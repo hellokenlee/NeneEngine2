@@ -1,0 +1,13 @@
+# Visual Studio Files
+.vs/*
+*.vcxproj.user
+
+# C++ Immediate Files
+*.tlog
+*.obj
+*.log
+*.idb
+*.pdb
+*.recipe
+*.exe
+*.ilk
