@@ -3,11 +3,15 @@
 #pragma once
 
 #include <string>
+#include <memory>
 
-typedef std::string String;
+typedef std::tm time_struct;
 
-typedef char Char;
+typedef time_t time_type;
 
-typedef std::tm TimeStruct;
+#ifdef _UNICODE
+typedef std::wstring string;
+#else
+typedef std::string  string;
+#endif // _UNICODE
 
-typedef time_t TimeType;

@@ -1,16 +1,16 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #include "Windows.h"
-#include "Core/Log.h"
-#include "Engine/EngineLoop.h"
+#include "core/log.h"
+#include "engine/engine_loop.h"
 
 int main()
 {
-	EngineLoop::Initialize();
+	engine_loop::initialize();
 
-	EngineLoop::Update();
+	engine_loop::update();
 
-	EngineLoop::Shutdown();
+	engine_loop::shutdown();
 
 	return 0;
 }

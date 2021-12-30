@@ -9,59 +9,59 @@
 
 #include "Platform.h"
 
-#define LOG(Cat, Level, Fmt, ...) LogImpl(LogCategory##Cat::GetString(), LogLevel::Level, Fmt, __VA_ARGS__)
+#define LOG(cat, level, fmt, ...) log_impl(zznn_log_categort##cat::get_name(), log_level::level, fmt, __VA_ARGS__)
 
 
-#define DEFINE_LOG_CATEGORY(Cat) \
-	class LogCategory##Cat : public LogCategoryBase \
+#define DEFINE_LOG_CATEGORY(cat) \
+	class zznn_log_categort##cat : public log_category_base \
 	{ \
 	public: \
-		static std::string GetString() { return #Cat; } \
+		static std::string get_name() { return #cat; } \
 	}; \
 
-enum class LogLevel
+enum class log_level
 {
-	Info ,
-	Warning ,
-	Error,
-	Fatal,
+	info,
+	warning,
+	error,
+	fatal,
 
-	LogLevel_Max
+	MAX_COUNT,
 };
 
-class LogCategoryBase
+class log_category_base
 {
 
 };
 
 
-void inline LogImpl(const String& Cat, const LogLevel& Level, const Char* Format, ...)
+void inline log_impl(const string& cat, const log_level& level, const char* format, ...)
 {
-	static const String LogLevelStrings[static_cast<int>(LogLevel::LogLevel_Max)] = {
-		"Info",
-		"Warning",
-		"Error",
-		"Fatal",
+	static const string LogLevelStrings[static_cast<int>(log_level::MAX_COUNT)] = {
+		TEXT("info"),
+		"warning",
+		"error",
+		"fatal",
 	};
 
 	// The timestamp
-	static char TimeBuffer[256];
-	TimeType CurrentTime = std::time(nullptr);
-	TimeStruct CurrentLocal;
-	Platform::LocalTime(&CurrentLocal, &CurrentTime);
-	std::strftime(TimeBuffer, sizeof(TimeBuffer), "[%y-%m-%d %H:%M:%S]", &CurrentLocal);
+	static char time_stamp[256];
+	time_type current = std::time(nullptr);
+	time_struct current_time;
+	platform::local_time(&current_time, &current);
+	platform::strftime(time_stamp, sizeof(time_stamp), "[%y-%m-%d %H:%M:%S]", &current_time);
 
 	// The category and Level
-	printf("%s [%s] [%s] ", TimeBuffer, Cat.c_str(), LogLevelStrings[static_cast<int>(Level)].c_str());
+	printf("%s [%s] [%s] ", time_stamp, cat.c_str(), LogLevelStrings[static_cast<int>(level)].c_str());
 
 	// The actual log message
-	va_list ArgList;
+	va_list arg_list;
 
-	va_start(ArgList, Format);
+	va_start(arg_list, format);
 
-	vprintf(Format, ArgList);
+	vprintf(format, arg_list);
 
-	va_end(ArgList);
+	va_end(arg_list);
 
 	printf("\n");
 }

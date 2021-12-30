@@ -80,10 +80,13 @@
     <LinkIncremental>true</LinkIncremental>
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <IncludePath>$(SolutionDir)Source;$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)Bin\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\bin\intermediate\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\bin\$(Platform)\intermediate\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -144,17 +147,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Source\App\Windows\Main.cpp" />
-    <ClCompile Include="Source\Core\Platform.cpp" />
-    <ClCompile Include="Source\Engine\EngineLoop.cpp" />
+    <ClCompile Include="source\app\windows\client.cpp" />
+    <ClCompile Include="source\app\windows\main.cpp" />
+    <ClCompile Include="source\core\platform.cpp" />
+    <ClCompile Include="source\engine\engine_loop.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Core\Log.h" />
-    <ClInclude Include="Source\Core\Platform.h" />
-    <ClInclude Include="Source\Core\Types.h" />
-    <ClInclude Include="Source\Engine\EngineLoop.h" />
-    <ClInclude Include="Source\Renderer\RendererBase.h" />
-    <ClInclude Include="Source\Renderer\SimpleRenderer.h" />
+    <ClInclude Include="source\app\windows\client.h" />
+    <ClInclude Include="source\core\log.h" />
+    <ClInclude Include="source\core\platform.h" />
+    <ClInclude Include="source\core\types.h" />
+    <ClInclude Include="source\engine\engine_loop.h" />
+    <ClInclude Include="source\renderer\renderer_base.h" />
+    <ClInclude Include="source\renderer\simple_renderer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

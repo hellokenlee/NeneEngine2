@@ -5,12 +5,12 @@
 #include "Core/Log.h"
 
 
-class EngineLoop
+class engine_loop
 {
 public:
-	static void Initialize();
+	static void initialize();
 
-	static void Update();
+	static void update();
 
-	static void Shutdown();
+	static void shutdown();
 };

@@ -2,9 +2,8 @@
 
 #pragma once
 
-#include "RendererBase.h"
-
-class SimpleRenderer : RendererBase
+class renderer_base
 {
+public:
 
 };

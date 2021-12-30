@@ -2,14 +2,14 @@
 
 #pragma once
 
-#include "Types.h"
+#include "types.h"
 
 
-class Platform
+class platform
 {
-
 public:
-	static void LocalTime(TimeStruct* const _Tm, TimeType const* const _Time);
+	static void local_time(time_struct* const tm, time_type const* const time);
 	
+	static void strftime(char* buffer, size_t buffer_size, const char* fmt, const time_struct* tm);
 };
 

@@ -2,7 +2,9 @@
 
 #pragma once
 
-class RendererBase
+#include "renderer_base.h"
+
+class simple_renderer : renderer_base
 {
 
 };
