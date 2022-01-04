@@ -3,8 +3,6 @@
 #include "client.h"
 #include "windows.h"
 
-bool g_window_should_close = false;
-
 static LRESULT CALLBACK WindowProcessFunction(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg) 
@@ -16,7 +14,7 @@ static LRESULT CALLBACK WindowProcessFunction(HWND hWnd, UINT msg, WPARAM wParam
 	}
 	case WM_CLOSE: 
 	{
-		g_window_should_close = true;
+		client::s_should_exit = true;
 		break;
 	}
 	default: 
@@ -26,6 +24,8 @@ static LRESULT CALLBACK WindowProcessFunction(HWND hWnd, UINT msg, WPARAM wParam
 	}
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
+
+bool client::s_should_exit = false;
 
 client::client(const string& name)
 	: handle(nullptr)
@@ -49,12 +49,25 @@ client::client(const string& name)
 	//
 	window = CreateWindowEx(
 		0, window_class_name, name.c_str(), WS_OVERLAPPEDWINDOW,
-		0, 0, 0, 0, nullptr, nullptr,
+		0, 0, 800, 600, nullptr, nullptr,
 		handle, nullptr
 	);
+	//
+	ShowWindow(window, SW_SHOW);
 }
 
 client::~client()
 {
+	
+}
 
+
+void client::poll_events()
+{
+	MSG msg;
+	while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+	{
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
 }

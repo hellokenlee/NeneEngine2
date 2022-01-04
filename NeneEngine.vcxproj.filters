@@ -5,6 +5,7 @@
     <ClCompile Include="source\app\windows\main.cpp" />
     <ClCompile Include="source\core\platform.cpp" />
     <ClCompile Include="source\app\windows\client.cpp" />
+    <ClCompile Include="source\engine\engine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\core\log.h" />
@@ -14,5 +15,6 @@
     <ClInclude Include="source\core\platform.h" />
     <ClInclude Include="source\core\types.h" />
     <ClInclude Include="source\app\windows\client.h" />
+    <ClInclude Include="source\engine\engine.h" />
   </ItemGroup>
 </Project>

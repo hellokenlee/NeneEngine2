@@ -1,15 +1,22 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
-#include "Windows.h"
-#include "core/log.h"
+#include "windows.h"
+
+#include "client.h"
 #include "engine/engine_loop.h"
 
 int main()
 {
+	client client;
+
 	engine_loop::initialize();
 
-	engine_loop::update();
-
+	while (!client::s_should_exit)
+	{
+		client.poll_events();
+		engine_loop::update();
+	}
+	
 	engine_loop::shutdown();
 
 	return 0;

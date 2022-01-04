@@ -10,11 +10,16 @@
 class client
 {
 public:
-	client() : client("NeneEngine") {}
+	client() : client(TEXT("NeneEngine")) {}
 	
 	client(const string& name);
 	
 	~client();
+
+	void poll_events();
+
+public:
+	static bool s_should_exit;
 
 protected:
 	HWND window;
