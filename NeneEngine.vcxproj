@@ -147,20 +147,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="source\app\windows\client.cpp" />
+    <ClCompile Include="source\app\windows\win_client.cpp" />
     <ClCompile Include="source\app\windows\main.cpp" />
     <ClCompile Include="source\core\platform.cpp" />
     <ClCompile Include="source\engine\engine.cpp" />
     <ClCompile Include="source\engine\engine_loop.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\app\windows\client.h" />
+    <ClInclude Include="source\app\iclient.h" />
+    <ClInclude Include="source\app\windows\win_client.h" />
     <ClInclude Include="source\core\log.h" />
     <ClInclude Include="source\core\platform.h" />
     <ClInclude Include="source\core\types.h" />
+    <ClInclude Include="source\device\idevice.h" />
     <ClInclude Include="source\engine\engine.h" />
     <ClInclude Include="source\engine\engine_loop.h" />
-    <ClInclude Include="source\renderer\renderer_base.h" />
+    <ClInclude Include="source\renderer\irenderer.h" />
     <ClInclude Include="source\renderer\simple_renderer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -2,18 +2,18 @@
 
 #include "windows.h"
 
-#include "client.h"
+#include "win_client.h"
 #include "engine/engine_loop.h"
 
 int main()
 {
-	client client;
+	win_client client;
 
-	engine_loop::initialize();
+	engine_loop::init();
 
-	while (!client::s_should_exit)
+	while (!client.should_exit())
 	{
-		client.poll_events();
+		client.poll_messages();
 		engine_loop::update();
 	}
 	

@@ -5,7 +5,7 @@
 DEFINE_LOG_CATEGORY(engine)
 
 
-void engine_loop::initialize()
+void engine_loop::init()
 {
 	LOG(engine, info, "Engine Init!");
 }

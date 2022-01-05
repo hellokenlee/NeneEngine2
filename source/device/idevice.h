@@ -2,9 +2,7 @@
 
 #pragma once
 
-#include "irenderer.h"
-
-class simple_renderer : irenderer
+class idevice
 {
 
 };

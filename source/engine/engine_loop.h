@@ -8,7 +8,7 @@
 class engine_loop
 {
 public:
-	static void initialize();
+	static void init();
 
 	static void update();
 

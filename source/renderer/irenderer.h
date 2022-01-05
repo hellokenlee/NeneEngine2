@@ -2,7 +2,7 @@
 
 #pragma once
 
-class renderer_base
+class irenderer
 {
 public:
 

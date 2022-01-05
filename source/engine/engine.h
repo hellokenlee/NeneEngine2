@@ -9,6 +9,9 @@ class engine
 public:
 	static engine& instance();
 
+public:
+
+
 private:
 	engine() = default;
 	~engine() = default;
