@@ -128,6 +128,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EntryPointSymbol>
       </EntryPointSymbol>
+      <AdditionalDependencies>dxgi.lib;d3d12.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -149,21 +150,34 @@
   <ItemGroup>
     <ClCompile Include="source\app\windows\win_client.cpp" />
     <ClCompile Include="source\app\windows\main.cpp" />
+    <ClCompile Include="source\core\globals.cpp" />
     <ClCompile Include="source\core\platform.cpp" />
     <ClCompile Include="source\engine\engine.cpp" />
     <ClCompile Include="source\engine\engine_loop.cpp" />
+    <ClCompile Include="source\gapi\d3d12\d3d12_device.cpp" />
+    <ClCompile Include="source\gapi\device.cpp" />
+    <ClCompile Include="source\gapi\gapi.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\app\iclient.h" />
     <ClInclude Include="source\app\windows\win_client.h" />
+    <ClInclude Include="source\core\core.h" />
+    <ClInclude Include="source\core\debug.h" />
+    <ClInclude Include="source\core\globals.h" />
     <ClInclude Include="source\core\log.h" />
     <ClInclude Include="source\core\platform.h" />
     <ClInclude Include="source\core\types.h" />
-    <ClInclude Include="source\device\idevice.h" />
+    <ClInclude Include="source\gapi\d3d12\d3d12_device.h" />
+    <ClInclude Include="source\gapi\d3d12\d3d12_utils.h" />
+    <ClInclude Include="source\gapi\gapi.h" />
+    <ClInclude Include="source\gapi\device.h" />
     <ClInclude Include="source\engine\engine.h" />
     <ClInclude Include="source\engine\engine_loop.h" />
     <ClInclude Include="source\renderer\irenderer.h" />
     <ClInclude Include="source\renderer\simple_renderer.h" />
+    <ClInclude Include="source\threads\device_thread.h" />
+    <ClInclude Include="source\threads\render_thread.h" />
+    <ClInclude Include="source\threads\threads.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

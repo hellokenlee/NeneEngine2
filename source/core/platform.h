@@ -8,8 +8,12 @@
 class platform
 {
 public:
+
 	static void local_time(time_struct* const tm, time_type const* const time);
 	
 	static void strftime(char* buffer, size_t buffer_size, const char* fmt, const time_struct* tm);
+
+public:
+	static constexpr uint32 max_path_length = 512;
 };
 

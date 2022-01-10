@@ -2,8 +2,8 @@
 
 #include "engine.h"
 
-engine& engine::instance()
+engine& engine::get()
 {
-	static engine static_instance;
-	return static_instance;
+	static engine instance;
+	return instance;
 }

@@ -5,7 +5,7 @@
 #include <windows.h>
 
 #include "core/types.h"
-#include "app/iclient.h"
+#include "../iclient.h"
 
 
 class win_client : public iclient
@@ -21,9 +21,6 @@ public:
 	virtual bool should_exit() override;
 
 	virtual void poll_messages() override;
-
-public:
-	bool m_should_exit;
 
 protected:
 	HWND m_window;

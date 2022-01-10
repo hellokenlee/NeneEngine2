@@ -4,6 +4,9 @@
 
 #include "windows.h"
 
+#include "core/core.h"
+
+
 static LRESULT CALLBACK WindowProcessFunction(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	win_client* p_client = reinterpret_cast<win_client*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
@@ -27,7 +30,7 @@ static LRESULT CALLBACK WindowProcessFunction(HWND hWnd, UINT msg, WPARAM wParam
 	}
 	case WM_CLOSE: 
 	{
-		p_client->m_should_exit = true;
+		g_engine_requested_exit = true;
 		break;
 	}
 	default: 
@@ -40,8 +43,7 @@ static LRESULT CALLBACK WindowProcessFunction(HWND hWnd, UINT msg, WPARAM wParam
 
 
 win_client::win_client(const string& name)
-	: m_should_exit(false)
-	, m_handle(nullptr)
+	: m_handle(nullptr)
 	, m_window(nullptr)
 {
 	//
@@ -79,7 +81,7 @@ win_client::~win_client()
 
 bool win_client::should_exit()
 {
-	return m_should_exit;
+	return g_engine_requested_exit;
 }
 
 void win_client::poll_messages()

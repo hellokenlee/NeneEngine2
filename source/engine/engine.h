@@ -2,12 +2,12 @@
 
 #pragma once
 
-#include "core/types.h"
+#include "core/core.h"
 
 class engine
 {
 public:
-	static engine& instance();
+	static engine& get();
 
 public:
 

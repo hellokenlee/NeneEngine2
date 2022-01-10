@@ -2,19 +2,32 @@
 
 #include "engine_loop.h"
 
+#include "core/core.h"
+
+#include "gapi/gapi.h"
+
 DEFINE_LOG_CATEGORY(engine)
 
 
 void engine_loop::init()
 {
+	//
+	create_gapi();
+
+	//
 	LOG(engine, info, "Engine Init!");
 }
 
 void engine_loop::update()
 {
+	int a = 1;
 }
 
 void engine_loop::shutdown()
 {
+	//
+	destroy_gapi();
+
+	//
 	LOG(engine, info, "Engine Shutdown!");
 }

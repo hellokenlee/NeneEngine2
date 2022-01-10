@@ -6,6 +6,10 @@
     <ClCompile Include="source\core\platform.cpp" />
     <ClCompile Include="source\app\windows\win_client.cpp" />
     <ClCompile Include="source\engine\engine.cpp" />
+    <ClCompile Include="source\gapi\device.cpp" />
+    <ClCompile Include="source\gapi\gapi.cpp" />
+    <ClCompile Include="source\gapi\d3d12\d3d12_device.cpp" />
+    <ClCompile Include="source\core\globals.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\core\log.h" />
@@ -17,6 +21,15 @@
     <ClInclude Include="source\app\windows\win_client.h" />
     <ClInclude Include="source\engine\engine.h" />
     <ClInclude Include="source\app\iclient.h" />
-    <ClInclude Include="source\device\idevice.h" />
+    <ClInclude Include="source\gapi\device.h" />
+    <ClInclude Include="source\core\debug.h" />
+    <ClInclude Include="source\core\globals.h" />
+    <ClInclude Include="source\threads\render_thread.h" />
+    <ClInclude Include="source\threads\device_thread.h" />
+    <ClInclude Include="source\threads\threads.h" />
+    <ClInclude Include="source\core\core.h" />
+    <ClInclude Include="source\gapi\d3d12\d3d12_device.h" />
+    <ClInclude Include="source\gapi\gapi.h" />
+    <ClInclude Include="source\gapi\d3d12\d3d12_utils.h" />
   </ItemGroup>
 </Project>
