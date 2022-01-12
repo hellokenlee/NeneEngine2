@@ -22,7 +22,7 @@ DEFINE_LOG_CATEGORY(debug)
 	{ \
 		if (!(expr)) \
 		{ \
-			LOG(debug, fatal, "Runtime check failed: [File:%s] [Line: %i]", __FILE__, __LINE__); \
+			LOG(debug, fatal, "Runtime check failed: [File:%s] [Line: %i]", TEXT(__FILE__), __LINE__); \
 			DEBUG_BREAK(); \
 		} \
 	}

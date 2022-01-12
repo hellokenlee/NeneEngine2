@@ -9,10 +9,11 @@
 DEFINE_LOG_CATEGORY(engine)
 
 
-void engine_loop::init()
+void engine_loop::init(void* window)
 {
+	int a = 1;
 	//
-	create_gapi();
+	create_gapi(window);
 
 	//
 	LOG(engine, info, "Engine Init!");

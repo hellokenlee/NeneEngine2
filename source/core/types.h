@@ -4,6 +4,7 @@
 
 #include <string>
 #include <memory>
+#include <format>
 
 // >>> Unsigned base types >>>
 

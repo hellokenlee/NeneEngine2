@@ -2,7 +2,7 @@
 
 #pragma once
 
-void create_gapi();
+void create_gapi(void* window);
 
 void destroy_gapi();
 

@@ -9,7 +9,7 @@ int main()
 {
 	win_client client;
 
-	engine_loop::init();
+	engine_loop::init(client.get_window());
 
 	while (!client.should_exit())
 	{

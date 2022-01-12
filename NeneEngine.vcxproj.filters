@@ -31,5 +31,6 @@
     <ClInclude Include="source\gapi\d3d12\d3d12_device.h" />
     <ClInclude Include="source\gapi\gapi.h" />
     <ClInclude Include="source\gapi\d3d12\d3d12_utils.h" />
+    <ClInclude Include="source\gapi\d3d12\d3d12_types.h" />
   </ItemGroup>
 </Project>

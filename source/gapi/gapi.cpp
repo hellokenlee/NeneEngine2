@@ -4,13 +4,13 @@
 #include "core/core.h"
 #include "d3d12/d3d12_device.h"
 
-void create_gapi()
+void create_gapi(void* window)
 {
 	bool use_d3d12 = true;
 
 	if (use_d3d12)
 	{
-		device* instance = new d3d12_device();
+		device* instance = new d3d12_device(window);
 
 		instance->init();
 

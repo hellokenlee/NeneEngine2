@@ -6,7 +6,7 @@
 class engine_loop
 {
 public:
-	static void init();
+	static void init(void* window);
 
 	static void update();
 

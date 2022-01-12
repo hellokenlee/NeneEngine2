@@ -13,7 +13,7 @@
 
 #include "platform.h"
 
-#define LOG(cat, level, fmt, ...) log_impl(zznn_log_categort##cat::get_name(), log_level::level, fmt, __VA_ARGS__)
+#define LOG(cat, level, fmt, ...) log_impl(zznn_log_categort##cat::get_name(), log_level::level, TEXT(fmt), __VA_ARGS__)
 
 #define DEFINE_LOG_CATEGORY(cat) \
 	class zznn_log_categort##cat : public log_category_base \
@@ -40,7 +40,7 @@ class log_category_base
 };
 
 
-void inline log_impl(const string& cat, const log_level& level, const char* format, ...)
+void inline log_impl(const string& cat, const log_level& level, const wchar_t* format, ...)
 {
 	static const string LogLevelStrings[static_cast<int>(log_level::MAX_COUNT)] = {
 		TEXT("info"),
@@ -66,7 +66,7 @@ void inline log_impl(const string& cat, const log_level& level, const char* form
 
 	va_start(arg_list, format);
 
-	vprintf(format, arg_list);
+	vwprintf(format, arg_list);
 
 	va_end(arg_list);
 
