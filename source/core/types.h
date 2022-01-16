@@ -2,10 +2,6 @@
 
 #pragma once
 
-#include <string>
-#include <memory>
-#include <format>
-
 // >>> Unsigned base types >>>
 
 // 8-bit unsigned integer
@@ -39,9 +35,13 @@ typedef signed long long	int64;
 
 // <<< Signed base types <<<
 
-typedef std::tm time_struct;
 
-typedef time_t time_type;
+// >>> Container Types >>>
+
+#include <string>
+#include <format>
+#include <vector>
+#include <queue>
 
 #ifdef _UNICODE
 typedef std::wstringstream stringstream;
@@ -51,7 +51,44 @@ typedef std::string  string;
 typedef std::stringstream stringstream;
 #endif // _UNICODE
 
-// template alias
-#define shared_ptr std::shared_ptr
+template<class T>
+using vector = std::vector<T>;
 
-#define unique_ptr std::unique_ptr
+
+template<class T>
+using queue = std::queue<T>;
+
+// <<< Container Types <<<
+
+
+// >>> Smart Pointer Types >>>
+
+#include <memory>
+
+template<class T>
+using shared_ptr = std::shared_ptr<T>;
+
+template <class T, class... Args>
+auto make_shared = &std::make_shared<T, Args...>;
+
+template<class T>
+using unique_ptr = std::unique_ptr<T>;
+
+template <class T, class... Args>
+auto make_unique = &std::make_unique<T, Args...>;
+
+template<class T>
+using enable_shared_from_this = std::enable_shared_from_this<T>;
+
+// <<< Smart Pointer Types <<<
+
+
+// <<< Other types <<<
+
+#include <ctype.h>
+
+typedef std::tm time_struct;
+
+typedef time_t time_type;
+
+// >>> Other types >>>

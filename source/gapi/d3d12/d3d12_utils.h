@@ -3,6 +3,7 @@
 #pragma once
 
 #include "core/core.h"
+#include "d3dx12.h"
 #include "d3d12_types.h"
 
 DEFINE_LOG_CATEGORY(d3d12)
@@ -38,6 +39,6 @@ static string get_error_string(HRESULT code)
 void inline verify_impl(HRESULT hres, const wchar_t* code, const wchar_t* filename, uint32 line)
 {
 	string error = get_error_string(hres);
-	LOG(d3d12, fatal, "Function call failed!\n Code at %s:%u:\n    `%s`\n Error:\n    `%s`", filename, line, code, error.c_str());
+	LOG(d3d12, fatal, "Function call failed!\n    Code at %s:%u:\n        `%s`\n    Error:\n        `%s`", filename, line, code, error.c_str());
 	DEBUG_BREAK();
 }

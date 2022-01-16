@@ -15,14 +15,13 @@
 
 
 
-
 DEFINE_LOG_CATEGORY(debug)
 
 #define __CHECK_IMPL(expr) \
 	{ \
 		if (!(expr)) \
 		{ \
-			LOG(debug, fatal, "Runtime check failed: [File:%s] [Line: %i]", TEXT(__FILE__), __LINE__); \
+			LOG(debug, fatal, "Assertin failed!\n    Code at %s:%u\n        `CHECK(%s);`\n", TEXT(__FILE__), __LINE__, TEXT(#expr)); \
 			DEBUG_BREAK(); \
 		} \
 	}

@@ -5,34 +5,48 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 
-#include "../device.h"
 #include "d3d12_utils.h"
+#include "d3d12_adapter.h"
+
+class d3d12_descriptor_heap;
+class d3d12_command_list_manager;
 
 
-class d3d12_device : public device
+class d3d12_device : public noncopyable, public enable_shared_from_this<d3d12_device>, public d3d12_adapter_child
 {
 public:
 	d3d12_device() = delete;
 
-	d3d12_device(void* hwnd);
+	d3d12_device(shared_ptr<d3d12_adapter> adapter);
 
 	virtual void init();
 
-	virtual void shutdown();
+	ID3D12Device* get_d3d_device() const { return m_device.Get(); }
 
-private:
-	HWND m_hwnd;
-	WinComPtr<ID3D12Device> m_device;
-	WinComPtr<IDXGISwapChain3> m_swap_chain;
-	WinComPtr<ID3D12CommandQueue> m_command_queue;
+	shared_ptr<d3d12_descriptor_heap> get_global_descriptor_heap() const { return m_global_descriptor_heap; };
 
-	WinComPtr<ID3D12Resource> m_back_buffers[2];
-	WinComPtr<ID3D12DescriptorHeap> m_back_buffers_desc_heap;
-
-	WinComPtr<ID3D12CommandAllocator> m_command_allocator;
+public:
+	shared_ptr<d3d12_descriptor_heap> m_global_descriptor_heap;
+	shared_ptr<d3d12_command_list_manager> m_copy_cmd_list_mgr;
+	shared_ptr<d3d12_command_list_manager> m_compute_cmd_list_mgr;
+	shared_ptr<d3d12_command_list_manager> m_graphic_cmd_list_mgr;
 
 protected:
-	uint32 m_back_buffer_index;
-	uint32 m_back_buffers_desc_heap_size;
+	WinComPtr<ID3D12Device> m_device;
+};
 
+
+class d3d12_device_child
+{
+public:
+	d3d12_device_child() = delete;
+
+	d3d12_device_child(shared_ptr<d3d12_device> device) : m_device(device) {}
+
+	~d3d12_device_child() = default;
+
+	shared_ptr<d3d12_device> get_parent_device() { return m_device; }
+
+protected:
+	shared_ptr<d3d12_device> m_device;
 };

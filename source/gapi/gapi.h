@@ -2,9 +2,19 @@
 
 #pragma once
 
-void create_gapi(void* window);
+#include "core/core.h"
 
-void destroy_gapi();
+class gapi : public noncopyable
+{
+public:
+	static void create(void* window);
+
+	static void destroy();
+
+public:
+	static shared_ptr<gapi> m_instance;
+};
+
 
 
 void inline gapi_flush_resources() {};

@@ -2,19 +2,19 @@
 
 #include "gapi.h"
 #include "core/core.h"
-#include "d3d12/d3d12_device.h"
+#include "d3d12/d3d12_gapi.h"
 
-void create_gapi(void* window)
+shared_ptr<gapi> gapi::m_instance = nullptr;
+
+void gapi::create(void* window)
 {
 	bool use_d3d12 = true;
 
+	CHECK(m_instance == nullptr);
+
 	if (use_d3d12)
 	{
-		device* instance = new d3d12_device(window);
-
-		instance->init();
-
-		device::set(instance);
+		m_instance = shared_ptr<d3d12_gapi>(new d3d12_gapi(window));
 	}
 	else
 	{
@@ -22,12 +22,12 @@ void create_gapi(void* window)
 	}
 }
 
-void destroy_gapi()
+void gapi::destroy()
 {
-	device* instance = device::get();
+	CHECK(m_instance != nullptr);
 
-	instance->shutdown();
+	m_instance.reset();
 
-	device::set(nullptr);
+	m_instance = nullptr;
 }
 

@@ -10,6 +10,14 @@
     <ClCompile Include="source\gapi\gapi.cpp" />
     <ClCompile Include="source\gapi\d3d12\d3d12_device.cpp" />
     <ClCompile Include="source\core\globals.cpp" />
+    <ClCompile Include="source\gapi\d3d12\d3d12_gapi.cpp" />
+    <ClCompile Include="source\gapi\d3d12\d3d12_adapter.cpp" />
+    <ClCompile Include="source\gapi\d3d12\d3d12_command_list_manager.cpp" />
+    <ClCompile Include="source\gapi\d3d12\d3d12_viewport.cpp" />
+    <ClCompile Include="source\gapi\d3d12\d3d12_descriptor_heap.cpp" />
+    <ClCompile Include="source\gapi\d3d12\d3d12_resource.cpp" />
+    <ClCompile Include="source\gapi\d3d12\d3d12_texture2d.cpp" />
+    <ClCompile Include="source\gapi\d3d12\d3d12_resource_view.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\core\log.h" />
@@ -32,5 +40,18 @@
     <ClInclude Include="source\gapi\gapi.h" />
     <ClInclude Include="source\gapi\d3d12\d3d12_utils.h" />
     <ClInclude Include="source\gapi\d3d12\d3d12_types.h" />
+    <ClInclude Include="source\gapi\d3d12\d3d12_globals.h" />
+    <ClInclude Include="source\gapi\d3d12\d3d12_adapter.h" />
+    <ClInclude Include="source\gapi\d3d12\d3d12_swap_chain.h" />
+    <ClInclude Include="source\gapi\d3d12\d3d12_gapi.h" />
+    <ClInclude Include="source\gapi\d3d12\d3d12_command_queue.h" />
+    <ClInclude Include="source\core\template.h" />
+    <ClInclude Include="source\gapi\d3d12\d3d12_command_list_manager.h" />
+    <ClInclude Include="source\gapi\d3d12\d3d12_viewport.h" />
+    <ClInclude Include="source\gapi\d3d12\d3d12_texture2d.h" />
+    <ClInclude Include="source\gapi\d3d12\d3d12_resource.h" />
+    <ClInclude Include="source\gapi\d3d12\d3d12_descriptor_heap.h" />
+    <ClInclude Include="source\gapi\d3d12\d3d12_resource_view.h" />
+    <ClInclude Include="source\gapi\d3d12\d3dx12.h" />
   </ItemGroup>
 </Project>

@@ -13,7 +13,6 @@ extern bool g_engine_requested_exit;
 // <<< Multi Thread Rendering <<<
 
 
-
 void inline request_engine_exit() 
 {
 	g_engine_requested_exit = true;
