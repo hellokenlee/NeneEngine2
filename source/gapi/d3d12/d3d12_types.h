@@ -7,3 +7,10 @@
 
 template<class T>
 using WinComPtr = Microsoft::WRL::ComPtr<T>;
+
+enum class d3d12_command_type
+{
+	graphics,
+	compute,
+	copy,
+};

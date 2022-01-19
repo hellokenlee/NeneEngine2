@@ -6,17 +6,21 @@ d3d12_descriptor_heap::d3d12_descriptor_heap(shared_ptr<d3d12_device> device, ui
 	: d3d12_device_child(device)
 	, m_descriptor_size(0)
 {
+	//
+	auto d3d_device = get_parent_device()->get_d3d_device();
+
 	// Create the descriptor heap
 	D3D12_DESCRIPTOR_HEAP_DESC desc = {};
 	desc.NumDescriptors = num_desc;
 	desc.Type = type;
 	desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-	VERIFY(get_parent_device()->get_d3d_device()->CreateDescriptorHeap(
+
+	VERIFY(d3d_device->CreateDescriptorHeap(
 		&desc, IID_PPV_ARGS(&m_descriptor_heap)
 	));
 
 	// Calc the descriptor size in the heap
-	m_descriptor_size = get_parent_device()->get_d3d_device()->GetDescriptorHandleIncrementSize(type);
+	m_descriptor_size = d3d_device->GetDescriptorHandleIncrementSize(type);
 
 	// 
 	m_cpu_base = m_descriptor_heap->GetCPUDescriptorHandleForHeapStart();

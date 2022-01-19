@@ -16,5 +16,4 @@ public:
 };
 
 
-
-void inline gapi_flush_resources() {};
+void inline clear_render_target() {};

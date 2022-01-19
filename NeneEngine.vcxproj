@@ -156,6 +156,7 @@
     <ClCompile Include="source\engine\engine.cpp" />
     <ClCompile Include="source\engine\engine_loop.cpp" />
     <ClCompile Include="source\gapi\d3d12\d3d12_adapter.cpp" />
+    <ClCompile Include="source\gapi\d3d12\d3d12_command_list.cpp" />
     <ClCompile Include="source\gapi\d3d12\d3d12_command_list_manager.cpp" />
     <ClCompile Include="source\gapi\d3d12\d3d12_descriptor_heap.cpp" />
     <ClCompile Include="source\gapi\d3d12\d3d12_device.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="source\core\template.h" />
     <ClInclude Include="source\core\types.h" />
     <ClInclude Include="source\gapi\d3d12\d3d12_adapter.h" />
+    <ClInclude Include="source\gapi\d3d12\d3d12_command_list.h" />
     <ClInclude Include="source\gapi\d3d12\d3d12_command_queue.h" />
     <ClInclude Include="source\gapi\d3d12\d3d12_descriptor_heap.h" />
     <ClInclude Include="source\gapi\d3d12\d3d12_device.h" />

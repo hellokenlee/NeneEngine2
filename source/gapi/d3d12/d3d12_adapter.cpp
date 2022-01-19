@@ -101,5 +101,5 @@ shared_ptr<d3d12_device> d3d12_adapter::get_device(uint32 index)
 uint32 d3d12_adapter::append_device(shared_ptr<d3d12_device> device)
 {
 	m_devices.push_back(device);
-	return m_devices.size() - 1;
+	return static_cast<uint32>(m_devices.size()) - 1;
 }
