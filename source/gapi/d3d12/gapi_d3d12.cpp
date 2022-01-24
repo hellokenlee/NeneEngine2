@@ -1,6 +1,6 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
-#include "d3d12_gapi.h"
+#include "gapi_d3d12.h"
 #include "d3d12_adapter.h"
 #include "d3d12_globals.h"
 
@@ -26,4 +26,21 @@ d3d12_gapi::~d3d12_gapi()
 
 	adapter.reset();
 	adapter = nullptr;
+}
+
+void d3d12_gapi::begin_drawing_viewport()
+{
+	m_viewport->begin_frame();
+}
+
+void d3d12_gapi::end_drawing_viewport()
+{
+	m_viewport->present();
+	m_viewport->end_frame();
+}
+
+shared_ptr<gapi_cmd_context> d3d12_gapi::create_cmd_context()
+{
+	CHECK(0);
+	return nullptr;
 }

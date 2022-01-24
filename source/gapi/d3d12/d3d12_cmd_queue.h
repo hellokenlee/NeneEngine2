@@ -2,7 +2,7 @@
 
 #pragma once
 
-class d3d12_command_queue
+class d3d12_cmd_queue
 {
 
 };

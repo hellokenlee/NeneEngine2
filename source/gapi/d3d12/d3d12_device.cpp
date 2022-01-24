@@ -3,7 +3,7 @@
 #include "d3d12_device.h"
 #include "d3d12_globals.h"
 #include "d3d12_descriptor_heap.h"
-#include "d3d12_command_list_manager.h"
+#include "d3d12_cmd_list_mgr.h"
 
 #include <windows.h>
 
@@ -26,7 +26,24 @@ void d3d12_device::init()
 	);
 
 	// Create command list manager
-	m_copy_cmd_list_mgr = shared_ptr<d3d12_command_list_manager>(new d3d12_command_list_manager(shared_from_this()));
-	m_compute_cmd_list_mgr = shared_ptr<d3d12_command_list_manager>(new d3d12_command_list_manager(shared_from_this()));
-	m_graphic_cmd_list_mgr = shared_ptr<d3d12_command_list_manager>(new d3d12_command_list_manager(shared_from_this()));
+	m_copy_cmd_list_mgr = shared_ptr<d3d12_cmd_list_mgr>(new d3d12_cmd_list_mgr(shared_from_this(), d3d12_cmd_type::copy));
+	m_compute_cmd_list_mgr = shared_ptr<d3d12_cmd_list_mgr>(new d3d12_cmd_list_mgr(shared_from_this(), d3d12_cmd_type::compute));
+	m_graphics_cmd_list_mgr = shared_ptr<d3d12_cmd_list_mgr>(new d3d12_cmd_list_mgr(shared_from_this(), d3d12_cmd_type::graphics));
+}
+
+
+shared_ptr<d3d12_cmd_list_mgr> d3d12_device::get_cmd_list_mgr(d3d12_cmd_type type)
+{
+	switch (type)
+	{
+	case d3d12_cmd_type::graphics:
+		return get_graphics_cmd_list_mgr();
+	case d3d12_cmd_type::compute:
+		return get_compute_cmd_list_mgr();
+	case d3d12_cmd_type::copy:
+		return get_copy_cmd_list_mgr();
+	default:
+		break;
+	}
+	return nullptr;
 }

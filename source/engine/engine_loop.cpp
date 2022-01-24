@@ -20,7 +20,8 @@ void engine_loop::init(void* window)
 
 void engine_loop::update()
 {
-	int a = 1;
+	gapi::get()->begin_drawing_viewport();
+	gapi::get()->end_drawing_viewport();
 }
 
 void engine_loop::shutdown()
