@@ -65,11 +65,13 @@ d3d12_viewport::d3d12_viewport(shared_ptr<d3d12_adapter> adapter, void* hwnd, ui
 
 void d3d12_viewport::begin_frame()
 {
-	m_last_fence_value = m_fence->signal();
+	
 }
 
 void d3d12_viewport::end_frame()
 {
+	m_last_fence_value = m_fence->signal();
+
 	m_fence->wait(m_last_fence_value);
 
 	m_back_buffer_index = m_swap_chain->GetCurrentBackBufferIndex();
