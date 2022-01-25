@@ -17,7 +17,7 @@ d3d12_fence::d3d12_fence(shared_ptr<d3d12_device> device, d3d12_cmd_type type)
 	, m_fence_complete_event(nullptr)
 {
 	auto d3d_device = get_parent_device()->get_d3d_device();
-	VERIFY(d3d_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence)));
+	VERIFY(d3d_device->CreateFence(m_last_signaled_fence, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence)));
 	m_fence_complete_event = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 	CHECK(m_fence_complete_event != nullptr);
 }
@@ -49,11 +49,5 @@ void d3d12_fence::wait(const uint64& value)
 
 bool d3d12_fence::is_complete(const uint64& value)
 {
-	/*
-	if (value <= m_last_signaled_fence)
-	{
-		return true;
-	}
-	*/
-	return value <= m_fence->GetCompletedValue();
+	return m_fence->GetCompletedValue() >= value;
 }

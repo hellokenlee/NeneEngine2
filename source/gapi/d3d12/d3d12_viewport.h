@@ -5,6 +5,7 @@
 #include "d3d12_fence.h"
 #include "d3d12_adapter.h"
 #include "d3d12_texture2d.h"
+#include "d3d12_cmd_list.h"
 
 
 class d3d12_viewport : public noncopyable, public d3d12_adapter_child
@@ -25,6 +26,8 @@ protected:
 protected:
 	uint64 m_last_fence_value;
 	shared_ptr<d3d12_fence> m_fence;
+
+	shared_ptr<d3d12_cmd_list> m_cmd_list;
 
 	uint32 m_back_buffer_num;
 	uint32 m_multi_sample_num;

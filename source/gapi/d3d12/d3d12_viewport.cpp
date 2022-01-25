@@ -58,6 +58,9 @@ d3d12_viewport::d3d12_viewport(shared_ptr<d3d12_adapter> adapter, void* hwnd, ui
 
 	//
 	m_fence = shared_ptr<d3d12_fence>(new d3d12_fence(device));
+
+	//
+	m_cmd_list = device->get_graphics_cmd_list_mgr()->create_cmd_list();
 }
 
 void d3d12_viewport::begin_frame()
@@ -81,27 +84,26 @@ void d3d12_viewport::present()
 	allocator->reset();
 	
 	//
-	shared_ptr<d3d12_cmd_list> cmd_list = device->get_graphics_cmd_list_mgr()->create_cmd_list();
-	cmd_list->reset(allocator);
+	m_cmd_list->reset(allocator);
 
 	//
 	auto transition0 = CD3DX12_RESOURCE_BARRIER::Transition(m_back_buffers[m_back_buffer_index]->get_d3d_resource(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-	cmd_list->get_d3d_graphics_cmd_list()->ResourceBarrier(1, &transition0);
+	m_cmd_list->get_d3d_graphics_cmd_list()->ResourceBarrier(1, &transition0);
 
 	//
 	const float clear_color[] = { 0.0f, 0.2f, 0.4f, 1.0f };
-	cmd_list->get_d3d_graphics_cmd_list()->ClearRenderTargetView(
+	m_cmd_list->get_d3d_graphics_cmd_list()->ClearRenderTargetView(
 		*(m_back_buffers[m_back_buffer_index]->get_render_target_view()->get_d3d_descriptor_handle()), clear_color, 0, nullptr
 	);
 
 	//
 	auto transition1 = CD3DX12_RESOURCE_BARRIER::Transition(m_back_buffers[m_back_buffer_index]->get_d3d_resource(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-	cmd_list->get_d3d_graphics_cmd_list()->ResourceBarrier(1, &transition1);
+	m_cmd_list->get_d3d_graphics_cmd_list()->ResourceBarrier(1, &transition1);
 
 	//
-	cmd_list->close();
+	m_cmd_list->close();
 	//
-	device->get_cmd_list_mgr(d3d12_cmd_type::graphics)->execute_cmd_list(cmd_list);
+	device->get_cmd_list_mgr(d3d12_cmd_type::graphics)->execute_cmd_list(m_cmd_list);
 
 	//
 	m_swap_chain->Present(1, 0);

@@ -24,7 +24,7 @@ d3d12_descriptor_heap::d3d12_descriptor_heap(shared_ptr<d3d12_device> device, ui
 
 	// 
 	m_cpu_base = m_descriptor_heap->GetCPUDescriptorHandleForHeapStart();
-	m_gpu_base = m_descriptor_heap->GetGPUDescriptorHandleForHeapStart();
+	m_gpu_base = { 0ull };
 
 	//
 	for (uint32 i = 0; i < num_desc; ++i)
