@@ -29,26 +29,46 @@ shared_ptr<d3d12_adapter> d3d12_adapter::select_adapter()
 	VERIFY(CreateDXGIFactory2(dxgi_factory_flags, IID_PPV_ARGS(&factory)));
 
 	//
+	int32 adapter_index = -1;
 	WinComPtr<IDXGIAdapter1> adapter;
 	WinComPtr<IDXGIFactory6> factory6;
+	//
+	int32 selected_adapter_index = -1;
+	WinComPtr<IDXGIAdapter1> selected_adapter;
 
-	auto select_adapter = [&adapter]() -> bool
+	// Main selection function
+	auto update_selected_adapter = [&adapter, &adapter_index, &selected_adapter, &selected_adapter_index]() -> bool
 	{
 		//
 		DXGI_ADAPTER_DESC1 desc;
 		adapter->GetDesc1(&desc);
+		//
+		LOG(d3d12, info, "    %d: %s.", ++adapter_index, desc.Description);
+
+		// Find the first satisfied
+		if (selected_adapter_index > -1)
+		{
+			return true;
+		}
+		
+		// Skip software emulated drvier
 		if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
 		{
-			// Skip software emulated drvier
 			return false;
 		}
+
 		// Check if the adapter support d3d12
 		if (SUCCEEDED(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, _uuidof(ID3D12Device), nullptr)))
 		{
+			selected_adapter_index = adapter_index;
+			selected_adapter = adapter;
 			return true;
 		}
 		return false;
 	};
+
+	//
+	LOG(d3d12, info, "Listing all adapters:");
 
 	// Newer enum api
 	if (SUCCEEDED(factory->QueryInterface(IID_PPV_ARGS(&factory6))))
@@ -66,24 +86,23 @@ shared_ptr<d3d12_adapter> d3d12_adapter::select_adapter()
 			}
 
 			// Check current adapter 
-			if (select_adapter())
-			{
-				break;
-			}
+			update_selected_adapter();
 		}
 	}
 
 	// Fallback to old enum api
-	if (adapter.Get() == nullptr)
+	if (selected_adapter.Get() == nullptr)
 	{
 		for (uint32 index = 0; SUCCEEDED(factory->EnumAdapters1(index, &adapter)); ++index)
 		{
-			if (select_adapter())
-			{
-				break;
-			}
+			update_selected_adapter();
 		}
 	}
+
+	//
+	DXGI_ADAPTER_DESC1 desc;
+	selected_adapter->GetDesc1(&desc);
+	LOG(d3d12, info, "Select Adapter %d: %s.", selected_adapter_index, desc.Description);
 
 	// Assemble the result of d3d12 adapter
 	shared_ptr<d3d12_adapter> result(new d3d12_adapter());

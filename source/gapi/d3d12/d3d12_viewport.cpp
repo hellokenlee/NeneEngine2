@@ -60,7 +60,8 @@ d3d12_viewport::d3d12_viewport(shared_ptr<d3d12_adapter> adapter, void* hwnd, ui
 	m_fence = shared_ptr<d3d12_fence>(new d3d12_fence(device));
 
 	//
-	m_cmd_list = device->get_graphics_cmd_list_mgr()->create_cmd_list();
+	m_cmd_list = nullptr;
+	m_cmd_allocator = nullptr;
 }
 
 void d3d12_viewport::begin_frame()
@@ -70,11 +71,15 @@ void d3d12_viewport::begin_frame()
 
 void d3d12_viewport::end_frame()
 {
+	auto device = get_parent_adapter()->get_device(0);
+
 	m_last_fence_value = m_fence->signal();
 
 	m_fence->wait(m_last_fence_value);
 
 	m_back_buffer_index = m_swap_chain->GetCurrentBackBufferIndex();
+
+	device->get_cmd_list_mgr(d3d12_cmd_type::graphics)->release_cmd_allocator(m_cmd_allocator);
 }
 
 void d3d12_viewport::present()
@@ -82,11 +87,11 @@ void d3d12_viewport::present()
 	auto device = get_parent_adapter()->get_device(0);
 
 	//
-	auto allocator = device->get_cmd_list_mgr(d3d12_cmd_type::graphics)->obtain_cmd_allocator();
-	allocator->reset();
+	m_cmd_allocator = device->get_cmd_list_mgr(d3d12_cmd_type::graphics)->obtain_cmd_allocator();
+	m_cmd_list = device->get_graphics_cmd_list_mgr()->create_cmd_list(m_cmd_allocator);
 	
 	//
-	m_cmd_list->reset(allocator);
+	m_cmd_list->reset(m_cmd_allocator);
 
 	//
 	auto transition0 = CD3DX12_RESOURCE_BARRIER::Transition(m_back_buffers[m_back_buffer_index]->get_d3d_resource(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);

@@ -6,10 +6,9 @@
 #include "d3dx12.h"
 #include "d3d12_types.h"
 
-DEFINE_LOG_CATEGORY(d3d12)
-
 #define VERIFY(x) { HRESULT hres = x; if (FAILED(hres)) { verify_impl(hres, TEXT(#x), TEXT(__FILE__), __LINE__); }}
 
+DEFINE_LOG_CATEGORY(d3d12);
 
 static string get_error_string(HRESULT code)
 {

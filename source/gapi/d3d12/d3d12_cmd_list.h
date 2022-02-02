@@ -12,9 +12,9 @@ class d3d12_cmd_allocator;
 class d3d12_cmd_list : public d3d12_device_child
 {
 public:
-	d3d12_cmd_list(d3d12_cmd_type type, shared_ptr<d3d12_device> device);
+	d3d12_cmd_list(d3d12_cmd_type type, shared_ptr<d3d12_cmd_allocator> allocator, shared_ptr<d3d12_device> device);
 
-	d3d12_cmd_list(d3d12_cmd_type type, shared_ptr<d3d12_cmd_list_mgr> manager);
+	d3d12_cmd_list(d3d12_cmd_type type, shared_ptr<d3d12_cmd_allocator> allocator, shared_ptr<d3d12_cmd_list_mgr> manager);
 
 public:
 	ID3D12CommandList* get_d3d_cmd_list() { return m_command_list.Get(); }

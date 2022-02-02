@@ -28,6 +28,7 @@ protected:
 	shared_ptr<d3d12_fence> m_fence;
 
 	shared_ptr<d3d12_cmd_list> m_cmd_list;
+	shared_ptr<d3d12_cmd_allocator> m_cmd_allocator;
 
 	uint32 m_back_buffer_num;
 	uint32 m_multi_sample_num;

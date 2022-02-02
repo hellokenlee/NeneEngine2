@@ -4,7 +4,7 @@
 
 #include "d3d12_device.h"
 
-class d3d12_cmd_allocator : public d3d12_device_child
+class d3d12_cmd_allocator : public enable_shared_from_this<d3d12_cmd_allocator>, public d3d12_device_child
 {
 public:
 	d3d12_cmd_allocator(shared_ptr<d3d12_device> device, d3d12_cmd_type type);

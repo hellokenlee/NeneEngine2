@@ -12,10 +12,9 @@ DEFINE_LOG_CATEGORY(engine)
 void engine_loop::init(void* window)
 {
 	//
-	gapi::create(window);
-
-	//
 	LOG(engine, info, "Engine Init!");
+	//
+	gapi::create(window);	
 }
 
 void engine_loop::update()
