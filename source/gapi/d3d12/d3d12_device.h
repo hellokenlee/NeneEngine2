@@ -17,9 +17,12 @@ class d3d12_device : public noncopyable, public enable_shared_from_this<d3d12_de
 public:
 	d3d12_device() = delete;
 
+	~d3d12_device();
+
 	d3d12_device(shared_ptr<d3d12_adapter> adapter);
 
-	virtual void init();
+	void init();
+	void clear();
 
 	ID3D12Device* get_d3d_device() const { return m_device.Get(); }
 

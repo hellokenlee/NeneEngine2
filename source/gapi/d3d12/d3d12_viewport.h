@@ -12,7 +12,9 @@ class d3d12_viewport : public noncopyable, public d3d12_adapter_child
 {
 public:
 	d3d12_viewport(shared_ptr<d3d12_adapter> adapter, void* hwnd, uint32 back_buffer_num, uint32 multi_sample_num);
+	~d3d12_viewport();
 
+public:
 	void begin_frame();
 
 	void end_frame();

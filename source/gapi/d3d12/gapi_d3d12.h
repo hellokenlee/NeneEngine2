@@ -22,5 +22,6 @@ public:
 
 protected:
 	shared_ptr<d3d12_device> m_device;
+	shared_ptr<d3d12_adapter> m_adapter;
 	shared_ptr<d3d12_viewport> m_viewport;
 };

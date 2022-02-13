@@ -13,6 +13,7 @@ class d3d12_cmd_list_mgr : public noncopyable, public enable_shared_from_this<d3
 {
 public:
 	d3d12_cmd_list_mgr(shared_ptr<d3d12_device> device, d3d12_cmd_type type);
+	~d3d12_cmd_list_mgr();
 
 	/* Command List Functions */
 	shared_ptr<d3d12_cmd_list> create_cmd_list(shared_ptr<d3d12_cmd_allocator>);

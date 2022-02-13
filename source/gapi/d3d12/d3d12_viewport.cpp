@@ -64,6 +64,12 @@ d3d12_viewport::d3d12_viewport(shared_ptr<d3d12_adapter> adapter, void* hwnd, ui
 	m_cmd_allocator = nullptr;
 }
 
+d3d12_viewport::~d3d12_viewport()
+{
+	m_cmd_list.reset();
+	m_cmd_allocator.reset();
+}
+
 void d3d12_viewport::begin_frame()
 {
 	

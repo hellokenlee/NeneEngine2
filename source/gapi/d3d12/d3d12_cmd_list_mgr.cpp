@@ -16,6 +16,11 @@ d3d12_cmd_list_mgr::d3d12_cmd_list_mgr(shared_ptr<d3d12_device> device, d3d12_cm
 	VERIFY(d3d_device->CreateCommandQueue(&desc, IID_PPV_ARGS(&m_command_queue)));
 }
 
+d3d12_cmd_list_mgr::~d3d12_cmd_list_mgr()
+{
+	
+}
+
 shared_ptr<d3d12_cmd_list> d3d12_cmd_list_mgr::create_cmd_list(shared_ptr<d3d12_cmd_allocator> allocator)
 {
 	//

@@ -25,6 +25,7 @@ public:
 	
 	shared_ptr<d3d12_device> get_device(uint32 index);
 	uint32 append_device(shared_ptr<d3d12_device> device);
+	void remove_all_devices();
 
 private:
 	vector<shared_ptr<d3d12_device>> m_devices;

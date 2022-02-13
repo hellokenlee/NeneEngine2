@@ -22,6 +22,11 @@ d3d12_fence::d3d12_fence(shared_ptr<d3d12_device> device, d3d12_cmd_type type)
 	CHECK(m_fence_complete_event != nullptr);
 }
 
+d3d12_fence::~d3d12_fence()
+{
+	CloseHandle(m_fence_complete_event);
+}
+
 uint64 d3d12_fence::signal()
 {
 	//

@@ -5,6 +5,7 @@
 #include "core/core.h"
 
 // >>> GAPI Globals >>> 
+constexpr bool g_d3d12_debug = true;
 
 constexpr uint32 g_d3d12_back_buffer_count = 2;
 constexpr uint32 g_d3d12_back_buffer_multisample_count = 1;

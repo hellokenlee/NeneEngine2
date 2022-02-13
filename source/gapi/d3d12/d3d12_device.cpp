@@ -15,6 +15,11 @@ d3d12_device::d3d12_device(shared_ptr<d3d12_adapter> adapter)
 	VERIFY(D3D12CreateDevice(get_parent_adapter()->get_dxgi_adapter(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&m_device)));
 }
 
+d3d12_device::~d3d12_device()
+{
+	clear();
+}
+
 void d3d12_device::init()
 {
 	// Register device
@@ -31,6 +36,13 @@ void d3d12_device::init()
 	m_graphics_cmd_list_mgr = shared_ptr<d3d12_cmd_list_mgr>(new d3d12_cmd_list_mgr(shared_from_this(), d3d12_cmd_type::graphics));
 }
 
+void d3d12_device::clear()
+{
+	m_copy_cmd_list_mgr.reset();
+	m_compute_cmd_list_mgr.reset();
+	m_graphics_cmd_list_mgr.reset();
+	m_global_descriptor_heap.reset();
+}
 
 shared_ptr<d3d12_cmd_list_mgr> d3d12_device::get_cmd_list_mgr(d3d12_cmd_type type)
 {

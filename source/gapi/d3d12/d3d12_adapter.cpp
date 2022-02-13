@@ -3,6 +3,7 @@
 #include "d3d12_adapter.h"
 #include "d3d12_types.h"
 #include "d3d12_utils.h"
+#include "d3d12_globals.h"
 
 #include <windows.h>
 
@@ -11,9 +12,7 @@ shared_ptr<d3d12_adapter> d3d12_adapter::select_adapter()
 	// Init dxgi crate flag
 	UINT dxgi_factory_flags = 0;
 
-	bool use_debug_layer = true;
-
-	if (use_debug_layer)
+	if (g_d3d12_debug)
 	{
 		WinComPtr<ID3D12Debug> debug_com;
 		if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debug_com))))
@@ -121,4 +120,9 @@ uint32 d3d12_adapter::append_device(shared_ptr<d3d12_device> device)
 {
 	m_devices.push_back(device);
 	return static_cast<uint32>(m_devices.size()) - 1;
+}
+
+void d3d12_adapter::remove_all_devices()
+{
+	m_devices.clear();
 }
