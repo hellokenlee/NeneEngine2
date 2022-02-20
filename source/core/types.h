@@ -51,6 +51,11 @@ typedef std::string  string;
 typedef std::stringstream stringstream;
 #endif // _UNICODE
 
+typedef std::string  sstring;
+typedef std::wstring wstring;
+typedef std::wstringstream wstringstream;
+typedef std::stringstream sstringstream;
+
 template<class T>
 using vector = std::vector<T>;
 
@@ -92,3 +97,11 @@ typedef std::tm time_struct;
 typedef time_t time_type;
 
 // >>> Other types >>>
+
+#include <fstream>
+#include <sstream>
+
+using ifstream = std::ifstream;
+
+template <class... Args>
+auto move = std::move<Args...>;

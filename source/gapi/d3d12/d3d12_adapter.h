@@ -18,10 +18,10 @@ public:
 	static shared_ptr<d3d12_adapter> select_adapter();
 
 public:
-	IDXGIAdapter* const get_dxgi_adapter() const { return m_adapter.Get(); };
+	IDXGIAdapter* const get_dxgi_adapter() const { return m_adapter.Get(); }
 
-	IDXGIFactory* const get_dxgi_factory() const { return m_factory.Get(); };
-	IDXGIFactory6* const get_dxgi_factory6() const { return m_factory.Get(); };
+	IDXGIFactory* const get_dxgi_factory() const { return m_factory.Get(); }
+	IDXGIFactory6* const get_dxgi_factory6() const { return m_factory.Get(); }
 	
 	shared_ptr<d3d12_device> get_device(uint32 index);
 	uint32 append_device(shared_ptr<d3d12_device> device);

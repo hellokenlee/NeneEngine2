@@ -5,6 +5,7 @@
 #include "core/core.h"
 #include "gapi_cmd_context.h"
 
+
 class gapi : public noncopyable
 {
 public:

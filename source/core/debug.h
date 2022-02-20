@@ -14,14 +14,14 @@
 #define CHECK(expr) __CHECK_IMPL(expr)
 
 
+DECLARE_LOG_CATEGORY(debug)
 
-DEFINE_LOG_CATEGORY(debug)
 
 #define __CHECK_IMPL(expr) \
 	{ \
 		if (!(expr)) \
 		{ \
-			LOG(debug, fatal, "Assertin failed!\n    Code at %s:%u\n        `CHECK(%s);`\n", TEXT(__FILE__), __LINE__, TEXT(#expr)); \
+			LOG(debug, fatal, TEXT("Assertin failed!\n    Code at %s:%u\n        `CHECK(%s);`\n"), TEXT(__FILE__), __LINE__, TEXT(#expr)); \
 			DEBUG_BREAK(); \
 		} \
 	}

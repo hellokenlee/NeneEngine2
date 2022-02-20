@@ -54,8 +54,6 @@ shared_ptr<d3d12_cmd_list_mgr> d3d12_device::get_cmd_list_mgr(d3d12_cmd_type typ
 		return get_compute_cmd_list_mgr();
 	case d3d12_cmd_type::copy:
 		return get_copy_cmd_list_mgr();
-	default:
-		break;
 	}
 	return nullptr;
 }

@@ -8,9 +8,9 @@
 
 #define VERIFY(x) { HRESULT hres = x; if (FAILED(hres)) { verify_impl(hres, TEXT(#x), TEXT(__FILE__), __LINE__); }}
 
-DEFINE_LOG_CATEGORY(d3d12);
+DECLARE_LOG_CATEGORY(d3d12);
 
-static string get_error_string(HRESULT code)
+static string get_error_string(const HRESULT code)
 {
 	//
 	string res;
@@ -35,9 +35,9 @@ static string get_error_string(HRESULT code)
 	return res;
 }
 
-void inline verify_impl(HRESULT hres, const wchar_t* code, const wchar_t* filename, uint32 line)
+void inline verify_impl(const HRESULT hres, const wchar_t* code, const wchar_t* filename, uint32 line)
 {
-	string error = get_error_string(hres);
-	LOG(d3d12, fatal, "Function call failed!\n    Code at %s:%u:\n        `%s`\n    Error:\n        `%s`", filename, line, code, error.c_str());
+	const string error = get_error_string(hres);
+	LOG(d3d12, fatal, TEXT("Function call failed!\n    Code at %s:%u:\n        `%s`\n    Error:\n        `%s`"), filename, line, code, error.c_str());
 	DEBUG_BREAK();
 }

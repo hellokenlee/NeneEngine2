@@ -7,6 +7,7 @@
 #include "d3d12_device.h"
 #include "d3d12_viewport.h"
 
+
 class d3d12_gapi_cmd_context : gapi_cmd_context
 {
 

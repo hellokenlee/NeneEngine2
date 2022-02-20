@@ -6,15 +6,15 @@
 
 #include "gapi/gapi.h"
 
-DEFINE_LOG_CATEGORY(engine)
+DECLARE_LOG_CATEGORY(engine)
 
 
 void engine_loop::init(void* window)
 {
 	//
-	LOG(engine, info, "Engine Init!");
+	LOG(engine, info, TEXT("Engine Init!"));
 	//
-	gapi::create(window);	
+	gapi::create(window);
 }
 
 void engine_loop::update()
@@ -29,5 +29,5 @@ void engine_loop::shutdown()
 	gapi::destroy();
 
 	//
-	LOG(engine, info, "Engine Shutdown!");
+	LOG(engine, info, TEXT("Engine Shutdown!"));
 }

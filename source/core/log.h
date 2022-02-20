@@ -1,5 +1,7 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
+// ReSharper disable CppClangTidyClangDiagnosticFormatNonliteral
+
 #pragma once
 
 #include <ctime>
@@ -13,16 +15,28 @@
 
 #include "platform.h"
 
-#define LOG(cat, level, fmt, ...) log_impl(zznn_log_categort##cat::get_name(), log_level::level, TEXT(fmt), __VA_ARGS__)
+#ifdef _UNICODE
+	#define LOG(cat, level, fmt, ...) WLOG(cat, level, fmt, __VA_ARGS__)
+#else
+	#define LOG(cat, level, fmt, ...) SLOG(cat, level, fmt, __VA_ARGS__)
+#endif
 
-#define DEFINE_LOG_CATEGORY(cat) \
-	class zznn_log_categort##cat : public log_category_base \
+#define WLOG(cat, level, fmt, ...) wlog_impl(zznn_log_categort##cat::get_wide_name(), log_level::level, fmt, __VA_ARGS__)
+#define SLOG(cat, level, fmt, ...) slog_impl(zznn_log_categort##cat::get_single_name(), log_level::level, fmt, __VA_ARGS__)
+
+
+#define DECLARE_LOG_CATEGORY(cat_name) \
+	class zznn_log_categort##cat_name : public log_category_base \
 	{ \
 	public: \
-		static string get_name() { return TEXT(#cat); } \
+		inline static wstring get_wide_name() { return TEXT(#cat_name); } \
+		inline static sstring get_single_name() { return (#cat_name); } \
 	}; \
 
-#define EXTERN_LOG_CATEGORY(cat)
+
+#define DEFINE_LOG_CATEGORY(cat_name) \
+	zznn_log_categort##cat_name (cat_name);
+
 
 enum class log_level
 {
@@ -40,9 +54,9 @@ class log_category_base
 };
 
 
-void inline log_impl(const string& cat, const log_level& level, const wchar_t* format, ...)
+void inline wlog_impl(const wstring& cat, const log_level& level, const wchar_t* const format, ...)
 {
-	static const string LogLevelStrings[static_cast<int>(log_level::MAX_COUNT)] = {
+	static const wstring log_levels[static_cast<int>(log_level::MAX_COUNT)] = {
 		TEXT("info"),
 		TEXT("warning"),
 		TEXT("error"),
@@ -50,16 +64,16 @@ void inline log_impl(const string& cat, const log_level& level, const wchar_t* f
 	};
 
 	// The timestamp
-	time_type current = std::time(nullptr);
+	const time_type current = std::time(nullptr);
 	time_struct current_time;
 	platform::local_time(&current_time, &current);
 
-	stringstream text_stream;
+	wstringstream text_stream;
 	text_stream << std::put_time(&current_time, TEXT("[%y-%m-%d %H:%M:%S]"));
-	string time_string = text_stream.str();
+	const wstring time_string(text_stream.str());
 
 	// The category and Level
-	wprintf(TEXT("%s [%s] [%s] "), time_string.c_str(), cat.c_str(), LogLevelStrings[static_cast<int>(level)].c_str());
+	wprintf(TEXT("%s [%s] [%s] "), time_string.c_str(), cat.c_str(), log_levels[static_cast<int>(level)].c_str());
 
 	// The actual log message
 	va_list arg_list;
@@ -67,6 +81,39 @@ void inline log_impl(const string& cat, const log_level& level, const wchar_t* f
 	va_start(arg_list, format);
 
 	vwprintf(format, arg_list);
+
+	va_end(arg_list);
+
+	printf("\n");
+}
+
+void inline slog_impl(const sstring& cat, const log_level& level, const char* const format, ...)
+{
+	static const sstring log_levels[static_cast<int>(log_level::MAX_COUNT)] = {
+		"info",
+		"warning",
+		"error",
+		"fatal",
+	};
+
+	// The timestamp
+	const time_type current = std::time(nullptr);
+	time_struct current_time;
+	platform::local_time(&current_time, &current);
+
+	sstringstream text_stream;
+	text_stream << std::put_time(&current_time, "[%y-%m-%d %H:%M:%S]");
+	const sstring time_string = text_stream.str();
+
+	// The category and Level
+	printf("%s [%s] [%s] ", time_string.c_str(), cat.c_str(), log_levels[static_cast<int>(level)].c_str());
+
+	// The actual log message
+	va_list arg_list;
+
+	va_start(arg_list, format);
+
+	vprintf(format, arg_list);
 
 	va_end(arg_list);
 

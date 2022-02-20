@@ -5,6 +5,7 @@
 #include "d3d12_resource.h"
 #include "d3d12_resource_view.h"
 
+
 class d3d12_texture2d : public d3d12_resource
 {
 public:

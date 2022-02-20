@@ -2,6 +2,11 @@
 
 #pragma once
 
+#include <d3d12.h>
+
+#include "core/core.h"
+#include "gapi/gapi_types.h"
+
 #include <windows.h>
 #include <wrl/client.h>
 
@@ -25,9 +30,7 @@ static inline D3D12_COMMAND_LIST_TYPE d3d_cast(const d3d12_cmd_type& type)
 		return D3D12_COMMAND_LIST_TYPE_COMPUTE;
 	case d3d12_cmd_type::copy:
 		return D3D12_COMMAND_LIST_TYPE_COPY;
-	default:
-		CHECK(0);
-		break;
 	}
+
 	return D3D12_COMMAND_LIST_TYPE_DIRECT;
 }

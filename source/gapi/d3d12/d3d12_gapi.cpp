@@ -1,8 +1,9 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
-#include "gapi_d3d12.h"
-#include "d3d12_adapter.h"
+#include "d3d12_gapi.h"
 #include "d3d12_globals.h"
+#include "d3d12_adapter.h"
+#include "d3d12_shader.h"
 
 #include <windows.h>
 #include <d3d12.h>
@@ -21,6 +22,13 @@ d3d12_gapi::d3d12_gapi(void* hwnd)
 
 	//
 	m_viewport = shared_ptr<d3d12_viewport>(new d3d12_viewport(m_adapter, hwnd, g_d3d12_back_buffer_count, g_d3d12_back_buffer_multisample_count));
+
+
+	//
+	auto ps = shared_ptr<d3d12_pixel_shader>(new d3d12_pixel_shader(TEXT("shader/simple.hlsl"), TEXT("PSMain")));
+	auto vs = shared_ptr<d3d12_vertex_shader>(new d3d12_vertex_shader(TEXT("shader/simple.hlsl"), TEXT("VSMain")));
+	ps->compile();
+	vs->compile();
 }
 
 d3d12_gapi::~d3d12_gapi()
