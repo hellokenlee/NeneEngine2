@@ -2,6 +2,10 @@
 
 #pragma once
 
+/*
+ * Simple Proxy For Standard Template Library
+ */
+
 // >>> Unsigned base types >>>
 
 // 8-bit unsigned integer
@@ -42,6 +46,7 @@ typedef signed long long	int64;
 #include <format>
 #include <vector>
 #include <queue>
+#include <array>
 
 #ifdef _UNICODE
 typedef std::wstringstream stringstream;
@@ -57,8 +62,10 @@ typedef std::wstringstream wstringstream;
 typedef std::stringstream sstringstream;
 
 template<class T>
-using vector = std::vector<T>;
+using dynamic_array = std::vector<T>;
 
+template<class T, size_t S>
+using static_array = std::array<T, S>;
 
 template<class T>
 using queue = std::queue<T>;

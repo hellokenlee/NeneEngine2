@@ -5,7 +5,7 @@
 #include <d3d12.h>
 
 #include "core/core.h"
-#include "gapi/gapi_types.h"
+#include "gapi/gapi_type.h"
 
 #include <windows.h>
 #include <wrl/client.h>

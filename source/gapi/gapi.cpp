@@ -3,7 +3,7 @@
 #include "gapi.h"
 #include "core/core.h"
 
-#include "d3d12/d3d12_gapi.h"
+#include "d3d12/gapi_d3d12.h"
 
 shared_ptr<gapi> gapi::m_instance = nullptr;
 
@@ -15,7 +15,7 @@ void gapi::create(void* window)
 
 	if (use_d3d12)
 	{
-		m_instance = shared_ptr<d3d12_gapi>(new d3d12_gapi(window));
+		m_instance = shared_ptr<gapi_d3d12>(new gapi_d3d12(window));
 	}
 	else
 	{

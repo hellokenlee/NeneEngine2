@@ -24,16 +24,16 @@ public:
 	void init();
 	void clear();
 
-	ID3D12Device* get_d3d_device() const { return m_device.Get(); }
+	[[nodiscard]] ID3D12Device* get_d3d_device() const { return m_device.Get(); }
 
-	shared_ptr<d3d12_descriptor_heap> get_rtv_descriptor_heap() const { return m_rtv_descriptor_heap; }
-	shared_ptr<d3d12_descriptor_heap> get_dsv_descriptor_heap() const { return m_dsv_descriptor_heap; }
-	shared_ptr<d3d12_descriptor_heap> get_global_descriptor_heap() const { return m_global_descriptor_heap; }
+	[[nodiscard]] shared_ptr<d3d12_descriptor_heap> get_rtv_descriptor_heap() const { return m_rtv_descriptor_heap; }
+	[[nodiscard]] shared_ptr<d3d12_descriptor_heap> get_dsv_descriptor_heap() const { return m_dsv_descriptor_heap; }
+	[[nodiscard]] shared_ptr<d3d12_descriptor_heap> get_global_descriptor_heap() const { return m_global_descriptor_heap; }
 
-	shared_ptr<d3d12_cmd_list_mgr> get_cmd_list_mgr(d3d12_cmd_type type);
-	shared_ptr<d3d12_cmd_list_mgr> get_copy_cmd_list_mgr() const { return m_copy_cmd_list_mgr; }
-	shared_ptr<d3d12_cmd_list_mgr> get_compute_cmd_list_mgr() const { return m_compute_cmd_list_mgr; }
-	shared_ptr<d3d12_cmd_list_mgr> get_graphics_cmd_list_mgr() const { return m_graphics_cmd_list_mgr; }
+	[[nodiscard]] shared_ptr<d3d12_cmd_list_mgr> get_cmd_list_mgr(d3d12_cmd_type type);
+	[[nodiscard]] shared_ptr<d3d12_cmd_list_mgr> get_copy_cmd_list_mgr() const { return m_copy_cmd_list_mgr; }
+	[[nodiscard]] shared_ptr<d3d12_cmd_list_mgr> get_compute_cmd_list_mgr() const { return m_compute_cmd_list_mgr; }
+	[[nodiscard]] shared_ptr<d3d12_cmd_list_mgr> get_graphics_cmd_list_mgr() const { return m_graphics_cmd_list_mgr; }
 
 public:
 	// Descriptor allocators
@@ -56,12 +56,12 @@ class d3d12_device_child
 public:
 	d3d12_device_child() = delete;
 
-	d3d12_device_child(shared_ptr<d3d12_device> device) : m_device(device) {}
+	explicit d3d12_device_child(shared_ptr<d3d12_device> device) : m_device(device) {}
 
-	~d3d12_device_child() = default;
+	virtual ~d3d12_device_child() = default;
 
 	shared_ptr<d3d12_device> get_parent_device() { return m_device; }
 
 protected:
-	shared_ptr<d3d12_device> m_device;
+	shared_ptr<d3d12_device> m_device{};
 };

@@ -31,8 +31,8 @@ protected:
 	d3d12_cmd_type m_type;
 
 	/* Managed Command Allocators */
-	vector<shared_ptr<d3d12_cmd_allocator>> current_allocators;
-	queue<shared_ptr<d3d12_cmd_allocator>> available_allocators;
+	dynamic_array<shared_ptr<d3d12_cmd_allocator>> m_current_allocators;
+	queue<shared_ptr<d3d12_cmd_allocator>> m_available_allocators;
 
 protected:
 	WinComPtr<ID3D12CommandQueue> m_command_queue;

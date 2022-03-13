@@ -14,6 +14,9 @@ public:
 	// Allocate in given desc. heap
 	d3d12_resource(shared_ptr<d3d12_device> device, shared_ptr<d3d12_descriptor_heap> heap);
 
+	virtual ~d3d12_resource() {}
+
+public:
 	ID3D12Resource* get_d3d_resource() { return m_resource.Get(); }
 
 	void set_d3d_resource(WinComPtr<ID3D12Resource> resource) { m_resource = resource; init(); }
@@ -22,6 +25,7 @@ public:
 
 protected:
 	virtual void init() {};
+	virtual void release() {};
 
 protected:
 	WinComPtr<ID3D12Resource> m_resource;

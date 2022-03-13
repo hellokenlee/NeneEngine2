@@ -1,0 +1,60 @@
+/* Copyright reserved by KenLee@hellokenlee@163.com */
+
+#include "simple_renderer.h"
+
+
+struct vertex
+{
+	vector4 position;
+	vector4 vertex_color;
+};
+
+
+constexpr float aspect_ratio = 1.0f;
+
+
+simple_renderer::simple_renderer()
+	: renderer_interface()
+	, m_graphics_pipeline_state(nullptr)
+{
+	auto& api = gapi::get();
+
+	auto vertex_shader = api.create_vertex_shader({TEXT("./shader/simple.hlsl"), TEXT("MainVS")});
+	auto pixel_sahder = api.create_pixel_shader({TEXT("./shader/simple.hlsl"), TEXT("MainPS")});
+	dynamic_array<gapi_vertex_element> vertex_declaration {
+		{"POSITION", 0, gapi_vertex_element_type::float4, 0, 0, 0, 0},
+		{"COLOR", 1, gapi_vertex_element_type::float4, 0, 16, 0, 0}
+	};
+	gapi_graphics_pipeline_state_initializer grahpics_initializer(
+		{vertex_declaration, vertex_shader, pixel_sahder}
+	);
+	m_graphics_pipeline_state = api.create_graphic_pipeline_state(grahpics_initializer);
+	
+	vertex triangle[] = {
+		{ { 0.0f, 0.25f * aspect_ratio, 0.0f, 0.0f}, { 1.0f, 0.0f, 0.0f, 1.0f } },
+        { { 0.25f, -0.25f * aspect_ratio, 0.0f, 0.0f}, { 0.0f, 1.0f, 0.0f, 1.0f } },
+        { { -0.25f, -0.25f * aspect_ratio, 0.0f, 0.0f}, { 0.0f, 0.0f, 1.0f, 1.0f } }
+	};
+	const auto vertex_buffer = 
+		api.create_vertex_buffer(sizeof(vertex), sizeof(triangle), gapi_resource_usage::usage_dynamic);
+	void* mapped_buffer = api.lock_vertex_buffer(vertex_buffer);
+	memcpy(mapped_buffer, &triangle, sizeof(triangle));
+	api.unlock_vertex_buffer(vertex_buffer);
+}
+
+void simple_renderer::render_view_family()
+{
+	auto& api = gapi::get();
+
+	const auto cmd_list = api.create_cmd_list();
+
+	cmd_list->set_graphic_pipeline_states(m_graphics_pipeline_state);
+
+	cmd_list->start_drawing_viewport(api.get_viewport());
+
+	cmd_list->draw_primitive(3, 1, 0, 0);
+
+	cmd_list->finish_drawing_viewport(api.get_viewport());
+
+	api.execute_cmd_list(cmd_list);
+}

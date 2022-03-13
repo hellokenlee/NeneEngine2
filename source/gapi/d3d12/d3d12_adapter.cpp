@@ -36,7 +36,7 @@ shared_ptr<d3d12_adapter> d3d12_adapter::select_adapter()
 	WinComPtr<IDXGIAdapter1> selected_adapter;
 
 	// Main selection function
-	auto update_selected_adapter = [&adapter, &adapter_index, &selected_adapter, &selected_adapter_index]() -> bool
+	auto update_selected_adapter = [&adapter, &adapter_index, &selected_adapter, &selected_adapter_index]() -> void
 	{
 		//
 		DXGI_ADAPTER_DESC1 desc;
@@ -47,23 +47,21 @@ shared_ptr<d3d12_adapter> d3d12_adapter::select_adapter()
 		// Find the first satisfied
 		if (selected_adapter_index > -1)
 		{
-			return true;
+			return;
 		}
 		
-		// Skip software emulated drvier
+		// Skip software emulated driver
 		if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
 		{
-			return false;
+			return;
 		}
 
 		// Check if the adapter support d3d12
-		if (SUCCEEDED(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, _uuidof(ID3D12Device), nullptr)))
+		if (SUCCEEDED(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_12_0, _uuidof(ID3D12Device), nullptr)))
 		{
 			selected_adapter_index = adapter_index;
 			selected_adapter = adapter;
-			return true;
 		}
-		return false;
 	};
 
 	//
@@ -116,7 +114,7 @@ shared_ptr<d3d12_device> d3d12_adapter::get_device(uint32 index)
 	return m_devices[index];
 }
 
-uint32 d3d12_adapter::append_device(shared_ptr<d3d12_device> device)
+uint32 d3d12_adapter::append_device(const shared_ptr<d3d12_device>& device)
 {
 	m_devices.push_back(device);
 	return static_cast<uint32>(m_devices.size()) - 1;

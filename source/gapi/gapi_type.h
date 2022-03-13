@@ -34,3 +34,19 @@ enum class gapi_shader_feature_level
 	shading_model_5_1,
 	shading_model_6_0,
 };
+
+enum class gapi_vertex_element_type
+{
+	float1,
+	float2,
+	float3,
+	float4,
+
+	half2,
+	half4,
+
+	packed_normal,
+
+	unsigned_int,
+	unsigned_byte4,
+};

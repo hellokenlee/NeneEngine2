@@ -18,17 +18,23 @@ public:
 	static shared_ptr<d3d12_adapter> select_adapter();
 
 public:
-	IDXGIAdapter* const get_dxgi_adapter() const { return m_adapter.Get(); }
+	[[nodiscard]]
+	IDXGIAdapter* get_dxgi_adapter() const { return m_adapter.Get(); }
 
-	IDXGIFactory* const get_dxgi_factory() const { return m_factory.Get(); }
-	IDXGIFactory6* const get_dxgi_factory6() const { return m_factory.Get(); }
+	[[nodiscard]]
+	IDXGIFactory* get_dxgi_factory() const { return m_factory.Get(); }
+
+	[[nodiscard]]
+	IDXGIFactory6* get_dxgi_factory6() const { return m_factory.Get(); }
 	
-	shared_ptr<d3d12_device> get_device(uint32 index);
-	uint32 append_device(shared_ptr<d3d12_device> device);
+	shared_ptr<d3d12_device> get_device(const uint32 index);
+
+	uint32 append_device(const shared_ptr<d3d12_device>& device);
+
 	void remove_all_devices();
 
 private:
-	vector<shared_ptr<d3d12_device>> m_devices;
+	dynamic_array<shared_ptr<d3d12_device>> m_devices;
 
 private:
 	WinComPtr<IDXGIAdapter> m_adapter;

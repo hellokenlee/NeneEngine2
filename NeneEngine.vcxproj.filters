@@ -9,24 +9,32 @@
     <ClCompile Include="source\gapi\gapi.cpp" />
     <ClCompile Include="source\gapi\d3d12\d3d12_device.cpp" />
     <ClCompile Include="source\core\globals.cpp" />
-    <ClCompile Include="source\gapi\d3d12\d3d12_gapi.cpp" />
+    <ClCompile Include="source\gapi\d3d12\gapi_d3d12.cpp" />
     <ClCompile Include="source\gapi\d3d12\d3d12_adapter.cpp" />
     <ClCompile Include="source\gapi\d3d12\d3d12_cmd_list_mgr.cpp" />
-    <ClCompile Include="source\gapi\d3d12\d3d12_viewport.cpp" />
+    <ClCompile Include="source\gapi\d3d12\gapi_d3d12_viewport.cpp" />
     <ClCompile Include="source\gapi\d3d12\d3d12_descriptor_heap.cpp" />
     <ClCompile Include="source\gapi\d3d12\d3d12_resource.cpp" />
-    <ClCompile Include="source\gapi\d3d12\d3d12_texture2d.cpp" />
+    <ClCompile Include="source\gapi\d3d12\d3d12_texture.cpp" />
     <ClCompile Include="source\gapi\d3d12\d3d12_resource_view.cpp" />
     <ClCompile Include="source\gapi\d3d12\d3d12_cmd_list.cpp" />
     <ClCompile Include="source\gapi\d3d12\d3d12_fence.cpp" />
     <ClCompile Include="source\gapi\d3d12\d3d12_cmd_allocator.cpp" />
     <ClCompile Include="source\gapi\d3d12\d3d12_shader.cpp" />
     <ClCompile Include="source\core\file_helper.cpp" />
+    <ClCompile Include="source\gapi\d3d12\d3d12_pipeline_state.cpp" />
+    <ClCompile Include="source\renderer\simple_renderer.cpp" />
+    <ClCompile Include="source\gapi\d3d12\d3d12_buffer.cpp" />
+    <ClCompile Include="source\gapi\d3d12\gapi_d3d12_resource.cpp" />
+    <ClCompile Include="source\gapi\d3d12\gapi_d3d12_pipeline_state.cpp" />
+    <ClCompile Include="source\gapi\gapi_shader.cpp" />
+    <ClCompile Include="source\gapi\d3d12\gapi_d3d12_cmd_list.cpp" />
+    <ClCompile Include="source\gapi\d3d12\d3d12_swap_chain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\core\log.h" />
     <ClInclude Include="source\engine\engine_loop.h" />
-    <ClInclude Include="source\renderer\irenderer.h" />
+    <ClInclude Include="source\renderer\renderer_interface.h" />
     <ClInclude Include="source\renderer\simple_renderer.h" />
     <ClInclude Include="source\core\platform.h" />
     <ClInclude Include="source\core\types.h" />
@@ -46,12 +54,12 @@
     <ClInclude Include="source\gapi\d3d12\d3d12_globals.h" />
     <ClInclude Include="source\gapi\d3d12\d3d12_adapter.h" />
     <ClInclude Include="source\gapi\d3d12\d3d12_swap_chain.h" />
-    <ClInclude Include="source\gapi\d3d12\d3d12_gapi.h" />
+    <ClInclude Include="source\gapi\d3d12\gapi_d3d12.h" />
     <ClInclude Include="source\gapi\d3d12\d3d12_cmd_queue.h" />
     <ClInclude Include="source\core\template.h" />
     <ClInclude Include="source\gapi\d3d12\d3d12_cmd_list_mgr.h" />
-    <ClInclude Include="source\gapi\d3d12\d3d12_viewport.h" />
-    <ClInclude Include="source\gapi\d3d12\d3d12_texture2d.h" />
+    <ClInclude Include="source\gapi\d3d12\gapi_d3d12_viewport.h" />
+    <ClInclude Include="source\gapi\d3d12\d3d12_texture.h" />
     <ClInclude Include="source\gapi\d3d12\d3d12_resource.h" />
     <ClInclude Include="source\gapi\d3d12\d3d12_descriptor_heap.h" />
     <ClInclude Include="source\gapi\d3d12\d3d12_resource_view.h" />
@@ -59,14 +67,35 @@
     <ClInclude Include="source\gapi\d3d12\d3d12_cmd_list.h" />
     <ClInclude Include="source\gapi\d3d12\d3d12_fence.h" />
     <ClInclude Include="source\gapi\gapi_cmd_context.h" />
-    <ClInclude Include="source\gapi\d3d12\d3d12_gapi_cmd_context.h" />
     <ClInclude Include="source\gapi\d3d12\d3d12_cmd_allocator.h" />
     <ClInclude Include="source\gapi\d3d12\d3d12_shader.h" />
     <ClInclude Include="source\gapi\d3d12\d3d12_pipeline_state.h" />
-    <ClInclude Include="source\gapi\gapi_types.h" />
+    <ClInclude Include="source\gapi\gapi_type.h" />
     <ClInclude Include="source\core\file_helper.h" />
+    <ClInclude Include="source\gapi\gapi_cmd_list.h" />
+    <ClInclude Include="source\core\math\math.h" />
+    <ClInclude Include="source\core\math\dxmath\DirectXCollision.h" />
+    <ClInclude Include="source\core\math\dxmath\DirectXColors.h" />
+    <ClInclude Include="source\core\math\dxmath\DirectXMath.h" />
+    <ClInclude Include="source\core\math\dxmath\DirectXPackedVector.h" />
+    <ClInclude Include="source\gapi\gapi_resource.h" />
+    <ClInclude Include="source\gapi\d3d12\gapi_d3d12_cmd_list_context.h" />
+    <ClInclude Include="source\gapi\d3d12\gapi_d3d12_resource.h" />
+    <ClInclude Include="source\gapi\d3d12\gapi_d3d12_cmd_list.h" />
+    <ClInclude Include="source\gapi\d3d12\d3d12_buffer.h" />
+    <ClInclude Include="source\gapi\gapi_shader.h" />
+    <ClInclude Include="source\gapi\gapi_pipeline_state.h" />
+    <ClInclude Include="source\gapi\d3d12\gapi_d3d12_pipeline_state.h" />
+    <ClInclude Include="source\gapi\d3d12\gapi_d3d12_shader.h" />
+    <ClInclude Include="source\gapi\gapi_viewport.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="source\core\file_helper.inl" />
+    <None Include="source\core\math\dxmath\DirectXCollision.inl" />
+    <None Include="source\core\math\dxmath\DirectXMathConvert.inl" />
+    <None Include="source\core\math\dxmath\DirectXMathMatrix.inl" />
+    <None Include="source\core\math\dxmath\DirectXMathMisc.inl" />
+    <None Include="source\core\math\dxmath\DirectXMathVector.inl" />
+    <None Include="source\core\math\dxmath\DirectXPackedVector.inl" />
   </ItemGroup>
 </Project>

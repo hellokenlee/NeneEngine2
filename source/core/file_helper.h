@@ -3,6 +3,8 @@
 #pragma once
 
 #include "types.h"
+#include "log.h"
+#include "debug.h"
 
 
 DECLARE_LOG_CATEGORY(filehelper);

@@ -40,16 +40,16 @@ void d3d12_cmd_list_mgr::execute_cmd_list(shared_ptr<d3d12_cmd_list> cmd_list)
 shared_ptr<d3d12_cmd_allocator> d3d12_cmd_list_mgr::obtain_cmd_allocator()
 {
 	shared_ptr<d3d12_cmd_allocator> res = nullptr;
-	if (available_allocators.size() > 0)
+	if (m_available_allocators.size() > 0)
 	{
-		res = available_allocators.front();
+		res = m_available_allocators.front();
 		res->reset();
-		available_allocators.pop();
+		m_available_allocators.pop();
 	}
 	else
 	{
 		res = shared_ptr<d3d12_cmd_allocator>(new d3d12_cmd_allocator(get_parent_device(), m_type));
-		current_allocators.push_back(res);
+		m_current_allocators.push_back(res);
 	}
 
 	return res;
@@ -58,5 +58,5 @@ shared_ptr<d3d12_cmd_allocator> d3d12_cmd_list_mgr::obtain_cmd_allocator()
 void d3d12_cmd_list_mgr::release_cmd_allocator(shared_ptr<d3d12_cmd_allocator> allocator)
 {
 	CHECK(allocator != nullptr);
-	available_allocators.push(allocator);
+	m_available_allocators.push(allocator);
 }

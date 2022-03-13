@@ -5,5 +5,11 @@
 class gapi_cmd_context
 {
 public:
+	void draw_primitive();
 
+	void draw_primitive_indirect();
+
+	void draw_indexed_primitive();
+
+	void draw_indexed_primitive_indirect();
 };

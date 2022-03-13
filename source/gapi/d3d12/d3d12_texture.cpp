@@ -1,6 +1,6 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
-#include "d3d12_texture2d.h"
+#include "d3d12_texture.h"
 
 d3d12_texture2d::d3d12_texture2d(shared_ptr<d3d12_device> device)
 	: d3d12_texture2d(device, device->get_global_descriptor_heap())

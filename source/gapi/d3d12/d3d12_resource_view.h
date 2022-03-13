@@ -6,6 +6,9 @@
 #include "d3d12_resource.h"
 
 
+class d3d12_buffer;
+
+
 class d3d12_render_target_view
 {
 public:

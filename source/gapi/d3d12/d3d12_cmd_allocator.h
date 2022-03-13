@@ -12,7 +12,7 @@ public:
 	void reset();
 
 public:
-	ID3D12CommandAllocator* get_d3d_command_allocator() { return m_command_allocator.Get(); }
+	ID3D12CommandAllocator* get_d3d_command_allocator() const { return m_command_allocator.Get(); }
 
 protected:
 	WinComPtr<ID3D12CommandAllocator> m_command_allocator;

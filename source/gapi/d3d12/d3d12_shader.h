@@ -10,36 +10,46 @@
 
 class d3d12_vertex_declaration
 {
+public:
+	d3d12_vertex_declaration() = default;
+	~d3d12_vertex_declaration() = default;
+
+	d3d12_vertex_declaration(const dynamic_array<D3D12_INPUT_ELEMENT_DESC>& vertex_elements): m_vertex_elements(vertex_elements) {}
+
+	D3D12_INPUT_LAYOUT_DESC get_d3d12_input_layout_desc();
 
 protected:
-
-
-protected:
-	D3D12_INPUT_ELEMENT_DESC input_element_desc;
-};
+	dynamic_array<D3D12_INPUT_ELEMENT_DESC> m_vertex_elements;
+};            
 
 
 class d3d12_shader_base
 {
 public:
 	d3d12_shader_base(
-		const gapi_shader_type type_,
-		const gapi_shader_feature_level level_
+		const gapi_shader_type type,
+		const gapi_shader_feature_level level,
+		const sstring& codes,
+		const sstring& entry,
+		const sstring& name
 	);
+
 	virtual ~d3d12_shader_base() = default;
 
 	virtual bool compile();
 
+	ID3DBlob* get_d3d_blob() { return m_bytecode.Get(); }
+
 public:
-	sstring name;
-	sstring codes;
-	sstring entry;
-	gapi_shader_type type;
-	gapi_shader_feature_level level;
+	sstring m_name;
+	sstring m_codes;
+	sstring m_entry;
+	gapi_shader_type m_type;
+	gapi_shader_feature_level m_level;
 
 protected:
-	WinComPtr<ID3DBlob> bytecode;
-	WinComPtr<ID3DBlob> error_message;
+	WinComPtr<ID3DBlob> m_bytecode;
+	WinComPtr<ID3DBlob> m_error_message;
 };
 
 
@@ -49,7 +59,7 @@ public:
 	static constexpr gapi_shader_type static_type = gapi_shader_type::vertex_shader;
 
 public:
-	d3d12_vertex_shader(const string& filepath, const string& entry);
+	d3d12_vertex_shader(const sstring& codes, const sstring& entry, const sstring& name);
 	virtual ~d3d12_vertex_shader() override = default;
 };
 
@@ -60,6 +70,6 @@ public:
 	static constexpr gapi_shader_type static_type = gapi_shader_type::pixel_shader;
 
 public:
-	d3d12_pixel_shader(const string& filepath, const string& entry);
+	d3d12_pixel_shader(const sstring& codes, const sstring& entry, const sstring& name);
 	virtual ~d3d12_pixel_shader() override = default;
 };

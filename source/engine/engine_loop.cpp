@@ -6,6 +6,10 @@
 
 #include "gapi/gapi.h"
 
+#include "renderer/renderer_interface.h"
+#include "renderer/simple_renderer.h"
+
+
 DECLARE_LOG_CATEGORY(engine)
 
 
@@ -19,8 +23,13 @@ void engine_loop::init(void* window)
 
 void engine_loop::update()
 {
-	gapi::get()->begin_drawing_viewport();
-	gapi::get()->end_drawing_viewport();
+	gapi::get().start_frame();
+
+	simple_renderer renderer;
+
+	renderer.render_view_family();
+	
+	gapi::get().finish_frame();
 }
 
 void engine_loop::shutdown()

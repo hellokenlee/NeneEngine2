@@ -1,0 +1,31 @@
+/* Copyright reserved by KenLee@hellokenlee@163.com */
+
+#pragma once
+
+#include "gapi_resource.h"
+#include "gapi_viewport.h"
+#include "gapi_pipeline_state.h"
+
+
+class gapi_cmd_list
+{
+public:
+	gapi_cmd_list() = default;
+	virtual ~gapi_cmd_list() = default;
+
+public:
+	//
+	virtual void start_drawing_viewport(shared_ptr<gapi_viewport> viewport) = 0;
+
+	virtual void finish_drawing_viewport(shared_ptr<gapi_viewport> viewport) = 0;
+
+	virtual void draw_primitive(uint32 vertex_num, uint32 instance_num, uint32 base_vertex_index, uint32 instance_base_index) = 0;
+
+	virtual void set_vertex_stream(shared_ptr<gapi_vertex_buffer> vertex_buffer) = 0;
+
+	// virtual void set_viewport(float min_x, float min_y, float min_z, float max_x, float max_y, float max_z) = 0;
+
+	virtual void set_graphic_pipeline_states(shared_ptr<gapi_graphics_pipeline_state> state) = 0;
+
+	
+};

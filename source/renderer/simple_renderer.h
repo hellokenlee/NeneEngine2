@@ -2,9 +2,18 @@
 
 #pragma once
 
-#include "irenderer.h"
+#include "gapi/gapi.h"
+#include "core/core.h"
+#include "renderer_interface.h"
 
-class simple_renderer : irenderer
+
+class simple_renderer : public renderer_interface
 {
+public:
+	simple_renderer();
 
+	virtual void render_view_family() override;
+
+protected:
+	shared_ptr<gapi_graphics_pipeline_state> m_graphics_pipeline_state;
 };
