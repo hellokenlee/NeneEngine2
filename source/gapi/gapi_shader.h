@@ -18,12 +18,14 @@ struct gapi_vertex_element
 
 class gapi_vertex_shader
 {
-	
+public:
+	virtual ~gapi_vertex_shader() {};
 };
 
 class gapi_pixel_shader
 {
-	
+public:
+	virtual ~gapi_pixel_shader() {};
 };
 
 class gapi_shader_initializer

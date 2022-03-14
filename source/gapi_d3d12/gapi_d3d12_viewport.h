@@ -4,6 +4,8 @@
 
 #include "../gapi_viewport.h"
 
+#include "gapi_d3d12_template.h"
+
 #include "d3d12_fence.h"
 #include "d3d12_adapter.h"
 #include "d3d12_texture.h"
@@ -11,11 +13,11 @@
 #include "d3d12_swap_chain.h"
 
 
-class gapi_d3d12_viewport : public gapi_viewport
+class gapi_d3d12_viewport : public t::dynamic_custom<gapi_d3d12_viewport, gapi_viewport>
 {
 public:
 	gapi_d3d12_viewport(shared_ptr<d3d12_adapter> adapter, void* hwnd, uint32 back_buffer_num, uint32 multi_sample_num);
-	~gapi_d3d12_viewport() = default;
+	virtual ~gapi_d3d12_viewport() {};
 
 public:
 	void start_frame();

@@ -45,6 +45,6 @@ d3d12_vertex_buffer::d3d12_vertex_buffer(shared_ptr<d3d12_device> device, const 
 	: d3d12_buffer(device, buffer_size)
 {
 	m_vbv.BufferLocation = m_resource->GetGPUVirtualAddress();
-	m_vbv.StrideInBytes = buffer_stride;
-	m_vbv.SizeInBytes = buffer_size;
+	m_vbv.StrideInBytes = static_cast<uint32>(buffer_stride);
+	m_vbv.SizeInBytes = static_cast<uint32>(buffer_size);
 }

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../gapi.h"
+#include "gapi/gapi.h"
 
 #include "d3d12_device.h"
 #include "gapi_d3d12_viewport.h"

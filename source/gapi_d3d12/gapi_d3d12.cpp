@@ -77,6 +77,7 @@ shared_ptr<gapi_vertex_shader> gapi_d3d12::create_vertex_shader(const gapi_shade
 	shared_ptr<gapi_d3d12_vertex_shader> result(
 		new gapi_d3d12_vertex_shader(initializer.m_shader_source, initializer.m_shader_entry, initializer.m_shader_file)
 	);
+
 	result->compile();
 	return result;
 }
@@ -101,8 +102,7 @@ shared_ptr<gapi_cmd_list> gapi_d3d12::create_cmd_list()
 
 void gapi_d3d12::execute_cmd_list(shared_ptr<gapi_cmd_list> cmd_list)
 {
-	shared_ptr<gapi_d3d12_cmd_list> d3d_cmd_list = 
-		std::reinterpret_pointer_cast<gapi_d3d12_cmd_list>(cmd_list);
+	shared_ptr<gapi_d3d12_cmd_list> d3d_cmd_list = gapi_d3d12_cmd_list::cast(cmd_list);
 	m_device->get_graphics_cmd_list_mgr()->execute_cmd_list(d3d_cmd_list->get_cmd_list());
 }
 
@@ -113,7 +113,7 @@ shared_ptr<gapi_compute_pipeline_state> gapi_d3d12::create_compute_pipeline_stat
 
 shared_ptr<gapi_graphics_pipeline_state> gapi_d3d12::create_graphic_pipeline_state(const gapi_graphics_pipeline_state_initializer& initializer)
 {
-	shared_ptr<gai_d3d12_graphics_pipeline_state> result(new gai_d3d12_graphics_pipeline_state(m_device, initializer));
+	shared_ptr<gapi_d3d12_graphics_pipeline_state> result(new gapi_d3d12_graphics_pipeline_state(m_device, initializer));
 	return result;
 }
 
@@ -125,16 +125,14 @@ shared_ptr<gapi_vertex_buffer> gapi_d3d12::create_vertex_buffer(const size_t& bu
 
 void* gapi_d3d12::lock_vertex_buffer(shared_ptr<gapi_vertex_buffer> vertex_buffer)
 {
-	shared_ptr<gapi_d3d12_vertex_buffer> buffer = 
-		std::reinterpret_pointer_cast<gapi_d3d12_vertex_buffer>(vertex_buffer);
+	shared_ptr<gapi_d3d12_vertex_buffer> buffer = gapi_d3d12_vertex_buffer::cast(vertex_buffer);
 	return buffer->map();
 }
 
 void gapi_d3d12::unlock_vertex_buffer(shared_ptr<gapi_vertex_buffer> vertex_buffer)
 {
 	// Unmap the buffer
-	shared_ptr<gapi_d3d12_vertex_buffer> buffer = 
-		std::reinterpret_pointer_cast<gapi_d3d12_vertex_buffer>(vertex_buffer);
+	shared_ptr<gapi_d3d12_vertex_buffer> buffer = gapi_d3d12_vertex_buffer::cast(vertex_buffer);
 	buffer->unmap();
 
 	// Fence and wait for buffer uploading

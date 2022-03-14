@@ -79,7 +79,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <ReferencePath>$(ReferencePath)</ReferencePath>
-    <IncludePath>$(SolutionDir)Source;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)source\;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\bin\intermediate\$(Configuration)\</IntDir>
   </PropertyGroup>
@@ -201,6 +201,7 @@
     <ClInclude Include="source\gapi\d3d12\gapi_d3d12_pipeline_state.h" />
     <ClInclude Include="source\gapi\d3d12\gapi_d3d12_resource.h" />
     <ClInclude Include="source\gapi\d3d12\gapi_d3d12_shader.h" />
+    <ClInclude Include="source\gapi\d3d12\gapi_d3d12_template.h" />
     <ClInclude Include="source\gapi\gapi_cmd_list.h" />
     <ClInclude Include="source\gapi\gapi_pipeline_state.h" />
     <ClInclude Include="source\gapi\gapi_resource.h" />

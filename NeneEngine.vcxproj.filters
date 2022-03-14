@@ -88,6 +88,7 @@
     <ClInclude Include="source\gapi\d3d12\gapi_d3d12_pipeline_state.h" />
     <ClInclude Include="source\gapi\d3d12\gapi_d3d12_shader.h" />
     <ClInclude Include="source\gapi\gapi_viewport.h" />
+    <ClInclude Include="source\gapi\d3d12\gapi_d3d12_template.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="source\core\file_helper.inl" />

@@ -4,5 +4,6 @@
 
 class gapi_viewport
 {
-	
+public:
+	virtual ~gapi_viewport() = default;
 };

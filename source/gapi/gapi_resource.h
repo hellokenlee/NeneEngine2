@@ -14,10 +14,6 @@ enum class gapi_resource_usage
 
 class gapi_vertex_buffer
 {
-	
-};
-
-class gapi_render_pass_info
-{
-	
+public:
+	virtual ~gapi_vertex_buffer() = default;
 };

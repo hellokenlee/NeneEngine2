@@ -2,13 +2,14 @@
 
 #pragma once
 
-#include "../gapi_cmd_list.h"
+#include "gapi/gapi_cmd_list.h"
 
+#include "gapi_d3d12_template.h"
 #include "d3d12_cmd_list.h"
 #include "d3d12_cmd_list_mgr.h"
 
 
-class gapi_d3d12_cmd_list : public gapi_cmd_list
+class gapi_d3d12_cmd_list : public t::dynamic_custom<gapi_d3d12_cmd_list, gapi_cmd_list>
 {
 public:
 	gapi_d3d12_cmd_list(shared_ptr<d3d12_device> device);
