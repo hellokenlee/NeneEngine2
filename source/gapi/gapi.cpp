@@ -3,7 +3,7 @@
 #include "gapi.h"
 #include "core/core.h"
 
-#include "d3d12/gapi_d3d12.h"
+#include "gapi_d3d12/gapi_d3d12.h"
 
 shared_ptr<gapi> gapi::m_instance = nullptr;
 

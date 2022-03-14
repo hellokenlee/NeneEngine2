@@ -7,9 +7,9 @@
 #include "gapi_d3d12_cmd_list.h"
 #include "gapi_d3d12_pipeline_state.h"
 
-#include "d3d12_globals.h"
-#include "d3d12_adapter.h"
-#include "d3d12_shader.h"
+#include "d3d12/d3d12_globals.h"
+#include "d3d12/d3d12_adapter.h"
+#include "d3d12/d3d12_shader.h"
 
 #include <windows.h>
 #include <d3d12.h>

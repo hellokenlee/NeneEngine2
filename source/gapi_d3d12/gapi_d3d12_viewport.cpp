@@ -2,11 +2,11 @@
 
 #include "gapi_d3d12_viewport.h"
 
-#include "d3d12_utils.h"
-#include "d3d12_device.h"
-#include "d3d12_cmd_list.h"
-#include "d3d12_cmd_list_mgr.h"
-#include "d3d12_cmd_allocator.h"
+#include "d3d12/d3d12_utils.h"
+#include "d3d12/d3d12_device.h"
+#include "d3d12/d3d12_cmd_list.h"
+#include "d3d12/d3d12_cmd_list_mgr.h"
+#include "d3d12/d3d12_cmd_allocator.h"
 
 
 gapi_d3d12_viewport::gapi_d3d12_viewport(shared_ptr<d3d12_adapter> adapter, void* hwnd, uint32 back_buffer_num, uint32 multi_sample_num)

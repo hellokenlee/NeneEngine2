@@ -5,7 +5,7 @@
 #include "gapi_d3d12_viewport.h"
 #include "gapi_d3d12_pipeline_state.h"
 
-#include "d3d12_cmd_list_mgr.h"
+#include "d3d12/d3d12_cmd_list_mgr.h"
 
 
 gapi_d3d12_cmd_list::gapi_d3d12_cmd_list(shared_ptr<d3d12_device> device)
