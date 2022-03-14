@@ -4,9 +4,10 @@
 
 #include "gapi/gapi_cmd_list.h"
 
+#include "d3d12/d3d12_cmd_list.h"
+#include "d3d12/d3d12_cmd_list_mgr.h"
+
 #include "gapi_d3d12_template.h"
-#include "d3d12_cmd_list.h"
-#include "d3d12_cmd_list_mgr.h"
 
 
 class gapi_d3d12_cmd_list : public t::dynamic_custom<gapi_d3d12_cmd_list, gapi_cmd_list>

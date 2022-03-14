@@ -2,15 +2,15 @@
 
 #pragma once
 
-#include "../gapi_viewport.h"
+#include "gapi/gapi_viewport.h"
+
+#include "d3d12/d3d12_fence.h"
+#include "d3d12/d3d12_adapter.h"
+#include "d3d12/d3d12_texture.h"
+#include "d3d12/d3d12_cmd_list.h"
+#include "d3d12/d3d12_swap_chain.h"
 
 #include "gapi_d3d12_template.h"
-
-#include "d3d12_fence.h"
-#include "d3d12_adapter.h"
-#include "d3d12_texture.h"
-#include "d3d12_cmd_list.h"
-#include "d3d12_swap_chain.h"
 
 
 class gapi_d3d12_viewport : public t::dynamic_custom<gapi_d3d12_viewport, gapi_viewport>

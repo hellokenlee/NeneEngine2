@@ -3,8 +3,7 @@
 #pragma once
 
 #include "gapi/gapi.h"
-
-#include "d3d12_device.h"
+#include "d3d12/d3d12_device.h"
 #include "gapi_d3d12_viewport.h"
 
 
