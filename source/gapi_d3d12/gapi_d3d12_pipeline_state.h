@@ -4,6 +4,7 @@
 
 #include "gapi/gapi_pipeline_state.h"
 #include "d3d12/d3d12_pipeline_state.h"
+
 #include "gapi_d3d12_template.h"
 
 

@@ -3,17 +3,19 @@
 #include "gapi_d3d12_pipeline_state.h"
 #include "gapi_d3d12_shader.h"
 #include "core/types.h"
+#include "d3d12/d3d12_globals.h"
 
-static constexpr uint32 MAX_VERTEX_ELEMENT_NUM = 16;
-
-typedef static_array<D3D12_INPUT_ELEMENT_DESC, MAX_VERTEX_ELEMENT_NUM> d3d12_vertex_elements;
+constexpr size_t DEFAULT_VERTEX_ELEMENT_NUM = 16;
 
 d3d12_vertex_elements d3d_cast(const dynamic_array<gapi_vertex_element>& element_list)
 {
-	CHECK(element_list.size() < MAX_VERTEX_ELEMENT_NUM);
 	d3d12_vertex_elements elements;
+	elements.reserve(DEFAULT_VERTEX_ELEMENT_NUM);
 	for (int idx = 0; idx < element_list.size(); ++idx)
 	{
+		//
+		elements.push_back({});
+		//
 		elements[idx].SemanticName = element_list[idx].semantic_name.c_str();
 		elements[idx].SemanticIndex = element_list[idx].attrib_index;
 		switch (element_list[idx].type)
@@ -43,9 +45,7 @@ d3d12_vertex_elements d3d_cast(const dynamic_array<gapi_vertex_element>& element
 
 d3d12_graphics_pipeline_creation_args d3d_cast(const gapi_graphics_pipeline_state_initializer& initializer)
 {
-	d3d12_graphics_pipeline_creation_args desc;
-	d3d12_vertex_elements vetex_elements = d3d_cast(initializer.m_bound_shader_state.m_vertex_declaration);
-
+	d3d12_graphics_pipeline_creation_args desc = {};
 
 	shared_ptr<gapi_d3d12_vertex_shader> vertex_shader = gapi_d3d12_vertex_shader::cast(initializer.m_bound_shader_state.m_vertex_shader);
 	shared_ptr<gapi_d3d12_pixel_shader> pixel_shader = gapi_d3d12_pixel_shader::cast(initializer.m_bound_shader_state.m_pixel_shader);
@@ -53,11 +53,11 @@ d3d12_graphics_pipeline_creation_args d3d_cast(const gapi_graphics_pipeline_stat
 	CHECK(vertex_shader->get_d3d_blob() != nullptr);
 	CHECK(pixel_shader->get_d3d_blob() != nullptr);
 
-	desc.InputLayout = {&vetex_elements[0], static_cast<uint32>(initializer.m_bound_shader_state.m_vertex_declaration.size())};
-
+	
 	desc.VS = CD3DX12_SHADER_BYTECODE(vertex_shader->get_d3d_blob());
 	desc.PS = CD3DX12_SHADER_BYTECODE(pixel_shader->get_d3d_blob());
 	desc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+	desc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 	desc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 	desc.DepthStencilState.DepthEnable = FALSE;
     desc.DepthStencilState.StencilEnable = FALSE;
@@ -70,7 +70,7 @@ d3d12_graphics_pipeline_creation_args d3d_cast(const gapi_graphics_pipeline_stat
 }
 
 gapi_d3d12_graphics_pipeline_state::gapi_d3d12_graphics_pipeline_state(shared_ptr<d3d12_device> device, const gapi_graphics_pipeline_state_initializer& initializer)
-	: super(device, d3d_cast(initializer))
+	: super(device, d3d_cast(initializer), d3d_cast(initializer.m_bound_shader_state.m_vertex_declaration))
 {
 
 }

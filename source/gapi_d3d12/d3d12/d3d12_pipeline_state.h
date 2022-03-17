@@ -15,7 +15,7 @@ typedef D3D12_GRAPHICS_PIPELINE_STATE_DESC d3d12_graphics_pipeline_creation_args
 class d3d12_pipeline_state: public noncopyable, public d3d12_device_child
 {
 public:
-	d3d12_pipeline_state(shared_ptr<d3d12_device> device, const d3d12_graphics_pipeline_creation_args& args);
+	d3d12_pipeline_state(shared_ptr<d3d12_device> device, d3d12_graphics_pipeline_creation_args args, const d3d12_vertex_elements& elements);
 
 	[[nodiscard]] ID3D12PipelineState* get_d3d_pipeline_state() { return m_pipeline_state.Get(); }
 

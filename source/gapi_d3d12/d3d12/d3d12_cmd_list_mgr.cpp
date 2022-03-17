@@ -33,6 +33,8 @@ void d3d12_cmd_list_mgr::execute_cmd_list(shared_ptr<d3d12_cmd_list> cmd_list)
 {
 	CHECK(m_type == cmd_list->m_type);
 	//
+	cmd_list->close();
+	//
 	ID3D12CommandList* cmd_lists = { cmd_list->get_d3d_cmd_list() };
 	get_d3d_command_queue()->ExecuteCommandLists(1, &cmd_lists);
 }

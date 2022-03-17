@@ -25,6 +25,7 @@ public:
 	void clear();
 
 	[[nodiscard]] ID3D12Device* get_d3d_device() const { return m_device.Get(); }
+	[[nodiscard]] ID3D12RootSignature* get_d3d_root_signature() const { return m_root_signature.Get(); }
 
 	[[nodiscard]] shared_ptr<d3d12_descriptor_heap> get_rtv_descriptor_heap() const { return m_rtv_descriptor_heap; }
 	[[nodiscard]] shared_ptr<d3d12_descriptor_heap> get_dsv_descriptor_heap() const { return m_dsv_descriptor_heap; }
@@ -48,6 +49,7 @@ public:
 
 protected:
 	WinComPtr<ID3D12Device> m_device;
+	WinComPtr<ID3D12RootSignature> m_root_signature;
 };
 
 

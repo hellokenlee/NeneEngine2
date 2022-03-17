@@ -17,7 +17,7 @@ class gapi_d3d12_viewport : public t::dynamic_custom<gapi_d3d12_viewport, gapi_v
 {
 public:
 	gapi_d3d12_viewport(shared_ptr<d3d12_adapter> adapter, void* hwnd, uint32 back_buffer_num, uint32 multi_sample_num);
-	virtual ~gapi_d3d12_viewport() {};
+	virtual ~gapi_d3d12_viewport() = default;
 
 public:
 	void start_frame();

@@ -4,7 +4,7 @@
 
 #include "core/core.h"
 
-#define GAPI_D3D12_USE_DYNAMIC_CAST 0
+#define GAPI_D3D12_USE_DYNAMIC_CAST 1
 
 namespace t
 {

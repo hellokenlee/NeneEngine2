@@ -13,6 +13,19 @@ d3d12_device::d3d12_device(shared_ptr<d3d12_adapter> adapter)
 {
 	// Create device
 	VERIFY(D3D12CreateDevice(get_parent_adapter()->get_dxgi_adapter(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&m_device)));
+
+	// Create root signature
+	CD3DX12_ROOT_SIGNATURE_DESC desc;
+	desc.Init(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+	WinComPtr<ID3DBlob> signature;
+	WinComPtr<ID3DBlob> error;
+	D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error);
+	VERIFY(
+		m_device->CreateRootSignature(
+			0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_root_signature)
+		)
+	);
+
 }
 
 d3d12_device::~d3d12_device()

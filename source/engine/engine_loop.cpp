@@ -12,6 +12,7 @@
 
 DECLARE_LOG_CATEGORY(engine)
 
+shared_ptr<renderer_interface> engine_loop::m_renderer = nullptr;
 
 void engine_loop::init(void* window)
 {
@@ -19,15 +20,15 @@ void engine_loop::init(void* window)
 	LOG(engine, info, TEXT("Engine Init!"));
 	//
 	gapi::create(window);
+	//
+	m_renderer = shared_ptr<simple_renderer>(new simple_renderer());
 }
 
 void engine_loop::update()
 {
 	gapi::get().start_frame();
 
-	simple_renderer renderer;
-
-	renderer.render_view_family();
+	m_renderer->render_view_family();
 	
 	gapi::get().finish_frame();
 }
@@ -35,6 +36,8 @@ void engine_loop::update()
 void engine_loop::shutdown()
 {
 	//
+	m_renderer.reset();
+
 	gapi::destroy();
 
 	//

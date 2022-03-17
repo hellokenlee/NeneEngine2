@@ -18,13 +18,20 @@ gapi_d3d12_cmd_list::gapi_d3d12_cmd_list(shared_ptr<d3d12_device> device)
 void gapi_d3d12_cmd_list::start_drawing_viewport(shared_ptr<gapi_viewport> viewport)
 {
 	shared_ptr<gapi_d3d12_viewport> d3dviewport = gapi_d3d12_viewport::cast(viewport);
-
+	m_cmd_list->get_d3d_graphics_cmd_list()->SetGraphicsRootSignature(
+		m_cmd_list->get_parent_device()->get_d3d_root_signature()
+	);
 	m_cmd_list->get_d3d_graphics_cmd_list()->RSSetViewports(1, &d3dviewport->m_viewport);
 	m_cmd_list->get_d3d_graphics_cmd_list()->RSSetScissorRects(1, &d3dviewport->m_scissor_rect);
 	m_cmd_list->add_transition_barrier(
 		d3dviewport->get_back_buffer_texture(),
 		D3D12_RESOURCE_STATE_PRESENT,
 		D3D12_RESOURCE_STATE_RENDER_TARGET
+	);
+	m_cmd_list->get_d3d_graphics_cmd_list()->OMSetRenderTargets(
+		1, 
+		d3dviewport->get_back_buffer_texture()->get_render_target_view()->get_d3d_descriptor_handle(), 
+		FALSE, nullptr
 	);
 	constexpr float clear_color[] = { 0.0f, 0.2f, 0.4f, 1.0f };
     m_cmd_list->get_d3d_graphics_cmd_list()->ClearRenderTargetView(

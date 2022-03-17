@@ -10,7 +10,7 @@ struct vertex
 };
 
 
-constexpr float aspect_ratio = 1.0f;
+constexpr float aspect_ratio = 800.0f / 600.0f;
 
 
 simple_renderer::simple_renderer()
@@ -23,7 +23,7 @@ simple_renderer::simple_renderer()
 	auto pixel_sahder = api.create_pixel_shader({TEXT("./shader/simple.hlsl"), TEXT("MainPS")});
 	dynamic_array<gapi_vertex_element> vertex_declaration {
 		{"POSITION", 0, gapi_vertex_element_type::float4, 0, 0, 0, 0},
-		{"COLOR", 1, gapi_vertex_element_type::float4, 0, 16, 0, 0}
+		{"COLOR", 0, gapi_vertex_element_type::float4, 0, 16, 0, 0}
 	};
 	gapi_graphics_pipeline_state_initializer grahpics_initializer(
 		{vertex_declaration, vertex_shader, pixel_sahder}
@@ -35,11 +35,11 @@ simple_renderer::simple_renderer()
         { { 0.25f, -0.25f * aspect_ratio, 0.0f, 0.0f}, { 0.0f, 1.0f, 0.0f, 1.0f } },
         { { -0.25f, -0.25f * aspect_ratio, 0.0f, 0.0f}, { 0.0f, 0.0f, 1.0f, 1.0f } }
 	};
-	const auto vertex_buffer = 
+	m_vertex_buffer = 
 		api.create_vertex_buffer(sizeof(vertex), sizeof(triangle), gapi_resource_usage::usage_dynamic);
-	void* mapped_buffer = api.lock_vertex_buffer(vertex_buffer);
+	void* mapped_buffer = api.lock_vertex_buffer(m_vertex_buffer);
 	memcpy(mapped_buffer, &triangle, sizeof(triangle));
-	api.unlock_vertex_buffer(vertex_buffer);
+	api.unlock_vertex_buffer(m_vertex_buffer);
 }
 
 void simple_renderer::render_view_family()
@@ -51,6 +51,8 @@ void simple_renderer::render_view_family()
 	cmd_list->set_graphic_pipeline_states(m_graphics_pipeline_state);
 
 	cmd_list->start_drawing_viewport(api.get_viewport());
+
+	cmd_list->set_vertex_stream(m_vertex_buffer);
 
 	cmd_list->draw_primitive(3, 1, 0, 0);
 
