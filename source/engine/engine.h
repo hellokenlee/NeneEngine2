@@ -9,9 +9,6 @@ class engine
 public:
 	static engine& get();
 
-public:
-
-
 private:
 	engine() = default;
 	~engine() = default;

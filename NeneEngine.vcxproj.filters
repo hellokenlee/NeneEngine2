@@ -89,6 +89,7 @@
     <ClInclude Include="source\gapi_d3d12\d3d12\d3d12_types.h" />
     <ClInclude Include="source\gapi_d3d12\d3d12\d3d12_utils.h" />
     <ClInclude Include="source\gapi_d3d12\d3d12\d3dx12.h" />
+    <ClInclude Include="source\gapi\gapi_utils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="source\core\file_helper.inl" />

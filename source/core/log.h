@@ -85,6 +85,8 @@ void inline wlog_impl(const wstring& cat, const log_level& level, const wchar_t*
 	va_end(arg_list);
 
 	printf("\n");
+
+	fflush(stdout);
 }
 
 void inline slog_impl(const sstring& cat, const log_level& level, const char* const format, ...)
@@ -118,4 +120,6 @@ void inline slog_impl(const sstring& cat, const log_level& level, const char* co
 	va_end(arg_list);
 
 	printf("\n");
+
+	fflush(stdout);
 }

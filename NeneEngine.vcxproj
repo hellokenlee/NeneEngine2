@@ -204,6 +204,7 @@
     <ClInclude Include="source\engine\engine.h" />
     <ClInclude Include="source\engine\engine_loop.h" />
     <ClInclude Include="source\gapi\gapi_cmd_context.h" />
+    <ClInclude Include="source\gapi\gapi_utils.h" />
     <ClInclude Include="source\gapi\gapi_viewport.h" />
     <ClInclude Include="source\gapi_d3d12\d3d12\d3d12_adapter.h" />
     <ClInclude Include="source\gapi_d3d12\d3d12\d3d12_buffer.h" />
