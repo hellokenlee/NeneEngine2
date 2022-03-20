@@ -13,11 +13,11 @@
 #include "gapi_d3d12_template.h"
 
 
-class gapi_d3d12_viewport : public t::dynamic_custom<gapi_d3d12_viewport, gapi_viewport>
+class gapi_d3d12_viewport : public t::dynamic<gapi_d3d12_viewport, gapi_viewport, void>
 {
 public:
 	gapi_d3d12_viewport(shared_ptr<d3d12_adapter> adapter, void* hwnd, uint32 back_buffer_num, uint32 multi_sample_num);
-	virtual ~gapi_d3d12_viewport() = default;
+	~gapi_d3d12_viewport() override = default;
 
 public:
 	void start_frame();

@@ -35,6 +35,10 @@ void engine_loop::update()
 
 void engine_loop::shutdown()
 {
+	// Waiting for executing all commands
+	gapi::get().start_frame();
+	gapi::get().finish_frame();
+
 	//
 	m_renderer.reset();
 

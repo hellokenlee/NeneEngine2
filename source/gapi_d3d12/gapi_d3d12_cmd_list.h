@@ -10,10 +10,11 @@
 #include "gapi_d3d12_template.h"
 
 
-class gapi_d3d12_cmd_list : public t::dynamic_custom<gapi_d3d12_cmd_list, gapi_cmd_list>
+class gapi_d3d12_cmd_list : public t::dynamic<gapi_d3d12_cmd_list, gapi_cmd_list, void>
 {
 public:
 	gapi_d3d12_cmd_list(shared_ptr<d3d12_device> device);
+	~gapi_d3d12_cmd_list() override;
 
 public:
 	void start_drawing_viewport(shared_ptr<gapi_viewport> viewport) override;

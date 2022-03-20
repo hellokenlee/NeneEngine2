@@ -12,7 +12,7 @@ class simple_renderer : public renderer_interface
 public:
 	simple_renderer();
 
-	virtual void render_view_family() override;
+	void render_view_family() override;
 
 protected:
 	shared_ptr<gapi_vertex_buffer> m_vertex_buffer;
