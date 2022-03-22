@@ -27,8 +27,8 @@ gapi_d3d12_viewport::gapi_d3d12_viewport(shared_ptr<d3d12_adapter> adapter, void
 	RECT rect;
 	if(GetWindowRect(static_cast<HWND>(hwnd), &rect))
 	{
-		int32 width = static_cast<float>(rect.right - rect.left);
-		int32 height = static_cast<float>(rect.bottom - rect.top);
+		int32 width = rect.right - rect.left;
+		int32 height = rect.bottom - rect.top;
 		m_viewport = CD3DX12_VIEWPORT{0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height)};
 		m_scissor_rect = CD3DX12_RECT{0, 0, width, height};
 	}

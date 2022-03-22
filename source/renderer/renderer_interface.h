@@ -5,5 +5,8 @@
 class renderer_interface
 {
 public:
+	renderer_interface() = default;
+	virtual ~renderer_interface() = default;
+
 	virtual void render_view_family() = 0;
 };

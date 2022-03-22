@@ -50,3 +50,19 @@ enum class gapi_vertex_element_type
 	unsigned_int,
 	unsigned_byte4,
 };
+
+enum class gapi_primitive_type
+{
+	point,
+	line,
+	triangle,
+	patch,
+};
+
+enum class gapi_pixel_format
+{
+	
+};
+
+
+constexpr int32 MAX_RENDER_TARGET_COUNT = 8;

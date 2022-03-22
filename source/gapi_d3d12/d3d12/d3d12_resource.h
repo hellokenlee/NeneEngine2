@@ -14,7 +14,7 @@ public:
 	// Allocate in given desc. heap
 	d3d12_resource(shared_ptr<d3d12_device> device, shared_ptr<d3d12_descriptor_heap> heap);
 
-	virtual ~d3d12_resource() {}
+	~d3d12_resource() override = default;
 
 public:
 	ID3D12Resource* get_d3d_resource() { return m_resource.Get(); }

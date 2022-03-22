@@ -15,6 +15,10 @@ gapi_d3d12_cmd_list::gapi_d3d12_cmd_list(shared_ptr<d3d12_device> device)
 	m_cmd_list->reset(m_cmd_allocator);
 }
 
+gapi_d3d12_cmd_list::~gapi_d3d12_cmd_list()
+{
+}
+
 void gapi_d3d12_cmd_list::start_drawing_viewport(shared_ptr<gapi_viewport> viewport)
 {
 	shared_ptr<gapi_d3d12_viewport> d3dviewport = gapi_d3d12_viewport::cast(viewport);

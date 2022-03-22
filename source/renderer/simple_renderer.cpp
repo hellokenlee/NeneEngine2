@@ -26,7 +26,7 @@ simple_renderer::simple_renderer()
 		{"COLOR", 0, gapi_vertex_element_type::float4, 0, 16, 0, 0}
 	};
 	gapi_graphics_pipeline_state_initializer grahpics_initializer(
-		{vertex_declaration, vertex_shader, pixel_sahder}
+		gapi_bound_shader_state(vertex_declaration, vertex_shader, pixel_sahder)
 	);
 	m_graphics_pipeline_state = api.create_graphic_pipeline_state(grahpics_initializer);
 	

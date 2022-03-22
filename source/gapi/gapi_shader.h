@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <utility>
+
 #include "core/types.h"
 #include "gapi_type.h"
 
@@ -19,13 +21,31 @@ struct gapi_vertex_element
 class gapi_vertex_shader
 {
 public:
-	virtual ~gapi_vertex_shader() {};
+	virtual ~gapi_vertex_shader() = default;
 };
 
 class gapi_pixel_shader
 {
 public:
-	virtual ~gapi_pixel_shader() {};
+	virtual ~gapi_pixel_shader() = default;
+};
+
+class gapi_domain_shader
+{
+public:
+	virtual ~gapi_domain_shader() = default;
+};
+
+class gapi_hull_shader
+{
+public:
+	virtual ~gapi_hull_shader() = default;
+};
+
+class gapi_geometry_shader
+{
+public:
+	virtual ~gapi_geometry_shader() = default;
 };
 
 class gapi_shader_initializer
@@ -42,20 +62,44 @@ public:
 class gapi_bound_shader_state
 {
 public:
-	gapi_bound_shader_state(
+	explicit gapi_bound_shader_state(
 		const dynamic_array<gapi_vertex_element>& vertex_declaration,
 		shared_ptr<gapi_vertex_shader> vertex_shader,
 		shared_ptr<gapi_pixel_shader> pixel_shader
+	) : gapi_bound_shader_state(
+		vertex_declaration,
+		vertex_shader,
+		pixel_shader,
+		nullptr,
+		nullptr,
+		nullptr
+	)
+	{}
+
+	explicit gapi_bound_shader_state(
+		const dynamic_array<gapi_vertex_element>& vertex_declaration,
+		shared_ptr<gapi_vertex_shader> vertex_shader,
+		shared_ptr<gapi_pixel_shader> pixel_shader,
+		shared_ptr<gapi_domain_shader> domain_shader,
+		shared_ptr<gapi_hull_shader> hull_shader,
+		shared_ptr<gapi_geometry_shader> geometry_shader
 	)
 	: m_vertex_declaration(vertex_declaration)
-	, m_vertex_shader(vertex_shader)
-	, m_pixel_shader(pixel_shader)
-	{
-		
-	}
+	, m_vertex_shader(std::move(vertex_shader))
+	, m_pixel_shader(std::move(pixel_shader))
+	, m_domain_shader(std::move(domain_shader))
+	, m_hull_shader(std::move(hull_shader))
+	, m_geometry_shader(std::move(geometry_shader))
+	{}
 
 public:
+	//
 	dynamic_array<gapi_vertex_element> m_vertex_declaration;
+
+	//
 	shared_ptr<gapi_vertex_shader> m_vertex_shader;
 	shared_ptr<gapi_pixel_shader> m_pixel_shader;
+	shared_ptr<gapi_domain_shader> m_domain_shader;
+	shared_ptr<gapi_hull_shader> m_hull_shader;
+	shared_ptr<gapi_geometry_shader> m_geometry_shader;
 };
