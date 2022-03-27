@@ -4,7 +4,6 @@
 #include "gapi_d3d12_shader.h"
 #include "gapi_d3d12_resource.h"
 #include "gapi_d3d12_viewport.h"
-#include "gapi_d3d12_cmd_list.h"
 #include "gapi_d3d12_pipeline_state.h"
 
 #include "d3d12/d3d12_globals.h"
@@ -12,7 +11,6 @@
 #include "d3d12/d3d12_shader.h"
 
 #include <windows.h>
-#include <d3d12.h>
 #include <dxgi1_6.h>
 #include <dxgidebug.h>
 
@@ -89,21 +87,6 @@ shared_ptr<gapi_pixel_shader> gapi_d3d12::create_pixel_shader(const gapi_shader_
 	);
 	result->compile();
 	return result;
-}
-
-shared_ptr<gapi_cmd_list> gapi_d3d12::create_cmd_list()
-{
-	shared_ptr<gapi_d3d12_cmd_list> result(
-		new gapi_d3d12_cmd_list(m_device)
-	);
-	return result;
-}
-
-
-void gapi_d3d12::execute_cmd_list(shared_ptr<gapi_cmd_list> cmd_list)
-{
-	shared_ptr<gapi_d3d12_cmd_list> d3d_cmd_list = gapi_d3d12_cmd_list::cast(cmd_list);
-	m_device->get_graphics_cmd_list_mgr()->execute_cmd_list(d3d_cmd_list->get_cmd_list());
 }
 
 shared_ptr<gapi_compute_pipeline_state> gapi_d3d12::create_compute_pipeline_state(const gapi_compute_pipeline_state_initializer&)

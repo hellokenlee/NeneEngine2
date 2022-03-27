@@ -24,6 +24,8 @@ public:
 
 	void close();
 
+	bool is_closed();
+
 	void reset(shared_ptr<d3d12_cmd_allocator>);
 
 	void set_vertex_buffer(const uint32 slot_index, shared_ptr<d3d12_vertex_buffer> vertex_buffer);

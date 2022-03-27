@@ -2,14 +2,30 @@
 
 #pragma once
 
+#include "core/core.h"
+#include "gapi_viewport.h"
+#include "gapi_resource.h"
+#include "gapi_pipeline_state.h"
+
+
 class gapi_cmd_context
 {
 public:
-	void draw_primitive();
+	//
+	virtual void flush(const bool& wait=false);
 
-	void draw_primitive_indirect();
+	//
+	virtual void start_drawing_viewport(shared_ptr<gapi_viewport> viewport) = 0;
 
-	void draw_indexed_primitive();
+	virtual void finish_drawing_viewport(shared_ptr<gapi_viewport> viewport) = 0;
 
-	void draw_indexed_primitive_indirect();
+	virtual void draw_primitive(uint32 vertex_num, uint32 instance_num, uint32 base_vertex_index, uint32 instance_base_index) = 0;
+
+	virtual void set_vertex_stream(shared_ptr<gapi_vertex_buffer> vertex_buffer) = 0;
+
+	virtual void set_graphic_pipeline_states(shared_ptr<gapi_graphics_pipeline_state> state) = 0;
+
+public:
+	gapi_cmd_context() = default;
+	virtual ~gapi_cmd_context() = default;
 };

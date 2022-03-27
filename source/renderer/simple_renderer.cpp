@@ -46,17 +46,17 @@ void simple_renderer::render_view_family()
 {
 	auto& api = gapi::get();
 
-	const auto cmd_list = api.create_cmd_list();
+	auto context = api.get_context();
 
-	cmd_list->set_graphic_pipeline_states(m_graphics_pipeline_state);
+	context->set_graphic_pipeline_states(m_graphics_pipeline_state);
 
-	cmd_list->start_drawing_viewport(api.get_viewport());
+	context->start_drawing_viewport(api.get_viewport());
 
-	cmd_list->set_vertex_stream(m_vertex_buffer);
+	context->set_vertex_stream(m_vertex_buffer);
 
-	cmd_list->draw_primitive(3, 1, 0, 0);
+	context->draw_primitive(3, 1, 0, 0);
 
-	cmd_list->finish_drawing_viewport(api.get_viewport());
+	context->finish_drawing_viewport(api.get_viewport());
 
-	api.execute_cmd_list(cmd_list);
+	context->flush();
 }

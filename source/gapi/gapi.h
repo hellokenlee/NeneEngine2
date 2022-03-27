@@ -6,25 +6,26 @@
 #include "gapi_shader.h"
 #include "gapi_resource.h"
 #include "gapi_pipeline_state.h"
-#include "gapi_cmd_list.h"
+#include "gapi_cmd_context.h"
 #include "gapi_viewport.h"
 
 
 class gapi
 {
 public:
+	// >>> Static Methods >>>
 	static void create(void* window);
 
 	static void destroy();
 
-	static gapi& get() { CHECK(m_instance != nullptr); return *m_instance; }
+	static shared_ptr<gapi> get() { CHECK(m_instance != nullptr); return m_instance; }
+
+	// <<< Static Methods <<<
 
 public:
-	gapi(gapi& other) = delete;
+	//
+	virtual shared_ptr<gapi_cmd_context> get_context(const int32 id=-1) = 0;
 
-	gapi& operator=(const gapi& other) = delete;
-
-public:
 	// >>> View Port Related >>>
 
 	virtual void start_frame() = 0;
@@ -47,10 +48,6 @@ public:
 
 	// >>> Pipeline State Related >>>
 
-	virtual shared_ptr<gapi_cmd_list> create_cmd_list() = 0;
-
-	virtual void execute_cmd_list(shared_ptr<gapi_cmd_list> cmd_list) = 0;
-
 	virtual shared_ptr<gapi_compute_pipeline_state> create_compute_pipeline_state(const gapi_compute_pipeline_state_initializer&) = 0;
 
 	virtual shared_ptr<gapi_graphics_pipeline_state> create_graphic_pipeline_state(const gapi_graphics_pipeline_state_initializer&) = 0;
@@ -69,11 +66,15 @@ public:
 
 	// <<< Resource Related <<<
 
-protected:
+public:
 	gapi() = default;
 
 	virtual ~gapi() = default;
 
+	gapi(gapi& other) = delete;
 
+	gapi& operator=(const gapi& other) = delete;
+
+protected:
 	static shared_ptr<gapi> m_instance;
 };

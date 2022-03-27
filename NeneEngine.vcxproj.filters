@@ -11,7 +11,6 @@
     <ClCompile Include="source\core\file_helper.cpp" />
     <ClCompile Include="source\renderer\simple_renderer.cpp" />
     <ClCompile Include="source\gapi\gapi_shader.cpp" />
-    <ClCompile Include="source\gapi_d3d12\gapi_d3d12_cmd_list.cpp" />
     <ClCompile Include="source\gapi_d3d12\gapi_d3d12_pipeline_state.cpp" />
     <ClCompile Include="source\gapi_d3d12\gapi_d3d12_resource.cpp" />
     <ClCompile Include="source\gapi_d3d12\gapi_d3d12_viewport.cpp" />
@@ -30,6 +29,7 @@
     <ClCompile Include="source\gapi_d3d12\d3d12\d3d12_shader.cpp" />
     <ClCompile Include="source\gapi_d3d12\d3d12\d3d12_swap_chain.cpp" />
     <ClCompile Include="source\gapi_d3d12\d3d12\d3d12_texture.cpp" />
+    <ClCompile Include="source\gapi_d3d12\gapi_d3d12_cmd_context.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\core\log.h" />
@@ -52,7 +52,6 @@
     <ClInclude Include="source\gapi\gapi_cmd_context.h" />
     <ClInclude Include="source\gapi\gapi_type.h" />
     <ClInclude Include="source\core\file_helper.h" />
-    <ClInclude Include="source\gapi\gapi_cmd_list.h" />
     <ClInclude Include="source\core\math\math.h" />
     <ClInclude Include="source\core\math\dxmath\DirectXCollision.h" />
     <ClInclude Include="source\core\math\dxmath\DirectXColors.h" />
@@ -64,8 +63,7 @@
     <ClInclude Include="source\gapi\gapi_viewport.h" />
     <ClInclude Include="source\gapi_d3d12\gapi_d3d12.h" />
     <ClInclude Include="source\gapi_d3d12\gapi_d3d12_viewport.h" />
-    <ClInclude Include="source\gapi_d3d12\gapi_d3d12_cmd_list.h" />
-    <ClInclude Include="source\gapi_d3d12\gapi_d3d12_cmd_list_context.h" />
+    <ClInclude Include="source\gapi_d3d12\gapi_d3d12_cmd_context.h" />
     <ClInclude Include="source\gapi_d3d12\gapi_d3d12_pipeline_state.h" />
     <ClInclude Include="source\gapi_d3d12\gapi_d3d12_resource.h" />
     <ClInclude Include="source\gapi_d3d12\gapi_d3d12_shader.h" />

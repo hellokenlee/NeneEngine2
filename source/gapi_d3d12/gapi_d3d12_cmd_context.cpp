@@ -1,25 +1,62 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
-#include "gapi_d3d12_cmd_list.h"
-#include "gapi_d3d12_resource.h"
+#include "gapi_d3d12_cmd_context.h"
 #include "gapi_d3d12_viewport.h"
+#include "gapi_d3d12_resource.h"
 #include "gapi_d3d12_pipeline_state.h"
+
+#include "gapi_d3d12/gapi_d3d12.h"
 
 #include "d3d12/d3d12_cmd_list_mgr.h"
 
 
-gapi_d3d12_cmd_list::gapi_d3d12_cmd_list(shared_ptr<d3d12_device> device)
+dynamic_array<shared_ptr<d3d12_cmd_list>> gapi_d3d12_cmd_context::s_pending_cmd_lists;
+
+void gapi_d3d12_cmd_context::flush(const bool& wait)
 {
-	m_cmd_allocator = device->get_graphics_cmd_list_mgr()->obtain_cmd_allocator();
-	m_cmd_list = device->get_graphics_cmd_list_mgr()->create_cmd_list(m_cmd_allocator);
-	m_cmd_list->reset(m_cmd_allocator);
+	const bool has_peneding_work = !s_pending_cmd_lists.empty();
+	const bool is_cmd_list_open = !m_cmd_list->is_closed();
+	const bool need_new_cmd_list = wait || has_peneding_work;
+
+	auto api = gapi_d3d12::get();
+
+	auto device = api->get_device();
+
+	if (need_new_cmd_list)
+	{
+		if (is_cmd_list_open)
+		{
+			m_cmd_list->close();
+		}
+
+		// Execute current and all other pending command list
+		if (has_peneding_work)
+		{
+			if (is_cmd_list_open)
+			{
+				s_pending_cmd_lists.emplace_back(m_cmd_list);
+			}
+
+			device->get_graphics_cmd_list_mgr()->execute_cmd_lists(s_pending_cmd_lists);
+			s_pending_cmd_lists.clear();
+		}
+		// Just execute current command list
+		else
+		{
+			CHECK(is_cmd_list_open);
+
+			device->get_graphics_cmd_list_mgr()->execute_cmd_list(m_cmd_list);
+		}
+
+		// Open a new command list since current is already being executing
+		if (is_cmd_list_open)
+		{
+			open_cmd_list();
+		}
+	}
 }
 
-gapi_d3d12_cmd_list::~gapi_d3d12_cmd_list()
-{
-}
-
-void gapi_d3d12_cmd_list::start_drawing_viewport(shared_ptr<gapi_viewport> viewport)
+void gapi_d3d12_cmd_context::start_drawing_viewport(shared_ptr<gapi_viewport> viewport)
 {
 	shared_ptr<gapi_d3d12_viewport> d3dviewport = gapi_d3d12_viewport::cast(viewport);
 	m_cmd_list->get_d3d_graphics_cmd_list()->SetGraphicsRootSignature(
@@ -47,7 +84,7 @@ void gapi_d3d12_cmd_list::start_drawing_viewport(shared_ptr<gapi_viewport> viewp
 	m_cmd_list->get_d3d_graphics_cmd_list()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
-void gapi_d3d12_cmd_list::finish_drawing_viewport(shared_ptr<gapi_viewport> viewport)
+void gapi_d3d12_cmd_context::finish_drawing_viewport(shared_ptr<gapi_viewport> viewport)
 {
 	shared_ptr<gapi_d3d12_viewport> d3dviewport = gapi_d3d12_viewport::cast(viewport);
 
@@ -58,19 +95,19 @@ void gapi_d3d12_cmd_list::finish_drawing_viewport(shared_ptr<gapi_viewport> view
 	);
 }
 
-void gapi_d3d12_cmd_list::draw_primitive(uint32 vertex_num, uint32 instance_num, uint32 base_vertex_index, uint32 instance_base_index)
+void gapi_d3d12_cmd_context::draw_primitive(uint32 vertex_num, uint32 instance_num, uint32 base_vertex_index, uint32 instance_base_index)
 {
 	m_cmd_list->draw_instanced(vertex_num, instance_num, base_vertex_index, instance_base_index);
 }
 
-void gapi_d3d12_cmd_list::set_vertex_stream(shared_ptr<gapi_vertex_buffer> vertex_buffer)
+void gapi_d3d12_cmd_context::set_vertex_stream(shared_ptr<gapi_vertex_buffer> vertex_buffer)
 {
 	shared_ptr<gapi_d3d12_vertex_buffer> buffer = gapi_d3d12_vertex_buffer::cast(vertex_buffer);
 
 	m_cmd_list->set_vertex_buffer(0, buffer);
 }
 
-void gapi_d3d12_cmd_list::set_graphic_pipeline_states(shared_ptr<gapi_graphics_pipeline_state> state)
+void gapi_d3d12_cmd_context::set_graphic_pipeline_states(shared_ptr<gapi_graphics_pipeline_state> state)
 {
 	shared_ptr<gapi_d3d12_graphics_pipeline_state> pipeline_state = gapi_d3d12_graphics_pipeline_state::cast(state);
 

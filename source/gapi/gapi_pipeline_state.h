@@ -62,4 +62,5 @@ public:
 	gapi_primitive_type m_primitive_type;
 	static_array<gapi_pixel_format, MAX_RENDER_TARGET_COUNT> m_render_target_formats;
 	gapi_pixel_format m_depth_stencil_format;
+
 };
