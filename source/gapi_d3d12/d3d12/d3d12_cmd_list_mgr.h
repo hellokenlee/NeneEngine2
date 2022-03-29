@@ -17,8 +17,7 @@ public:
 
 	/* Command List Functions */
 	shared_ptr<d3d12_cmd_list> create_cmd_list(shared_ptr<d3d12_cmd_allocator>);
-	void execute_cmd_list(shared_ptr<d3d12_cmd_list> cmd_list);
-	void execute_cmd_lists(dynamic_array<shared_ptr<d3d12_cmd_list>>& cmd_lists);
+	void execute_cmd_lists(const dynamic_array<shared_ptr<d3d12_cmd_list>>& cmd_lists);
 
 	/* Command Allocator Functions */
 	shared_ptr<d3d12_cmd_allocator> obtain_cmd_allocator();

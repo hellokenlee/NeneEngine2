@@ -8,6 +8,7 @@
 #include "gapi_pipeline_state.h"
 #include "gapi_cmd_context.h"
 #include "gapi_viewport.h"
+#include "gapi_template.h"
 
 
 class gapi
@@ -24,7 +25,7 @@ public:
 
 public:
 	//
-	virtual shared_ptr<gapi_cmd_context> get_context(const int32 id=-1) = 0;
+	virtual shared_ptr<gapi_cmd_context> get_cmd_context(int32 id=0) = 0;
 
 	// >>> View Port Related >>>
 

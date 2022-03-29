@@ -3,16 +3,18 @@
 #pragma once
 
 #include "core/core.h"
+#include "gapi_template.h"
 #include "gapi_viewport.h"
 #include "gapi_resource.h"
 #include "gapi_pipeline_state.h"
+
 
 
 class gapi_cmd_context
 {
 public:
 	//
-	virtual void flush(const bool& wait=false);
+	virtual void flush(const bool& wait=false) = 0;
 
 	//
 	virtual void start_drawing_viewport(shared_ptr<gapi_viewport> viewport) = 0;

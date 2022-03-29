@@ -3,7 +3,6 @@
 #pragma once
 
 #include "gapi/gapi_cmd_context.h"
-#include "gapi_d3d12_template.h"
 
 #include "d3d12/d3d12_cmd_list.h"
 #include "d3d12/d3d12_cmd_list_mgr.h"
@@ -15,6 +14,8 @@
 class gapi_d3d12_cmd_context : public t::dynamic<gapi_d3d12_cmd_context, gapi_cmd_context, void>
 {
 public:
+	gapi_d3d12_cmd_context(shared_ptr<d3d12_device> device);
+
 	void flush(const bool& wait) override;
 
 	void start_drawing_viewport(shared_ptr<gapi_viewport> viewport) override;
@@ -36,6 +37,8 @@ protected:
 	void release_cmd_allocator();
 
 protected:
+	shared_ptr<d3d12_device> m_device;
+
 	shared_ptr<d3d12_cmd_list> m_cmd_list;
 	shared_ptr<d3d12_cmd_allocator> m_cmd_allocator;
 

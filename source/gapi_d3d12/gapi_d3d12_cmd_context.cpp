@@ -12,15 +12,21 @@
 
 dynamic_array<shared_ptr<d3d12_cmd_list>> gapi_d3d12_cmd_context::s_pending_cmd_lists;
 
+gapi_d3d12_cmd_context::gapi_d3d12_cmd_context(shared_ptr<d3d12_device> device)
+	: super()
+	, m_device(device)
+	, m_cmd_list(nullptr)
+	, m_cmd_allocator(nullptr)
+{
+	open_cmd_list();
+}
+
 void gapi_d3d12_cmd_context::flush(const bool& wait)
 {
+	const bool has_current_work = true;
 	const bool has_peneding_work = !s_pending_cmd_lists.empty();
 	const bool is_cmd_list_open = !m_cmd_list->is_closed();
-	const bool need_new_cmd_list = wait || has_peneding_work;
-
-	auto api = gapi_d3d12::get();
-
-	auto device = api->get_device();
+	const bool need_new_cmd_list = wait || has_peneding_work || has_current_work;
 
 	if (need_new_cmd_list)
 	{
@@ -35,9 +41,10 @@ void gapi_d3d12_cmd_context::flush(const bool& wait)
 			if (is_cmd_list_open)
 			{
 				s_pending_cmd_lists.emplace_back(m_cmd_list);
+				m_cmd_list = nullptr;
 			}
 
-			device->get_graphics_cmd_list_mgr()->execute_cmd_lists(s_pending_cmd_lists);
+			m_device->get_graphics_cmd_list_mgr()->execute_cmd_lists(s_pending_cmd_lists);
 			s_pending_cmd_lists.clear();
 		}
 		// Just execute current command list
@@ -45,7 +52,8 @@ void gapi_d3d12_cmd_context::flush(const bool& wait)
 		{
 			CHECK(is_cmd_list_open);
 
-			device->get_graphics_cmd_list_mgr()->execute_cmd_list(m_cmd_list);
+			m_device->get_graphics_cmd_list_mgr()->execute_cmd_lists({ m_cmd_list });
+			m_cmd_list = nullptr;
 		}
 
 		// Open a new command list since current is already being executing
@@ -112,4 +120,28 @@ void gapi_d3d12_cmd_context::set_graphic_pipeline_states(shared_ptr<gapi_graphic
 	shared_ptr<gapi_d3d12_graphics_pipeline_state> pipeline_state = gapi_d3d12_graphics_pipeline_state::cast(state);
 
 	m_cmd_list->set_graphic_pipeline_states(pipeline_state);
+}
+
+void gapi_d3d12_cmd_context::open_cmd_list()
+{
+	CHECK(m_cmd_list == nullptr);
+	obtain_cmd_allocator();
+	m_cmd_list = m_device->get_graphics_cmd_list_mgr()->create_cmd_list(m_cmd_allocator);
+	m_cmd_list->reset(m_cmd_allocator);
+}
+
+void gapi_d3d12_cmd_context::close_cmd_list()
+{
+}
+
+void gapi_d3d12_cmd_context::obtain_cmd_allocator()
+{
+	if (m_cmd_allocator == nullptr)
+	{
+		m_cmd_allocator = m_device->get_graphics_cmd_list_mgr()->obtain_cmd_allocator();
+	}
+}
+
+void gapi_d3d12_cmd_context::release_cmd_allocator()
+{
 }

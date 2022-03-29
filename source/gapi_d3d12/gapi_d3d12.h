@@ -4,7 +4,6 @@
 
 #include "gapi/gapi.h"
 #include "d3d12/d3d12_device.h"
-#include "gapi_d3d12_template.h"
 #include "gapi_d3d12_viewport.h"
 #include "gapi_d3d12/gapi_d3d12_cmd_context.h"
 
@@ -16,11 +15,12 @@ public:
 	gapi_d3d12(void* hwnd);
 	~gapi_d3d12() override;
 
-	static shared_ptr<gapi_d3d12> get() { return cast(get()); }
+	static shared_ptr<gapi_d3d12> get() { return cast(m_instance); }
 
 public:
 	//
-	shared_ptr<gapi_cmd_context> get_context(const int32 id) override;
+	/* Get command context of given thread id, 0 for default context. */
+	shared_ptr<gapi_cmd_context> get_cmd_context(int32 id=0) override;
 
 	// >>> View Port Related >>>
 	void start_frame() override;

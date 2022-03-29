@@ -3,7 +3,7 @@
 #include <utility>
 
 #include "gapi_shader.h"
-
+#include "gapi_template.h"
 
 class gapi_compute_pipeline_state
 {
