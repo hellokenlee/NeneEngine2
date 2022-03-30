@@ -17,6 +17,7 @@ public:
 
 	/* Command List Functions */
 	shared_ptr<d3d12_cmd_list> create_cmd_list(shared_ptr<d3d12_cmd_allocator>);
+	shared_ptr<d3d12_cmd_list> obtain_cmd_list(shared_ptr<d3d12_cmd_allocator>);
 	void execute_cmd_lists(const dynamic_array<shared_ptr<d3d12_cmd_list>>& cmd_lists);
 
 	/* Command Allocator Functions */
@@ -29,6 +30,9 @@ public:
 protected:
 	/* The Command Type*/
 	d3d12_cmd_type m_type;
+
+	/* Managed Command Lists */
+	queue<shared_ptr<d3d12_cmd_list>> m_available_cmd_lists;
 
 	/* Managed Command Allocators */
 	dynamic_array<shared_ptr<d3d12_cmd_allocator>> m_current_allocators;
