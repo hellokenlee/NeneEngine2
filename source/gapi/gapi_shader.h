@@ -6,6 +6,8 @@
 
 #include "core/types.h"
 #include "gapi_type.h"
+#include "gapi_template.h"
+
 
 struct gapi_vertex_element
 {

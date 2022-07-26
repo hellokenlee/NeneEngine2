@@ -4,7 +4,6 @@
 #include "gapi_d3d12_shader.h"
 #include "gapi_d3d12_resource.h"
 #include "gapi_d3d12_viewport.h"
-#include "gapi_d3d12_cmd_list.h"
 #include "gapi_d3d12_pipeline_state.h"
 
 #include "d3d12/d3d12_globals.h"
@@ -12,13 +11,12 @@
 #include "d3d12/d3d12_shader.h"
 
 #include <windows.h>
-#include <d3d12.h>
 #include <dxgi1_6.h>
 #include <dxgidebug.h>
 
 
 gapi_d3d12::gapi_d3d12(void* hwnd)
-	: gapi()
+	: super()
 	, m_device(nullptr)
 	, m_adapter(nullptr)
 	, m_viewport(nullptr)
@@ -32,14 +30,32 @@ gapi_d3d12::gapi_d3d12(void* hwnd)
 
 	//
 	m_viewport = shared_ptr<gapi_d3d12_viewport>(new gapi_d3d12_viewport(m_adapter, hwnd, g_d3d12_back_buffer_count, g_d3d12_back_buffer_multisample_count));
+
+	// Init context
+	constexpr uint32 worker_thread_num = 1;
+	for (uint32 idx = 0; idx < worker_thread_num; ++idx)
+	{
+		m_contexts.emplace_back(
+			shared_ptr<gapi_d3d12_cmd_context>(new gapi_d3d12_cmd_context(m_device))
+		);
+	}
 }
 
 gapi_d3d12::~gapi_d3d12()
 {
 	//
+	for (uint32 idx = 0; idx < m_contexts.size(); ++idx)
+	{
+		m_contexts[idx]->flush(true);
+	}
+
+	//
 	m_viewport->finish_frame();
 	m_viewport.reset();
 	m_viewport = nullptr;
+
+	//
+	m_contexts.clear();
 
 	//
 	m_device->clear();
@@ -51,6 +67,7 @@ gapi_d3d12::~gapi_d3d12()
 	m_adapter.reset();
 	m_adapter = nullptr;
 
+
 	//
 	if (g_d3d12_debug)
 	{
@@ -60,6 +77,13 @@ gapi_d3d12::~gapi_d3d12()
 			debug_com->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_SUMMARY | DXGI_DEBUG_RLO_IGNORE_INTERNAL));
 		}
 	}
+}
+
+shared_ptr<gapi_cmd_context> gapi_d3d12::get_cmd_context(const int32 id)
+{
+	CHECK(id < m_contexts.size());
+
+	return m_contexts[id];
 }
 
 void gapi_d3d12::start_frame()
@@ -89,21 +113,6 @@ shared_ptr<gapi_pixel_shader> gapi_d3d12::create_pixel_shader(const gapi_shader_
 	);
 	result->compile();
 	return result;
-}
-
-shared_ptr<gapi_cmd_list> gapi_d3d12::create_cmd_list()
-{
-	shared_ptr<gapi_d3d12_cmd_list> result(
-		new gapi_d3d12_cmd_list(m_device)
-	);
-	return result;
-}
-
-
-void gapi_d3d12::execute_cmd_list(shared_ptr<gapi_cmd_list> cmd_list)
-{
-	shared_ptr<gapi_d3d12_cmd_list> d3d_cmd_list = gapi_d3d12_cmd_list::cast(cmd_list);
-	m_device->get_graphics_cmd_list_mgr()->execute_cmd_list(d3d_cmd_list->get_cmd_list());
 }
 
 shared_ptr<gapi_compute_pipeline_state> gapi_d3d12::create_compute_pipeline_state(const gapi_compute_pipeline_state_initializer&)

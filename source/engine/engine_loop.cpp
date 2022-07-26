@@ -26,18 +26,18 @@ void engine_loop::init(void* window)
 
 void engine_loop::update()
 {
-	gapi::get().start_frame();
+	gapi::get()->start_frame();
 
 	m_renderer->render_view_family();
 	
-	gapi::get().finish_frame();
+	gapi::get()->finish_frame();
 }
 
 void engine_loop::shutdown()
 {
 	// Waiting for executing all commands
-	gapi::get().start_frame();
-	gapi::get().finish_frame();
+	gapi::get()->start_frame();
+	gapi::get()->finish_frame();
 
 	//
 	m_renderer.reset();

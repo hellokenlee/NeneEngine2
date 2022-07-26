@@ -24,6 +24,8 @@ public:
 
 	void close();
 
+	bool is_closed();
+
 	void reset(shared_ptr<d3d12_cmd_allocator>);
 
 	void set_vertex_buffer(const uint32 slot_index, shared_ptr<d3d12_vertex_buffer> vertex_buffer);
@@ -39,7 +41,8 @@ public:
 
 	ID3D12GraphicsCommandList* get_d3d_graphics_cmd_list() { CHECK(m_type == d3d12_cmd_type::graphics); return reinterpret_cast<ID3D12GraphicsCommandList*>(m_command_list.Get()); }
 
-public:
+protected:
+	bool m_is_closed;
 	d3d12_cmd_type m_type;
 	WinComPtr<ID3D12CommandList> m_command_list{};
 };

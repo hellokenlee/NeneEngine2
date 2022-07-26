@@ -14,6 +14,7 @@ d3d12_cmd_list::d3d12_cmd_list(d3d12_cmd_type type, shared_ptr<d3d12_cmd_allocat
 
 d3d12_cmd_list::d3d12_cmd_list(d3d12_cmd_type type, shared_ptr<d3d12_cmd_allocator> allocator, shared_ptr<d3d12_cmd_list_mgr> manager)
 	: d3d12_device_child(manager->get_parent_device())
+	, m_is_closed(false)
 	, m_type(type)
 	, m_command_list(nullptr)
 {
@@ -28,11 +29,21 @@ d3d12_cmd_list::d3d12_cmd_list(d3d12_cmd_type type, shared_ptr<d3d12_cmd_allocat
 void d3d12_cmd_list::reset(shared_ptr<d3d12_cmd_allocator> allocator)
 {
 	VERIFY(get_d3d_graphics_cmd_list()->Reset(allocator->get_d3d_command_allocator(), nullptr));
+	m_is_closed = false;
 }
 
 void d3d12_cmd_list::close()
 {
-	VERIFY(get_d3d_graphics_cmd_list()->Close());
+	if (!m_is_closed)
+	{
+		VERIFY(get_d3d_graphics_cmd_list()->Close());
+		m_is_closed = true;	
+	}
+}
+
+bool d3d12_cmd_list::is_closed()
+{
+	return m_is_closed;
 }
 
 void d3d12_cmd_list::set_vertex_buffer(const uint32 slot_index, shared_ptr<d3d12_vertex_buffer> vertex_buffer)

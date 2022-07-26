@@ -3,7 +3,7 @@
 #pragma once
 
 #include "gapi/gapi_resource.h"
-#include "gapi_d3d12_template.h"
+#include "gapi/gapi_template.h"
 #include "d3d12/d3d12_buffer.h"
 
 
