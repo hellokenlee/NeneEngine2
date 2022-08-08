@@ -6,15 +6,26 @@
 #include "d3d12/d3d12_pipeline_state.h"
 
 
-class gapi_d3d12_compute_pipeline_state: public t::dynamic<gapi_d3d12_compute_pipeline_state, gapi_compute_pipeline_state, d3d12_pipeline_state>
+class gapi_d3d12_compute_pipeline_state: public t::impl<gapi_d3d12_compute_pipeline_state, gapi_compute_pipeline_state>
 {
 public:
-	using super::super;
+	gapi_d3d12_compute_pipeline_state(shared_ptr<d3d12_device> device, const gapi_compute_pipeline_state_initializer& initializer);
+
+	shared_ptr<d3d12_pipeline_state> get_d3d12_pipeline_state() { return m_d3d12_state; }
+
+protected:
+	shared_ptr<d3d12_pipeline_state> m_d3d12_state{};
 };
 
-class gapi_d3d12_graphics_pipeline_state: public t::dynamic<gapi_d3d12_graphics_pipeline_state, gapi_graphics_pipeline_state, d3d12_pipeline_state>
+
+class gapi_d3d12_graphics_pipeline_state: public t::impl<gapi_d3d12_graphics_pipeline_state, gapi_graphics_pipeline_state>
 {
 public:
 	gapi_d3d12_graphics_pipeline_state(shared_ptr<d3d12_device> device, const gapi_graphics_pipeline_state_initializer& initializer);
+
+	shared_ptr<d3d12_pipeline_state> get_d3d12_pipeline_state() { return m_d3d12_state; }
+
+protected:
+	shared_ptr<d3d12_pipeline_state> m_d3d12_state{};
 };
 

@@ -5,10 +5,10 @@
 #include <windows.h>
 
 #include "core/types.h"
-#include "../iclient.h"
+#include "../i_client.h"
 
 
-class win_client : public iclient
+class win_client : public i_client
 {
 public:
 	win_client() : win_client(TEXT("NeneEngine")) {}

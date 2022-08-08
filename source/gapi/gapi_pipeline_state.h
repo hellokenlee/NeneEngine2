@@ -49,7 +49,7 @@ class gapi_graphics_pipeline_state_initializer
 public:
 	gapi_graphics_pipeline_state_initializer(
 		gapi_bound_shader_state bound_shader_state
-	) : m_bound_shader_state(std::move(bound_shader_state))
+	) : m_bound_shader_state(move(bound_shader_state))
 	{}
 
 	virtual ~gapi_graphics_pipeline_state_initializer() = default;

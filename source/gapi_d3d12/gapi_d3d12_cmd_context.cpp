@@ -112,14 +112,14 @@ void gapi_d3d12_cmd_context::set_vertex_stream(shared_ptr<gapi_vertex_buffer> ve
 {
 	shared_ptr<gapi_d3d12_vertex_buffer> buffer = gapi_d3d12_vertex_buffer::cast(vertex_buffer);
 
-	m_cmd_list->set_vertex_buffer(0, buffer);
+	m_cmd_list->set_vertex_buffer(0, buffer->get_d3d12_vertex_buffer());
 }
 
 void gapi_d3d12_cmd_context::set_graphic_pipeline_states(shared_ptr<gapi_graphics_pipeline_state> state)
 {
 	shared_ptr<gapi_d3d12_graphics_pipeline_state> pipeline_state = gapi_d3d12_graphics_pipeline_state::cast(state);
 
-	m_cmd_list->set_graphic_pipeline_states(pipeline_state);
+	m_cmd_list->set_graphic_pipeline_states(pipeline_state->get_d3d12_pipeline_state());
 }
 
 void gapi_d3d12_cmd_context::open_cmd_list()

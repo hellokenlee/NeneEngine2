@@ -8,10 +8,7 @@
 #include "d3d12/d3d12_cmd_list_mgr.h"
 
 
-/*
- *
- */
-class gapi_d3d12_cmd_context : public t::dynamic<gapi_d3d12_cmd_context, gapi_cmd_context, void>
+class gapi_d3d12_cmd_context : public t::impl<gapi_d3d12_cmd_context, gapi_cmd_context>
 {
 public:
 	gapi_d3d12_cmd_context(shared_ptr<d3d12_device> device);

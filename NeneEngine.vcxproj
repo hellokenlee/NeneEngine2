@@ -176,11 +176,12 @@
     <ClCompile Include="source\gapi_d3d12\gapi_d3d12.cpp" />
     <ClCompile Include="source\gapi_d3d12\gapi_d3d12_pipeline_state.cpp" />
     <ClCompile Include="source\gapi_d3d12\gapi_d3d12_resource.cpp" />
+    <ClCompile Include="source\gapi_d3d12\gapi_d3d12_shader.cpp" />
     <ClCompile Include="source\gapi_d3d12\gapi_d3d12_viewport.cpp" />
     <ClCompile Include="source\renderer\simple_renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\app\iclient.h" />
+    <ClInclude Include="source\app\i_client.h" />
     <ClInclude Include="source\app\windows\win_client.h" />
     <ClInclude Include="source\core\core.h" />
     <ClInclude Include="source\core\debug.h" />
@@ -231,7 +232,7 @@
     <ClInclude Include="source\gapi_d3d12\gapi_d3d12_shader.h" />
     <ClInclude Include="source\gapi\gapi_template.h" />
     <ClInclude Include="source\gapi_d3d12\gapi_d3d12_viewport.h" />
-    <ClInclude Include="source\renderer\renderer_interface.h" />
+    <ClInclude Include="source\renderer\i_renderer.h" />
     <ClInclude Include="source\renderer\simple_renderer.h" />
     <ClInclude Include="source\threads\device_thread.h" />
     <ClInclude Include="source\threads\render_thread.h" />

@@ -80,14 +80,22 @@ using queue = std::queue<T>;
 template<class T>
 using shared_ptr = std::shared_ptr<T>;
 
+// Use define until we got to forward function template
+#define make_shared std::make_shared
+/*
 template <class T, class... Args>
 auto make_shared = &std::make_shared<T, Args...>;
+*/
 
 template<class T>
 using unique_ptr = std::unique_ptr<T>;
 
+// Use define until we got to forward function template
+#define make_unique std::make_unique
+/*
 template <class T, class... Args>
 auto make_unique = &std::make_unique<T, Args...>;
+*/
 
 template<class T>
 using enable_shared_from_this = std::enable_shared_from_this<T>;
@@ -110,5 +118,9 @@ typedef time_t time_type;
 
 using ifstream = std::ifstream;
 
+// Use define until we got to forward function template
+#define move std::move
+/*
 template <class... Args>
 auto move = std::move<Args...>;
+*/

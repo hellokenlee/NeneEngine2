@@ -14,7 +14,7 @@ constexpr float aspect_ratio = 800.0f / 600.0f;
 
 
 simple_renderer::simple_renderer()
-	: renderer_interface()
+	: i_renderer()
 	, m_graphics_pipeline_state(nullptr)
 {
 	auto api = gapi::get();

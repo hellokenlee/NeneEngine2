@@ -2,11 +2,11 @@
 
 #pragma once
 
-class iclient
+class i_client
 {
 public:
-	iclient() = default;
-	virtual ~iclient() = default;
+	i_client() = default;
+	virtual ~i_client() = default;
 
 public:
 	virtual bool should_exit() = 0;

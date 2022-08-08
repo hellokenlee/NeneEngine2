@@ -6,13 +6,13 @@
 
 #include "gapi/gapi.h"
 
-#include "renderer/renderer_interface.h"
+#include "renderer/i_renderer.h"
 #include "renderer/simple_renderer.h"
 
 
 DECLARE_LOG_CATEGORY(engine)
 
-shared_ptr<renderer_interface> engine_loop::m_renderer = nullptr;
+shared_ptr<i_renderer> engine_loop::m_renderer = nullptr;
 
 void engine_loop::init(void* window)
 {

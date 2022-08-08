@@ -2,11 +2,11 @@
 
 #pragma once
 
-class renderer_interface
+class i_renderer
 {
 public:
-	renderer_interface() = default;
-	virtual ~renderer_interface() = default;
+	i_renderer() = default;
+	virtual ~i_renderer() = default;
 
 	virtual void render_view_family() = 0;
 };

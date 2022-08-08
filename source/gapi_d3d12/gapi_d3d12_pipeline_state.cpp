@@ -50,12 +50,11 @@ d3d12_graphics_pipeline_creation_args d3d_cast(const gapi_graphics_pipeline_stat
 	shared_ptr<gapi_d3d12_vertex_shader> vertex_shader = gapi_d3d12_vertex_shader::cast(initializer.m_bound_shader_state.m_vertex_shader);
 	shared_ptr<gapi_d3d12_pixel_shader> pixel_shader = gapi_d3d12_pixel_shader::cast(initializer.m_bound_shader_state.m_pixel_shader);
 
-	CHECK(vertex_shader->get_d3d_blob() != nullptr);
-	CHECK(pixel_shader->get_d3d_blob() != nullptr);
+	CHECK(vertex_shader->get_d3d12_shader()->get_d3d_blob() != nullptr);
+	CHECK(pixel_shader->get_d3d12_shader()->get_d3d_blob() != nullptr);
 
-	
-	desc.VS = CD3DX12_SHADER_BYTECODE(vertex_shader->get_d3d_blob());
-	desc.PS = CD3DX12_SHADER_BYTECODE(pixel_shader->get_d3d_blob());
+	desc.VS = CD3DX12_SHADER_BYTECODE(vertex_shader->get_d3d12_shader()->get_d3d_blob());
+	desc.PS = CD3DX12_SHADER_BYTECODE(pixel_shader->get_d3d12_shader()->get_d3d_blob());
 	desc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	desc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 	desc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
@@ -70,7 +69,12 @@ d3d12_graphics_pipeline_creation_args d3d_cast(const gapi_graphics_pipeline_stat
 }
 
 gapi_d3d12_graphics_pipeline_state::gapi_d3d12_graphics_pipeline_state(shared_ptr<d3d12_device> device, const gapi_graphics_pipeline_state_initializer& initializer)
-	: super(device, d3d_cast(initializer), d3d_cast(initializer.m_bound_shader_state.m_vertex_declaration))
+	: m_d3d12_state(new d3d12_pipeline_state(device, d3d_cast(initializer), d3d_cast(initializer.m_bound_shader_state.m_vertex_declaration)))
 {
 
+}
+
+gapi_d3d12_compute_pipeline_state::gapi_d3d12_compute_pipeline_state(shared_ptr<d3d12_device> device, const gapi_compute_pipeline_state_initializer& initializer)
+{
+	
 }

@@ -12,7 +12,7 @@
 #include "d3d12/d3d12_swap_chain.h"
 
 
-class gapi_d3d12_viewport : public t::dynamic<gapi_d3d12_viewport, gapi_viewport, void>
+class gapi_d3d12_viewport : public t::impl<gapi_d3d12_viewport, gapi_viewport>
 {
 public:
 	gapi_d3d12_viewport(shared_ptr<d3d12_adapter> adapter, void* hwnd, uint32 back_buffer_num, uint32 multi_sample_num);

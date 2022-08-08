@@ -8,7 +8,7 @@
 #include "gapi_d3d12/gapi_d3d12_cmd_context.h"
 
 
-class gapi_d3d12 : public t::dynamic<gapi_d3d12, gapi, void>
+class gapi_d3d12 : public t::impl<gapi_d3d12, gapi>
 {
 public:
 	gapi_d3d12() = delete;
@@ -57,9 +57,9 @@ public:
 	shared_ptr<d3d12_device> get_device() { return m_device; }
 
 protected:
-	shared_ptr<d3d12_device> m_device;
-	shared_ptr<d3d12_adapter> m_adapter;
-	shared_ptr<gapi_d3d12_viewport> m_viewport;
+	shared_ptr<d3d12_device> m_device{};
+	shared_ptr<d3d12_adapter> m_adapter{};
+	shared_ptr<gapi_d3d12_viewport> m_viewport{};
 
-	dynamic_array<shared_ptr<gapi_d3d12_cmd_context>> m_contexts;
+	dynamic_array<shared_ptr<gapi_d3d12_cmd_context>> m_contexts{};
 };

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "core/core.h"
-#include "renderer/renderer_interface.h"
+#include "renderer/i_renderer.h"
 
 class engine_loop
 {
@@ -15,5 +15,5 @@ public:
 	static void shutdown();
 
 protected:
-	static shared_ptr<renderer_interface> m_renderer;
+	static shared_ptr<i_renderer> m_renderer;
 };

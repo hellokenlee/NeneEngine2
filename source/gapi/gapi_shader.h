@@ -87,21 +87,21 @@ public:
 		shared_ptr<gapi_geometry_shader> geometry_shader
 	)
 	: m_vertex_declaration(vertex_declaration)
-	, m_vertex_shader(std::move(vertex_shader))
-	, m_pixel_shader(std::move(pixel_shader))
-	, m_domain_shader(std::move(domain_shader))
-	, m_hull_shader(std::move(hull_shader))
-	, m_geometry_shader(std::move(geometry_shader))
+	, m_vertex_shader(move(vertex_shader))
+	, m_pixel_shader(move(pixel_shader))
+	, m_domain_shader(move(domain_shader))
+	, m_hull_shader(move(hull_shader))
+	, m_geometry_shader(move(geometry_shader))
 	{}
 
 public:
 	//
-	dynamic_array<gapi_vertex_element> m_vertex_declaration;
+	dynamic_array<gapi_vertex_element> m_vertex_declaration{};
 
 	//
-	shared_ptr<gapi_vertex_shader> m_vertex_shader;
-	shared_ptr<gapi_pixel_shader> m_pixel_shader;
-	shared_ptr<gapi_domain_shader> m_domain_shader;
-	shared_ptr<gapi_hull_shader> m_hull_shader;
-	shared_ptr<gapi_geometry_shader> m_geometry_shader;
+	shared_ptr<gapi_vertex_shader> m_vertex_shader{};
+	shared_ptr<gapi_pixel_shader> m_pixel_shader{};
+	shared_ptr<gapi_domain_shader> m_domain_shader{};
+	shared_ptr<gapi_hull_shader> m_hull_shader{};
+	shared_ptr<gapi_geometry_shader> m_geometry_shader{};
 };

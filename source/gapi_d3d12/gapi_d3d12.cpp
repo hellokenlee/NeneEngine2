@@ -101,8 +101,6 @@ shared_ptr<gapi_vertex_shader> gapi_d3d12::create_vertex_shader(const gapi_shade
 	shared_ptr<gapi_d3d12_vertex_shader> result(
 		new gapi_d3d12_vertex_shader(initializer.m_shader_source, initializer.m_shader_entry, initializer.m_shader_file)
 	);
-
-	result->compile();
 	return result;
 }
 
@@ -111,7 +109,6 @@ shared_ptr<gapi_pixel_shader> gapi_d3d12::create_pixel_shader(const gapi_shader_
 	shared_ptr<gapi_d3d12_pixel_shader> result(
 		new gapi_d3d12_pixel_shader(initializer.m_shader_source, initializer.m_shader_entry, initializer.m_shader_file)
 	);
-	result->compile();
 	return result;
 }
 
@@ -135,14 +132,14 @@ shared_ptr<gapi_vertex_buffer> gapi_d3d12::create_vertex_buffer(const size_t& bu
 void* gapi_d3d12::lock_vertex_buffer(shared_ptr<gapi_vertex_buffer> vertex_buffer)
 {
 	shared_ptr<gapi_d3d12_vertex_buffer> buffer = gapi_d3d12_vertex_buffer::cast(vertex_buffer);
-	return buffer->map();
+	return buffer->get_d3d12_vertex_buffer()->map();
 }
 
 void gapi_d3d12::unlock_vertex_buffer(shared_ptr<gapi_vertex_buffer> vertex_buffer)
 {
 	// Unmap the buffer
 	shared_ptr<gapi_d3d12_vertex_buffer> buffer = gapi_d3d12_vertex_buffer::cast(vertex_buffer);
-	buffer->unmap();
+	buffer->get_d3d12_vertex_buffer()->unmap();
 
 	// Fence and wait for buffer uploading
 	auto buffer_fence = shared_ptr<d3d12_fence>(new d3d12_fence(m_device));
