@@ -1,6 +1,5 @@
 # Visual Studio Files
 .vs/*
-*.vcxproj.user
 
 # C++ Immediate Files
 *.tlog
