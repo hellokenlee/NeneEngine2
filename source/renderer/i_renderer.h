@@ -2,7 +2,7 @@
 
 #pragma once
 
-class i_renderer
+class NENE_API i_renderer
 {
 public:
 	i_renderer() = default;

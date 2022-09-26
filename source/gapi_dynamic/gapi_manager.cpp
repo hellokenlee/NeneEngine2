@@ -1,13 +1,11 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
-#include "gapi.h"
-#include "core/core.h"
-
+#include "gapi_manager.h"
 #include "gapi_d3d12/gapi_d3d12.h"
 
-shared_ptr<gapi> gapi::m_instance = nullptr;
+shared_ptr<gapi> gapi_manager::m_instance = nullptr;
 
-void gapi::create(void* window)
+void gapi_manager::create(void* window)
 {
 	bool use_d3d12 = true;
 
@@ -23,7 +21,7 @@ void gapi::create(void* window)
 	}
 }
 
-void gapi::destroy()
+void gapi_manager::destroy()
 {
 	CHECK(m_instance != nullptr);
 
@@ -32,3 +30,8 @@ void gapi::destroy()
 	m_instance = nullptr;
 }
 
+shared_ptr<gapi> gapi_manager::get()
+{
+	CHECK(m_instance != nullptr);
+	return m_instance;
+}

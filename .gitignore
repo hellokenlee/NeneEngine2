@@ -11,3 +11,6 @@
 *.recipe
 *.exe
 *.ilk
+
+#
+.bin/*

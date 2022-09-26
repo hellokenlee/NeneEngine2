@@ -5,7 +5,7 @@
 #include "core/core.h"
 #include "renderer/i_renderer.h"
 
-class engine_loop
+class NENE_API engine_loop
 {
 public:
 	static void init(void* window);

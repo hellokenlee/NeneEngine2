@@ -4,7 +4,7 @@
 
 #include "core/core.h"
 
-class engine
+class NENE_API engine
 {
 public:
 	static engine& get();

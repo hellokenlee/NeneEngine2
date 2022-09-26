@@ -14,7 +14,6 @@ namespace file_helper
 {
 	wstring sstring_to_wstring(const sstring& in_string)
 	{
-		
 		wstring result = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(in_string);
 		return result;
 	}

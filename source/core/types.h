@@ -2,6 +2,21 @@
 
 #pragma once
 
+/**
+ * Dynamic Library Macros
+ */
+
+#ifdef _MSC_VER
+	#define NENE_DYNAMIC_LIB _WINDLL
+#endif
+
+#ifdef _WINDLL
+	#define NENE_API __declspec(dllexport)
+#else
+	#define NENE_API __declspec(dllimport)
+#endif
+
+
 /*
  * Simple Proxy For Standard Template Library
  */
@@ -47,6 +62,7 @@ typedef signed long long	int64;
 #include <vector>
 #include <queue>
 #include <array>
+#include <list>
 
 #ifdef _UNICODE
 typedef std::wstringstream stringstream;

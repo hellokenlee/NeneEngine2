@@ -6,6 +6,8 @@
 
 #include "core/core.h"
 
+bool win_client::m_client_should_exit = false;
+
 
 static LRESULT CALLBACK WindowProcessFunction(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -30,7 +32,7 @@ static LRESULT CALLBACK WindowProcessFunction(HWND hWnd, UINT msg, WPARAM wParam
 	}
 	case WM_CLOSE: 
 	{
-		g_engine_requested_exit = true;
+		win_client::m_client_should_exit = true;
 		break;
 	}
 	default: 
@@ -81,7 +83,7 @@ win_client::~win_client()
 
 bool win_client::should_exit()
 {
-	return g_engine_requested_exit;
+	return m_client_should_exit;
 }
 
 void win_client::poll_messages()

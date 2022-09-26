@@ -24,6 +24,9 @@ public:
 
 	virtual void* get_window() override { return static_cast<void*>(m_window); }
 
+public:
+	static bool m_client_should_exit;
+
 protected:
 	HWND m_window;
 	HINSTANCE m_handle;

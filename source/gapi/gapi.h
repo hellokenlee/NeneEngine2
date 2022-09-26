@@ -11,21 +11,12 @@
 #include "gapi_template.h"
 
 
-class gapi
+class NENE_API gapi
 {
 public:
-	// >>> Static Methods >>>
-	static void create(void* window);
-
-	static void destroy();
-
-	static shared_ptr<gapi> get() { CHECK(m_instance != nullptr); return m_instance; }
-
-	// <<< Static Methods <<<
-
-public:
-	//
+	// >>> Context Related >>>
 	virtual shared_ptr<gapi_cmd_context> get_cmd_context(int32 id=0) = 0;
+	// <<< Context Related <<<
 
 	// >>> View Port Related >>>
 
@@ -75,7 +66,4 @@ public:
 	gapi(gapi& other) = delete;
 
 	gapi& operator=(const gapi& other) = delete;
-
-protected:
-	static shared_ptr<gapi> m_instance;
 };

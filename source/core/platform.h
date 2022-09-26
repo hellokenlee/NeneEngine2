@@ -5,7 +5,7 @@
 #include "types.h"
 
 
-class platform
+class NENE_API platform
 {
 public:
 

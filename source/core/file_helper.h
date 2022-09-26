@@ -13,11 +13,11 @@ DECLARE_LOG_CATEGORY(filehelper);
 namespace file_helper
 {
 	template<class string_type>
-	string_type load_file(const string& filepath);
+	NENE_API string_type load_file(const string& filepath);
 
-	wstring sstring_to_wstring(const sstring& in_string);
+	NENE_API wstring sstring_to_wstring(const sstring& in_string);
 
-	sstring wstring_to_sstring(const wstring& in_string);
+	NENE_API sstring wstring_to_sstring(const wstring& in_string);
 }
 
 #include "file_helper.inl"

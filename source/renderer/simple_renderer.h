@@ -7,7 +7,7 @@
 #include "i_renderer.h"
 
 
-class simple_renderer : public i_renderer
+class NENE_API simple_renderer : public i_renderer
 {
 public:
 	simple_renderer();

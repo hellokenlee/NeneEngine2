@@ -1,4 +1,4 @@
+/* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #include "globals.h"
 
-bool g_engine_requested_exit = false;

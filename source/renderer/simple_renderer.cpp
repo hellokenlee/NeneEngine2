@@ -1,6 +1,7 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #include "simple_renderer.h"
+#include "gapi_dynamic/gapi_manager.h"
 
 
 struct vertex
@@ -17,7 +18,7 @@ simple_renderer::simple_renderer()
 	: i_renderer()
 	, m_graphics_pipeline_state(nullptr)
 {
-	auto api = gapi::get();
+	auto api = gapi_manager::get();
 
 	auto vertex_shader = api->create_vertex_shader({TEXT("./shader/simple.hlsl"), TEXT("MainVS")});
 	auto pixel_sahder = api->create_pixel_shader({TEXT("./shader/simple.hlsl"), TEXT("MainPS")});
@@ -44,7 +45,7 @@ simple_renderer::simple_renderer()
 
 void simple_renderer::render_view_family()
 {
-	auto api = gapi::get();
+	auto api = gapi_manager::get();
 
 	auto context = api->get_cmd_context();
 

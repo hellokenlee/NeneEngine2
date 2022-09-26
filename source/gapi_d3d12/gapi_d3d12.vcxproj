@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{b0af6809-ee1c-4751-b075-cdae10a85163}</ProjectGuid>
+    <RootNamespace>gapid3d12</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir).bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir).bin\intermediate\$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>$(SolutionDir)source\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir).bin\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir).bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir).bin\intermediate\$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>$(SolutionDir)source\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir).bin\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>core.lib;gapi.lib;dxgi.lib;d3d12.lib;dxguid.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>core.lib;gapi.lib;dxgi.lib;d3d12.lib;dxguid.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="d3d12\d3d12_adapter.cpp" />
+    <ClCompile Include="d3d12\d3d12_buffer.cpp" />
+    <ClCompile Include="d3d12\d3d12_cmd_allocator.cpp" />
+    <ClCompile Include="d3d12\d3d12_cmd_list.cpp" />
+    <ClCompile Include="d3d12\d3d12_cmd_list_mgr.cpp" />
+    <ClCompile Include="d3d12\d3d12_descriptor_heap.cpp" />
+    <ClCompile Include="d3d12\d3d12_device.cpp" />
+    <ClCompile Include="d3d12\d3d12_fence.cpp" />
+    <ClCompile Include="d3d12\d3d12_pipeline_state.cpp" />
+    <ClCompile Include="d3d12\d3d12_resource.cpp" />
+    <ClCompile Include="d3d12\d3d12_resource_view.cpp" />
+    <ClCompile Include="d3d12\d3d12_shader.cpp" />
+    <ClCompile Include="d3d12\d3d12_swap_chain.cpp" />
+    <ClCompile Include="d3d12\d3d12_texture.cpp" />
+    <ClCompile Include="gapi_d3d12.cpp" />
+    <ClCompile Include="gapi_d3d12_cmd_context.cpp" />
+    <ClCompile Include="gapi_d3d12_pipeline_state.cpp" />
+    <ClCompile Include="gapi_d3d12_resource.cpp" />
+    <ClCompile Include="gapi_d3d12_shader.cpp" />
+    <ClCompile Include="gapi_d3d12_viewport.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="d3d12\d3d12_adapter.h" />
+    <ClInclude Include="d3d12\d3d12_buffer.h" />
+    <ClInclude Include="d3d12\d3d12_cmd_allocator.h" />
+    <ClInclude Include="d3d12\d3d12_cmd_list.h" />
+    <ClInclude Include="d3d12\d3d12_cmd_list_mgr.h" />
+    <ClInclude Include="d3d12\d3d12_cmd_queue.h" />
+    <ClInclude Include="d3d12\d3d12_descriptor_heap.h" />
+    <ClInclude Include="d3d12\d3d12_device.h" />
+    <ClInclude Include="d3d12\d3d12_fence.h" />
+    <ClInclude Include="d3d12\d3d12_globals.h" />
+    <ClInclude Include="d3d12\d3d12_pipeline_state.h" />
+    <ClInclude Include="d3d12\d3d12_resource.h" />
+    <ClInclude Include="d3d12\d3d12_resource_view.h" />
+    <ClInclude Include="d3d12\d3d12_shader.h" />
+    <ClInclude Include="d3d12\d3d12_swap_chain.h" />
+    <ClInclude Include="d3d12\d3d12_texture.h" />
+    <ClInclude Include="d3d12\d3d12_types.h" />
+    <ClInclude Include="d3d12\d3d12_utils.h" />
+    <ClInclude Include="d3d12\d3dx12.h" />
+    <ClInclude Include="gapi_d3d12.h" />
+    <ClInclude Include="gapi_d3d12_cmd_context.h" />
+    <ClInclude Include="gapi_d3d12_pipeline_state.h" />
+    <ClInclude Include="gapi_d3d12_resource.h" />
+    <ClInclude Include="gapi_d3d12_shader.h" />
+    <ClInclude Include="gapi_d3d12_viewport.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

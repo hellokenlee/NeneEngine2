@@ -1,11 +1,8 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #include "engine_loop.h"
-
 #include "core/core.h"
-
-#include "gapi/gapi.h"
-
+#include "gapi_dynamic/gapi_manager.h"
 #include "renderer/i_renderer.h"
 #include "renderer/simple_renderer.h"
 
@@ -19,30 +16,30 @@ void engine_loop::init(void* window)
 	//
 	LOG(engine, info, TEXT("Engine Init!"));
 	//
-	gapi::create(window);
+	gapi_manager::create(window);
 	//
 	m_renderer = shared_ptr<simple_renderer>(new simple_renderer());
 }
 
 void engine_loop::update()
 {
-	gapi::get()->start_frame();
+	gapi_manager::get()->start_frame();
 
 	m_renderer->render_view_family();
 	
-	gapi::get()->finish_frame();
+	gapi_manager::get()->finish_frame();
 }
 
 void engine_loop::shutdown()
 {
 	// Waiting for executing all commands
-	gapi::get()->start_frame();
-	gapi::get()->finish_frame();
+	gapi_manager::get()->start_frame();
+	gapi_manager::get()->finish_frame();
 
 	//
 	m_renderer.reset();
 
-	gapi::destroy();
+	gapi_manager::destroy();
 
 	//
 	LOG(engine, info, TEXT("Engine Shutdown!"));

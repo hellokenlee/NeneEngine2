@@ -44,7 +44,7 @@ public:
 };
 
 
-class gapi_graphics_pipeline_state_initializer
+class NENE_API gapi_graphics_pipeline_state_initializer
 {
 public:
 	gapi_graphics_pipeline_state_initializer(

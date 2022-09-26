@@ -50,7 +50,7 @@ public:
 	virtual ~gapi_geometry_shader() = default;
 };
 
-class gapi_shader_initializer
+class NENE_API gapi_shader_initializer
 {
 public:
 	gapi_shader_initializer(const string& filepath, const string& entry);
@@ -61,7 +61,7 @@ public:
 	sstring m_shader_entry;
 };
 
-class gapi_bound_shader_state
+class NENE_API gapi_bound_shader_state
 {
 public:
 	explicit gapi_bound_shader_state(

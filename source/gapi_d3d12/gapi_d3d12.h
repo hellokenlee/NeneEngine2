@@ -8,14 +8,12 @@
 #include "gapi_d3d12/gapi_d3d12_cmd_context.h"
 
 
-class gapi_d3d12 : public t::impl<gapi_d3d12, gapi>
+class NENE_API gapi_d3d12 : public t::impl<gapi_d3d12, gapi>
 {
 public:
 	gapi_d3d12() = delete;
 	gapi_d3d12(void* hwnd);
 	~gapi_d3d12() override;
-
-	static shared_ptr<gapi_d3d12> get() { return cast(m_instance); }
 
 public:
 	//
