@@ -45,11 +45,11 @@ static LRESULT CALLBACK WindowProcessFunction(HWND hWnd, UINT msg, WPARAM wParam
 
 
 win_client::win_client(const string& name)
-	: m_handle(nullptr)
-	, m_window(nullptr)
+	: m_window(nullptr)
+	, m_handle(nullptr)
 {
 	//
-	HINSTANCE m_handle = GetModuleHandle(0);
+	m_handle = GetModuleHandle(nullptr);
 
 	static LPCWSTR window_class_name = TEXT("NeneEngineClass");
 

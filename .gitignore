@@ -11,5 +11,12 @@
 *.exe
 *.ilk
 
+# Python Cache Files
+*.pyc
+*.pyo
+
 #
 .bin/*
+toolchain/.idea/*
+toolchain/__pycache__/*
+toolchain/common/__pycache__/*
