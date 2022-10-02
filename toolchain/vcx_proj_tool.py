@@ -15,6 +15,13 @@ class VcxProjTool(ToolBase):
 	CMD = "npt"
 	NAME = "Nene Visual C++ Project Tool"
 
+	PROJ_CXX_STD = "stdcpplatest"
+	PROJ_OUTPUT_PATH = "$(SolutionDir).bin\\$(Platform)\\$(Configuration)\\"
+	PROJ_INTERMEDIATE_PATH = "$(ProjectDir).bin\\intermediate\\$(Platform)\\$(Configuration)\\"
+	PROJ_ADDITIONAL_INCLUDE_PATHS = [
+		"$(SolutionDir)source\\"
+	]
+
 	def __init__(self):
 		super(VcxProjTool, self).__init__()
 		self.engine_root = os.path.abspath(os.path.join(os.path.dirname(__file__), self.RELATIVE_TO_ENGINE_ROOT))

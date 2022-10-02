@@ -9,13 +9,6 @@ class ToolBase(object):
 	SOURCE = "source"
 	RELATIVE_TO_ENGINE_ROOT = ".."
 
-	PROJ_CXX_STD = "stdcpplatest"
-	PROJ_OUTPUT_PATH = "$(SolutionDir).bin\\$(Platform)\\$(Configuration)\\"
-	PROJ_INTERMEDIATE_PATH = "$(ProjectDir).bin\\intermediate\\$(Platform)\\$(Configuration)\\"
-	PROJ_ADDITIONAL_INCLUDE_PATHS = [
-		"$(SolutionDir)source\\"
-	]
-
 	def __init__(self):
 		super(ToolBase, self).__init__()
 		pass
