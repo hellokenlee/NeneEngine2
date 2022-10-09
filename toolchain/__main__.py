@@ -4,7 +4,6 @@
 
 import os
 import sys
-import argparse
 import importlib
 
 from common.tool_base import ToolBase
@@ -28,6 +27,16 @@ def main():
 			tool: ToolBase = cmds[cmd][1]
 			tool.run(sys.argv[2:])
 			return
+	# Execute default commands
+	default_cmds = (
+		("npt", ["--all"]),
+		("vst", []),
+	)
+	if len(sys.argv) == 1:
+		for cmd in default_cmds:
+			tool: ToolBase = cmds[cmd[0]][1]
+			tool.run(cmd[1])
+		return
 	# Print help command
 	print(HELP)
 	for name, value in cmds.items():

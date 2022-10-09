@@ -24,12 +24,23 @@ class ToolBase(object):
 		pass
 
 	def dependency(self, proj: str) -> list[str]:
-		proj_root = os.path.abspath(os.path.join(self.source_root, proj))
-		nene_file = os.path.join(proj_root, "%s.vcxproj.nene" % proj)
+		nene_file = os.path.join(self.source_root, "%s.py" % proj)
 		if os.path.exists(nene_file):
 			nene = SourceFileLoader(proj, nene_file).load_module()
-			return nene.DEPENDENCY
+			if hasattr(nene, "DEPENDENCY"):
+				return nene.DEPENDENCY
 		else:
-			# print("    [Warning] Failed to find %s.vcxproj.nene file." % proj)
-			return []
-		pass
+			# print("    [Warning] Failed to find nene proj file: %s.py" % nene_file)
+			pass
+		return []
+
+	def external_lib(self, proj: str) -> list[str]:
+		nene_file = os.path.join(self.source_root, "%s.py" % proj)
+		if os.path.exists(nene_file):
+			nene = SourceFileLoader(proj, nene_file).load_module()
+			if hasattr(nene, "EXTERNAL_LIB"):
+				return nene.EXTERNAL_LIB
+		else:
+			# print("    [Warning] Failed to find nene proj file: %s.py" % nene_file)
+			pass
+		return []

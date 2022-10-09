@@ -35,7 +35,8 @@ class VcxProjTool(ToolBase):
 		#
 		if args.all:
 			for proj in os.listdir(self.source_root):
-				self.modify(str(proj))
+				if not proj.startswith("__") and os.path.isdir(os.path.join(self.source_root, proj)):
+					self.modify(str(proj))
 			return
 		if args.proj:
 			if args.proj in os.listdir(self.source_root):
@@ -51,6 +52,7 @@ class VcxProjTool(ToolBase):
 	def modify(self, proj: str):
 		#
 		dependencies = self.dependency(proj)
+		external_libs = self.external_lib(proj)
 		#
 		proj_file = os.path.join(self.source_root, proj, "%s.vcxproj" % proj)
 		print("    Modified %s." % proj_file)
@@ -84,11 +86,12 @@ class VcxProjTool(ToolBase):
 					if link.find("AdditionalDependencies", namespaces) is None:
 						ElementTree.SubElement(link, "{%s}%s" % (namespace, "AdditionalDependencies"))
 					libs = [dep + ".lib" for dep in dependencies]
+					libs.extend([ext + ".lib" for ext in external_libs])
 					libs.append("%(AdditionalDependencies)")
 					link.find("AdditionalDependencies", namespaces).text = ";".join(libs)
 		#
 		ElementTree.indent(proj_tree, '  ')
-		proj_tree.write(proj_file, encoding='utf8', method='xml')
+		proj_tree.write(proj_file, encoding='utf-8', method='xml')
 		#
 		print("")
 		pass
