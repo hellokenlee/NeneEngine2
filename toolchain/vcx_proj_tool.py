@@ -8,7 +8,6 @@ import argparse
 
 from xml.etree import ElementTree
 from common.tool_base import ToolBase
-from importlib.machinery import SourceFileLoader
 
 
 class VcxProjTool(ToolBase):
@@ -24,11 +23,10 @@ class VcxProjTool(ToolBase):
 
 	def __init__(self):
 		super(VcxProjTool, self).__init__()
-		self.engine_root = os.path.abspath(os.path.join(os.path.dirname(__file__), self.RELATIVE_TO_ENGINE_ROOT))
-		self.source_root = os.path.join(self.engine_root, self.SOURCE)
 		pass
 
 	def run(self, args: list[str]):
+		super(VcxProjTool, self).run(args)
 		#
 		parser = argparse.ArgumentParser(description=self.NAME)
 		parser.add_argument("-p", "--proj", type=str, help="Project name in /source/ to procceed.")
@@ -36,13 +34,11 @@ class VcxProjTool(ToolBase):
 		args = parser.parse_args(args)
 		#
 		if args.all:
-			print(self.NAME)
 			for proj in os.listdir(self.source_root):
 				self.modify(str(proj))
 			return
 		if args.proj:
 			if args.proj in os.listdir(self.source_root):
-				print(self.NAME)
 				self.modify(args.proj)
 			else:
 				error_proj = os.path.join(self.source_root, args.proj)
@@ -50,17 +46,6 @@ class VcxProjTool(ToolBase):
 			return
 		#
 		parser.error("either argument --proj or --all is expected")
-		pass
-
-	def dependency(self, proj: str) -> list[str]:
-		proj_root = os.path.abspath(os.path.join(self.source_root, proj))
-		nene_file = os.path.join(proj_root, "%s.vcxproj.nene" % proj)
-		if os.path.exists(nene_file):
-			nene = SourceFileLoader(proj, nene_file).load_module()
-			return nene.DEPENDENCY
-		else:
-			# print("    [Warning] Failed to find %s.vcxproj.nene file." % proj)
-			return []
 		pass
 
 	def modify(self, proj: str):

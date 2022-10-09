@@ -13,8 +13,8 @@ HELP = "Please choose one tool for further execution:"
 
 
 def main():
-	#
-	cmds: dict[str, tuple[str, any]] = {}
+	# Collect commands
+	cmds: dict[str, tuple[str, ToolBase]] = {}
 	toolchainroot = os.path.dirname(__file__)
 	for filename in os.listdir(toolchainroot):
 		if filename.endswith(".py") and (not filename.startswith("__")):
