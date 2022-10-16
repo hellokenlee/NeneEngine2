@@ -17,11 +17,14 @@ class VsSlnTool(ToolBase):
 
 	def __init__(self):
 		super(VsSlnTool, self).__init__()
+		self.file_changed = False
 		self.proj_guids: dict[str, str] = {}
 		pass
 
 	def run(self, args: list[str]):
 		super(VsSlnTool, self).run(args)
+		#
+		self.file_changed = False
 		#
 		parser = argparse.ArgumentParser(description=self.NAME)
 		parser.parse_args(args)
@@ -34,7 +37,12 @@ class VsSlnTool(ToolBase):
 		for project in solution.projects:
 			self.add_dependency(project)
 		#
-		solution.save(sln_path)
+		if self.file_changed:
+			solution.save(sln_path)
+			print("    Modified: %s" % sln_path)
+		else:
+			print("    Nothing changed.")
+		print("")
 		pass
 
 	def add_dependency(self, proj: Project):
@@ -42,9 +50,11 @@ class VsSlnTool(ToolBase):
 		print("        %s: %s" % (proj.header.proj_name, deps))
 		for dep in deps:
 			if not self.has_dependency(proj, dep):
-				for section in proj.sections:
-					if section.header.name == "ProjectDependencies":
-						section.attribs.append(Attribute(self.proj_guids[dep], self.proj_guids[dep]))
+				self.file_changed = True
+				proj_deps = proj.find_section("ProjectDependencies")
+				if proj_deps is None:
+					proj_deps = proj.add_section("ProjectDependencies", "postProject")
+				proj_deps.attribs.append(Attribute(self.proj_guids[dep], self.proj_guids[dep]))
 		pass
 
 	def has_dependency(self, proj: Project, dep: str):

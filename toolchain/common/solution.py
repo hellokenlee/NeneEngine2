@@ -153,6 +153,19 @@ class Solution(Serializable):
 		pass
 
 
+class ProjectSection(Serializable):
+	def __init__(self):
+		super(ProjectSection, self).__init__()
+		self.header = Header(
+			"ProjectSection({}) = {}",
+			name="",
+			phase="",
+		)
+		self.attribs = TypedList(Attribute)
+		self.tail = Header("EndProjectSection")
+		pass
+
+
 class Project(Serializable):
 	def __init__(self):
 		super(Project, self).__init__()
@@ -167,18 +180,18 @@ class Project(Serializable):
 		self.tail = Header("EndProject")
 		pass
 
+	def find_section(self, name: str) -> ProjectSection or None:
+		for section in self.sections:
+			if section.header.name == name:
+				return section
+		return None
 
-class ProjectSection(Serializable):
-	def __init__(self):
-		super(ProjectSection, self).__init__()
-		self.header = Header(
-			"ProjectSection({}) = {}",
-			name="",
-			phase="",
-		)
-		self.attribs = TypedList(Attribute)
-		self.tail = Header("EndProjectSection")
-		pass
+	def add_section(self, name: str, phase: str) -> ProjectSection:
+		section = ProjectSection()
+		section.header.name = name
+		section.header.phase = phase
+		self.sections.append(section)
+		return self.sections[-1]
 
 
 class GlobalSection(Serializable):

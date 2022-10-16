@@ -31,6 +31,7 @@ def main():
 	default_cmds = (
 		("npt", ["--all"]),
 		("vst", []),
+		("sct", [])
 	)
 	if len(sys.argv) == 1:
 		for cmd in default_cmds:

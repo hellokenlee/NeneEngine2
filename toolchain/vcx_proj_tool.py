@@ -23,6 +23,9 @@ class VcxProjTool(ToolBase):
 
 	def __init__(self):
 		super(VcxProjTool, self).__init__()
+		self.namespaces = {"": "http://schemas.microsoft.com/developer/msbuild/2003"}
+		self.namespace = ""
+		self.file_changed = False
 		pass
 
 	def run(self, args: list[str]):
@@ -51,50 +54,69 @@ class VcxProjTool(ToolBase):
 
 	def modify(self, proj: str):
 		#
+		self.file_changed = False
 		dependencies = self.dependency(proj)
 		external_libs = self.external_lib(proj)
 		#
 		proj_file = os.path.join(self.source_root, proj, "%s.vcxproj" % proj)
-		print("    Modified %s." % proj_file)
+		print("    Checking %s." % proj_file)
 		print("    Dependencies: %s" % dependencies)
 		#
-		namespaces = {"": "http://schemas.microsoft.com/developer/msbuild/2003"}
-		for key, val in namespaces.items():
+		for key, val in self.namespaces.items():
 			ElementTree.register_namespace(key, val)
 		proj_tree = ElementTree.parse(proj_file)
-		# Modify visual c++ paths
+		#
 		root = proj_tree.getroot()
-		namespace = root.tag.split('}')[0].strip('{')
-		for group in root.findall("PropertyGroup", namespaces):
+		self.namespace = root.tag.split('}')[0].strip('{')
+
+		# Modify visual c++ paths
+		for group in root.findall("PropertyGroup", self.namespaces):
 			if "Condition" in group.attrib:
-				if outdir := group.find("OutDir", namespaces):
-					outdir.text = self.PROJ_OUTPUT_PATH
-				if intdir := group.find("IntDir", namespaces):
-					intdir.text = self.PROJ_INTERMEDIATE_PATH
-				if includepath := group.find("IncludePath", namespaces):
+				if outdir := group.find("OutDir", self.namespaces):
+					self.try_modify_text(outdir, self.PROJ_OUTPUT_PATH)
+				if intdir := group.find("IntDir", self.namespaces):
+					self.try_modify_text(intdir, self.PROJ_INTERMEDIATE_PATH)
+				if includepath := group.find("IncludePath", self.namespaces):
 					incpaths = list(self.PROJ_ADDITIONAL_INCLUDE_PATHS)
 					incpaths.append("$(IncludePath)")
-					includepath.text = ';'.join(incpaths)
+					self.try_modify_text(includepath, ';'.join(incpaths))
+
 		# Modify compiler and linker settings
-		for group in root.findall("ItemDefinitionGroup", namespaces):
+		for group in root.findall("ItemDefinitionGroup", self.namespaces):
 			if "Condition" in group.attrib:
-				if clcompile := group.find("ClCompile", namespaces):
-					if clcompile.find("LanguageStandard", namespaces) is None:
-						ElementTree.SubElement(clcompile, "{%s}%s" % (namespace, "LanguageStandard"))
-					clcompile.find("LanguageStandard", namespaces).text = self.PROJ_CXX_STD
-				if link := group.find("Link", namespaces):
-					if link.find("AdditionalDependencies", namespaces) is None:
-						ElementTree.SubElement(link, "{%s}%s" % (namespace, "AdditionalDependencies"))
+				if clcompile := group.find("ClCompile", self.namespaces):
+					cxxstd = self.find_or_add_element(clcompile, "LanguageStandard")
+					self.try_modify_text(cxxstd, self.PROJ_CXX_STD)
+				if link := group.find("Link", self.namespaces):
+					adddeps = self.find_or_add_element(link, "AdditionalDependencies")
 					libs = [dep + ".lib" for dep in dependencies]
 					libs.extend([ext + ".lib" for ext in external_libs])
 					libs.append("%(AdditionalDependencies)")
-					link.find("AdditionalDependencies", namespaces).text = ";".join(libs)
+					self.try_modify_text(adddeps, ';'.join(libs))
 		#
-		ElementTree.indent(proj_tree, '  ')
-		proj_tree.write(proj_file, encoding='utf-8', method='xml')
+		if self.file_changed:
+			ElementTree.indent(proj_tree, '  ')
+			proj_tree.write(proj_file, encoding='utf-8', method='xml')
+			print("    Modified: %s" % proj_file)
+		else:
+			print("    Nothing to change.")
 		#
 		print("")
 		pass
+
+	def find_or_add_element(self, elem: ElementTree.Element, tag: str) -> ElementTree.Element:
+		result = elem.find(tag, self.namespaces)
+		if result is None:
+			result = ElementTree.SubElement(elem, "{%s}%s" % (self.namespace, "LanguageStandard"))
+			self.file_changed = True
+		return result
+
+	def try_modify_text(self, elem: ElementTree.Element, text: str):
+		if elem.text != text:
+			elem.text = text
+			self.file_changed = True
+			return True
+		return False
 
 
 def tool() -> ToolBase:

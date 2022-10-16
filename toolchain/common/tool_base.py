@@ -23,6 +23,15 @@ class ToolBase(object):
 		print("Runing %s ..." % self.NAME)
 		pass
 
+	def list_proj(self):
+		for proj in os.listdir(self.source_root):
+			if not proj.startswith("__") and os.path.isdir(os.path.join(self.source_root, proj)):
+				yield proj
+		pass
+
+	def get_proj_path(self, proj):
+		return os.path.join(self.source_root, proj)
+
 	def dependency(self, proj: str) -> list[str]:
 		nene_file = os.path.join(self.source_root, "%s.py" % proj)
 		if os.path.exists(nene_file):
