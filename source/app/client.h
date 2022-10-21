@@ -2,11 +2,13 @@
 
 #pragma once
 
-class i_client
+namespace i
+{
+class client
 {
 public:
-	i_client() = default;
-	virtual ~i_client() = default;
+	client() = default;
+	virtual ~client() = default;
 
 public:
 	virtual bool should_exit() = 0;
@@ -15,3 +17,4 @@ public:
 
 	virtual void* get_window() = 0;
 };
+}

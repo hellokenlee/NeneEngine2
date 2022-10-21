@@ -2,11 +2,15 @@
 
 #pragma once
 
-class NENE_API i_renderer
+
+namespace i
+{
+class NENE_API renderer
 {
 public:
-	i_renderer() = default;
-	virtual ~i_renderer() = default;
+	renderer() = default;
+	virtual ~renderer() = default;
 
 	virtual void render_view_family() = 0;
 };
+}

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "core/core.h"
-#include "renderer/i_renderer.h"
+#include "renderer/renderer.h"
 
 class NENE_API engine_loop
 {
@@ -15,5 +15,5 @@ public:
 	static void shutdown();
 
 protected:
-	static shared_ptr<i_renderer> m_renderer;
+	static shared_ptr<i::renderer> m_renderer;
 };

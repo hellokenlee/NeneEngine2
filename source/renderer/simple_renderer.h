@@ -4,10 +4,10 @@
 
 #include "gapi/gapi.h"
 #include "core/core.h"
-#include "i_renderer.h"
+#include "renderer.h"
 
 
-class NENE_API simple_renderer : public i_renderer
+class NENE_API simple_renderer : public i::renderer
 {
 public:
 	simple_renderer();

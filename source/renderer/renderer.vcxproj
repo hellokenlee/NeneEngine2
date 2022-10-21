@@ -154,7 +154,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="i_renderer.h" />
+    <ClInclude Include="renderer.h" />
     <ClInclude Include="simple_renderer.h" />
   </ItemGroup>
   <ItemGroup>

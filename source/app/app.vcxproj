@@ -154,7 +154,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="i_client.h" />
+    <ClInclude Include="client.h" />
     <ClInclude Include="windows\win_client.h" />
   </ItemGroup>
   <ItemGroup>

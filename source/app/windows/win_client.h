@@ -2,13 +2,13 @@
 
 #pragma once
 
-#include <windows.h>
+#include <Windows.h>
 
 #include "core/types.h"
-#include "../i_client.h"
+#include "../client.h"
 
 
-class win_client : public i_client
+class win_client : public i::client
 {
 public:
 	win_client() : win_client(TEXT("NeneEngine")) {}
