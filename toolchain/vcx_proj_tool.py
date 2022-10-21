@@ -89,9 +89,11 @@ class VcxProjTool(ToolBase):
 		# Modify compiler and linker settings
 		for group in root.findall("ItemDefinitionGroup", self.namespaces):
 			if "Condition" in group.attrib:
+				# C++ Standard
 				if clcompile := group.find("ClCompile", self.namespaces):
 					cxxstd = self.find_or_add_element(clcompile, "LanguageStandard")
 					self.try_modify_text(cxxstd, self.PROJ_CXX_STD)
+				# External Libs
 				if link := group.find("Link", self.namespaces):
 					adddeps = self.find_or_add_element(link, "AdditionalDependencies")
 					libs = [dep + ".lib" for dep in dependencies]
