@@ -18,7 +18,8 @@ class VcxProjTool(ToolBase):
 	PROJ_OUTPUT_PATH = "$(SolutionDir).bin\\$(Platform)\\$(Configuration)\\"
 	PROJ_INTERMEDIATE_PATH = "$(ProjectDir).bin\\intermediate\\$(Platform)\\$(Configuration)\\"
 	PROJ_ADDITIONAL_INCLUDE_PATHS = [
-		"$(SolutionDir)source\\"
+		"$(SolutionDir)source\\",
+		"$(ProjectDir)",
 	]
 
 	def __init__(self):
@@ -72,11 +73,15 @@ class VcxProjTool(ToolBase):
 		# Modify visual c++ paths
 		for group in root.findall("PropertyGroup", self.namespaces):
 			if "Condition" in group.attrib:
-				if outdir := group.find("OutDir", self.namespaces):
+				if "Label" not in group.attrib:
+					# Binary
+					outdir = self.find_or_add_element(group, "Outdir")
 					self.try_modify_text(outdir, self.PROJ_OUTPUT_PATH)
-				if intdir := group.find("IntDir", self.namespaces):
+					# Intermediate
+					intdir = self.find_or_add_element(group, "IntDir")
 					self.try_modify_text(intdir, self.PROJ_INTERMEDIATE_PATH)
-				if includepath := group.find("IncludePath", self.namespaces):
+					# Include Path
+					includepath = self.find_or_add_element(group, "ExternalIncludePath")
 					incpaths = list(self.PROJ_ADDITIONAL_INCLUDE_PATHS)
 					incpaths.append("$(IncludePath)")
 					self.try_modify_text(includepath, ';'.join(incpaths))
@@ -107,7 +112,7 @@ class VcxProjTool(ToolBase):
 	def find_or_add_element(self, elem: ElementTree.Element, tag: str) -> ElementTree.Element:
 		result = elem.find(tag, self.namespaces)
 		if result is None:
-			result = ElementTree.SubElement(elem, "{%s}%s" % (self.namespace, "LanguageStandard"))
+			result = ElementTree.SubElement(elem, "{%s}%s" % (self.namespace, tag))
 			self.file_changed = True
 		return result
 
