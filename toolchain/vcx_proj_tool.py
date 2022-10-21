@@ -75,7 +75,7 @@ class VcxProjTool(ToolBase):
 			if "Condition" in group.attrib:
 				if "Label" not in group.attrib:
 					# Binary
-					outdir = self.find_or_add_element(group, "Outdir")
+					outdir = self.find_or_add_element(group, "OutDir")
 					self.try_modify_text(outdir, self.PROJ_OUTPUT_PATH)
 					# Intermediate
 					intdir = self.find_or_add_element(group, "IntDir")
@@ -83,7 +83,7 @@ class VcxProjTool(ToolBase):
 					# Include Path
 					includepath = self.find_or_add_element(group, "ExternalIncludePath")
 					incpaths = list(self.PROJ_ADDITIONAL_INCLUDE_PATHS)
-					incpaths.append("$(IncludePath)")
+					incpaths.append("$(ExternalIncludePath)")
 					self.try_modify_text(includepath, ';'.join(incpaths))
 
 		# Modify compiler and linker settings
