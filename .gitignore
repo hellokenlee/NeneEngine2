@@ -10,6 +10,8 @@
 *.recipe
 *.exe
 *.ilk
+*.iobj
+*.ipdb
 
 # Python Cache Files
 *.pyc

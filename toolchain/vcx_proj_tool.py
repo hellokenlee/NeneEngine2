@@ -70,6 +70,20 @@ class VcxProjTool(ToolBase):
 		root = proj_tree.getroot()
 		self.namespace = root.tag.split('}')[0].strip('{')
 
+		# Collect Extern Library
+		lib3partypaths = []
+		inc3partypaths = []
+		for lib in external_libs:
+			if self.is_3rd_party_lib(lib):
+				libpath = \
+					"%%(SolutionDir)\\extern\\%s\\lib\\%s\\%%(PlatformTarget)\\%%(Configuration)\\" % \
+					(lib, self.platform)
+				lib3partypaths.append(libpath)
+				incpath = "%%(SolutionDir)\\extern\\%s\\inc\\" % (lib)
+				inc3partypaths.append(incpath)
+		lib3partypaths.append("$(SolutionDir).bin\\$(Platform)\\$(Configuration)\\")
+		lib3partypaths.append("$(LibraryPath)")
+
 		# Modify visual c++ paths
 		for group in root.findall("PropertyGroup", self.namespaces):
 			if "Condition" in group.attrib:
@@ -83,20 +97,12 @@ class VcxProjTool(ToolBase):
 					# Include Path
 					includepath = self.find_or_add_element(group, "ExternalIncludePath")
 					incpaths = list(self.PROJ_ADDITIONAL_INCLUDE_PATHS)
+					incpaths.extend(inc3partypaths)
 					incpaths.append("$(ExternalIncludePath)")
 					self.try_modify_text(includepath, ';'.join(incpaths))
 					# Library Path
 					librarypath = self.find_or_add_element(group, "LibraryPath")
-					lib3party = []
-					for lib in external_libs:
-						if self.is_3rd_party_lib(lib):
-							libpath = \
-								"%%(SolutionDir)\\extern\\%s\\lib\\%s\\%%(PlatformTarget)\\%%(Configuration)\\" % \
-								(lib, self.platform)
-							lib3party.append(libpath)
-					lib3party.append("$(SolutionDir).bin\\$(Platform)\\$(Configuration)\\")
-					lib3party.append("$(LibraryPath)")
-					self.try_modify_text(librarypath, ';'.join(lib3party))
+					self.try_modify_text(librarypath, ';'.join(lib3partypaths))
 
 		# Modify compiler and linker settings
 		for group in root.findall("ItemDefinitionGroup", self.namespaces):
