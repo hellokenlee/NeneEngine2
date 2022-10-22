@@ -85,6 +85,18 @@ class VcxProjTool(ToolBase):
 					incpaths = list(self.PROJ_ADDITIONAL_INCLUDE_PATHS)
 					incpaths.append("$(ExternalIncludePath)")
 					self.try_modify_text(includepath, ';'.join(incpaths))
+					# Library Path
+					librarypath = self.find_or_add_element(group, "LibraryPath")
+					lib3party = []
+					for lib in external_libs:
+						if self.is_3rd_party_lib(lib):
+							libpath = \
+								"%%(SolutionDir)\\extern\\%s\\lib\\%s\\%%(PlatformTarget)\\%%(Configuration)\\" % \
+								(lib, self.platform)
+							lib3party.append(libpath)
+					lib3party.append("$(SolutionDir).bin\\$(Platform)\\$(Configuration)\\")
+					lib3party.append("$(LibraryPath)")
+					self.try_modify_text(librarypath, ';'.join(lib3party))
 
 		# Modify compiler and linker settings
 		for group in root.findall("ItemDefinitionGroup", self.namespaces):
@@ -93,6 +105,8 @@ class VcxProjTool(ToolBase):
 				if clcompile := group.find("ClCompile", self.namespaces):
 					cxxstd = self.find_or_add_element(clcompile, "LanguageStandard")
 					self.try_modify_text(cxxstd, self.PROJ_CXX_STD)
+					conmode = self.find_or_add_element(clcompile, "ConformanceMode")
+					self.try_modify_text(conmode, "false")
 				# External Libs
 				if link := group.find("Link", self.namespaces):
 					adddeps = self.find_or_add_element(link, "AdditionalDependencies")
@@ -100,7 +114,8 @@ class VcxProjTool(ToolBase):
 					libs.extend([ext + ".lib" for ext in external_libs])
 					libs.append("%(AdditionalDependencies)")
 					self.try_modify_text(adddeps, ';'.join(libs))
-		#
+
+		# Modify the vc project file
 		if self.file_changed:
 			ElementTree.indent(proj_tree, '  ')
 			proj_tree.write(proj_file, encoding='utf-8', method='xml')
@@ -122,6 +137,12 @@ class VcxProjTool(ToolBase):
 		if elem.text != text:
 			elem.text = text
 			self.file_changed = True
+			return True
+		return False
+
+	def is_3rd_party_lib(self, lib: str):
+		externpath = os.path.abspath(os.path.join(self.engine_root, "extern", lib))
+		if os.path.exists(externpath):
 			return True
 		return False
 

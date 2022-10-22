@@ -22,6 +22,7 @@ class ToolBase(object):
 		self.template_content = ""
 		with open(template_path, "r") as fp:
 			self.template_content = fp.readlines()
+		self.platform = "win"
 		pass
 
 	def run(self, args: list[str]):
