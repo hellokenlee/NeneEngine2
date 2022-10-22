@@ -50,6 +50,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "core_render", "source\core_render\core_render.vcxproj", "{7B62A386-8EDC-48F1-8764-5691D93EEFD4}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "core_object", "source\core_object\core_object.vcxproj", "{9A85FCEA-CBCB-47BD-B006-A5EE627F1FBA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{68C53BB2-2176-4755-B147-E57E263D3949} = {68C53BB2-2176-4755-B147-E57E263D3949}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

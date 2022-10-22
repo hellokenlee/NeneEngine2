@@ -3,6 +3,6 @@
     Nene Module File
 """
 
-DEPENDENCY = []
+DEPENDENCY = ["core"]
 
-EXTERNAL_LIB = []
+EXTERNAL_LIB = ["rttr"]
