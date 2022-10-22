@@ -76,10 +76,10 @@ class VcxProjTool(ToolBase):
 		for lib in external_libs:
 			if self.is_3rd_party_lib(lib):
 				libpath = \
-					"$(SolutionDir)\\extern\\%s\\lib\\%s\\$(PlatformTarget)\\$(Configuration)\\" % \
+					"$(SolutionDir)extern\\%s\\lib\\%s\\$(PlatformTarget)\\$(Configuration)\\" % \
 					(lib, self.platform)
 				lib3partypaths.append(libpath)
-				incpath = "$(SolutionDir)\\extern\\%s\\inc\\" % lib
+				incpath = "$(SolutionDir)extern\\%s\\inc\\" % lib
 				inc3partypaths.append(incpath)
 		lib3partypaths.append("$(SolutionDir).bin\\$(Platform)\\$(Configuration)\\")
 		lib3partypaths.append("$(LibraryPath)")
