@@ -2,18 +2,24 @@
 
 #pragma once
 
+#include "core/core.h"
 #include "serializable.h"
+
 
 namespace n
 {
-class object: public i::serialzable
+class NENE_API object: public i::serialzable
 {
 public:
+	object(int data)
+		: data0(data)
+	{}
 
 	void func0();
 
 	void func1(int a);
 
+	static void test();
 
 private:
 	int data0;

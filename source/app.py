@@ -1,3 +1,3 @@
 # -*- coding=utf-8 -*-
 
-DEPENDENCY = ["core", "engine"]
+DEPENDENCY = ["core", "core_object", "engine"]

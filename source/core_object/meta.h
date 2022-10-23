@@ -2,9 +2,37 @@
 
 #pragma once
 
+#ifdef max
+	#undef max
+#endif
+
+#ifdef min
+	#undef min
+#endif
+
 #include "rttr/registration"
+#include "rttr/type"
 
-#define META RTTR_REGISTRATION
+#define NMETA RTTR_REGISTRATION
 
-template<class F>
-using refl_method = rttr::registration::method<F>;
+/*
+ *	Usage:
+ *
+ *	// In *.meta.cpp
+ *
+ *	META
+ *	{
+ *		NClass(my_class)
+ *			.constructor<>
+ *	}
+ */
+#define NCLASS(ClassName, ClassType) \
+	rttr::registration::class_<ClassType>(ClassName)
+
+#define NInherit(...) RTTR_ENABLE(__VA_ARGS__)
+
+namespace n
+{
+	using type = rttr::type;
+	using variant = rttr::variant;
+}
