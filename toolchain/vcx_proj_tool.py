@@ -14,7 +14,7 @@ class VcxProjTool(ToolBase):
 	CMD = "npt"
 	NAME = "Nene Visual C++ Project Tool"
 
-	PROJ_CXX_STD = "stdcpplatest"
+	PROJ_CXX_STD = "stdcpp20"
 	PROJ_OUTPUT_PATH = "$(SolutionDir).bin\\$(Platform)\\$(Configuration)\\"
 	PROJ_INTERMEDIATE_PATH = "$(ProjectDir).bin\\intermediate\\$(Platform)\\$(Configuration)\\"
 	PROJ_ADDITIONAL_INCLUDE_PATHS = [
@@ -83,6 +83,13 @@ class VcxProjTool(ToolBase):
 				inc3partypaths.append(incpath)
 		lib3partypaths.append("$(SolutionDir).bin\\$(Platform)\\$(Configuration)\\")
 		lib3partypaths.append("$(LibraryPath)")
+		# Dependency's Extern Library's Include
+		for dep in dependencies:
+			dep_externail_libs = self.external_lib(dep)
+			for lib in dep_externail_libs:
+				if self.is_3rd_party_lib(lib):
+					incpath = "$(SolutionDir)extern\\%s\\inc\\" % lib
+					inc3partypaths.append(incpath)
 
 		# Modify visual c++ paths
 		for group in root.findall("PropertyGroup", self.namespaces):
