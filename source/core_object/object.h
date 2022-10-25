@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "meta.h"
 #include "core/core.h"
 #include "serializable.h"
 
@@ -10,6 +11,8 @@ namespace n
 {
 class NENE_API object: public i::serialzable
 {
+	NINHERIT()
+	
 public:
 	object(int data)
 		: data0(data)

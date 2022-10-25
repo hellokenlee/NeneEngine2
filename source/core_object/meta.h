@@ -29,7 +29,22 @@
 #define NCLASS(ClassName, ClassType) \
 	rttr::registration::class_<ClassType>(ClassName)
 
-#define NInherit(...) RTTR_ENABLE(__VA_ARGS__)
+/*
+ *	Usage:
+ *
+ *	// In *.h
+ *
+ *	class Base
+ *	{
+ *		NINHERIT();
+ *	};
+ *
+ *	class Derived : public Base
+ *	{
+ *		NINHERIT(Base);
+ *	};
+ */
+#define NINHERIT(...) RTTR_ENABLE(__VA_ARGS__)
 
 namespace n
 {
