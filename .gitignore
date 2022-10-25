@@ -1,6 +1,9 @@
 # Visual Studio Files
 .vs/*
 
+# Jetbrain Rider Files
+.idea/*
+
 # C++ Immediate Files
 *.tlog
 *.obj
