@@ -10,9 +10,9 @@
 #include "d3d12/d3d12_cmd_list_mgr.h"
 
 
-dynamic_array<shared_ptr<d3d12_cmd_list>> gapi_d3d12_cmd_context::s_pending_cmd_lists;
+t::dynamic_array<t::shared_ptr<d3d12_cmd_list>> gapi_d3d12_cmd_context::s_pending_cmd_lists;
 
-gapi_d3d12_cmd_context::gapi_d3d12_cmd_context(shared_ptr<d3d12_device> device)
+gapi_d3d12_cmd_context::gapi_d3d12_cmd_context(t::shared_ptr<d3d12_device> device)
 	: super()
 	, m_device(device)
 	, m_cmd_list(nullptr)
@@ -64,9 +64,9 @@ void gapi_d3d12_cmd_context::flush(const bool& wait)
 	}
 }
 
-void gapi_d3d12_cmd_context::start_drawing_viewport(shared_ptr<gapi_viewport> viewport)
+void gapi_d3d12_cmd_context::start_drawing_viewport(t::shared_ptr<gapi_viewport> viewport)
 {
-	shared_ptr<gapi_d3d12_viewport> d3dviewport = gapi_d3d12_viewport::cast(viewport);
+	t::shared_ptr<gapi_d3d12_viewport> d3dviewport = gapi_d3d12_viewport::cast(viewport);
 	m_cmd_list->get_d3d_graphics_cmd_list()->SetGraphicsRootSignature(
 		m_cmd_list->get_parent_device()->get_d3d_root_signature()
 	);
@@ -92,9 +92,9 @@ void gapi_d3d12_cmd_context::start_drawing_viewport(shared_ptr<gapi_viewport> vi
 	m_cmd_list->get_d3d_graphics_cmd_list()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
-void gapi_d3d12_cmd_context::finish_drawing_viewport(shared_ptr<gapi_viewport> viewport)
+void gapi_d3d12_cmd_context::finish_drawing_viewport(t::shared_ptr<gapi_viewport> viewport)
 {
-	shared_ptr<gapi_d3d12_viewport> d3dviewport = gapi_d3d12_viewport::cast(viewport);
+	t::shared_ptr<gapi_d3d12_viewport> d3dviewport = gapi_d3d12_viewport::cast(viewport);
 
 	m_cmd_list->add_transition_barrier(
 		d3dviewport->get_back_buffer_texture(),
@@ -108,16 +108,16 @@ void gapi_d3d12_cmd_context::draw_primitive(uint32 vertex_num, uint32 instance_n
 	m_cmd_list->draw_instanced(vertex_num, instance_num, base_vertex_index, instance_base_index);
 }
 
-void gapi_d3d12_cmd_context::set_vertex_stream(shared_ptr<gapi_vertex_buffer> vertex_buffer)
+void gapi_d3d12_cmd_context::set_vertex_stream(t::shared_ptr<gapi_vertex_buffer> vertex_buffer)
 {
-	shared_ptr<gapi_d3d12_vertex_buffer> buffer = gapi_d3d12_vertex_buffer::cast(vertex_buffer);
+	t::shared_ptr<gapi_d3d12_vertex_buffer> buffer = gapi_d3d12_vertex_buffer::cast(vertex_buffer);
 
 	m_cmd_list->set_vertex_buffer(0, buffer->get_d3d12_vertex_buffer());
 }
 
-void gapi_d3d12_cmd_context::set_graphic_pipeline_states(shared_ptr<gapi_graphics_pipeline_state> state)
+void gapi_d3d12_cmd_context::set_graphic_pipeline_states(t::shared_ptr<gapi_graphics_pipeline_state> state)
 {
-	shared_ptr<gapi_d3d12_graphics_pipeline_state> pipeline_state = gapi_d3d12_graphics_pipeline_state::cast(state);
+	t::shared_ptr<gapi_d3d12_graphics_pipeline_state> pipeline_state = gapi_d3d12_graphics_pipeline_state::cast(state);
 
 	m_cmd_list->set_graphic_pipeline_states(pipeline_state->get_d3d12_pipeline_state());
 }

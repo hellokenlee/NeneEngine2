@@ -2,7 +2,7 @@
 
 #include "d3d12_resource_view.h"
 
-d3d12_render_target_view::d3d12_render_target_view(shared_ptr<d3d12_resource> resource)
+d3d12_render_target_view::d3d12_render_target_view(t::shared_ptr<d3d12_resource> resource)
 {
 	//
 	const auto desc_heap = resource->get_located_heap();

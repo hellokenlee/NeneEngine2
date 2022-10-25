@@ -4,7 +4,7 @@
 #include "d3d12_cmd_list.h"
 
 
-d3d12_cmd_list_mgr::d3d12_cmd_list_mgr(shared_ptr<d3d12_device> device, d3d12_cmd_type type)
+d3d12_cmd_list_mgr::d3d12_cmd_list_mgr(t::shared_ptr<d3d12_device> device, d3d12_cmd_type type)
 	: d3d12_device_child(device)
 	, m_type(type)
 {
@@ -21,16 +21,16 @@ d3d12_cmd_list_mgr::~d3d12_cmd_list_mgr()
 	
 }
 
-shared_ptr<d3d12_cmd_list> d3d12_cmd_list_mgr::create_cmd_list(shared_ptr<d3d12_cmd_allocator> allocator)
+t::shared_ptr<d3d12_cmd_list> d3d12_cmd_list_mgr::create_cmd_list(t::shared_ptr<d3d12_cmd_allocator> allocator)
 {
 	// TODO: Reusing command lists
 	//
-	shared_ptr<d3d12_cmd_list> cmd_list(new d3d12_cmd_list(m_type, allocator, shared_from_this()));
+	t::shared_ptr<d3d12_cmd_list> cmd_list(new d3d12_cmd_list(m_type, allocator, shared_from_this()));
 	//
 	return cmd_list;
 }
 
-void d3d12_cmd_list_mgr::execute_cmd_lists(const dynamic_array<shared_ptr<d3d12_cmd_list>>& cmd_lists)
+void d3d12_cmd_list_mgr::execute_cmd_lists(const t::dynamic_array<t::shared_ptr<d3d12_cmd_list>>& cmd_lists)
 {
 	constexpr uint32 max_execute_command_list_num = 512;
 	uint32 cmd_list_count = 0;
@@ -53,9 +53,9 @@ void d3d12_cmd_list_mgr::execute_cmd_lists(const dynamic_array<shared_ptr<d3d12_
 	}
 }
 
-shared_ptr<d3d12_cmd_list> d3d12_cmd_list_mgr::obtain_cmd_list(shared_ptr<d3d12_cmd_allocator> allocator)
+t::shared_ptr<d3d12_cmd_list> d3d12_cmd_list_mgr::obtain_cmd_list(t::shared_ptr<d3d12_cmd_allocator> allocator)
 {
-	shared_ptr<d3d12_cmd_list> cmd_list;
+	t::shared_ptr<d3d12_cmd_list> cmd_list;
 	if (m_available_cmd_lists.size() > 0)
 	{
 		cmd_list = m_available_cmd_lists.front();
@@ -64,14 +64,14 @@ shared_ptr<d3d12_cmd_list> d3d12_cmd_list_mgr::obtain_cmd_list(shared_ptr<d3d12_
 	}
 	else
 	{
-		cmd_list = shared_ptr<d3d12_cmd_list>(new d3d12_cmd_list(m_type, allocator, shared_from_this()));
+		cmd_list = t::shared_ptr<d3d12_cmd_list>(new d3d12_cmd_list(m_type, allocator, shared_from_this()));
 	}
 	return cmd_list;
 }
 
-shared_ptr<d3d12_cmd_allocator> d3d12_cmd_list_mgr::obtain_cmd_allocator()
+t::shared_ptr<d3d12_cmd_allocator> d3d12_cmd_list_mgr::obtain_cmd_allocator()
 {
-	shared_ptr<d3d12_cmd_allocator> allocator;
+	t::shared_ptr<d3d12_cmd_allocator> allocator;
 	if (m_available_allocators.size() > 0)
 	{
 		allocator = m_available_allocators.front();
@@ -80,14 +80,14 @@ shared_ptr<d3d12_cmd_allocator> d3d12_cmd_list_mgr::obtain_cmd_allocator()
 	}
 	else
 	{
-		allocator = shared_ptr<d3d12_cmd_allocator>(new d3d12_cmd_allocator(get_parent_device(), m_type));
+		allocator = t::shared_ptr<d3d12_cmd_allocator>(new d3d12_cmd_allocator(get_parent_device(), m_type));
 		m_current_allocators.push_back(allocator);
 	}
 
 	return allocator;
 }
 
-void d3d12_cmd_list_mgr::release_cmd_allocator(shared_ptr<d3d12_cmd_allocator> allocator)
+void d3d12_cmd_list_mgr::release_cmd_allocator(t::shared_ptr<d3d12_cmd_allocator> allocator)
 {
 	CHECK(allocator != nullptr);
 	m_available_allocators.push(allocator);

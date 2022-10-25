@@ -3,7 +3,7 @@
 #include "d3d12_pipeline_state.h"
 
 
-d3d12_pipeline_state::d3d12_pipeline_state(shared_ptr<d3d12_device> device, d3d12_graphics_pipeline_creation_args args, const d3d12_vertex_elements& elements)
+d3d12_pipeline_state::d3d12_pipeline_state(t::shared_ptr<d3d12_device> device, d3d12_graphics_pipeline_creation_args args, const d3d12_vertex_elements& elements)
 	: d3d12_device_child(device)
 	, m_pipeline_type(d3d12_cmd_type::graphics)
 {

@@ -3,7 +3,7 @@
 #include "d3d12_buffer.h"
 #include "d3dx12.h"
 
-d3d12_buffer::d3d12_buffer(shared_ptr<d3d12_device> device, const size_t& buffer_size)
+d3d12_buffer::d3d12_buffer(t::shared_ptr<d3d12_device> device, const size_t& buffer_size)
 	: d3d12_resource(device)
 	, m_buffer_size(buffer_size)
 {
@@ -41,7 +41,7 @@ void d3d12_buffer::unmap()
 
 
 
-d3d12_vertex_buffer::d3d12_vertex_buffer(shared_ptr<d3d12_device> device, const size_t& buffer_stride, const size_t& buffer_size)
+d3d12_vertex_buffer::d3d12_vertex_buffer(t::shared_ptr<d3d12_device> device, const size_t& buffer_stride, const size_t& buffer_size)
 	: d3d12_buffer(device, buffer_size)
 {
 	m_vbv.BufferLocation = m_resource->GetGPUVirtualAddress();

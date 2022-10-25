@@ -15,7 +15,7 @@ class NENE_API gapi
 {
 public:
 	// >>> Context Related >>>
-	virtual shared_ptr<gapi_cmd_context> get_cmd_context(int32 id=0) = 0;
+	virtual t::shared_ptr<gapi_cmd_context> get_cmd_context(int32 id=0) = 0;
 	// <<< Context Related <<<
 
 	// >>> View Port Related >>>
@@ -24,25 +24,25 @@ public:
 
 	virtual void finish_frame() = 0;
 
-	virtual shared_ptr<gapi_viewport> get_viewport() = 0;
+	virtual t::shared_ptr<gapi_viewport> get_viewport() = 0;
 
 	// <<< View Port Related <<<
 
 
 	// >>> Shader Related >>>
 
-	virtual shared_ptr<gapi_vertex_shader> create_vertex_shader(const gapi_shader_initializer& initializer) = 0;
+	virtual t::shared_ptr<gapi_vertex_shader> create_vertex_shader(const gapi_shader_initializer& initializer) = 0;
 
-	virtual shared_ptr<gapi_pixel_shader> create_pixel_shader(const gapi_shader_initializer& initializer) = 0;
+	virtual t::shared_ptr<gapi_pixel_shader> create_pixel_shader(const gapi_shader_initializer& initializer) = 0;
 
 	// <<< Shader Related <<<
 
 
 	// >>> Pipeline State Related >>>
 
-	virtual shared_ptr<gapi_compute_pipeline_state> create_compute_pipeline_state(const gapi_compute_pipeline_state_initializer&) = 0;
+	virtual t::shared_ptr<gapi_compute_pipeline_state> create_compute_pipeline_state(const gapi_compute_pipeline_state_initializer&) = 0;
 
-	virtual shared_ptr<gapi_graphics_pipeline_state> create_graphic_pipeline_state(const gapi_graphics_pipeline_state_initializer&) = 0;
+	virtual t::shared_ptr<gapi_graphics_pipeline_state> create_graphic_pipeline_state(const gapi_graphics_pipeline_state_initializer&) = 0;
 
 	
 	// <<< Pipeline State Related <<<
@@ -50,11 +50,11 @@ public:
 
 	// >>> Resource Related >>>
 
-	virtual shared_ptr<gapi_vertex_buffer> create_vertex_buffer(const size_t& buffer_stride, const size_t& buffer_size, const gapi_resource_usage& buffer_usage) = 0;
+	virtual t::shared_ptr<gapi_vertex_buffer> create_vertex_buffer(const size_t& buffer_stride, const size_t& buffer_size, const gapi_resource_usage& buffer_usage) = 0;
 
-	virtual void* lock_vertex_buffer(shared_ptr<gapi_vertex_buffer> vertex_buffer) = 0;
+	virtual void* lock_vertex_buffer(t::shared_ptr<gapi_vertex_buffer> vertex_buffer) = 0;
 
-	virtual void unlock_vertex_buffer(shared_ptr<gapi_vertex_buffer> vertex_buffer) = 0;
+	virtual void unlock_vertex_buffer(t::shared_ptr<gapi_vertex_buffer> vertex_buffer) = 0;
 
 	// <<< Resource Related <<<
 

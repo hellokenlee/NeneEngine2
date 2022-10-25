@@ -3,7 +3,7 @@
 #include "gapi_manager.h"
 #include "gapi_d3d12/gapi_d3d12.h"
 
-shared_ptr<gapi> gapi_manager::m_instance = nullptr;
+t::shared_ptr<gapi> gapi_manager::m_instance = nullptr;
 
 void gapi_manager::create(void* window)
 {
@@ -13,7 +13,7 @@ void gapi_manager::create(void* window)
 
 	if (use_d3d12)
 	{
-		m_instance = shared_ptr<gapi_d3d12>(new gapi_d3d12(window));
+		m_instance = t::shared_ptr<gapi_d3d12>(new gapi_d3d12(window));
 	}
 	else
 	{
@@ -30,7 +30,7 @@ void gapi_manager::destroy()
 	m_instance = nullptr;
 }
 
-shared_ptr<gapi> gapi_manager::get()
+t::shared_ptr<gapi> gapi_manager::get()
 {
 	CHECK(m_instance != nullptr);
 	return m_instance;

@@ -7,9 +7,9 @@
 class d3d12_fence : public noncopyable, public d3d12_device_child
 {
 public:
-	d3d12_fence(shared_ptr<d3d12_device> device);
+	d3d12_fence(t::shared_ptr<d3d12_device> device);
 
-	d3d12_fence(shared_ptr<d3d12_device> device, d3d12_cmd_type type);
+	d3d12_fence(t::shared_ptr<d3d12_device> device, d3d12_cmd_type type);
 
 	~d3d12_fence();
 

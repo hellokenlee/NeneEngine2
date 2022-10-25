@@ -8,7 +8,7 @@
 #include <windows.h>
 
 
-d3d12_device::d3d12_device(shared_ptr<d3d12_adapter> adapter)
+d3d12_device::d3d12_device(t::shared_ptr<d3d12_adapter> adapter)
 	: d3d12_adapter_child(adapter)
 {
 	// Create device
@@ -39,14 +39,14 @@ void d3d12_device::init()
 	get_parent_adapter()->append_device(shared_from_this());
 
 	// Create global heap
-	m_global_descriptor_heap = shared_ptr<d3d12_descriptor_heap>(
+	m_global_descriptor_heap = t::shared_ptr<d3d12_descriptor_heap>(
 		new d3d12_descriptor_heap(shared_from_this(), g_d3d12_max_global_descriptor_count, D3D12_DESCRIPTOR_HEAP_TYPE_RTV)
 	);
 
 	// Create command list manager
-	m_copy_cmd_list_mgr = shared_ptr<d3d12_cmd_list_mgr>(new d3d12_cmd_list_mgr(shared_from_this(), d3d12_cmd_type::copy));
-	m_compute_cmd_list_mgr = shared_ptr<d3d12_cmd_list_mgr>(new d3d12_cmd_list_mgr(shared_from_this(), d3d12_cmd_type::compute));
-	m_graphics_cmd_list_mgr = shared_ptr<d3d12_cmd_list_mgr>(new d3d12_cmd_list_mgr(shared_from_this(), d3d12_cmd_type::graphics));
+	m_copy_cmd_list_mgr = t::shared_ptr<d3d12_cmd_list_mgr>(new d3d12_cmd_list_mgr(shared_from_this(), d3d12_cmd_type::copy));
+	m_compute_cmd_list_mgr = t::shared_ptr<d3d12_cmd_list_mgr>(new d3d12_cmd_list_mgr(shared_from_this(), d3d12_cmd_type::compute));
+	m_graphics_cmd_list_mgr = t::shared_ptr<d3d12_cmd_list_mgr>(new d3d12_cmd_list_mgr(shared_from_this(), d3d12_cmd_type::graphics));
 }
 
 void d3d12_device::clear()
@@ -57,7 +57,7 @@ void d3d12_device::clear()
 	m_global_descriptor_heap.reset();
 }
 
-shared_ptr<d3d12_cmd_list_mgr> d3d12_device::get_cmd_list_mgr(d3d12_cmd_type type)
+t::shared_ptr<d3d12_cmd_list_mgr> d3d12_device::get_cmd_list_mgr(d3d12_cmd_type type)
 {
 	switch (type)
 	{

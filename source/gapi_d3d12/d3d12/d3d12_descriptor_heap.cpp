@@ -2,7 +2,7 @@
 
 #include "d3d12_descriptor_heap.h"
 
-d3d12_descriptor_heap::d3d12_descriptor_heap(shared_ptr<d3d12_device> device, uint32 num_desc, D3D12_DESCRIPTOR_HEAP_TYPE type)
+d3d12_descriptor_heap::d3d12_descriptor_heap(t::shared_ptr<d3d12_device> device, uint32 num_desc, D3D12_DESCRIPTOR_HEAP_TYPE type)
 	: d3d12_device_child(device)
 	, m_descriptor_size(0)
 {
@@ -33,7 +33,7 @@ d3d12_descriptor_heap::d3d12_descriptor_heap(shared_ptr<d3d12_device> device, ui
 	}
 }
 
-shared_ptr<d3d12_descriptor_handle> d3d12_descriptor_heap::allocate_descriptor()
+t::shared_ptr<d3d12_descriptor_handle> d3d12_descriptor_heap::allocate_descriptor()
 {
 	uint32 index = m_free_descriptor_indices.front();
 	m_free_descriptor_indices.pop();
@@ -41,10 +41,10 @@ shared_ptr<d3d12_descriptor_handle> d3d12_descriptor_heap::allocate_descriptor()
 	CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_cpu_base);
 	handle.Offset(index, m_descriptor_size);
 
-	return shared_ptr<d3d12_descriptor_handle>(new d3d12_descriptor_handle{ index, handle });
+	return t::shared_ptr<d3d12_descriptor_handle>(new d3d12_descriptor_handle{ index, handle });
 }
 
-void d3d12_descriptor_heap::free_descriptor(shared_ptr<d3d12_descriptor_handle> handle)
+void d3d12_descriptor_heap::free_descriptor(t::shared_ptr<d3d12_descriptor_handle> handle)
 {
 
 }

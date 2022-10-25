@@ -172,6 +172,9 @@
     <ClInclude Include="math\math.h" />
     <ClInclude Include="platform.h" />
     <ClInclude Include="template.h" />
+    <ClInclude Include="template\container.h" />
+    <ClInclude Include="template\data_type.h" />
+    <ClInclude Include="template\pointer.h" />
     <ClInclude Include="types.h" />
   </ItemGroup>
   <ItemGroup>

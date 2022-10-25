@@ -16,9 +16,9 @@ class d3d12_cmd_allocator;
 class d3d12_cmd_list : public d3d12_device_child
 {
 public:
-	d3d12_cmd_list(d3d12_cmd_type type, shared_ptr<d3d12_cmd_allocator> allocator, shared_ptr<d3d12_device> device);
+	d3d12_cmd_list(d3d12_cmd_type type, t::shared_ptr<d3d12_cmd_allocator> allocator, t::shared_ptr<d3d12_device> device);
 
-	d3d12_cmd_list(d3d12_cmd_type type, shared_ptr<d3d12_cmd_allocator> allocator, shared_ptr<d3d12_cmd_list_mgr> manager);
+	d3d12_cmd_list(d3d12_cmd_type type, t::shared_ptr<d3d12_cmd_allocator> allocator, t::shared_ptr<d3d12_cmd_list_mgr> manager);
 
 public:
 
@@ -26,15 +26,15 @@ public:
 
 	bool is_closed();
 
-	void reset(shared_ptr<d3d12_cmd_allocator>);
+	void reset(t::shared_ptr<d3d12_cmd_allocator>);
 
-	void set_vertex_buffer(const uint32 slot_index, shared_ptr<d3d12_vertex_buffer> vertex_buffer);
+	void set_vertex_buffer(const uint32 slot_index, t::shared_ptr<d3d12_vertex_buffer> vertex_buffer);
 
-	void set_graphic_pipeline_states(shared_ptr<d3d12_pipeline_state> state);
+	void set_graphic_pipeline_states(t::shared_ptr<d3d12_pipeline_state> state);
 
 	void draw_instanced(uint32 vertex_num, uint32 instance_num, uint32 base_vertex_index, uint32 instance_base_index);
 
-	void add_transition_barrier(shared_ptr<d3d12_resource> resource, D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after);
+	void add_transition_barrier(t::shared_ptr<d3d12_resource> resource, D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after);
 
 public:
 	ID3D12CommandList* get_d3d_cmd_list() { return m_command_list.Get(); }

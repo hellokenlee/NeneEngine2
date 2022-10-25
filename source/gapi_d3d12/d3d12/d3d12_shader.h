@@ -14,12 +14,12 @@ public:
 	d3d12_vertex_declaration() = default;
 	~d3d12_vertex_declaration() = default;
 
-	d3d12_vertex_declaration(const dynamic_array<D3D12_INPUT_ELEMENT_DESC>& vertex_elements): m_vertex_elements(vertex_elements) {}
+	d3d12_vertex_declaration(const t::dynamic_array<D3D12_INPUT_ELEMENT_DESC>& vertex_elements): m_vertex_elements(vertex_elements) {}
 
 	D3D12_INPUT_LAYOUT_DESC get_d3d12_input_layout_desc();
 
 protected:
-	dynamic_array<D3D12_INPUT_ELEMENT_DESC> m_vertex_elements;
+	t::dynamic_array<D3D12_INPUT_ELEMENT_DESC> m_vertex_elements;
 };            
 
 

@@ -15,7 +15,7 @@
 class gapi_d3d12_viewport : public t::impl<gapi_d3d12_viewport, gapi_viewport>
 {
 public:
-	gapi_d3d12_viewport(shared_ptr<d3d12_adapter> adapter, void* hwnd, uint32 back_buffer_num, uint32 multi_sample_num);
+	gapi_d3d12_viewport(t::shared_ptr<d3d12_adapter> adapter, void* hwnd, uint32 back_buffer_num, uint32 multi_sample_num);
 	~gapi_d3d12_viewport() override = default;
 
 public:
@@ -23,7 +23,7 @@ public:
 
 	void finish_frame();
 
-	shared_ptr<d3d12_texture2d> get_back_buffer_texture();
+	t::shared_ptr<d3d12_texture2d> get_back_buffer_texture();
 
 public:
 	//
@@ -33,6 +33,6 @@ public:
 	uint64 m_last_fence_value;
 	uint32 m_back_buffer_index;
 	//
-	shared_ptr<d3d12_fence> m_fence;
-	shared_ptr<d3d12_swap_chain> m_swap_chain;
+	t::shared_ptr<d3d12_fence> m_fence;
+	t::shared_ptr<d3d12_swap_chain> m_swap_chain;
 };

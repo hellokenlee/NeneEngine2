@@ -17,15 +17,15 @@ public:
 	virtual void flush(const bool& wait=false) = 0;
 
 	//
-	virtual void start_drawing_viewport(shared_ptr<gapi_viewport> viewport) = 0;
+	virtual void start_drawing_viewport(t::shared_ptr<gapi_viewport> viewport) = 0;
 
-	virtual void finish_drawing_viewport(shared_ptr<gapi_viewport> viewport) = 0;
+	virtual void finish_drawing_viewport(t::shared_ptr<gapi_viewport> viewport) = 0;
 
 	virtual void draw_primitive(uint32 vertex_num, uint32 instance_num, uint32 base_vertex_index, uint32 instance_base_index) = 0;
 
-	virtual void set_vertex_stream(shared_ptr<gapi_vertex_buffer> vertex_buffer) = 0;
+	virtual void set_vertex_stream(t::shared_ptr<gapi_vertex_buffer> vertex_buffer) = 0;
 
-	virtual void set_graphic_pipeline_states(shared_ptr<gapi_graphics_pipeline_state> state) = 0;
+	virtual void set_graphic_pipeline_states(t::shared_ptr<gapi_graphics_pipeline_state> state) = 0;
 
 public:
 	gapi_cmd_context() = default;

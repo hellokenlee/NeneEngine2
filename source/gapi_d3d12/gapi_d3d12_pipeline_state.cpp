@@ -7,7 +7,7 @@
 
 constexpr size_t DEFAULT_VERTEX_ELEMENT_NUM = 16;
 
-d3d12_vertex_elements d3d_cast(const dynamic_array<gapi_vertex_element>& element_list)
+d3d12_vertex_elements d3d_cast(const t::dynamic_array<gapi_vertex_element>& element_list)
 {
 	d3d12_vertex_elements elements;
 	elements.reserve(DEFAULT_VERTEX_ELEMENT_NUM);
@@ -47,8 +47,8 @@ d3d12_graphics_pipeline_creation_args d3d_cast(const gapi_graphics_pipeline_stat
 {
 	d3d12_graphics_pipeline_creation_args desc = {};
 
-	shared_ptr<gapi_d3d12_vertex_shader> vertex_shader = gapi_d3d12_vertex_shader::cast(initializer.m_bound_shader_state.m_vertex_shader);
-	shared_ptr<gapi_d3d12_pixel_shader> pixel_shader = gapi_d3d12_pixel_shader::cast(initializer.m_bound_shader_state.m_pixel_shader);
+	t::shared_ptr<gapi_d3d12_vertex_shader> vertex_shader = gapi_d3d12_vertex_shader::cast(initializer.m_bound_shader_state.m_vertex_shader);
+	t::shared_ptr<gapi_d3d12_pixel_shader> pixel_shader = gapi_d3d12_pixel_shader::cast(initializer.m_bound_shader_state.m_pixel_shader);
 
 	CHECK(vertex_shader->get_d3d12_shader()->get_d3d_blob() != nullptr);
 	CHECK(pixel_shader->get_d3d12_shader()->get_d3d_blob() != nullptr);
@@ -68,13 +68,13 @@ d3d12_graphics_pipeline_creation_args d3d_cast(const gapi_graphics_pipeline_stat
 	return desc;
 }
 
-gapi_d3d12_graphics_pipeline_state::gapi_d3d12_graphics_pipeline_state(shared_ptr<d3d12_device> device, const gapi_graphics_pipeline_state_initializer& initializer)
+gapi_d3d12_graphics_pipeline_state::gapi_d3d12_graphics_pipeline_state(t::shared_ptr<d3d12_device> device, const gapi_graphics_pipeline_state_initializer& initializer)
 	: m_d3d12_state(new d3d12_pipeline_state(device, d3d_cast(initializer), d3d_cast(initializer.m_bound_shader_state.m_vertex_declaration)))
 {
 
 }
 
-gapi_d3d12_compute_pipeline_state::gapi_d3d12_compute_pipeline_state(shared_ptr<d3d12_device> device, const gapi_compute_pipeline_state_initializer& initializer)
+gapi_d3d12_compute_pipeline_state::gapi_d3d12_compute_pipeline_state(t::shared_ptr<d3d12_device> device, const gapi_compute_pipeline_state_initializer& initializer)
 {
 	
 }

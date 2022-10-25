@@ -15,6 +15,6 @@ public:
 	void render_view_family() override;
 
 protected:
-	shared_ptr<gapi_vertex_buffer> m_vertex_buffer{};
-	shared_ptr<gapi_graphics_pipeline_state> m_graphics_pipeline_state{};
+	t::shared_ptr<gapi_vertex_buffer> m_vertex_buffer{};
+	t::shared_ptr<gapi_graphics_pipeline_state> m_graphics_pipeline_state{};
 };

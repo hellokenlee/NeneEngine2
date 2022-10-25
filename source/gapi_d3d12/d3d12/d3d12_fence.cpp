@@ -3,13 +3,13 @@
 #include "d3d12_fence.h"
 #include "d3d12_cmd_list_mgr.h"
 
-d3d12_fence::d3d12_fence(shared_ptr<d3d12_device> device)
+d3d12_fence::d3d12_fence(t::shared_ptr<d3d12_device> device)
 	: d3d12_fence(device, d3d12_cmd_type::graphics)
 {
 	
 }
 
-d3d12_fence::d3d12_fence(shared_ptr<d3d12_device> device, d3d12_cmd_type type)
+d3d12_fence::d3d12_fence(t::shared_ptr<d3d12_device> device, d3d12_cmd_type type)
 	: d3d12_device_child(device)
 	, m_current_fence(1)
 	, m_last_signaled_fence(0)

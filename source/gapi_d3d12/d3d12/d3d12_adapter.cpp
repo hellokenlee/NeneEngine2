@@ -7,7 +7,7 @@
 
 #include <windows.h>
 
-shared_ptr<d3d12_adapter> d3d12_adapter::select_adapter()
+t::shared_ptr<d3d12_adapter> d3d12_adapter::select_adapter()
 {
 	// Init dxgi crate flag
 	UINT dxgi_factory_flags = 0;
@@ -102,19 +102,19 @@ shared_ptr<d3d12_adapter> d3d12_adapter::select_adapter()
 	LOG(d3d12, info, TEXT("Select Adapter %d: %s."), selected_adapter_index, desc.Description);
 
 	// Assemble the result of d3d12 adapter
-	shared_ptr<d3d12_adapter> result(new d3d12_adapter());
+	t::shared_ptr<d3d12_adapter> result(new d3d12_adapter());
 	result->m_adapter = adapter;
 	result->m_factory = factory6;
 	return result;
 }
 
-shared_ptr<d3d12_device> d3d12_adapter::get_device(uint32 index)
+t::shared_ptr<d3d12_device> d3d12_adapter::get_device(uint32 index)
 {
 	CHECK(index < m_devices.size());
 	return m_devices[index];
 }
 
-uint32 d3d12_adapter::append_device(const shared_ptr<d3d12_device>& device)
+uint32 d3d12_adapter::append_device(const t::shared_ptr<d3d12_device>& device)
 {
 	m_devices.push_back(device);
 	return static_cast<uint32>(m_devices.size()) - 1;

@@ -6,13 +6,13 @@
 #include "d3d12_cmd_allocator.h"
 
 
-d3d12_cmd_list::d3d12_cmd_list(d3d12_cmd_type type, shared_ptr<d3d12_cmd_allocator> allocator, shared_ptr<d3d12_device> device)
+d3d12_cmd_list::d3d12_cmd_list(d3d12_cmd_type type, t::shared_ptr<d3d12_cmd_allocator> allocator, t::shared_ptr<d3d12_device> device)
 	: d3d12_cmd_list(type, allocator, device->get_graphics_cmd_list_mgr())
 {
 
 }
 
-d3d12_cmd_list::d3d12_cmd_list(d3d12_cmd_type type, shared_ptr<d3d12_cmd_allocator> allocator, shared_ptr<d3d12_cmd_list_mgr> manager)
+d3d12_cmd_list::d3d12_cmd_list(d3d12_cmd_type type, t::shared_ptr<d3d12_cmd_allocator> allocator, t::shared_ptr<d3d12_cmd_list_mgr> manager)
 	: d3d12_device_child(manager->get_parent_device())
 	, m_is_closed(false)
 	, m_type(type)
@@ -26,7 +26,7 @@ d3d12_cmd_list::d3d12_cmd_list(d3d12_cmd_type type, shared_ptr<d3d12_cmd_allocat
 	close();
 }
 
-void d3d12_cmd_list::reset(shared_ptr<d3d12_cmd_allocator> allocator)
+void d3d12_cmd_list::reset(t::shared_ptr<d3d12_cmd_allocator> allocator)
 {
 	VERIFY(get_d3d_graphics_cmd_list()->Reset(allocator->get_d3d_command_allocator(), nullptr));
 	m_is_closed = false;
@@ -46,7 +46,7 @@ bool d3d12_cmd_list::is_closed()
 	return m_is_closed;
 }
 
-void d3d12_cmd_list::set_vertex_buffer(const uint32 slot_index, shared_ptr<d3d12_vertex_buffer> vertex_buffer)
+void d3d12_cmd_list::set_vertex_buffer(const uint32 slot_index, t::shared_ptr<d3d12_vertex_buffer> vertex_buffer)
 {
 	get_d3d_graphics_cmd_list()->IASetVertexBuffers(slot_index, 1, vertex_buffer->get_d3d_vertex_buffer_view());
 }
@@ -57,12 +57,12 @@ void d3d12_cmd_list::draw_instanced(uint32 vertex_num, uint32 instance_num, uint
 }
 
 
-void d3d12_cmd_list::set_graphic_pipeline_states(shared_ptr<d3d12_pipeline_state> state)
+void d3d12_cmd_list::set_graphic_pipeline_states(t::shared_ptr<d3d12_pipeline_state> state)
 {
 	get_d3d_graphics_cmd_list()->SetPipelineState(state->get_d3d_pipeline_state());
 }
 
-void d3d12_cmd_list::add_transition_barrier(shared_ptr<d3d12_resource> resource, D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after)
+void d3d12_cmd_list::add_transition_barrier(t::shared_ptr<d3d12_resource> resource, D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after)
 {
 	CD3DX12_RESOURCE_BARRIER transition = CD3DX12_RESOURCE_BARRIER::Transition (
 		resource->get_d3d_resource(), 

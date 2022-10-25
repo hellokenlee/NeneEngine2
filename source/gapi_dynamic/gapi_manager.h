@@ -11,7 +11,7 @@ public:
 
 	static void destroy();
 
-	static shared_ptr<gapi> get();
+	static t::shared_ptr<gapi> get();
 	// <<< Static Methods <<<
 
 
@@ -26,5 +26,5 @@ public:
 	// <<< Disallow Instancing <<<
 
 protected:
-	static shared_ptr<gapi> m_instance;
+	static t::shared_ptr<gapi> m_instance;
 };

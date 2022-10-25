@@ -2,7 +2,7 @@
 
 #include "d3d12_cmd_allocator.h"
 
-d3d12_cmd_allocator::d3d12_cmd_allocator(shared_ptr<d3d12_device> device, d3d12_cmd_type type)
+d3d12_cmd_allocator::d3d12_cmd_allocator(t::shared_ptr<d3d12_device> device, d3d12_cmd_type type)
 	: d3d12_device_child(device)
 {
 	//

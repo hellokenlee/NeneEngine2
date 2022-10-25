@@ -60,7 +60,7 @@ public:
 	gapi_rasterizer_state_initializer m_rasterizer_state;
 	gapi_depth_stencil_state_initializer m_depth_stencil_state;
 	gapi_primitive_type m_primitive_type;
-	static_array<gapi_pixel_format, MAX_RENDER_TARGET_COUNT> m_render_target_formats;
+	t::static_array<gapi_pixel_format, MAX_RENDER_TARGET_COUNT> m_render_target_formats;
 	gapi_pixel_format m_depth_stencil_format;
 
 };

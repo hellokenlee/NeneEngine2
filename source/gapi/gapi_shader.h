@@ -65,9 +65,9 @@ class NENE_API gapi_bound_shader_state
 {
 public:
 	explicit gapi_bound_shader_state(
-		const dynamic_array<gapi_vertex_element>& vertex_declaration,
-		shared_ptr<gapi_vertex_shader> vertex_shader,
-		shared_ptr<gapi_pixel_shader> pixel_shader
+		const t::dynamic_array<gapi_vertex_element>& vertex_declaration,
+		t::shared_ptr<gapi_vertex_shader> vertex_shader,
+		t::shared_ptr<gapi_pixel_shader> pixel_shader
 	) : gapi_bound_shader_state(
 		vertex_declaration,
 		vertex_shader,
@@ -79,12 +79,12 @@ public:
 	{}
 
 	explicit gapi_bound_shader_state(
-		const dynamic_array<gapi_vertex_element>& vertex_declaration,
-		shared_ptr<gapi_vertex_shader> vertex_shader,
-		shared_ptr<gapi_pixel_shader> pixel_shader,
-		shared_ptr<gapi_domain_shader> domain_shader,
-		shared_ptr<gapi_hull_shader> hull_shader,
-		shared_ptr<gapi_geometry_shader> geometry_shader
+		const t::dynamic_array<gapi_vertex_element>& vertex_declaration,
+		t::shared_ptr<gapi_vertex_shader> vertex_shader,
+		t::shared_ptr<gapi_pixel_shader> pixel_shader,
+		t::shared_ptr<gapi_domain_shader> domain_shader,
+		t::shared_ptr<gapi_hull_shader> hull_shader,
+		t::shared_ptr<gapi_geometry_shader> geometry_shader
 	)
 	: m_vertex_declaration(vertex_declaration)
 	, m_vertex_shader(move(vertex_shader))
@@ -96,12 +96,12 @@ public:
 
 public:
 	//
-	dynamic_array<gapi_vertex_element> m_vertex_declaration{};
+	t::dynamic_array<gapi_vertex_element> m_vertex_declaration{};
 
 	//
-	shared_ptr<gapi_vertex_shader> m_vertex_shader{};
-	shared_ptr<gapi_pixel_shader> m_pixel_shader{};
-	shared_ptr<gapi_domain_shader> m_domain_shader{};
-	shared_ptr<gapi_hull_shader> m_hull_shader{};
-	shared_ptr<gapi_geometry_shader> m_geometry_shader{};
+	t::shared_ptr<gapi_vertex_shader> m_vertex_shader{};
+	t::shared_ptr<gapi_pixel_shader> m_pixel_shader{};
+	t::shared_ptr<gapi_domain_shader> m_domain_shader{};
+	t::shared_ptr<gapi_hull_shader> m_hull_shader{};
+	t::shared_ptr<gapi_geometry_shader> m_geometry_shader{};
 };

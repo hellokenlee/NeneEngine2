@@ -1,9 +1,6 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #include "win_client.h"
-
-#include "windows.h"
-
 #include "core/core.h"
 
 bool win_client::m_client_should_exit = false;

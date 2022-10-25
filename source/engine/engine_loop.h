@@ -15,5 +15,5 @@ public:
 	static void shutdown();
 
 protected:
-	static shared_ptr<i::renderer> m_renderer;
+	static t::shared_ptr<i::renderer> m_renderer;
 };

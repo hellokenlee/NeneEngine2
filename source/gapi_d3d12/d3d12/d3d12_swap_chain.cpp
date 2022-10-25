@@ -7,7 +7,7 @@
 #include "d3d12_cmd_list_mgr.h"
 
 
-d3d12_swap_chain::d3d12_swap_chain(shared_ptr<d3d12_adapter> adapter, void* hwnd, uint32 back_buffer_num, uint32 multi_sample_num)
+d3d12_swap_chain::d3d12_swap_chain(t::shared_ptr<d3d12_adapter> adapter, void* hwnd, uint32 back_buffer_num, uint32 multi_sample_num)
 	: d3d12_adapter_child(adapter)
 	, m_hwnd(static_cast<HWND>(hwnd))
 	, m_back_buffer_num(back_buffer_num)
@@ -45,7 +45,7 @@ d3d12_swap_chain::d3d12_swap_chain(shared_ptr<d3d12_adapter> adapter, void* hwnd
 	m_back_buffers.clear();
 	for (uint32 i = 0; i < m_back_buffer_num; ++i)
 	{
-		shared_ptr<d3d12_texture2d> back_buffer(new d3d12_texture2d(device));
+		t::shared_ptr<d3d12_texture2d> back_buffer(new d3d12_texture2d(device));
 		WinComPtr<ID3D12Resource> render_target;
 		VERIFY(m_swap_chain->GetBuffer(i, IID_PPV_ARGS(&render_target)));
 		back_buffer->set_d3d_resource(render_target);

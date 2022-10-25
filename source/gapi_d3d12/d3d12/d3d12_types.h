@@ -35,4 +35,4 @@ static inline D3D12_COMMAND_LIST_TYPE d3d_cast(const d3d12_cmd_type& type)
 	return D3D12_COMMAND_LIST_TYPE_DIRECT;
 }
 
-typedef dynamic_array<D3D12_INPUT_ELEMENT_DESC> d3d12_vertex_elements;
+typedef t::dynamic_array<D3D12_INPUT_ELEMENT_DESC> d3d12_vertex_elements;
