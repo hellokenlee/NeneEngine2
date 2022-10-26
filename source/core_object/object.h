@@ -9,7 +9,7 @@
 
 namespace n
 {
-class NENE_API object: public i::serialzable
+class NENE_API object: public i::serializable
 {
 	NINHERIT()
 	

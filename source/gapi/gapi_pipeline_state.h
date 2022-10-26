@@ -1,3 +1,5 @@
+/* Copyright reserved by KenLee@hellokenlee@163.com */
+
 #pragma once
 
 #include <utility>
@@ -51,16 +53,27 @@ public:
 		gapi_bound_shader_state bound_shader_state
 	) : m_bound_shader_state(bound_shader_state)
 	{}
-
 	virtual ~gapi_graphics_pipeline_state_initializer() = default;
+	
+	[[nodiscard]] const gapi_bound_shader_state& get_bound_shader_state() const;
+	
+	[[nodiscard]] const gapi_blend_state_initializer& get_blend_state() const;
 
-public:
+	[[nodiscard]] const gapi_rasterizer_state_initializer& get_rasterizer_state() const;
+
+	[[nodiscard]] const gapi_depth_stencil_state_initializer& get_depth_stencil_state() const;
+
+	[[nodiscard]] const gapi_primitive_type& get_primitive_type() const;
+
+	[[nodiscard]] const gapi_pixel_format& get_depth_stencil_format() const;
+
+
+private:
 	gapi_bound_shader_state m_bound_shader_state;
 	gapi_blend_state_initializer m_blend_state;
 	gapi_rasterizer_state_initializer m_rasterizer_state;
 	gapi_depth_stencil_state_initializer m_depth_stencil_state;
 	gapi_primitive_type m_primitive_type;
-	t::static_array<gapi_pixel_format, MAX_RENDER_TARGET_COUNT> m_render_target_formats;
 	gapi_pixel_format m_depth_stencil_format;
-
+	t::static_array<gapi_pixel_format, MAX_RENDER_TARGET_COUNT> m_render_target_formats;
 };

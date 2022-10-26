@@ -47,8 +47,8 @@ d3d12_graphics_pipeline_creation_args d3d_cast(const gapi_graphics_pipeline_stat
 {
 	d3d12_graphics_pipeline_creation_args desc = {};
 
-	t::shared_ptr<gapi_d3d12_vertex_shader> vertex_shader = gapi_d3d12_vertex_shader::cast(initializer.m_bound_shader_state.m_vertex_shader);
-	t::shared_ptr<gapi_d3d12_pixel_shader> pixel_shader = gapi_d3d12_pixel_shader::cast(initializer.m_bound_shader_state.m_pixel_shader);
+	t::shared_ptr<gapi_d3d12_vertex_shader> vertex_shader = gapi_d3d12_vertex_shader::cast(initializer.get_bound_shader_state().m_vertex_shader);
+	t::shared_ptr<gapi_d3d12_pixel_shader> pixel_shader = gapi_d3d12_pixel_shader::cast(initializer.get_bound_shader_state().m_pixel_shader);
 
 	CHECK(vertex_shader->get_d3d12_shader()->get_d3d_blob() != nullptr);
 	CHECK(pixel_shader->get_d3d12_shader()->get_d3d_blob() != nullptr);
@@ -69,7 +69,7 @@ d3d12_graphics_pipeline_creation_args d3d_cast(const gapi_graphics_pipeline_stat
 }
 
 gapi_d3d12_graphics_pipeline_state::gapi_d3d12_graphics_pipeline_state(t::shared_ptr<d3d12_device> device, const gapi_graphics_pipeline_state_initializer& initializer)
-	: m_d3d12_state(new d3d12_pipeline_state(device, d3d_cast(initializer), d3d_cast(initializer.m_bound_shader_state.m_vertex_declaration)))
+	: m_d3d12_state(new d3d12_pipeline_state(device, d3d_cast(initializer), d3d_cast(initializer.get_bound_shader_state().m_vertex_declaration)))
 {
 
 }

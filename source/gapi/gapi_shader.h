@@ -8,7 +8,6 @@
 #include "gapi_type.h"
 #include "gapi_template.h"
 
-
 struct gapi_vertex_element
 {
 	sstring semantic_name;
@@ -55,7 +54,11 @@ class NENE_API gapi_shader_initializer
 public:
 	gapi_shader_initializer(const string& filepath, const string& entry);
 
-public:
+	[[nodiscard]] const sstring& get_shader_file() const;
+	[[nodiscard]] const sstring& get_shader_source() const;
+	[[nodiscard]] const sstring& get_shader_entry() const;
+
+private:
 	sstring m_shader_file;
 	sstring m_shader_source;
 	sstring m_shader_entry;

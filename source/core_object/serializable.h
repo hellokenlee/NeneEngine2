@@ -5,7 +5,7 @@
 
 namespace i
 {
-class serialzable
+class serializable
 {
 	
 };	

@@ -99,7 +99,7 @@ void gapi_d3d12::finish_frame()
 t::shared_ptr<gapi_vertex_shader> gapi_d3d12::create_vertex_shader(const gapi_shader_initializer& initializer)
 {
 	t::shared_ptr<gapi_d3d12_vertex_shader> result(
-		new gapi_d3d12_vertex_shader(initializer.m_shader_source, initializer.m_shader_entry, initializer.m_shader_file)
+		new gapi_d3d12_vertex_shader(initializer.get_shader_source(), initializer.get_shader_entry(), initializer.get_shader_file())
 	);
 	return result;
 }
@@ -107,7 +107,7 @@ t::shared_ptr<gapi_vertex_shader> gapi_d3d12::create_vertex_shader(const gapi_sh
 t::shared_ptr<gapi_pixel_shader> gapi_d3d12::create_pixel_shader(const gapi_shader_initializer& initializer)
 {
 	t::shared_ptr<gapi_d3d12_pixel_shader> result(
-		new gapi_d3d12_pixel_shader(initializer.m_shader_source, initializer.m_shader_entry, initializer.m_shader_file)
+		new gapi_d3d12_pixel_shader(initializer.get_shader_source(), initializer.get_shader_entry(), initializer.get_shader_file())
 	);
 	return result;
 }

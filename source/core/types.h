@@ -18,5 +18,5 @@
 
 
 #include "template/pointer.h"
-#include "template/data_type.h"
 #include "template/container.h"
+#include "template/fundamental.h"

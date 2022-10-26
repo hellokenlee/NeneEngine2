@@ -1,7 +1,5 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
-#include "windows.h"
-
 #include "win_client.h"
 #include "engine/engine_loop.h"
 #include "core_object/object.h"
