@@ -15,8 +15,8 @@ class VcxProjTool(ToolBase):
 	NAME = "Nene Visual C++ Project Tool"
 
 	PROJ_CXX_STD = "stdcpp20"
-	PROJ_OUTPUT_PATH = "$(SolutionDir).bin\\$(Platform)\\$(Configuration)\\"
-	PROJ_INTERMEDIATE_PATH = "$(ProjectDir).bin\\intermediate\\$(Platform)\\$(Configuration)\\"
+	PROJ_OUTPUT_PATH = "$(SolutionDir).bin\\binary\\$(Platform)\\$(Configuration)\\"
+	PROJ_INTERMEDIATE_PATH = "$(SolutionDir).bin\\intermediate\\$(ProjectName)\\$(Platform)\\$(Configuration)\\"
 	PROJ_ADDITIONAL_INCLUDE_PATHS = [
 		"$(SolutionDir)source\\",
 		"$(ProjectDir)",
@@ -81,7 +81,7 @@ class VcxProjTool(ToolBase):
 				lib3partypaths.append(libpath)
 				incpath = "$(SolutionDir)extern\\%s\\inc\\" % lib
 				inc3partypaths.append(incpath)
-		lib3partypaths.append("$(SolutionDir).bin\\$(Platform)\\$(Configuration)\\")
+		lib3partypaths.append(self.PROJ_OUTPUT_PATH)
 		lib3partypaths.append("$(LibraryPath)")
 		# Dependency's Extern Library's Include
 		for dep in dependencies:
@@ -114,12 +114,15 @@ class VcxProjTool(ToolBase):
 		# Modify compiler and linker settings
 		for group in root.findall("ItemDefinitionGroup", self.namespaces):
 			if "Condition" in group.attrib:
-				# C++ Standard
+				# Compiler Options
 				if clcompile := group.find("ClCompile", self.namespaces):
 					cxxstd = self.find_or_add_element(clcompile, "LanguageStandard")
 					self.try_modify_text(cxxstd, self.PROJ_CXX_STD)
 					conmode = self.find_or_add_element(clcompile, "ConformanceMode")
 					self.try_modify_text(conmode, "false")
+					warnings = self.find_or_add_element(clcompile, "DisableSpecificWarnings")
+					self.try_modify_text(warnings, "4251;%(DisableSpecificWarnings)")
+
 				# External Libs
 				if link := group.find("Link", self.namespaces):
 					adddeps = self.find_or_add_element(link, "AdditionalDependencies")

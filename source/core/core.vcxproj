@@ -71,31 +71,31 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir).bin\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(ProjectDir).bin\intermediate\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir).bin\binary\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir).bin\intermediate\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <ExternalIncludePath>$(SolutionDir)source\;$(ProjectDir);$(ExternalIncludePath)</ExternalIncludePath>
-    <LibraryPath>$(SolutionDir).bin\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir).bin\binary\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir).bin\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(ProjectDir).bin\intermediate\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir).bin\binary\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir).bin\intermediate\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <ExternalIncludePath>$(SolutionDir)source\;$(ProjectDir);$(ExternalIncludePath)</ExternalIncludePath>
-    <LibraryPath>$(SolutionDir).bin\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir).bin\binary\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir).bin\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(ProjectDir).bin\intermediate\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir).bin\binary\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir).bin\intermediate\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <ExternalIncludePath>$(SolutionDir)source\;$(ProjectDir);$(ExternalIncludePath)</ExternalIncludePath>
-    <LibraryPath>$(SolutionDir).bin\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir).bin\binary\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir).bin\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(ProjectDir).bin\intermediate\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir).bin\binary\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir).bin\intermediate\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <ExternalIncludePath>$(SolutionDir)source\;$(ProjectDir);$(ExternalIncludePath)</ExternalIncludePath>
-    <LibraryPath>$(SolutionDir).bin\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir).bin\binary\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -104,6 +104,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);#ifdef DLLEXPORT;#define API declspec(dllexport);#else;#define API declspec(dllimport)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <DisableSpecificWarnings>4251;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -120,6 +121,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);#ifdef DLLEXPORT;#define API declspec(dllexport);#else;#define API declspec(dllimport)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <DisableSpecificWarnings>4251;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -135,6 +137,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <DisableSpecificWarnings>4251;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -150,6 +153,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <DisableSpecificWarnings>4251;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -173,7 +177,7 @@
     <ClInclude Include="platform.h" />
     <ClInclude Include="template.h" />
     <ClInclude Include="template\container.h" />
-    <ClInclude Include="template\data_type.h" />
+    <ClInclude Include="template\fundamental.h" />
     <ClInclude Include="template\pointer.h" />
     <ClInclude Include="types.h" />
   </ItemGroup>
