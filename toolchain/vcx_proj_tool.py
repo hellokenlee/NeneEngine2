@@ -94,7 +94,13 @@ class VcxProjTool(ToolBase):
 		# Modify visual c++ paths
 		for group in root.findall("PropertyGroup", self.namespaces):
 			if "Condition" in group.attrib:
-				if "Label" not in group.attrib:
+				if "Label" in group.attrib:
+					config = group.find("ConfigurationType", self.namespaces)
+					if self.is_exe(proj):
+						self.try_modify_text(config, "DynamicLibrary")
+					else:
+						self.try_modify_text(config, "Application")
+				else:
 					# Binary
 					outdir = self.find_or_add_element(group, "OutDir")
 					self.try_modify_text(outdir, self.PROJ_OUTPUT_PATH)

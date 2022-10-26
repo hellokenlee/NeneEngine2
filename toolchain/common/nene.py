@@ -3,6 +3,8 @@
     Nene Module File
 """
 
+EXE = False
+
 DEPENDENCY = []
 
 EXTERNAL_LIB = []
