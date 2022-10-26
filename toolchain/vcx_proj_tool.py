@@ -97,9 +97,9 @@ class VcxProjTool(ToolBase):
 				if "Label" in group.attrib:
 					config = group.find("ConfigurationType", self.namespaces)
 					if self.is_exe(proj):
-						self.try_modify_text(config, "DynamicLibrary")
-					else:
 						self.try_modify_text(config, "Application")
+					else:
+						self.try_modify_text(config, "DynamicLibrary")
 				else:
 					# Binary
 					outdir = self.find_or_add_element(group, "OutDir")
