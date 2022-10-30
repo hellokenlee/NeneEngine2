@@ -10,6 +10,31 @@ from xml.etree import ElementTree
 from common.tool_base import ToolBase
 
 
+class VcTag(object):
+	OutDir = "OutDir"
+	IntDir = "IntDir"
+	LibraryPath = "LibraryPath"
+	PropertyGroup = "PropertyGroup"
+	LinkIncremental = "LinkIncremental"
+	ConfigurationType = "ConfigurationType"
+	ExternalIncludePath = "ExternalIncludePath"
+	pass
+
+
+class VcAttrib(object):
+	Label = "Label"
+	Condition = "Condition"
+	pass
+
+
+class VcMacro(object):
+	Platform = "$(Platform)"
+	SolutionDir = "$(SolutionDir)"
+	LibraryPath = "$(LibraryPath)"
+	ExternalIncludePath = "$(ExternalIncludePath)"
+	pass
+
+
 class VcxProjTool(ToolBase):
 	CMD = "npt"
 	NAME = "Nene Visual C++ Project Tool"
@@ -91,35 +116,38 @@ class VcxProjTool(ToolBase):
 					incpath = "$(SolutionDir)extern\\%s\\inc\\" % lib
 					inc3partypaths.append(incpath)
 
+		# Make sure both configuration amd setting are in property group
+		self.update_all_configurations(root)
+
 		# Modify visual c++ paths
-		for group in root.findall("PropertyGroup", self.namespaces):
-			if "Condition" in group.attrib:
-				if "Label" in group.attrib:
-					config = group.find("ConfigurationType", self.namespaces)
+		for group in root.findall(VcTag.PropertyGroup, self.namespaces):
+			if VcAttrib.Condition in group.attrib:
+				if VcAttrib.Label in group.attrib:
+					config = group.find(VcTag.ConfigurationType, self.namespaces)
 					if self.is_exe(proj):
 						self.try_modify_text(config, "Application")
 					else:
 						self.try_modify_text(config, "DynamicLibrary")
 				else:
 					# Binary
-					outdir = self.find_or_add_element(group, "OutDir")
+					outdir = self.find_or_add_element(group, VcTag.OutDir)
 					self.try_modify_text(outdir, self.PROJ_OUTPUT_PATH)
 					# Intermediate
-					intdir = self.find_or_add_element(group, "IntDir")
+					intdir = self.find_or_add_element(group, VcTag.IntDir)
 					self.try_modify_text(intdir, self.PROJ_INTERMEDIATE_PATH)
 					# Include Path
-					includepath = self.find_or_add_element(group, "ExternalIncludePath")
+					includepath = self.find_or_add_element(group, VcTag.ExternalIncludePath)
 					incpaths = list(self.PROJ_ADDITIONAL_INCLUDE_PATHS)
 					incpaths.extend(inc3partypaths)
-					incpaths.append("$(ExternalIncludePath)")
+					incpaths.append(VcMacro.ExternalIncludePath)
 					self.try_modify_text(includepath, ';'.join(incpaths))
 					# Library Path
-					librarypath = self.find_or_add_element(group, "LibraryPath")
+					librarypath = self.find_or_add_element(group, VcTag.LibraryPath)
 					self.try_modify_text(librarypath, ';'.join(lib3partypaths))
 
 		# Modify compiler and linker settings
 		for group in root.findall("ItemDefinitionGroup", self.namespaces):
-			if "Condition" in group.attrib:
+			if VcAttrib.Condition in group.attrib:
 				# Compiler Options
 				if clcompile := group.find("ClCompile", self.namespaces):
 					cxxstd = self.find_or_add_element(clcompile, "LanguageStandard")
@@ -148,10 +176,52 @@ class VcxProjTool(ToolBase):
 		print("")
 		pass
 
+	def tag(self, tag: str) -> str:
+		return "{%s}%s" % (self.namespace, tag)
+
+	def insert_after_element(self, parent: ElementTree.Element, tag: str, elemlambda: callable) -> ElementTree.Element or None:
+		index = 0
+		for child in parent:
+			index += 1
+			if elemlambda(child):
+				elem = ElementTree.Element(self.tag(tag))
+				parent.insert(index, elem)
+				return elem
+		return None
+
+	def update_all_configurations(self, root: ElementTree.Element):
+		conditions: dict = {}
+		for group in root.findall(VcTag.PropertyGroup, self.namespaces):
+			if VcAttrib.Condition in group.attrib:
+				#  0: Both
+				# -1: "Label" Only
+				# +1: Non "Label" Only
+				config = group.attrib[VcAttrib.Condition]
+				conditions.setdefault(config, 0)
+				if VcAttrib.Label in group.attrib:
+					conditions[config] = conditions[config] - 1
+				else:
+					conditions[config] = conditions[config] + 1
+
+		def is_user_macro(gelem: ElementTree.Element):
+			if gelem.tag == self.tag(VcTag.PropertyGroup):
+				if gelem.attrib.get(VcAttrib.Label, "Invalid") == "UserMacros":
+					return True
+			return False
+
+		for config, status in conditions.items():
+			if status == -1:
+				elem = self.insert_after_element(root, VcTag.PropertyGroup, is_user_macro)
+				elem.attrib[VcAttrib.Condition] = config
+				# TODO: Relace strong condition here
+				ilink = "true" if "Debug" in config else "false"
+				self.find_or_add_element(elem, VcTag.LinkIncremental).text = ilink
+		pass
+
 	def find_or_add_element(self, elem: ElementTree.Element, tag: str) -> ElementTree.Element:
 		result = elem.find(tag, self.namespaces)
 		if result is None:
-			result = ElementTree.SubElement(elem, "{%s}%s" % (self.namespace, tag))
+			result = ElementTree.SubElement(elem, self.tag(tag))
 			self.file_changed = True
 		return result
 
