@@ -5,4 +5,6 @@
 
 DEPENDENCY = ["core"]
 
-EXTERNAL_LIB = ["rttr"]
+EXTERNAL = {
+    "rttr": ["rttr.lib"]
+}

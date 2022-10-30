@@ -2,4 +2,6 @@
 
 DEPENDENCY = ["core", "gapi"]
 
-EXTERNAL_LIB = ["dxgi", "d3d12", "dxguid", "d3dcompiler"]
+EXTERNAL = {
+	"__system__": ["dxgi.lib", "d3d12.lib", "dxguid.lib", "d3dcompiler.lib"]
+}

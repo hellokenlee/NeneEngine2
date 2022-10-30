@@ -60,5 +60,5 @@ class ToolBase(object):
 	def dependency(self, proj: str) -> list[str]:
 		return self.get_default_nene_attribute(proj, "DEPENDENCY")
 
-	def external_lib(self, proj: str) -> list[str]:
-		return self.get_default_nene_attribute(proj, "EXTERNAL_LIB")
+	def external(self, proj: str) -> dict[str, list[str]]:
+		return self.get_default_nene_attribute(proj, "EXTERNAL")

@@ -3,8 +3,8 @@
     Nene Module File
 """
 
-EXE = False
+EXE: bool = False
 
-DEPENDENCY = []
+DEPENDENCY: list[str] = []
 
-EXTERNAL_LIB = []
+EXTERNAL: dict[str, list[str]] = {}

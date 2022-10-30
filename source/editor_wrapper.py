@@ -2,4 +2,6 @@
 
 DEPENDENCY = ["core", "engine"]
 
-EXTERNAL_LIB = ["python3"]
+EXTERNAL = {
+	"python3.10": ["python3.lib"]
+}

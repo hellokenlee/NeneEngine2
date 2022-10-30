@@ -82,7 +82,7 @@ class VcxProjTool(ToolBase):
 		#
 		self.file_changed = False
 		dependencies = self.dependency(proj)
-		external_libs = self.external_lib(proj)
+		externals = self.external(proj)
 		#
 		proj_file = os.path.join(self.source_root, proj, "%s.vcxproj" % proj)
 		print("    Checking %s." % proj_file)
@@ -98,7 +98,7 @@ class VcxProjTool(ToolBase):
 		# Collect Extern Library
 		lib3partypaths = []
 		inc3partypaths = []
-		for lib in external_libs:
+		for lib in externals.keys():
 			if self.is_3rd_party_lib(lib):
 				libpath = \
 					"$(SolutionDir)extern\\%s\\lib\\%s\\$(PlatformTarget)\\$(Configuration)\\" % \
@@ -110,8 +110,8 @@ class VcxProjTool(ToolBase):
 		lib3partypaths.append("$(LibraryPath)")
 		# Dependency's Extern Library's Include
 		for dep in dependencies:
-			dep_externail_libs = self.external_lib(dep)
-			for lib in dep_externail_libs:
+			dep_externail_libs = self.external(dep)
+			for lib in dep_externail_libs.keys():
 				if self.is_3rd_party_lib(lib):
 					incpath = "$(SolutionDir)extern\\%s\\inc\\" % lib
 					inc3partypaths.append(incpath)
@@ -161,7 +161,8 @@ class VcxProjTool(ToolBase):
 				if link := group.find("Link", self.namespaces):
 					adddeps = self.find_or_add_element(link, "AdditionalDependencies")
 					libs = [dep + ".lib" for dep in dependencies]
-					libs.extend([ext + ".lib" for ext in external_libs])
+					for _, extlibs in externals.items():
+						libs.extend(extlibs)
 					libs.append("%(AdditionalDependencies)")
 					self.try_modify_text(adddeps, ';'.join(libs))
 
