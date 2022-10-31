@@ -112,6 +112,10 @@
       <LanguageStandard>%(AdditionalDependencies)</LanguageStandard>
       <AdditionalDependencies>core.lib;rttr.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>cd $(SolutionDir)
+py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(OutputPath) $(SolutionPath)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -131,6 +135,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>core.lib;rttr.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>cd $(SolutionDir)
+py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(OutputPath) $(SolutionPath)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -148,6 +156,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>core.lib;rttr.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>cd $(SolutionDir)
+py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(OutputPath) $(SolutionPath)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -167,6 +179,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>core.lib;rttr.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>cd $(SolutionDir)
+py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(OutputPath) $(SolutionPath)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="serializable.h" />
