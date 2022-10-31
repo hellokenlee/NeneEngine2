@@ -3,6 +3,7 @@
 
 # Jetbrain Rider Files
 .idea/*
+script/editor/.idea/*
 
 # C++ Immediate Files
 *.tlog
