@@ -47,6 +47,8 @@ class VcxProjTool(ToolBase):
 		"$(ProjectDir)",
 	]
 
+	POST_BUILD_EVENT_CMD = "cd $(SolutionDir)\npy -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(OutputPath) $(SolutionPath)"
+
 	def __init__(self):
 		super(VcxProjTool, self).__init__()
 		self.namespaces = {"": "http://schemas.microsoft.com/developer/msbuild/2003"}
@@ -165,6 +167,11 @@ class VcxProjTool(ToolBase):
 						libs.extend(extlibs)
 					libs.append("%(AdditionalDependencies)")
 					self.try_modify_text(adddeps, ';'.join(libs))
+
+				# Post Build Events
+				pbe = self.find_or_add_element(group, "PostBuildEvent")
+				cmd = self.find_or_add_element(pbe, "Command")
+				self.try_modify_text(cmd, self.POST_BUILD_EVENT_CMD)
 
 		# Modify the vc project file
 		if self.file_changed:
