@@ -7,6 +7,7 @@ import json
 import shutil
 from common.tool_base import ToolBase
 
+
 class BuildEventArgs(object):
 	def __init__(self, args: list[str]):
 		"""
@@ -33,7 +34,7 @@ class EditorWrapperPostBuildEventTool(ToolBase):
 		print("   Writing latest build config...")
 		jsonpath = os.path.join(self.engine_root, ".bin\\latest_build.json")
 		with open(jsonpath, "w") as fp:
-			json.dump(args, fp)
+			json.dump(args.__dict__, fp)
 		print("   All post build actions have been done!!!")
 		pass
 

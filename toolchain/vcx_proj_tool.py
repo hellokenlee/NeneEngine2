@@ -47,7 +47,7 @@ class VcxProjTool(ToolBase):
 		"$(ProjectDir)",
 	]
 
-	POST_BUILD_EVENT_CMD = "cd $(SolutionDir)\npy -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(OutputPath) $(SolutionPath)"
+	POST_BUILD_EVENT_CMD = "cd $(SolutionDir)\n\rpy -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(OutputPath) $(SolutionPath)"
 
 	def __init__(self):
 		super(VcxProjTool, self).__init__()
