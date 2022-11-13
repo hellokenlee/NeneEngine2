@@ -30,6 +30,7 @@ class SrcCleanTool(ToolBase):
 		#
 		for proj in self.list_proj():
 			self.clean(self.get_proj_path(proj))
+		print("    Finished.\n")
 		pass
 
 	def clean(self, dirpath: str):

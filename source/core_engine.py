@@ -1,3 +1,7 @@
 # -*- coding=utf-8 -*-
 
-DEPENDENCY = ["core"]
+DEPENDENCY = ["core", "core_object"]
+
+EXTERNAL = {
+    "rttr": ["rttr.lib"]
+}

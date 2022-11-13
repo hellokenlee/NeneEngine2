@@ -93,6 +93,7 @@ graph TD
   core_object --> app
   engine --> app
   core --> core_engine
+  core_object --> core_engine
   core --> core_object
   core --> editor_wrapper
   engine --> editor_wrapper

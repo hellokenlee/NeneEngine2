@@ -184,6 +184,9 @@ py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(Outp
   <ItemGroup>
     <ClInclude Include="gapi_vulkan.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="gapi_vulkan.cpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

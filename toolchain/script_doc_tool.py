@@ -20,7 +20,7 @@ class ScriptDocTool(ToolBase):
 		pass
 
 	def run(self, args: list[str]):
-		super(ScriptDocTool, self).run()
+		super(ScriptDocTool, self).run(args)
 		print("    Updating %s" % self.DST_FILENAME)
 		src_filepath = os.path.join(self.engine_root, self.SRC_FILENAME)
 		dst_filepath = os.path.join(self.engine_root, self.DST_FILENAME)
