@@ -106,9 +106,12 @@ graph TD
   core --> gapi_dynamic
   gapi --> gapi_dynamic
   gapi_d3d12 --> gapi_dynamic
+  gapi_vulkan --> gapi_dynamic
+  gapi --> gapi_vulkan
   core --> renderer
   gapi --> renderer
   gapi_dynamic --> renderer
+  core_engine --> renderer
 ```
 
 
