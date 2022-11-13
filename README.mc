@@ -19,8 +19,10 @@ Note that Nene Engine use Visual Studio's Project file  ( instead of CMake ) as 
 - Visual Studio >= 2022.17.2
 - Compiler C++ Standard >= C++20 ( MSVC >= 143 ) [*]
 
-Currently Nene Engine only supports Microsoft Windows 1* with Direct3D 12. Apple's  *OS with Metal 2, Linux with Vulkan will be supported future.
+Currently Nene Engine only supports Microsoft Windows 10, 11 with Direct3D 12. 
+Apple's MacOS, iPadOS, iOS with Metal 2, Linux with Vulkan will be supported in the future.
 
+[*] [Microsoft adds support for `std::format` after Visual Studio 16.10]()
 
 
 ### Development
@@ -82,8 +84,6 @@ $ NeneEngine>: py -3 $(path_to_your_project)/main.py
 
 
 ## Introduction
-
-### Features
 
 ### Modules
 
