@@ -13,7 +13,8 @@ public:
 	
 	static void strftime(char* buffer, size_t buffer_size, const char* fmt, const time_struct* tm);
 
-
+	static t::dynamic_array<void*> get_windows(int32 pid=-1);
+	
 public:
 	static constexpr uint32 max_path_length = 512;
 };

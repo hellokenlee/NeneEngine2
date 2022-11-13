@@ -8,7 +8,8 @@ from common.singleton import Singleton
 
 
 class Config(metaclass=Singleton):
-	RELATIVE_TO_ENGINE_ROOT = "..\\..\\..\\.."
+	NENE = "nene"
+	RELATIVE_TO_ENGINE_ROOT = "..\\..\\.."
 
 	def __init__(self):
 		engine_root = os.path.abspath(os.path.join(__file__, self.RELATIVE_TO_ENGINE_ROOT))

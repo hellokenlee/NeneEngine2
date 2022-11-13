@@ -279,6 +279,7 @@ py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(Outp
   <ItemGroup>
     <ClCompile Include="file_helper.cpp" />
     <ClCompile Include="globals.cpp" />
+    <ClCompile Include="log.cpp" />
     <ClCompile Include="platform.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

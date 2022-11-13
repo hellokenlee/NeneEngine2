@@ -2,6 +2,11 @@
 
 #pragma once
 
+// Platform
+#ifdef _MSVC_LANG
+    #include <Windows.h>
+#endif
+
 /* >>> Unsigned base types >>> */
 // 8-bit unsigned integer
 typedef unsigned char 		uint8;
@@ -38,6 +43,18 @@ typedef signed long long	int64;
 #include <fstream>
 #include <format>
 
+#define NENE_TEXT(str) L##str
+
+#ifdef _UNICODE
+    #ifndef TEXT
+        #define TEXT(str) NENE_TEXT(str) 
+    #endif
+#else
+    #ifndef TEXT
+        #define TEXT(str) str
+    #endif
+#endif
+
 #ifdef _UNICODE
 typedef std::wstringstream stringstream;
 typedef std::wstring string;
@@ -56,7 +73,7 @@ typedef std::ifstream ifstream;
 
 /* <<< Other types <<< */
 
-#include <ctype.h>
+#include <cctype>
 
 typedef std::tm time_struct;
 

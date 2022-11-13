@@ -3,7 +3,7 @@
 #include "editor_start.h"
 #include "core_object/script/pybind11/pybind11.h"
 
-PYBIND11_MODULE(editor_wrapper, mod)
+PYBIND11_MODULE(nene, mod)
 {
     mod.doc() = "pybind11 example plugin";
 
