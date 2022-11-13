@@ -3,6 +3,7 @@
 #include "editor_start.h"
 #include "core/core.h"
 #include "QtWidgets/QApplication"
+#include "QtQuick/QSGRendererInterface"
 
 DECLARE_LOG_CATEGORY(editor)
 
