@@ -1,13 +1,23 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
+#pragma once
+
 #include "gapi/gapi.h"
 
+enum class gapi_platform
+{
+	direct3d12,
+	vulkan,
+	metal,
+};
 
 class NENE_API gapi_manager
 {
 public:
 	// >>> Static Methods >>>
 	static void create(void* window);
+
+	static void initialize(const gapi_platform& platform, void* device);
 
 	static void destroy();
 

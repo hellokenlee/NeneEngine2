@@ -17,6 +17,8 @@ class d3d12_adapter : private noncopyable
 public:
 	static t::shared_ptr<d3d12_adapter> select_adapter();
 
+	static t::shared_ptr<d3d12_adapter> select_adapter(const LUID& luid);
+
 public:
 	[[nodiscard]]
 	IDXGIAdapter* get_dxgi_adapter() const { return m_adapter.Get(); }
@@ -25,7 +27,7 @@ public:
 	IDXGIFactory* get_dxgi_factory() const { return m_factory.Get(); }
 
 	[[nodiscard]]
-	IDXGIFactory6* get_dxgi_factory6() const { return m_factory.Get(); }
+	IDXGIFactory4* get_dxgi_factory4() const { return m_factory.Get(); }
 	
 	t::shared_ptr<d3d12_device> get_device(const uint32 index);
 
@@ -38,7 +40,7 @@ private:
 
 private:
 	WinComPtr<IDXGIAdapter> m_adapter;
-	WinComPtr<IDXGIFactory6> m_factory;
+	WinComPtr<IDXGIFactory4> m_factory;
 };
 
 

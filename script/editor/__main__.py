@@ -6,7 +6,19 @@ from config import Config
 from PySide2.QtWidgets import QApplication
 from PySide2.QtQuick import QQuickView
 from PySide2.QtQuick import QQuickWindow
-from PySide2.QtCore import QUrl
+from PySide2.QtCore import QUrl, QTimer
+
+inited = False
+
+
+def deferred_init():
+	# noinspection PyUnresolvedReferences
+	import nene
+	global inited
+	if not inited:
+		nene.init()
+		inited = True
+	pass
 
 
 def main():
@@ -18,11 +30,12 @@ def main():
 	app = QApplication([])
 	QQuickWindow.setSceneGraphBackend("D3D12")
 	view = QQuickView()
-	url = QUrl("view.qml")
+	url = QUrl("script/editor/editor.qml")
 	view.setSource(url)
 	view.show()
 	#
-	nene.init()
+	QTimer.singleShot(50, deferred_init)
+	#
 	app.exec_()
 	pass
 

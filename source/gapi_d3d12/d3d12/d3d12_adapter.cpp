@@ -108,6 +108,21 @@ t::shared_ptr<d3d12_adapter> d3d12_adapter::select_adapter()
 	return result;
 }
 
+t::shared_ptr<d3d12_adapter> d3d12_adapter::select_adapter(const LUID& luid)
+{
+	//
+	constexpr UINT dxgi_factory_flags = 0;
+	WinComPtr<IDXGIFactory4> factory;
+	WinComPtr<IDXGIAdapter1> adapter;
+	VERIFY(CreateDXGIFactory2(dxgi_factory_flags, IID_PPV_ARGS(&factory)));
+	factory->EnumAdapterByLuid(luid, IID_PPV_ARGS(&adapter));
+	//
+	t::shared_ptr<d3d12_adapter> result(new d3d12_adapter());
+	result->m_adapter = adapter;
+	result->m_factory = factory;
+	return result;
+}
+
 t::shared_ptr<d3d12_device> d3d12_adapter::get_device(uint32 index)
 {
 	CHECK(index < m_devices.size());

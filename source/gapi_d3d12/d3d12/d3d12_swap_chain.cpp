@@ -27,7 +27,7 @@ d3d12_swap_chain::d3d12_swap_chain(t::shared_ptr<d3d12_adapter> adapter, void* h
 		desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 		desc.SampleDesc.Count = m_multi_sample_num;
 
-		auto factory = adapter->get_dxgi_factory6();
+		auto factory = adapter->get_dxgi_factory4();
 		
 		ID3D12CommandQueue* command_queue = device->get_graphics_cmd_list_mgr()->get_d3d_command_queue();
 

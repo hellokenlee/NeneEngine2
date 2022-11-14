@@ -25,7 +25,12 @@ d3d12_device::d3d12_device(t::shared_ptr<d3d12_adapter> adapter)
 			0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_root_signature)
 		)
 	);
+}
 
+d3d12_device::d3d12_device(t::shared_ptr<d3d12_adapter> adapter, ID3D12Device* d3d_device)
+	: d3d12_adapter_child(adapter)
+{
+	m_device = d3d_device;
 }
 
 d3d12_device::~d3d12_device()

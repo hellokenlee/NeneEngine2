@@ -1,6 +1,6 @@
 # -*- coding=utf-8 -*-
 
-DEPENDENCY = ["core", "engine"]
+DEPENDENCY = ["core", "engine", "gapi_dynamic"]
 
 EXTERNAL = {
 	"python3.10": ["python3.lib"],

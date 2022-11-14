@@ -13,6 +13,7 @@ class NENE_API gapi_d3d12 : public t::impl<gapi_d3d12, gapi>
 public:
 	gapi_d3d12() = delete;
 	gapi_d3d12(void* hwnd);
+	gapi_d3d12(ID3D12Device* device);
 	~gapi_d3d12() override;
 
 public:

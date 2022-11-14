@@ -7,7 +7,7 @@
 class editor_start
 {
 public:
-    static void init();
+    static bool init();
 
-    static void finalize();
+    static bool finalize();
 };

@@ -16,10 +16,10 @@ class d3d12_device : public noncopyable, public t::enable_shared_from_this<d3d12
 {
 public:
 	d3d12_device() = delete;
-
-	~d3d12_device();
-
 	d3d12_device(t::shared_ptr<d3d12_adapter> adapter);
+	d3d12_device(t::shared_ptr<d3d12_adapter> adapter, ID3D12Device* d3d_device);
+	
+	~d3d12_device();
 
 	void init();
 	void clear();

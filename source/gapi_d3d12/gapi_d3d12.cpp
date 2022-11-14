@@ -41,6 +41,13 @@ gapi_d3d12::gapi_d3d12(void* hwnd)
 	}
 }
 
+gapi_d3d12::gapi_d3d12(ID3D12Device* device)
+{
+	LUID luid = device->GetAdapterLuid();
+	m_adapter = d3d12_adapter::select_adapter(luid);
+	m_device = t::shared_ptr<d3d12_device>(new d3d12_device(m_adapter, device));
+}
+
 gapi_d3d12::~gapi_d3d12()
 {
 	//

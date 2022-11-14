@@ -21,6 +21,31 @@ void gapi_manager::create(void* window)
 	}
 }
 
+void gapi_manager::initialize(const gapi_platform& platform, void* device)
+{
+	CHECK(m_instance == nullptr);
+
+	switch (platform)
+	{
+	case gapi_platform::direct3d12:
+	{
+			ID3D12Device* d3d12device = static_cast<ID3D12Device*>(device);
+			m_instance = t::shared_ptr<gapi_d3d12>(new gapi_d3d12(d3d12device));
+			break;	
+	}
+	case gapi_platform::vulkan:
+	case gapi_platform::metal:
+	{
+		CHECK(false);
+		break;
+	}
+	default:
+	{
+		CHECK(false);
+	}
+	}
+}
+
 void gapi_manager::destroy()
 {
 	CHECK(m_instance != nullptr);

@@ -97,6 +97,7 @@ graph TD
   core --> core_object
   core --> editor_wrapper
   engine --> editor_wrapper
+  gapi_dynamic --> editor_wrapper
   core --> engine
   core_object --> engine
   renderer --> engine
