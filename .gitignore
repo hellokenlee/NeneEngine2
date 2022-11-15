@@ -20,6 +20,7 @@ script/editor/.idea/*
 # Python Cache Files
 *.pyc
 *.pyo
+*.pyi
 
 #
 .bin/*
