@@ -12,7 +12,6 @@ inited = False
 
 
 def deferred_init():
-	# noinspection PyUnresolvedReferences
 	import nene
 	global inited
 	if not inited:
@@ -24,8 +23,6 @@ def deferred_init():
 def main():
 	#
 	Config()
-	# noinspection PyUnresolvedReferences
-	import nene
 	#
 	app = QApplication([])
 	QQuickWindow.setSceneGraphBackend("D3D12")

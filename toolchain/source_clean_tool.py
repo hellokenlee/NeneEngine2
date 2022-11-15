@@ -8,7 +8,7 @@ import argparse
 from common.tool_base import ToolBase
 
 
-class SrcCleanTool(ToolBase):
+class SourceCleanTool(ToolBase):
 
 	CMD = "sct"
 	NAME = "Nene Source Clean Tool"
@@ -18,11 +18,11 @@ class SrcCleanTool(ToolBase):
 	]
 
 	def __init__(self):
-		super(SrcCleanTool, self).__init__()
+		super(SourceCleanTool, self).__init__()
 		pass
 
 	def run(self, args: list[str]):
-		super(SrcCleanTool, self).run(args)
+		super(SourceCleanTool, self).run(args)
 		parser = argparse.ArgumentParser(description=self.NAME)
 		parser.parse_args(args)
 		#
@@ -43,4 +43,4 @@ class SrcCleanTool(ToolBase):
 
 
 def tool() -> ToolBase:
-	return SrcCleanTool()
+	return SourceCleanTool()

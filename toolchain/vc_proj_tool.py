@@ -35,7 +35,7 @@ class VcMacro(object):
 	pass
 
 
-class VcxProjTool(ToolBase):
+class VcProjTool(ToolBase):
 	CMD = "npt"
 	NAME = "Nene Visual C++ Project Tool"
 
@@ -50,14 +50,14 @@ class VcxProjTool(ToolBase):
 	POST_BUILD_EVENT_CMD = "cd $(SolutionDir)\npy -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(OutputPath) $(SolutionPath)"
 
 	def __init__(self):
-		super(VcxProjTool, self).__init__()
+		super(VcProjTool, self).__init__()
 		self.namespaces = {"": "http://schemas.microsoft.com/developer/msbuild/2003"}
 		self.namespace = ""
 		self.file_changed = False
 		pass
 
 	def run(self, args: list[str]):
-		super(VcxProjTool, self).run(args)
+		super(VcProjTool, self).run(args)
 		#
 		parser = argparse.ArgumentParser(description=self.NAME)
 		parser.add_argument("-p", "--proj", type=str, help="Project name in /source/ to procceed.")
@@ -248,5 +248,5 @@ class VcxProjTool(ToolBase):
 
 
 def tool() -> ToolBase:
-	tool_inst = VcxProjTool()
+	tool_inst = VcProjTool()
 	return tool_inst
