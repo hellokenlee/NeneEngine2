@@ -9,25 +9,27 @@ Nene Engine is an in-house game engine named after Sakura Nene's game engine in 
 
 ### Preliminary
 
-Nene Engine use Python as main scripting language and tool-chain language. The following Python must be satisfied:
+Nene Engine use Python as main scripting language and tool-chain language. The following Python environment must be satisfied:
 
 - Python >= 3.10
 - Pyside2 == 5.15.2
 
 Note that Nene Engine use Visual Studio's Project file  ( instead of CMake ) as a primary way to organize the source files. The following C++ environment should be satisfied in Windows:
 
-- Visual Studio >= 2022.17.2
-- Compiler C++ Standard >= C++20 ( MSVC >= 143 ) [*]
+- Visual Studio >= 2022.17.2 [*]
+- Compiler C++ Standard >= C++20 ( MSVC >= 143 )
 
 Currently Nene Engine only supports Microsoft Windows 10, 11 with Direct3D 12. 
 Apple's MacOS, iPadOS, iOS with Metal 2, Linux with Vulkan will be supported in the future.
 
-[*] [Microsoft adds support for `std::format` after Visual Studio 16.10]()
+[*] [Microsoft only supports `std::format` under C++20 after Visual Studio 17.2](https://github.com/microsoft/STL/issues/1814)
+
+
 
 
 ### Development
 
-#### Build and Run
+#### Build
 
 Currently Nene Engine is build with Visual Studio. To build Nene Engine, simply  press ▶ in the IDE.
 
@@ -88,6 +90,58 @@ $ NeneEngine>: py -3 $(path_to_your_project)/main.py
 ### Modules
 
 {{ModuleDepency}}
+
+
+
+### Coding Standard
+
+#### Namespace
+
+You can use namespaces to organize your classes, functions and variables where appropriate. But Nene Engine uses some special single letter namespaces to annotate the category of the classes or functions:
+
+```c++
+// Interface
+namespace i
+{
+class some_interface_class
+{
+public:
+    virtual void foo() = 0;
+};
+} 
+```
+
+The namespace `i` is for interface classes which have at least one pure virtual method.
+
+
+
+```c++
+// Template
+namespace t
+{
+template<class tsometype>
+class some_class_template
+{
+};
+}
+```
+
+The namespace `t` is for class or function templates. For example, container such as vector ( `t::dynamic_array<>` ), array ( `t:static_array<>` ) are in this namespace. 
+
+
+
+```c++
+// NeneObject
+#include "core_object/object.h"
+namespace n
+{
+class some_class : public object
+{
+};
+}
+```
+
+The namespace `n` is for class that has reflection in Nene Engine. The classes in namespace `n` must inherit from `n::object` class. This give the derived classes the ability of reflection and serialization.
 
 
 
