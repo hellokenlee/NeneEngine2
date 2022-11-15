@@ -16,7 +16,7 @@
 	#define NENE_API __declspec(dllimport)
 #endif
 
-
+#include "template/lambda.h"
 #include "template/pointer.h"
 #include "template/container.h"
 #include "template/fundamental.h"

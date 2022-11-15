@@ -10,4 +10,6 @@ public:
     static bool init();
 
     static bool finalize();
+
+    static void script_log_wrapper(const string& timestamp, const string& cat, const string& lv, const string& message);
 };

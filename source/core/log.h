@@ -15,7 +15,7 @@
 
 #ifdef _UNICODE
 	#define LOG(cat, level, fmt, ...) WLOG(cat, level, fmt, __VA_ARGS__)
-	#define INTERCEPTE_LOG(log_func)  log_category_base::log_interceptions.push_back(log_func)
+	#define INTERCEPT_LOG(log_func)   intercept_log_impl(log_func)
 #else
 	#define LOG(cat, level, fmt, ...) SLOG(cat, level, fmt, __VA_ARGS__)
 #endif
@@ -47,11 +47,12 @@ enum class log_level
 	MAX_COUNT,
 };
 
-class log_category_base
+class NENE_API log_category_base
 {
 public:
-	typedef decltype([](const string& timestamp, const string& cat, const string& lv, const string& message) -> void {}) log_function;
-	static t::dynamic_array<log_function>  log_interceptions;
+	static t::dynamic_array<
+		t::function<void(const string& timestamp, const string& cat, const string& lv, const string& message)>
+	> log_interceptions;
 };
 
 template<class tstring, class tstringstream, class tchar>
@@ -96,3 +97,5 @@ inline const wstring& log_impl_loglevel(const log_level& level)
 NENE_API void slog_impl(const sstring& cat, const log_level& level, const char* const format, ...);
 
 NENE_API void wlog_impl(const wstring& cat, const log_level& level, const wchar_t* const format, ...);
+
+NENE_API void intercept_log_impl(t::function<void(const string& timestamp, const string& cat, const string& lv, const string& message)> lambda);

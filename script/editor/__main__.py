@@ -11,10 +11,16 @@ from PySide2.QtCore import QUrl, QTimer
 inited = False
 
 
+def log(ts, cat, lv, msg):
+	print(ts, cat, lv, msg)
+	pass
+
+
 def deferred_init():
 	import nene
 	global inited
 	if not inited:
+		nene.log = log
 		nene.init()
 		inited = True
 	pass

@@ -264,6 +264,7 @@ py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(Outp
     <ClInclude Include="template.h" />
     <ClInclude Include="template\container.h" />
     <ClInclude Include="template\fundamental.h" />
+    <ClInclude Include="template\lambda.h" />
     <ClInclude Include="template\pointer.h" />
     <ClInclude Include="types.h" />
   </ItemGroup>

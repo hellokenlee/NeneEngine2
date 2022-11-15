@@ -17,6 +17,8 @@ DECLARE_LOG_CATEGORY(editor)
 bool editor_start::init()
 {
     //
+    INTERCEPT_LOG(&editor_start::script_log_wrapper);
+    //
     LOG(editor, info, TEXT("Engine init from editor"));
     // 
     auto window_list = QApplication::allWindows();

@@ -1,10 +1,16 @@
 ﻿/* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #include "log.h"
-
 #include "debug.h"
 
-t::dynamic_array<log_category_base::log_function> log_category_base::log_interceptions;
+t::dynamic_array<
+    t::function<void(const string& timestamp, const string& cat, const string& lv, const string& message)>
+>  log_category_base::log_interceptions;
+
+void intercept_log_impl(t::function<void(const string& timestamp, const string& cat, const string& lv, const string& message)> lambda)
+{
+    log_category_base::log_interceptions.push_back(lambda);
+}
 
 void wlog_impl(const wstring& cat, const log_level& level, const wchar_t* const format, ...)
 {
