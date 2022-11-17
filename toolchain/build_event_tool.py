@@ -5,6 +5,9 @@
 import os
 import json
 import shutil
+import sys
+
+import pybind11_stubgen
 from common.tool_base import ToolBase
 
 
@@ -25,17 +28,38 @@ class BuildEventArgs(object):
 
 class EditorWrapperPostBuildEventTool(ToolBase):
 
+	PYSIDE_PATH = "Lib\\site-packages\\PySide2"
+	ENGINE_STUB_PATH = "script\\stubs"
+
 	def run(self, args: BuildEventArgs):
+		self.copy_lib(args.binary_path, args.proj)
+		self.generate_stubs(args)
+		self.write_latestbuild(args)
+		print("   All post build actions have been done!!!")
+		pass
+
+	# noinspection PyMethodMayBeStatic
+	def copy_lib(self, outputdir: str, proj: str):
 		print("   Generating python libs...")
-		outputdir = args.binary_path
-		dllpath = os.path.join(outputdir, args.proj + ".dll")
+		dllpath = os.path.join(outputdir, proj + ".dll")
 		pydpath = os.path.join(outputdir, "nene.pyd")
-		shutil.move(dllpath, pydpath)
+		shutil.copy(dllpath, pydpath)
+		pass
+
+	def write_latestbuild(self, args: BuildEventArgs):
 		print("   Writing latest build config...")
 		jsonpath = os.path.join(self.engine_root, ".bin\\latest_build.json")
 		with open(jsonpath, "w") as fp:
 			json.dump(args.__dict__, fp)
-		print("   All post build actions have been done!!!")
+		pass
+
+	def generate_stubs(self, args: BuildEventArgs):
+		print("   Generating python stubs...")
+		sys.path.append(args.binary_path)
+		lib_path = os.path.join(sys.exec_prefix, self.PYSIDE_PATH)
+		os.add_dll_directory(lib_path)
+		output_path = os.path.join(self.engine_root, self.ENGINE_STUB_PATH)
+		pybind11_stubgen.main(["-o", output_path, "--root-module-suffix", "", "nene"])
 		pass
 
 
