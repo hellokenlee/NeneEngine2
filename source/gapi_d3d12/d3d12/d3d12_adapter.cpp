@@ -117,6 +117,10 @@ t::shared_ptr<d3d12_adapter> d3d12_adapter::select_adapter(const LUID& luid)
 	VERIFY(CreateDXGIFactory2(dxgi_factory_flags, IID_PPV_ARGS(&factory)));
 	factory->EnumAdapterByLuid(luid, IID_PPV_ARGS(&adapter));
 	//
+	DXGI_ADAPTER_DESC1 desc;
+	adapter->GetDesc1(&desc);
+	LOG(d3d12, info, TEXT("Selected adapter: %s."), desc.Description);
+	//
 	t::shared_ptr<d3d12_adapter> result(new d3d12_adapter());
 	result->m_adapter = adapter;
 	result->m_factory = factory;

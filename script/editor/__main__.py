@@ -12,7 +12,7 @@ inited = False
 
 
 def log(ts, cat, lv, msg):
-	print(ts, cat, lv, msg)
+	print("%s [%s] [%s] %s" % (ts, cat, lv, msg))
 	pass
 
 
@@ -26,9 +26,15 @@ def deferred_init():
 	pass
 
 
+def close_event(event):
+	print(event)
+	pass
+
+
 def main():
 	#
 	Config()
+
 	#
 	app = QApplication([])
 	QQuickWindow.setSceneGraphBackend("D3D12")

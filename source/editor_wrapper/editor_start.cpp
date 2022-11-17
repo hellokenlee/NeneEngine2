@@ -51,6 +51,7 @@ bool editor_start::init()
     ID3D12Device* d3d12device = static_cast<ID3D12Device*>(renderer_interface->getResource(quick_window, QSGRendererInterface::Resource::DeviceResource));
     if (d3d12device == nullptr)
     {
+        LOG(editor, error, TEXT("No d3d12device found by QQuickWindow!"));
         return false;
     }
     gapi_manager::initialize(gapi_platform::direct3d12, d3d12device);
