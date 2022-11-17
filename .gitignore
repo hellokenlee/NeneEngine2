@@ -22,6 +22,9 @@ script/editor/.idea/*
 *.pyo
 *.pyi
 
+# Python Stub Files
+script/stubs
+
 #
 .bin/*
 toolchain/.idea/*
