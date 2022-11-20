@@ -2,7 +2,7 @@
 
 #include <d3d12.h>
 
-#include "editor_start.h"
+#include "editor_wrapper.h"
 #include "core/core.h"
 #include "QtWidgets/QtWidgets"
 #include "QtWidgets/QApplication"
@@ -14,13 +14,13 @@
 
 DECLARE_LOG_CATEGORY(editor)
 
-bool editor_start::init()
+bool editor_wrapper::initialize()
 {
     //
-    INTERCEPT_LOG(&editor_start::script_log_wrapper);
+    INTERCEPT_LOG(&editor_wrapper::script_log_wrapper);
     //
     LOG(editor, info, TEXT("Engine init from editor"));
-    // 
+    /*
     auto window_list = QApplication::allWindows();
     QQuickWindow* quick_window = nullptr;
     for (const auto window : window_list)
@@ -55,10 +55,11 @@ bool editor_start::init()
         return false;
     }
     gapi_manager::initialize(gapi_platform::direct3d12, d3d12device);
+    */
     return true;
 }
 
-bool editor_start::finalize()
+bool editor_wrapper::finalize()
 {
     LOG(editor, info, TEXT("Goodbye Nene Engine!"));
     return true;

@@ -21,7 +21,7 @@ def deferred_init():
 	global inited
 	if not inited:
 		nene.log = log
-		nene.init()
+		nene.initialize()
 		inited = True
 	pass
 
@@ -34,7 +34,7 @@ def close_event(event):
 def main():
 	#
 	Config()
-
+	deferred_init()
 	#
 	app = QApplication([])
 	QQuickWindow.setSceneGraphBackend("D3D12")
@@ -43,7 +43,7 @@ def main():
 	view.setSource(url)
 	view.show()
 	#
-	QTimer.singleShot(50, deferred_init)
+	# QTimer.singleShot(50, deferred_init)
 	#
 	app.exec_()
 	pass
