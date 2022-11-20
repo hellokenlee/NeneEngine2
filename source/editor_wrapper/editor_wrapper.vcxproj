@@ -75,6 +75,7 @@
     <IntDir>$(SolutionDir).bin\intermediate\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <ExternalIncludePath>$(SolutionDir)source\;$(ProjectDir);$(SolutionDir)extern\python3.10\inc\;$(SolutionDir)extern\qt5.15.2\inc\;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(SolutionDir)extern\python3.10\lib\win\$(PlatformTarget)\$(Configuration)\;$(SolutionDir)extern\qt5.15.2\lib\win\$(PlatformTarget)\$(Configuration)\;$(SolutionDir).bin\binary\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <TargetExt>.pyd</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
@@ -82,6 +83,7 @@
     <IntDir>$(SolutionDir).bin\intermediate\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <ExternalIncludePath>$(SolutionDir)source\;$(ProjectDir);$(SolutionDir)extern\python3.10\inc\;$(SolutionDir)extern\qt5.15.2\inc\;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(SolutionDir)extern\python3.10\lib\win\$(PlatformTarget)\$(Configuration)\;$(SolutionDir)extern\qt5.15.2\lib\win\$(PlatformTarget)\$(Configuration)\;$(SolutionDir).bin\binary\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <TargetExt>.pyd</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
@@ -89,6 +91,7 @@
     <IntDir>$(SolutionDir).bin\intermediate\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <ExternalIncludePath>$(SolutionDir)source\;$(ProjectDir);$(SolutionDir)extern\python3.10\inc\;$(SolutionDir)extern\qt5.15.2\inc\;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(SolutionDir)extern\python3.10\lib\win\$(PlatformTarget)\$(Configuration)\;$(SolutionDir)extern\qt5.15.2\lib\win\$(PlatformTarget)\$(Configuration)\;$(SolutionDir).bin\binary\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <TargetExt>.pyd</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
@@ -96,6 +99,7 @@
     <IntDir>$(SolutionDir).bin\intermediate\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <ExternalIncludePath>$(SolutionDir)source\;$(ProjectDir);$(SolutionDir)extern\python3.10\inc\;$(SolutionDir)extern\qt5.15.2\inc\;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(SolutionDir)extern\python3.10\lib\win\$(PlatformTarget)\$(Configuration)\;$(SolutionDir)extern\qt5.15.2\lib\win\$(PlatformTarget)\$(Configuration)\;$(SolutionDir).bin\binary\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <TargetExt>.pyd</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

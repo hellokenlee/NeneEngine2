@@ -32,7 +32,7 @@ class EditorWrapperPostBuildEventTool(ToolBase):
 	ENGINE_STUB_PATH = "script\\stubs"
 
 	def run(self, args: BuildEventArgs):
-		self.copy_lib(args.binary_path, args.proj)
+		# self.copy_lib(args.binary_path, args.proj)
 		self.generate_stubs(args)
 		self.write_latestbuild(args)
 		print("   All post build actions have been done!!!")
