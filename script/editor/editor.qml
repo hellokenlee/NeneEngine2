@@ -1,4 +1,6 @@
 import QtQuick 2.8
+import QtNene 1.0
+
 
 Item {
    Rectangle {
@@ -18,8 +20,8 @@ Item {
         //! [3]
         CustomRenderItem {
             id: renderer
-            width: bg.width - 20
-            height: bg.height - 20
+            width: parent.width / 2 - 20
+            height: parent.height / 2 - 20
             x: -clipper.x + 10
             y: -clipper.y + 10
 

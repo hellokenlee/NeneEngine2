@@ -6,7 +6,6 @@
 #include "core/core.h"
 
 
-
 class EDITOR_WRAPPER_EXPORT editor_wrapper
 {
 public:

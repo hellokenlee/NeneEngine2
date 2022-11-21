@@ -28,13 +28,16 @@
 	class zznn_log_category##cat_name : public log_category_base \
 	{ \
 	public: \
-		inline static wstring get_wide_name() { return TEXT(#cat_name); } \
-		inline static sstring get_single_name() { return (#cat_name); } \
+		inline static wstring get_wide_name() { return L#cat_name; } \
+		inline static sstring get_single_name() { return #cat_name; } \
 	}; \
 
 
 #define DEFINE_LOG_CATEGORY(cat_name) \
 	zznn_log_category##cat_name (cat_name);
+
+#define EXTERN_LOG_CATEGORY(cat_name) \
+	extern class zznn_log_category##cat_name (cat_name);
 
 
 enum class log_level
@@ -86,10 +89,10 @@ template<>
 inline const wstring& log_impl_loglevel(const log_level& level)
 {
 	static const wstring log_levels[static_cast<int>(log_level::MAX_COUNT)] = {
-		TEXT("info"),
-		TEXT("warning"),
-		TEXT("error"),
-		TEXT("fatal"),
+		L"info",
+		L"warning",
+		L"error",
+		L"fatal",
 	};
 	return log_levels[static_cast<int>(level)];
 }

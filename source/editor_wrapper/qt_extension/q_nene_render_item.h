@@ -4,12 +4,16 @@
 
 class CustomRenderItem : public QQuickItem
 {
-public:
     Q_OBJECT
-        QML_ELEMENT
 
 public:
-    CustomRenderItem(QQuickItem* parent = nullptr);
+    static void register_qml();
+    
+    explicit CustomRenderItem(QQuickItem* parent = nullptr);
+
     QSGNode* updatePaintNode(QSGNode* node, UpdatePaintNodeData*) override;
+
+protected:
+    bool is_gapi_inited = false; 
 };
 

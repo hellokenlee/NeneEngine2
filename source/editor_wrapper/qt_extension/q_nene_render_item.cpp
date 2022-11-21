@@ -1,4 +1,6 @@
 #include "q_nene_render_item.h"
+#include "core/core.h"
+#include "editor_wrapper.h"
 
 
 CustomRenderItem::CustomRenderItem(QQuickItem* parent)
@@ -10,5 +12,15 @@ CustomRenderItem::CustomRenderItem(QQuickItem* parent)
 
 QSGNode* CustomRenderItem::updatePaintNode(QSGNode* node, UpdatePaintNodeData*)
 {
+    if (!is_gapi_inited)
+    {
+        is_gapi_inited = true;
+        printf("asd");
+    }
     return nullptr;
+}
+
+void CustomRenderItem::register_qml()
+{
+    qmlRegisterType<CustomRenderItem>("QtNene", 1, 0, "CustomRenderItem");
 }

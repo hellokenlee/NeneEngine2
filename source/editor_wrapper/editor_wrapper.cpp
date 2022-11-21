@@ -4,15 +4,8 @@
 
 #include "editor_wrapper.h"
 #include "core/core.h"
-#include "QtWidgets/QtWidgets"
-#include "QtWidgets/QApplication"
-#include "QtQuick/QQuickWindow"
-#include "QtQuick/QSGRendererInterface"
+#include "qt_extension/q_nene_render_item.h"
 
-#include "gapi_dynamic/gapi_manager.h"
-
-
-DECLARE_LOG_CATEGORY(editor)
 
 bool editor_wrapper::initialize()
 {
@@ -20,6 +13,8 @@ bool editor_wrapper::initialize()
     INTERCEPT_LOG(&editor_wrapper::script_log_wrapper);
     //
     LOG(editor, info, TEXT("Engine init from editor"));
+    CustomRenderItem::register_qml();
+
     /*
     auto window_list = QApplication::allWindows();
     QQuickWindow* quick_window = nullptr;

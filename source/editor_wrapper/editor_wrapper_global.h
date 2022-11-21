@@ -13,3 +13,7 @@
 #else
 # define EDITOR_WRAPPER_EXPORT
 #endif
+
+#include "core/core.h"
+
+DECLARE_LOG_CATEGORY(editor)
