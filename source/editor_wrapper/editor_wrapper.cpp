@@ -15,7 +15,8 @@ bool editor_wrapper::initialize()
     //
     i::log_category::set_consume_log_to_stdout(false);
     //
-    LOG(editor, info, TXT("Engine init from editor"));
+    LOG(editor, info, TXT("Engine init from editor1"));
+    LOG(editor, info, TXT("Engine init from editor2"));
     
 
     /*

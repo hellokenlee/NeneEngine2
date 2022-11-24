@@ -11,18 +11,11 @@ from PySide2.QtCore import QUrl, QTimer
 inited = False
 
 
-def log(ts, cat, lv, msg):
-	print("%s [%s] [%s] %s" % (ts, cat, lv, msg))
-	pass
-
-
-def deferred_init():
+def print_engine_logs():
 	import nene
-	global inited
-	if not inited:
-		nene.log = log
-		nene.initialize()
-		inited = True
+	unflushed_logs = nene.fetch_engine_logs()
+	for log in unflushed_logs:
+		print(log)
 	pass
 
 
@@ -34,7 +27,8 @@ def close_event(event):
 def main():
 	#
 	Config()
-	deferred_init()
+	import nene
+	nene.initialize()
 	#
 	app = QApplication([])
 	QQuickWindow.setSceneGraphBackend("D3D12")
@@ -43,7 +37,9 @@ def main():
 	view.setSource(url)
 	view.show()
 	#
-	# QTimer.singleShot(50, deferred_init)
+	timer = QTimer(app)
+	timer.timeout.connect(print_engine_logs)
+	timer.start(200)
 	#
 	app.exec_()
 	pass

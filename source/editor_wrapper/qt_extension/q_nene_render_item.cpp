@@ -2,6 +2,7 @@
 #include "q_nene_render_item.h"
 #include "core/core.h"
 #include "editor_wrapper.h"
+#include "QtQuick/QSGRectangleNode"
 
 EXTERN_LOG_CATEGORY(editor)
 
@@ -19,6 +20,7 @@ QSGNode* CustomRenderItem::updatePaintNode(QSGNode* node, UpdatePaintNodeData*)
         is_gapi_inited = true;
         LOG(editor, info, TXT("Init!"));
     }
+    node = static_cast<QSGRectangleNode>
     return nullptr;
 }
 

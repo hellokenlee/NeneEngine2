@@ -111,6 +111,7 @@ graph TD
   gapi --> gapi_dynamic
   gapi_d3d12 --> gapi_dynamic
   gapi_vulkan --> gapi_dynamic
+  core --> gapi_vulkan
   gapi --> gapi_vulkan
   core --> renderer
   gapi --> renderer
