@@ -14,7 +14,9 @@ class VcTag(object):
 	OutDir = "OutDir"
 	IntDir = "IntDir"
 	LibraryPath = "LibraryPath"
+	ItemGroup = "ItemGroup"
 	PropertyGroup = "PropertyGroup"
+	ProjectConfiguration = "ProjectConfiguration"
 	LinkIncremental = "LinkIncremental"
 	ConfigurationType = "ConfigurationType"
 	ExternalIncludePath = "ExternalIncludePath"
@@ -123,30 +125,30 @@ class VcProjTool(ToolBase):
 
 		# Modify visual c++ paths
 		for group in root.findall(VcTag.PropertyGroup, self.namespaces):
-			if VcAttrib.Condition in group.attrib:
-				if VcAttrib.Label in group.attrib:
-					if VcAttrib.Label == "Configuration":
-						config = group.find(VcTag.ConfigurationType, self.namespaces)
-						if self.is_exe(proj):
-							self.try_modify_text(config, "Application")
-						else:
-							self.try_modify_text(config, "DynamicLibrary")
+			if self.is_configuration_property_group(group):
+				config = group.find(VcTag.ConfigurationType, self.namespaces)
+				if self.is_exe(proj):
+					self.try_modify_text(config, "Application")
 				else:
-					# Binary
-					outdir = self.find_or_add_element(group, VcTag.OutDir)
-					self.try_modify_text(outdir, self.PROJ_OUTPUT_PATH)
-					# Intermediate
-					intdir = self.find_or_add_element(group, VcTag.IntDir)
-					self.try_modify_text(intdir, self.PROJ_INTERMEDIATE_PATH)
-					# Include Path
-					includepath = self.find_or_add_element(group, VcTag.ExternalIncludePath)
-					incpaths = list(self.PROJ_ADDITIONAL_INCLUDE_PATHS)
-					incpaths.extend(inc3partypaths)
-					incpaths.append(VcMacro.ExternalIncludePath)
-					self.try_modify_text(includepath, ';'.join(incpaths))
-					# Library Path
-					librarypath = self.find_or_add_element(group, VcTag.LibraryPath)
-					self.try_modify_text(librarypath, ';'.join(lib3partypaths))
+					self.try_modify_text(config, "DynamicLibrary")
+			elif self.is_setting_property_group(group):
+				# Binary
+				outdir = self.find_or_add_element(group, VcTag.OutDir)
+				self.try_modify_text(outdir, self.PROJ_OUTPUT_PATH)
+				# Intermediate
+				intdir = self.find_or_add_element(group, VcTag.IntDir)
+				self.try_modify_text(intdir, self.PROJ_INTERMEDIATE_PATH)
+				# Include Path
+				includepath = self.find_or_add_element(group, VcTag.ExternalIncludePath)
+				incpaths = list(self.PROJ_ADDITIONAL_INCLUDE_PATHS)
+				incpaths.extend(inc3partypaths)
+				incpaths.append(VcMacro.ExternalIncludePath)
+				self.try_modify_text(includepath, ';'.join(incpaths))
+				# Library Path
+				librarypath = self.find_or_add_element(group, VcTag.LibraryPath)
+				self.try_modify_text(librarypath, ';'.join(lib3partypaths))
+			else:
+				print("    Ignored <PropertyGroup> with attribs: %s" % group.attrib)
 
 		# Modify compiler and linker settings
 		for group in root.findall("ItemDefinitionGroup", self.namespaces):
@@ -198,19 +200,25 @@ class VcProjTool(ToolBase):
 				return elem
 		return None
 
-	def update_all_configurations(self, root: ElementTree.Element):
+	def update_all_configurations(self, root: ElementTree.Element, x64only=True):
 		conditions: dict = {}
+		for group in root.findall(VcTag.ItemGroup, self.namespaces):
+			if VcAttrib.Label in group.attrib and group.attrib[VcAttrib.Label] == "ProjectConfigurations":
+				x86_configs = []
+				for config in group.findall(VcTag.ProjectConfiguration):
+					print(config.attrib["Include"])
+				pass
+
 		for group in root.findall(VcTag.PropertyGroup, self.namespaces):
 			if VcAttrib.Condition in group.attrib:
 				#  0: Both
-				# -1: "Label=Configuration" Only
-				# +1: Non "Label" Only
+				# -1: Configuration Property Group Only
+				# +1: Settings Property Group Only
 				config = group.attrib[VcAttrib.Condition]
 				conditions.setdefault(config, 0)
-				if VcAttrib.Label in group.attrib:
-					if VcAttrib.Label == "Configuration":
-						conditions[config] = conditions[config] - 1
-				else:
+				if self.is_configuration_property_group(group):
+					conditions[config] = conditions[config] - 1
+				elif self.is_setting_property_group(group):
 					conditions[config] = conditions[config] + 1
 
 		def is_user_macro(gelem: ElementTree.Element):
@@ -241,6 +249,22 @@ class VcProjTool(ToolBase):
 			self.file_changed = True
 			return True
 		return False
+
+	def is_setting_property_group(self, property_group: ElementTree.Element) -> bool:
+		assert(self.tag(VcTag.PropertyGroup) == property_group.tag)
+		if VcAttrib.Condition in property_group.attrib:
+			if VcAttrib.Label not in property_group.attrib:
+				return True
+		return False
+
+	def is_configuration_property_group(self, property_group: ElementTree.Element) -> bool:
+		assert (self.tag(VcTag.PropertyGroup) == property_group.tag)
+		if VcAttrib.Condition in property_group.attrib:
+			if VcAttrib.Label in property_group.attrib:
+				if property_group.attrib[VcAttrib.Label] == "Configuration":
+					return True
+		return False
+
 
 	def is_3rd_party_lib(self, lib: str):
 		externpath = os.path.abspath(os.path.join(self.engine_root, "extern", lib))
