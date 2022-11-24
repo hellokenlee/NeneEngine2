@@ -46,11 +46,12 @@ inline const wstring& log_impl_loglevel(const log_level& level)
 
 namespace i
 {
+    t::queue<wstring> log_category::m_wlog_queue;
+    t::queue<sstring> log_category::m_slog_queue;
     bool log_category::m_consume_log_to_stdout = false;
     t::dynamic_array<log_category*> log_category::m_all_log_categories;
     
-    log_category::log_category(sstring name)
-        : m_name(std::move(name))
+    log_category::log_category()
     {
         m_all_log_categories.push_back(this);
     }
@@ -78,28 +79,22 @@ namespace i
 
     bool log_category::consume_slog(sstring& log)
     {
-        for (const auto log_cat : m_all_log_categories)
+        if (!m_slog_queue.empty())
         {
-            if (!log_cat->m_slog_queue.empty())
-            {
-                log = log_cat->m_slog_queue.front();
-                log_cat->m_slog_queue.pop();
-                return true;
-            }
+            log = m_slog_queue.front();
+            m_slog_queue.pop();
+            return true;
         }
         return false;
     }
     
     bool log_category::consume_wlog(wstring& log)
     {
-        for (const auto log_cat : m_all_log_categories)
+        if (!m_wlog_queue.empty())
         {
-            if (!log_cat->m_wlog_queue.empty())
-            {
-                log = log_cat->m_wlog_queue.front();
-                log_cat->m_wlog_queue.pop();
-                return true;
-            }
+            log = m_wlog_queue.front();
+            m_wlog_queue.pop();
+            return true;
         }
         return false;
     }

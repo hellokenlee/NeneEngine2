@@ -32,7 +32,7 @@
 	class NENE_API zznn_log_category_##cat : public i::log_category \
 	{ \
 	public: \
-		zznn_log_category_##cat(): i::log_category(#cat) {} \
+		zznn_log_category_##cat(): i::log_category() {} \
 		virtual wstring get_wname() override { return (L#cat); } \
 		virtual sstring get_sname() override { return (#cat); } \
 	}; \
@@ -73,7 +73,7 @@ namespace i
 class NENE_API log_category
 {
 public:
-	log_category(sstring name);
+	log_category();
 	virtual ~log_category();
 
 	/** Single char log */
@@ -95,10 +95,8 @@ public:
 	virtual sstring get_sname() = 0;
 	
 protected:
-	sstring m_name;
-	t::queue<wstring> m_wlog_queue;
-	t::queue<sstring> m_slog_queue;
-	
+	static t::queue<wstring> m_wlog_queue;
+	static t::queue<sstring> m_slog_queue;
 	static bool m_consume_log_to_stdout;
 	static t::dynamic_array<log_category*> m_all_log_categories;
 };

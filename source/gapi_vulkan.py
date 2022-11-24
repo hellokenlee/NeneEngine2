@@ -5,6 +5,6 @@
 
 EXE: bool = False
 
-DEPENDENCY: list[str] = ["gapi"]
+DEPENDENCY: list[str] = ["core", "gapi"]
 
 EXTERNAL: dict[str, list[str]] = {}
