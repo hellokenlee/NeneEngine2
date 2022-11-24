@@ -15,7 +15,7 @@ public:
 
     static bool finalize();
 
-    static void script_log_wrapper(const string& timestamp, const string& cat, const string& lv, const string& message);
+    static t::dynamic_array<wstring> fetch_engine_logs();
 };
 
 

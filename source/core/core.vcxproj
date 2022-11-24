@@ -266,10 +266,10 @@ py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(Outp
     <ClInclude Include="template\fundamental.h" />
     <ClInclude Include="template\lambda.h" />
     <ClInclude Include="template\pointer.h" />
+    <ClInclude Include="template\view.h" />
     <ClInclude Include="types.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="file_helper.inl" />
     <None Include="math\dxmath\DirectXCollision.inl" />
     <None Include="math\dxmath\DirectXMathConvert.inl" />
     <None Include="math\dxmath\DirectXMathMatrix.inl" />
@@ -278,6 +278,7 @@ py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(Outp
     <None Include="math\dxmath\DirectXPackedVector.inl" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="debug.cpp" />
     <ClCompile Include="file_helper.cpp" />
     <ClCompile Include="globals.cpp" />
     <ClCompile Include="log.cpp" />

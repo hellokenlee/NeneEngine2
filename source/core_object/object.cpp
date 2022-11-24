@@ -3,17 +3,19 @@
 #include "meta.h"
 #include "core/core.h"
 
+DECLARE_LOG_CATEGORY(object)
+DEFINE_LOG_CATEGORY(object)
 
 namespace n
 {
 void object::func0()
 {
-	LOG(debug, info, TEXT("object::func0()"));
+	LOG(object, info, TXT("object::func0()"));
 }
 
 void object::func1(int a)
 {
-	LOG(debug, info, TEXT("object::func1(%d)"), a);
+	LOG(object, info, TXT("object::func1(%d)"), a);
 }
 
 void object::test()

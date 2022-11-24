@@ -1,7 +1,9 @@
+/* Copyright reserved by KenLee@hellokenlee@163.com */
 #include "q_nene_render_item.h"
 #include "core/core.h"
 #include "editor_wrapper.h"
 
+EXTERN_LOG_CATEGORY(editor)
 
 CustomRenderItem::CustomRenderItem(QQuickItem* parent)
     : QQuickItem(parent)
@@ -15,7 +17,7 @@ QSGNode* CustomRenderItem::updatePaintNode(QSGNode* node, UpdatePaintNodeData*)
     if (!is_gapi_inited)
     {
         is_gapi_inited = true;
-        printf("asd");
+        LOG(editor, info, TXT("Init!"));
     }
     return nullptr;
 }

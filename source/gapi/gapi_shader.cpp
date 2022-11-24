@@ -7,7 +7,7 @@ gapi_shader_initializer::gapi_shader_initializer(const string& filepath, const s
 {
 	m_shader_file = file_helper::wstring_to_sstring(filepath);
 	m_shader_entry = file_helper::wstring_to_sstring(entry);
-	m_shader_source = file_helper::load_file<sstring>(filepath);
+	m_shader_source = file_helper::load_file_to_sstring(filepath);
 }
 
 const sstring& gapi_shader_initializer::get_shader_file() const 

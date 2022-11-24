@@ -7,22 +7,19 @@
 #include "platform.h"
 
 #ifdef _MSVC_LANG
-	#include <windows.h>
-	#define DEBUG_BREAK() (__noop(), __debugbreak())
+	#include <Windows.h>
+#define DEBUG_BREAK() (__noop(), __debugbreak())
 #endif
 
-#define CHECK(expr) __CHECK_IMPL(expr)
+#define CHECK(expr) CHECK_IMPL(expr)
 
+NENE_API void check_failed(const string& filename, const uint32 line, const string& expression);
 
-DECLARE_LOG_CATEGORY(debug)
-
-
-#define __CHECK_IMPL(expr) \
+#define CHECK_IMPL(expr) \
 	{ \
 		if (!(expr)) \
 		{ \
-			LOG(debug, fatal, TEXT("Assertin failed!\n    Code at %s:%u\n        `CHECK(%s);`\n"), TEXT(__FILE__), __LINE__, TEXT(#expr)); \
+			check_failed(TXT(__FILE__), __LINE__, TXT(#expr)); \
 			DEBUG_BREAK(); \
 		} \
 	}
-

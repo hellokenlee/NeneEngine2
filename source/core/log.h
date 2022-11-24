@@ -6,41 +6,56 @@
 
 #include <ctime>
 #include <string>
-#include <cstring>
-#include <cstdarg>
 #include <iomanip>
-#include <sstream>
 
 #include "platform.h"
+#include "template/pointer.h"
 
+/**
+ * Usage:
+ *		LOG(engine, info, TXT("something wrong: %s"), str);
+ */
 #ifdef _UNICODE
 	#define LOG(cat, level, fmt, ...) WLOG(cat, level, fmt, __VA_ARGS__)
-	#define INTERCEPT_LOG(log_func)   intercept_log_impl(log_func)
 #else
 	#define LOG(cat, level, fmt, ...) SLOG(cat, level, fmt, __VA_ARGS__)
 #endif
 
-#define WLOG(cat, level, fmt, ...) wlog_impl(zznn_log_category##cat::get_wide_name(), log_level::level, fmt, __VA_ARGS__)
-#define SLOG(cat, level, fmt, ...) slog_impl(zznn_log_category##cat::get_single_name(), log_level::level, fmt, __VA_ARGS__)
+#define SLOG(cat, level, fmt, ...) zznn_log_category_instance_##cat.slog(level, fmt, __VA_ARGS__)
+#define WLOG(cat, level, fmt, ...) zznn_log_category_instance_##cat.wlog(level, fmt, __VA_ARGS__)
 
-
-#define DECLARE_LOG_CATEGORY(cat_name) \
-	class zznn_log_category##cat_name : public log_category_base \
+/**
+ * Usage:
+ *		DECLARE_LOG_CATEGORY(engine)
+ */
+#define DECLARE_LOG_CATEGORY(cat) \
+	class NENE_API zznn_log_category_##cat : public i::log_category \
 	{ \
 	public: \
-		inline static wstring get_wide_name() { return L#cat_name; } \
-		inline static sstring get_single_name() { return #cat_name; } \
+		zznn_log_category_##cat(): i::log_category(#cat) {} \
+		virtual wstring get_wname() override { return (L#cat); } \
+		virtual sstring get_sname() override { return (#cat); } \
 	}; \
 
+/**
+ * Usage:
+ *		DEFINE_LOG_CATEGORY(engine)
+ */
+#define DEFINE_LOG_CATEGORY(cat) \
+	zznn_log_category_##cat zznn_log_category_instance_##cat;
 
-#define DEFINE_LOG_CATEGORY(cat_name) \
-	zznn_log_category##cat_name (cat_name);
+/**
+ * Usage:
+ *		EXTERN_LOG_CATEGORY(engine)
+ */
+#define EXTERN_LOG_CATEGORY(cat) \
+	extern zznn_log_category_##cat zznn_log_category_instance_##cat;
 
-#define EXTERN_LOG_CATEGORY(cat_name) \
-	extern class zznn_log_category##cat_name (cat_name);
-
-
-enum class log_level
+/**
+ * Usage:
+ *		LOG(engine, info, TXT("something wrong: %s"), str);
+ */
+enum log_level
 {
 	info,
 	warning,
@@ -50,55 +65,41 @@ enum class log_level
 	MAX_COUNT,
 };
 
-class NENE_API log_category_base
+/**
+ * Log implementations
+ */
+namespace i
+{
+class NENE_API log_category
 {
 public:
-	static t::dynamic_array<
-		t::function<void(const string& timestamp, const string& cat, const string& lv, const string& message)>
-	> log_interceptions;
+	log_category(sstring name);
+	virtual ~log_category();
+
+	/** Single char log */
+	void slog(const log_level& level, const char* fmt, ...);
+
+	/** Wide char log */
+	void wlog(const log_level& level, const wchar_t* fmt, ...);
+
+	/** If consumes log and outputs to stdout */
+	static bool get_consume_log_to_stdout();
+	static void set_consume_log_to_stdout(const bool& sw);
+
+	/** Consumer methods from outside */
+	static bool consume_slog(sstring& log);
+	static bool consume_wlog(wstring& log);
+
+	/** Category name interfaces */
+	virtual wstring get_wname() = 0;
+	virtual sstring get_sname() = 0;
+	
+protected:
+	sstring m_name;
+	t::queue<wstring> m_wlog_queue;
+	t::queue<sstring> m_slog_queue;
+	
+	static bool m_consume_log_to_stdout;
+	static t::dynamic_array<log_category*> m_all_log_categories;
 };
-
-template<class tstring, class tstringstream, class tchar>
-tstring log_impl_timestamp(const tchar* fmt)
-{
-	const time_type current = std::time(nullptr);
-	time_struct current_time;
-	platform::local_time(&current_time, &current);
-
-	tstringstream text_stream;
-	text_stream << std::put_time(&current_time, fmt);
-	return {text_stream.str()};
 }
-
-template<class tstring>
-const tstring& log_impl_loglevel(const log_level& level);
-
-template<>
-inline const sstring& log_impl_loglevel(const log_level& level)
-{
-	static const sstring log_levels[static_cast<int>(log_level::MAX_COUNT)] = {
-		"info",
-		"warning",
-		"error",
-		"fatal",
-	};
-	return log_levels[static_cast<int>(level)];
-}
-
-template<>
-inline const wstring& log_impl_loglevel(const log_level& level)
-{
-	static const wstring log_levels[static_cast<int>(log_level::MAX_COUNT)] = {
-		L"info",
-		L"warning",
-		L"error",
-		L"fatal",
-	};
-	return log_levels[static_cast<int>(level)];
-}
-
-NENE_API void slog_impl(const sstring& cat, const log_level& level, const char* const format, ...);
-
-NENE_API void wlog_impl(const wstring& cat, const log_level& level, const wchar_t* const format, ...);
-
-NENE_API void intercept_log_impl(t::function<void(const string& timestamp, const string& cat, const string& lv, const string& message)> lambda);
