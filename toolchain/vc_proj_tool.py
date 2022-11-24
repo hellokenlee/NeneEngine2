@@ -15,6 +15,8 @@ class VcTag(object):
 	IntDir = "IntDir"
 	LibraryPath = "LibraryPath"
 	ItemGroup = "ItemGroup"
+	Platform = "Platform"
+	Configuration = "Configuration"
 	PropertyGroup = "PropertyGroup"
 	ProjectConfiguration = "ProjectConfiguration"
 	LinkIncremental = "LinkIncremental"
@@ -202,12 +204,19 @@ class VcProjTool(ToolBase):
 
 	def update_all_configurations(self, root: ElementTree.Element, x64only=True):
 		conditions: dict = {}
-		for group in root.findall(VcTag.ItemGroup, self.namespaces):
-			if VcAttrib.Label in group.attrib and group.attrib[VcAttrib.Label] == "ProjectConfigurations":
-				x86_configs = []
-				for config in group.findall(VcTag.ProjectConfiguration):
-					print(config.attrib["Include"])
-				pass
+		if x64only:
+			for group in root.findall(VcTag.ItemGroup, self.namespaces):
+				if VcAttrib.Label in group.attrib and group.attrib[VcAttrib.Label] == "ProjectConfigurations":
+					x86_elements = []
+					for config in group.findall(VcTag.ProjectConfiguration, self.namespaces):
+						if config.find(VcTag.Platform, self.namespaces).text == "Win32":
+							x86_elements.append(config)
+					for ele in x86_elements:
+						group.remove(ele)
+						self.file_changed = True
+					pass
+		else:
+			raise NotImplementedError
 
 		for group in root.findall(VcTag.PropertyGroup, self.namespaces):
 			if VcAttrib.Condition in group.attrib:
