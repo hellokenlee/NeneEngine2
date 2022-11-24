@@ -63,14 +63,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gapi_vulkan", "source\gapi_vulkan\gapi_vulkan.vcxproj", "{A491477A-ECA2-4372-B49F-DC31618D0809}"
 	ProjectSection(ProjectDependencies) = postProject
 		{71586D6E-30FF-412A-B0B1-A011E1CAE6A9} = {71586D6E-30FF-412A-B0B1-A011E1CAE6A9}
+		{68C53BB2-2176-4755-B147-E57E263D3949} = {68C53BB2-2176-4755-B147-E57E263D3949}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "editor_wrapper", "source\editor_wrapper\editor_wrapper.vcxproj", "{CBCD2244-B2D4-45C1-B222-3AB5A5D636B3}"
-	ProjectSection(ProjectDependencies) = postProject
-		{68C53BB2-2176-4755-B147-E57E263D3949} = {68C53BB2-2176-4755-B147-E57E263D3949}
-		{A491477A-ECA2-4372-B49F-DC31618D0809} = {A491477A-ECA2-4372-B49F-DC31618D0809}
-		{D10F2727-19B7-4548-8559-9E96B949DDE8} = {D10F2727-19B7-4548-8559-9E96B949DDE8}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "editor_wrapper", "source\editor_wrapper\editor_wrapper.vcxproj", "{90258A4E-E77C-4CF9-93A0-9865F786D908}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -168,14 +164,14 @@ Global
 		{A491477A-ECA2-4372-B49F-DC31618D0809}.Release|x64.Build.0 = Release|x64
 		{A491477A-ECA2-4372-B49F-DC31618D0809}.Release|x86.ActiveCfg = Release|Win32
 		{A491477A-ECA2-4372-B49F-DC31618D0809}.Release|x86.Build.0 = Release|Win32
-		{CBCD2244-B2D4-45C1-B222-3AB5A5D636B3}.Debug|x64.ActiveCfg = Debug|x64
-		{CBCD2244-B2D4-45C1-B222-3AB5A5D636B3}.Debug|x64.Build.0 = Debug|x64
-		{CBCD2244-B2D4-45C1-B222-3AB5A5D636B3}.Debug|x86.ActiveCfg = Debug|x64
-		{CBCD2244-B2D4-45C1-B222-3AB5A5D636B3}.Debug|x86.Build.0 = Debug|x64
-		{CBCD2244-B2D4-45C1-B222-3AB5A5D636B3}.Release|x64.ActiveCfg = Release|x64
-		{CBCD2244-B2D4-45C1-B222-3AB5A5D636B3}.Release|x64.Build.0 = Release|x64
-		{CBCD2244-B2D4-45C1-B222-3AB5A5D636B3}.Release|x86.ActiveCfg = Release|x64
-		{CBCD2244-B2D4-45C1-B222-3AB5A5D636B3}.Release|x86.Build.0 = Release|x64
+		{90258A4E-E77C-4CF9-93A0-9865F786D908}.Debug|x64.ActiveCfg = Debug|x64
+		{90258A4E-E77C-4CF9-93A0-9865F786D908}.Debug|x64.Build.0 = Debug|x64
+		{90258A4E-E77C-4CF9-93A0-9865F786D908}.Debug|x86.ActiveCfg = Debug|x64
+		{90258A4E-E77C-4CF9-93A0-9865F786D908}.Debug|x86.Build.0 = Debug|x64
+		{90258A4E-E77C-4CF9-93A0-9865F786D908}.Release|x64.ActiveCfg = Release|x64
+		{90258A4E-E77C-4CF9-93A0-9865F786D908}.Release|x64.Build.0 = Release|x64
+		{90258A4E-E77C-4CF9-93A0-9865F786D908}.Release|x86.ActiveCfg = Release|x64
+		{90258A4E-E77C-4CF9-93A0-9865F786D908}.Release|x86.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

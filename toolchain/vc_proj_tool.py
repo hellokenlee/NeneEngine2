@@ -125,11 +125,12 @@ class VcProjTool(ToolBase):
 		for group in root.findall(VcTag.PropertyGroup, self.namespaces):
 			if VcAttrib.Condition in group.attrib:
 				if VcAttrib.Label in group.attrib:
-					config = group.find(VcTag.ConfigurationType, self.namespaces)
-					if self.is_exe(proj):
-						self.try_modify_text(config, "Application")
-					else:
-						self.try_modify_text(config, "DynamicLibrary")
+					if VcAttrib.Label == "Configuration":
+						config = group.find(VcTag.ConfigurationType, self.namespaces)
+						if self.is_exe(proj):
+							self.try_modify_text(config, "Application")
+						else:
+							self.try_modify_text(config, "DynamicLibrary")
 				else:
 					# Binary
 					outdir = self.find_or_add_element(group, VcTag.OutDir)
