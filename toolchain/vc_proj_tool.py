@@ -118,7 +118,7 @@ class VcProjTool(ToolBase):
 					incpath = "$(SolutionDir)extern\\%s\\inc\\" % lib
 					inc3partypaths.append(incpath)
 
-		# Make sure both configuration amd setting are in property group
+		# Make sure both configuration and setting are in property group
 		self.update_all_configurations(root)
 
 		# Modify visual c++ paths
@@ -203,12 +203,13 @@ class VcProjTool(ToolBase):
 		for group in root.findall(VcTag.PropertyGroup, self.namespaces):
 			if VcAttrib.Condition in group.attrib:
 				#  0: Both
-				# -1: "Label" Only
+				# -1: "Label=Configuration" Only
 				# +1: Non "Label" Only
 				config = group.attrib[VcAttrib.Condition]
 				conditions.setdefault(config, 0)
 				if VcAttrib.Label in group.attrib:
-					conditions[config] = conditions[config] - 1
+					if VcAttrib.Label == "Configuration":
+						conditions[config] = conditions[config] - 1
 				else:
 					conditions[config] = conditions[config] + 1
 

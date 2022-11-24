@@ -1,3 +1,5 @@
+/* Copyright reserved by KenLee@hellokenlee@163.com */
+
 #pragma once
 
 #include <QtCore/qglobal.h>
@@ -11,3 +13,7 @@
 #else
 # define EDITOR_WRAPPER_EXPORT
 #endif
+
+#include "core/core.h"
+
+DECLARE_LOG_CATEGORY(editor)

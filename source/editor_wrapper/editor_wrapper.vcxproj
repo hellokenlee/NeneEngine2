@@ -1,5 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="17.0">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
@@ -56,9 +55,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <TargetExt>.pyd</TargetExt>
+    <OutDir>$(SolutionDir).bin\binary\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir).bin\intermediate\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <ExternalIncludePath>$(SolutionDir)source\;$(ProjectDir);$(SolutionDir)extern\python3.10\inc\;$(SolutionDir)extern\qt5.15.2\inc\;$(ExternalIncludePath)</ExternalIncludePath>
+    <LibraryPath>$(SolutionDir)extern\python3.10\lib\win\$(PlatformTarget)\$(Configuration)\;$(SolutionDir)extern\qt5.15.2\lib\win\$(PlatformTarget)\$(Configuration)\;$(SolutionDir).bin\binary\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <TargetName>nene</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <TargetExt>.pyd</TargetExt>
+    <OutDir>$(SolutionDir).bin\binary\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir).bin\intermediate\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <ExternalIncludePath>$(SolutionDir)source\;$(ProjectDir);$(SolutionDir)extern\python3.10\inc\;$(SolutionDir)extern\qt5.15.2\inc\;$(ExternalIncludePath)</ExternalIncludePath>
+    <LibraryPath>$(SolutionDir)extern\python3.10\lib\win\$(PlatformTarget)\$(Configuration)\;$(SolutionDir)extern\qt5.15.2\lib\win\$(PlatformTarget)\$(Configuration)\;$(SolutionDir).bin\binary\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <TargetName>nene</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
     <ClCompile>
@@ -68,11 +77,19 @@
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PreprocessorDefinitions>EDITOR_WRAPPER_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <ConformanceMode>false</ConformanceMode>
+      <DisableSpecificWarnings>4251;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>core.lib;engine.lib;gapi_dynamic.lib;python3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>cd $(SolutionDir)
+py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(OutputPath) $(SolutionPath)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="Configuration">
     <ClCompile>
@@ -82,16 +99,27 @@
       <Optimization>MaxSpeed</Optimization>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PreprocessorDefinitions>EDITOR_WRAPPER_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <ConformanceMode>false</ConformanceMode>
+      <DisableSpecificWarnings>4251;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>false</GenerateDebugInformation>
+      <AdditionalDependencies>core.lib;engine.lib;gapi_dynamic.lib;python3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>cd $(SolutionDir)
+py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(OutputPath) $(SolutionPath)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="editor_wrapper.meta.cpp" />
+    <ClCompile Include="qt_extension\q_nene_render_item.cpp" />
     <ClInclude Include="editor_wrapper_global.h" />
     <ClInclude Include="editor_wrapper.h" />
     <ClCompile Include="editor_wrapper.cpp" />
+    <QtMoc Include="qt_extension\q_nene_render_item.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

@@ -33,4 +33,17 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="editor_wrapper.meta.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="qt_extension\q_nene_render_item.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="qt_extension\q_nene_render_item.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+  </ItemGroup>
 </Project>
