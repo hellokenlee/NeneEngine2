@@ -46,12 +46,12 @@ typedef signed long long	int64;
 #define NENE_TEXT(str) L##str
 
 #ifdef _UNICODE
-    #ifndef TEXT
-        #define TEXT(str) NENE_TEXT(str) 
+    #ifndef TXT
+        #define TXT(str) NENE_TEXT(str) 
     #endif
 #else
-    #ifndef TEXT
-        #define TEXT(str) str
+    #ifndef TXT
+        #define TXT(str) str
     #endif
 #endif
 

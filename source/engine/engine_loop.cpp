@@ -8,13 +8,14 @@
 
 
 DECLARE_LOG_CATEGORY(engine)
+DEFINE_LOG_CATEGORY(engine)
 
 t::shared_ptr<i::renderer> engine_loop::m_renderer = nullptr;
 
 void engine_loop::init(void* window)
 {
 	//
-	LOG(engine, info, TEXT("Engine Init!"));
+	LOG(engine, info, TXT("Engine Init!"));
 	//
 	gapi_manager::create(window);
 	//
@@ -42,5 +43,5 @@ void engine_loop::shutdown()
 	gapi_manager::destroy();
 
 	//
-	LOG(engine, info, TEXT("Engine Shutdown!"));
+	LOG(engine, info, TXT("Engine Shutdown!"));
 }

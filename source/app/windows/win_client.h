@@ -11,7 +11,7 @@
 class win_client : public i::client
 {
 public:
-	win_client() : win_client(TEXT("NeneEngine")) {}
+	win_client() : win_client(TXT("NeneEngine")) {}
 	
 	win_client(const string& name);
 	

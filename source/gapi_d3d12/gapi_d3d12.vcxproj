@@ -198,6 +198,7 @@ py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(Outp
     <ClCompile Include="d3d12\d3d12_shader.cpp" />
     <ClCompile Include="d3d12\d3d12_swap_chain.cpp" />
     <ClCompile Include="d3d12\d3d12_texture.cpp" />
+    <ClCompile Include="d3d12\d3d12_utils.cpp" />
     <ClCompile Include="gapi_d3d12.cpp" />
     <ClCompile Include="gapi_d3d12_cmd_context.cpp" />
     <ClCompile Include="gapi_d3d12_pipeline_state.cpp" />

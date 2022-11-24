@@ -42,7 +42,7 @@ t::shared_ptr<d3d12_adapter> d3d12_adapter::select_adapter()
 		DXGI_ADAPTER_DESC1 desc;
 		adapter->GetDesc1(&desc);
 		//
-		LOG(d3d12, info, TEXT("    %d: %s."), ++adapter_index, desc.Description);
+		LOG(d3d12, info, TXT("    %d: %s."), ++adapter_index, desc.Description);
 
 		// Find the first satisfied
 		if (selected_adapter_index > -1)
@@ -65,7 +65,7 @@ t::shared_ptr<d3d12_adapter> d3d12_adapter::select_adapter()
 	};
 
 	//
-	LOG(d3d12, info, TEXT("Listing all adapters:"));
+	LOG(d3d12, info, TXT("Listing all adapters:"));
 
 	// Newer enum api
 	if (SUCCEEDED(factory->QueryInterface(IID_PPV_ARGS(&factory6))))
@@ -99,7 +99,7 @@ t::shared_ptr<d3d12_adapter> d3d12_adapter::select_adapter()
 	//
 	DXGI_ADAPTER_DESC1 desc;
 	selected_adapter->GetDesc1(&desc);
-	LOG(d3d12, info, TEXT("Select Adapter %d: %s."), selected_adapter_index, desc.Description);
+	LOG(d3d12, info, TXT("Select Adapter %d: %s."), selected_adapter_index, desc.Description);
 
 	// Assemble the result of d3d12 adapter
 	t::shared_ptr<d3d12_adapter> result(new d3d12_adapter());
@@ -119,7 +119,7 @@ t::shared_ptr<d3d12_adapter> d3d12_adapter::select_adapter(const LUID& luid)
 	//
 	DXGI_ADAPTER_DESC1 desc;
 	adapter->GetDesc1(&desc);
-	LOG(d3d12, info, TEXT("Selected adapter: %s."), desc.Description);
+	LOG(d3d12, info, TXT("Selected adapter: %s."), desc.Description);
 	//
 	t::shared_ptr<d3d12_adapter> result(new d3d12_adapter());
 	result->m_adapter = adapter;

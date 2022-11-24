@@ -6,7 +6,7 @@
 #include "d3dx12.h"
 #include "d3d12_types.h"
 
-#define VERIFY(x) { HRESULT hres = x; if (FAILED(hres)) { verify_impl(hres, TEXT(#x), TEXT(__FILE__), __LINE__); }}
+#define VERIFY(x) { HRESULT hres = x; if (FAILED(hres)) { verify_impl(hres, TXT(#x), TXT(__FILE__), __LINE__); }}
 
 DECLARE_LOG_CATEGORY(d3d12);
 
@@ -15,7 +15,7 @@ static string get_error_string(const HRESULT code)
 	//
 	string res;
 	//
-#define D3DERR(x) case x: res = TEXT(#x); break;
+#define D3DERR(x) case x: res = TXT(#x); break;
 	//
 	switch (code)
 	{
@@ -29,15 +29,17 @@ static string get_error_string(const HRESULT code)
 		D3DERR(E_NOINTERFACE)
 		D3DERR(DXGI_ERROR_DEVICE_REMOVED)
 	default:
-		res = std::format(TEXT("Code: {}"), static_cast<int32>(code));
+		res = std::format(TXT("Code: {}"), static_cast<int32>(code));
 	}
 
 	return res;
 }
 
+EXTERN_LOG_CATEGORY(d3d12)
+
 void inline verify_impl(const HRESULT hres, const wchar_t* code, const wchar_t* filename, uint32 line)
 {
 	const string error = get_error_string(hres);
-	LOG(d3d12, fatal, TEXT("Function call failed!\n    Code at %s:%u:\n        `%s`\n    Error:\n        `%s`"), filename, line, code, error.c_str());
+	LOG(d3d12, fatal, TXT("Function call failed!\n    Code at %s:%u:\n        `%s`\n    Error:\n        `%s`"), filename, line, code, error.c_str());
 	DEBUG_BREAK();
 }

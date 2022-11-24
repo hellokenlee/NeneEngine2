@@ -9,7 +9,7 @@
 
 
 DECLARE_LOG_CATEGORY(shader);
-
+DEFINE_LOG_CATEGORY(shader);
 
 static sstring d3d_cast(const gapi_shader_type& type, const gapi_shader_feature_level& level)
 {

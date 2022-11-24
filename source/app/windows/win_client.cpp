@@ -48,7 +48,7 @@ win_client::win_client(const string& name)
 	//
 	m_handle = GetModuleHandle(nullptr);
 
-	static LPCWSTR window_class_name = TEXT("NeneEngineClass");
+	static LPCWSTR window_class_name = TXT("NeneEngineClass");
 
 	WNDCLASSEX window_class = {};
 	ZeroMemory(&window_class, sizeof(WNDCLASSEX));
