@@ -20,8 +20,8 @@ simple_renderer::simple_renderer()
 {
 	auto api = gapi_manager::get();
 
-	auto vertex_shader = api->create_vertex_shader({TEXT("./shader/simple.hlsl"), TEXT("MainVS")});
-	auto pixel_sahder = api->create_pixel_shader({TEXT("./shader/simple.hlsl"), TEXT("MainPS")});
+	auto vertex_shader = api->create_vertex_shader({TXT("./shader/simple.hlsl"), TXT("MainVS")});
+	auto pixel_sahder = api->create_pixel_shader({TXT("./shader/simple.hlsl"), TXT("MainPS")});
 	t::dynamic_array<gapi_vertex_element> vertex_declaration {
 		{"POSITION", 0, gapi_vertex_element_type::float4, 0, 0, 0, 0},
 		{"COLOR", 0, gapi_vertex_element_type::float4, 0, 16, 0, 0}
