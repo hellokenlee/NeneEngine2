@@ -22,6 +22,7 @@ class VcTag(object):
 	LinkIncremental = "LinkIncremental"
 	ConfigurationType = "ConfigurationType"
 	ExternalIncludePath = "ExternalIncludePath"
+	ItemDefinitionGroup = "ItemDefinitionGroup"
 	pass
 
 
@@ -58,6 +59,7 @@ class VcProjTool(ToolBase):
 		self.namespaces = {"": "http://schemas.microsoft.com/developer/msbuild/2003"}
 		self.namespace = ""
 		self.file_changed = False
+		self.no_x86 = False
 		pass
 
 	def run(self, args: list[str]):
@@ -66,7 +68,9 @@ class VcProjTool(ToolBase):
 		parser = argparse.ArgumentParser(description=self.NAME)
 		parser.add_argument("-p", "--proj", type=str, help="Project name in /source/ to procceed.")
 		parser.add_argument("-a", "--all", action='store_true', help="Procceed all project in /source/.")
+		parser.add_argument("--no-x86", action='store_true', help="Generates x64 only build.")
 		args = parser.parse_args(args)
+		self.no_x86 = args.no_x86
 		#
 		if args.all:
 			for proj in os.listdir(self.source_root):
@@ -123,7 +127,7 @@ class VcProjTool(ToolBase):
 					inc3partypaths.append(incpath)
 
 		# Make sure both configuration and setting are in property group
-		self.update_all_configurations(root)
+		self.update_all_configurations(root, self.no_x86)
 
 		# Modify visual c++ paths
 		for group in root.findall(VcTag.PropertyGroup, self.namespaces):
@@ -202,22 +206,40 @@ class VcProjTool(ToolBase):
 				return elem
 		return None
 
-	def update_all_configurations(self, root: ElementTree.Element, x64only=True):
-		conditions: dict = {}
+	def update_all_configurations(self, root: ElementTree.Element, x64only: bool):
+		# remove or add x86 related builds
+		x86_elements = []
 		if x64only:
+			# Project Configurations
 			for group in root.findall(VcTag.ItemGroup, self.namespaces):
 				if VcAttrib.Label in group.attrib and group.attrib[VcAttrib.Label] == "ProjectConfigurations":
-					x86_elements = []
+					x86_elements.clear()
 					for config in group.findall(VcTag.ProjectConfiguration, self.namespaces):
 						if config.find(VcTag.Platform, self.namespaces).text == "Win32":
 							x86_elements.append(config)
-					for ele in x86_elements:
-						group.remove(ele)
-						self.file_changed = True
+					for elem in x86_elements:
+						self.try_remove_element(group, elem)
 					pass
+			# Property Group
+			x86_elements = []
+			for group in root.findall(VcTag.PropertyGroup, self.namespaces):
+				if VcAttrib.Condition in group.attrib and "|Win32" in group.attrib[VcAttrib.Condition]:
+					x86_elements.append(group)
+			for elem in x86_elements:
+				self.try_remove_element(root, elem)
+			x86_elements.clear()
+			# Item Definition Group
+			for group in root.findall(VcTag.ItemDefinitionGroup, self.namespaces):
+				if VcAttrib.Condition in group.attrib and "|Win32" in group.attrib[VcAttrib.Condition]:
+					x86_elements.append(group)
+			for elem in x86_elements:
+				self.try_remove_element(root, elem)
 		else:
+			# TODO: Restore x64 configrations
 			raise NotImplementedError
 
+		#
+		conditions: dict = {}
 		for group in root.findall(VcTag.PropertyGroup, self.namespaces):
 			if VcAttrib.Condition in group.attrib:
 				#  0: Both
@@ -252,6 +274,17 @@ class VcProjTool(ToolBase):
 			self.file_changed = True
 		return result
 
+	def try_remove_element(self, parent: ElementTree.Element, elem: ElementTree.Element):
+		try:
+			parent.remove(elem)
+			self.file_changed = True
+		except ValueError:
+			pass
+		pass
+
+	def try_add_element(self):
+		pass
+
 	def try_modify_text(self, elem: ElementTree.Element, text: str):
 		if elem.text != text:
 			elem.text = text
@@ -273,7 +306,6 @@ class VcProjTool(ToolBase):
 				if property_group.attrib[VcAttrib.Label] == "Configuration":
 					return True
 		return False
-
 
 	def is_3rd_party_lib(self, lib: str):
 		externpath = os.path.abspath(os.path.join(self.engine_root, "extern", lib))

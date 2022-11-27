@@ -29,8 +29,8 @@ def main():
 			return
 	# Execute default commands
 	default_cmds = (
-		("npt", ["--all"]),
-		("vst", []),
+		("npt", ["--all", "--no-x86"]),
+		("vst", ["--no-x86"]),
 		("sct", []),
 		("sdt", []),
 	)

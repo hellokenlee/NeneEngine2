@@ -18,6 +18,7 @@ class VsSlnTool(ToolBase):
 	def __init__(self):
 		super(VsSlnTool, self).__init__()
 		self.file_changed = False
+		self.no_x86 = False
 		self.proj_guids: dict[str, str] = {}
 		pass
 
@@ -27,7 +28,9 @@ class VsSlnTool(ToolBase):
 		self.file_changed = False
 		#
 		parser = argparse.ArgumentParser(description=self.NAME)
-		parser.parse_args(args)
+		parser.add_argument("--no-x86", action='store_true', help="Generates x64 only build.")
+		args = parser.parse_args(args)
+		self.no_x86 = args.no_x86
 		#
 		sln_path = os.path.join(self.engine_root, self.SLN_FILENAME)
 		solution = Solution.open(sln_path)
@@ -37,12 +40,37 @@ class VsSlnTool(ToolBase):
 		for project in solution.projects:
 			self.add_dependency(project)
 		#
+		self.update_platfroms(solution)
+		#
 		if self.file_changed:
 			solution.save(sln_path)
 			print("    Modified: %s" % sln_path)
 		else:
 			print("    Nothing changed.")
 		print("")
+		pass
+
+	# noinspection DuplicatedCode
+	def update_platfroms(self, solution: Solution):
+		if self.no_x86:
+			x86_attribs = []
+			for attrib in solution.globals.solu_platforms.attribs:
+				if "x86" in attrib.key and "x86" in attrib.value:
+					x86_attribs.append(attrib)
+			for attrib in x86_attribs:
+				solution.globals.solu_platforms.attribs.remove(attrib)
+				self.file_changed = True
+			x86_attribs.clear()
+			for attrib in solution.globals.proj_platforms.attribs:
+				if "x86" in attrib.key and "Win32" in attrib.value:
+					x86_attribs.append(attrib)
+			for attrib in x86_attribs:
+				solution.globals.proj_platforms.attribs.remove(attrib)
+				self.file_changed = True
+			x86_attribs.clear()
+		else:
+			raise NotImplemented
+
 		pass
 
 	def add_dependency(self, proj: Project):
