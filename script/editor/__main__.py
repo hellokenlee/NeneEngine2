@@ -15,13 +15,9 @@ from editor import Editor
 def main():
 	#
 	config = Config()
+	config.initialize()
 	#
-	import nene
-	nene.initialize()
-	#
-	editor = Editor()
-	#
-	sys.exit(editor.exec_())
+	sys.exit(Editor().run())
 	pass
 
 

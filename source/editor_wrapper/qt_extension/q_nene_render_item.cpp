@@ -3,6 +3,7 @@
 #include "core/core.h"
 #include "editor_wrapper.h"
 #include "QtQuick/QSGRectangleNode"
+#include "QtQuick/QQuickWindow"
 
 EXTERN_LOG_CATEGORY(editor)
 
@@ -15,12 +16,14 @@ CustomRenderItem::CustomRenderItem(QQuickItem* parent)
 
 QSGNode* CustomRenderItem::updatePaintNode(QSGNode* node, UpdatePaintNodeData*)
 {
-    if (!is_gapi_inited)
+    QSGRectangleNode * rect = static_cast<QSGRectangleNode*>(node);
+    if (rect == nullptr)
     {
-        is_gapi_inited = true;
-        LOG(editor, info, TXT("Init!"));
+        rect = window()->createRectangleNode();
     }
-    return nullptr;
+    rect->setColor(Qt::GlobalColor::red);
+    rect->setRect(1920 / 2 - 250, 1080 / 2 - 250, 500, 500);
+    return rect;
 }
 
 void CustomRenderItem::register_qml()
