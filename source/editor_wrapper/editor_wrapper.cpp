@@ -4,19 +4,18 @@
 
 #include "editor_wrapper.h"
 #include "core/core.h"
-#include "qt_extension/q_nene_render_item.h"
+#include "qt/nene_render_item.h"
 
 DEFINE_LOG_CATEGORY(editor)
 
 bool editor_wrapper::initialize()
 {
     //
-    CustomRenderItem::register_qml();
+    q::nene_render_item_d3d12::register_qml_type();
     //
     i::log_category::set_consume_log_to_stdout(false);
     //
-    LOG(editor, info, TXT("Engine init from editor1"));
-    LOG(editor, info, TXT("Engine init from editor2"));
+    LOG(editor, info, TXT("Engine init from editor"));
 
 
     /*
