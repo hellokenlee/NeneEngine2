@@ -19,7 +19,7 @@ void engine_loop::init(void* window)
 	//
 	gapi_manager::create(window);
 	//
-	m_renderer = t::shared_ptr<simple_renderer>(new simple_renderer());
+	m_renderer = t::make_shared<simple_renderer>();
 }
 
 void engine_loop::update()

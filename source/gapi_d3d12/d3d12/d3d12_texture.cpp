@@ -17,5 +17,5 @@ d3d12_texture2d::d3d12_texture2d(t::shared_ptr<d3d12_device> device, t::shared_p
 void d3d12_texture2d::init()
 {
 	CHECK(m_rtv == nullptr);
-	m_rtv = t::shared_ptr<d3d12_render_target_view>(new d3d12_render_target_view(shared_from_this()));
+	m_rtv = t::make_shared<d3d12_render_target_view>(shared_from_this());
 }

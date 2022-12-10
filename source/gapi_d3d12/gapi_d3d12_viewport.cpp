@@ -16,10 +16,10 @@ gapi_d3d12_viewport::gapi_d3d12_viewport(t::shared_ptr<d3d12_adapter> adapter, v
 	, m_swap_chain(nullptr)
 {
 	//
-	m_fence = t::shared_ptr<d3d12_fence>(new d3d12_fence(adapter->get_device(0)));
+	m_fence = t::make_shared<d3d12_fence>(adapter->get_device(0));
 
 	//
-	m_swap_chain = t::shared_ptr<d3d12_swap_chain>(new d3d12_swap_chain(adapter, hwnd, back_buffer_num, multi_sample_num));
+	m_swap_chain = t::make_shared<d3d12_swap_chain>(adapter, hwnd, back_buffer_num, multi_sample_num);
 
 	//
 	m_back_buffer_index = m_swap_chain->get_current_back_buffer_index();

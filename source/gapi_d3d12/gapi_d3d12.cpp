@@ -25,27 +25,26 @@ gapi_d3d12::gapi_d3d12(void* hwnd)
 	m_adapter = d3d12_adapter::select_adapter();
 
 	//
-	m_device = t::shared_ptr<d3d12_device>(new d3d12_device(m_adapter));
+	m_device = t::make_shared<d3d12_device>(m_adapter);
 	m_device->init();
 
 	//
-	m_viewport = t::shared_ptr<gapi_d3d12_viewport>(new gapi_d3d12_viewport(m_adapter, hwnd, g_d3d12_back_buffer_count, g_d3d12_back_buffer_multisample_count));
-
+	m_viewport = t::make_shared<gapi_d3d12_viewport>(m_adapter, hwnd, g_d3d12_back_buffer_count, g_d3d12_back_buffer_multisample_count);
 	// Init context
 	constexpr uint32 worker_thread_num = 1;
 	for (uint32 idx = 0; idx < worker_thread_num; ++idx)
 	{
 		m_contexts.emplace_back(
-			t::shared_ptr<gapi_d3d12_cmd_context>(new gapi_d3d12_cmd_context(m_device))
+			t::make_shared<gapi_d3d12_cmd_context>(m_device)
 		);
 	}
 }
 
 gapi_d3d12::gapi_d3d12(ID3D12Device* device)
 {
-	LUID luid = device->GetAdapterLuid();
+	const LUID luid = device->GetAdapterLuid();
 	m_adapter = d3d12_adapter::select_adapter(luid);
-	m_device = t::shared_ptr<d3d12_device>(new d3d12_device(m_adapter, device));
+	m_device = t::make_shared<d3d12_device>(m_adapter, device);
 }
 
 gapi_d3d12::~gapi_d3d12()
@@ -81,7 +80,7 @@ gapi_d3d12::~gapi_d3d12()
 		WinComPtr<IDXGIDebug1> debug_com;
 		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug_com))))
 		{
-			debug_com->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_SUMMARY | DXGI_DEBUG_RLO_IGNORE_INTERNAL));
+			debug_com->ReportLiveObjects(DXGI_DEBUG_ALL, static_cast<DXGI_DEBUG_RLO_FLAGS>(DXGI_DEBUG_RLO_SUMMARY | DXGI_DEBUG_RLO_IGNORE_INTERNAL));
 		}
 	}
 }
@@ -138,18 +137,18 @@ t::shared_ptr<gapi_vertex_buffer> gapi_d3d12::create_vertex_buffer(const size_t&
 
 void* gapi_d3d12::lock_vertex_buffer(t::shared_ptr<gapi_vertex_buffer> vertex_buffer)
 {
-	t::shared_ptr<gapi_d3d12_vertex_buffer> buffer = gapi_d3d12_vertex_buffer::cast(vertex_buffer);
+	const t::shared_ptr<gapi_d3d12_vertex_buffer> buffer = gapi_d3d12_vertex_buffer::cast(vertex_buffer);
 	return buffer->get_d3d12_vertex_buffer()->map();
 }
 
 void gapi_d3d12::unlock_vertex_buffer(t::shared_ptr<gapi_vertex_buffer> vertex_buffer)
 {
 	// Unmap the buffer
-	t::shared_ptr<gapi_d3d12_vertex_buffer> buffer = gapi_d3d12_vertex_buffer::cast(vertex_buffer);
+	const t::shared_ptr<gapi_d3d12_vertex_buffer> buffer = gapi_d3d12_vertex_buffer::cast(vertex_buffer);
 	buffer->get_d3d12_vertex_buffer()->unmap();
 
 	// Fence and wait for buffer uploading
-	auto buffer_fence = t::shared_ptr<d3d12_fence>(new d3d12_fence(m_device));
-	uint64 fence_value = buffer_fence->signal();
+	const auto buffer_fence = t::make_shared<d3d12_fence>(m_device);
+	const uint64 fence_value = buffer_fence->signal();
 	buffer_fence->wait(fence_value);
 }

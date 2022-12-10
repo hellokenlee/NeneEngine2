@@ -12,14 +12,11 @@ d3d12_cmd_list_mgr::d3d12_cmd_list_mgr(t::shared_ptr<d3d12_device> device, d3d12
 	D3D12_COMMAND_QUEUE_DESC desc = {};
 	desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 	desc.Type = d3d_cast(type);
-	auto d3d_device = get_parent_device()->get_d3d_device();
+	const auto d3d_device = get_parent_device()->get_d3d_device();
 	VERIFY(d3d_device->CreateCommandQueue(&desc, IID_PPV_ARGS(&m_command_queue)));
 }
 
-d3d12_cmd_list_mgr::~d3d12_cmd_list_mgr()
-{
-	
-}
+d3d12_cmd_list_mgr::~d3d12_cmd_list_mgr() = default;
 
 t::shared_ptr<d3d12_cmd_list> d3d12_cmd_list_mgr::create_cmd_list(t::shared_ptr<d3d12_cmd_allocator> allocator)
 {
@@ -64,7 +61,7 @@ t::shared_ptr<d3d12_cmd_list> d3d12_cmd_list_mgr::obtain_cmd_list(t::shared_ptr<
 	}
 	else
 	{
-		cmd_list = t::shared_ptr<d3d12_cmd_list>(new d3d12_cmd_list(m_type, allocator, shared_from_this()));
+		cmd_list = t::make_shared<d3d12_cmd_list>(m_type, allocator, this->shared_from_this());
 	}
 	return cmd_list;
 }
@@ -80,7 +77,7 @@ t::shared_ptr<d3d12_cmd_allocator> d3d12_cmd_list_mgr::obtain_cmd_allocator()
 	}
 	else
 	{
-		allocator = t::shared_ptr<d3d12_cmd_allocator>(new d3d12_cmd_allocator(get_parent_device(), m_type));
+		allocator = t::make_shared<d3d12_cmd_allocator>(get_parent_device(), m_type);
 		m_current_allocators.push_back(allocator);
 	}
 

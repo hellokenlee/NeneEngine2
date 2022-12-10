@@ -49,9 +49,9 @@ void d3d12_device::init()
 	);
 
 	// Create command list manager
-	m_copy_cmd_list_mgr = t::shared_ptr<d3d12_cmd_list_mgr>(new d3d12_cmd_list_mgr(shared_from_this(), d3d12_cmd_type::copy));
-	m_compute_cmd_list_mgr = t::shared_ptr<d3d12_cmd_list_mgr>(new d3d12_cmd_list_mgr(shared_from_this(), d3d12_cmd_type::compute));
-	m_graphics_cmd_list_mgr = t::shared_ptr<d3d12_cmd_list_mgr>(new d3d12_cmd_list_mgr(shared_from_this(), d3d12_cmd_type::graphics));
+	m_copy_cmd_list_mgr = t::make_shared<d3d12_cmd_list_mgr>(this->shared_from_this(), d3d12_cmd_type::copy);
+	m_compute_cmd_list_mgr = t::make_shared<d3d12_cmd_list_mgr>(shared_from_this(), d3d12_cmd_type::compute);
+	m_graphics_cmd_list_mgr = t::make_shared<d3d12_cmd_list_mgr>(shared_from_this(), d3d12_cmd_type::graphics);
 }
 
 void d3d12_device::clear()

@@ -41,7 +41,7 @@ t::shared_ptr<d3d12_descriptor_handle> d3d12_descriptor_heap::allocate_descripto
 	CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_cpu_base);
 	handle.Offset(index, m_descriptor_size);
 
-	return t::shared_ptr<d3d12_descriptor_handle>(new d3d12_descriptor_handle{ index, handle });
+	return t::make_shared<d3d12_descriptor_handle>(index, handle);
 }
 
 void d3d12_descriptor_heap::free_descriptor(t::shared_ptr<d3d12_descriptor_handle> handle)

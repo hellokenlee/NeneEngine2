@@ -14,4 +14,16 @@ using unique_ptr = std::unique_ptr<T>;
 
 template<class T>
 using enable_shared_from_this = std::enable_shared_from_this<T>;
+
+template <typename T, typename ...Args>
+auto make_shared(Args &&...args)
+{
+    return std::make_shared<T>(std::forward<Args>(args)...);
+}
+
+template <typename T, typename ...Args>
+auto make_unique(Args &&...args)
+{
+    return std::make_unique<T>(std::forward<Args>(args)...);
+}
 }
