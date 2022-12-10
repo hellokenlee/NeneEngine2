@@ -55,7 +55,7 @@ Window {
                 title: "Build"
             }
         }
-        CustomRenderItem
+        NeneRenderItem
         {
             Layout.fillWidth: true
             Layout.fillHeight: true

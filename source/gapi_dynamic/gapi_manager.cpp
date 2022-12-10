@@ -23,6 +23,7 @@ void gapi_manager::create(void* window)
 
 void gapi_manager::initialize(const gapi_platform& platform, void* device)
 {
+	CHECK(device != nullptr);
 	CHECK(m_instance == nullptr);
 
 	switch (platform)
@@ -56,6 +57,5 @@ void gapi_manager::destroy()
 
 t::shared_ptr<gapi> gapi_manager::get()
 {
-	CHECK(m_instance != nullptr);
 	return m_instance;
 }

@@ -136,10 +136,12 @@ py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(Outp
   <ItemGroup>
     <ClCompile Include="editor_wrapper.meta.cpp" />
     <ClCompile Include="qt\nene_render_item.cpp" />
+    <ClCompile Include="qt\nene_render_node.cpp" />
     <ClInclude Include="editor_wrapper_global.h" />
     <ClInclude Include="editor_wrapper.h" />
     <ClCompile Include="editor_wrapper.cpp" />
     <ClInclude Include="qt\nene_qt.h" />
+    <ClInclude Include="qt\nene_render_node.h" />
     <QtMoc Include="qt\nene_render_item.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
