@@ -69,6 +69,26 @@
     <LibraryPath>$(SolutionDir)extern\python3.10\lib\win\$(PlatformTarget)\$(Configuration)\;$(SolutionDir)extern\qt5.15.2\lib\win\$(PlatformTarget)\$(Configuration)\;$(SolutionDir).bin\binary\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <TargetName>nene</TargetName>
   </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <QtMoc>
+      <OverrideClCompile>extend</OverrideClCompile>
+    </QtMoc>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <QtMoc>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </QtMoc>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <QtMoc>
+      <OverrideClCompile>extend</OverrideClCompile>
+    </QtMoc>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <QtMoc>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </QtMoc>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
     <ClCompile>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
@@ -115,11 +135,12 @@ py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(Outp
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="editor_wrapper.meta.cpp" />
-    <ClCompile Include="qt_extension\q_nene_render_item.cpp" />
+    <ClCompile Include="qt\nene_render_item.cpp" />
     <ClInclude Include="editor_wrapper_global.h" />
     <ClInclude Include="editor_wrapper.h" />
     <ClCompile Include="editor_wrapper.cpp" />
-    <QtMoc Include="qt_extension\q_nene_render_item.h" />
+    <ClInclude Include="qt\nene_qt.h" />
+    <QtMoc Include="qt\nene_render_item.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

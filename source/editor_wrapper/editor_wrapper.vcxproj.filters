@@ -32,17 +32,20 @@
     <ClInclude Include="editor_wrapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="qt\nene_qt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="editor_wrapper.meta.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="qt_extension\q_nene_render_item.cpp">
+    <ClCompile Include="qt\nene_render_item.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="qt_extension\q_nene_render_item.h">
+    <QtMoc Include="qt\nene_render_item.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
