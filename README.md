@@ -100,6 +100,7 @@ graph TD
   core --> editor_wrapper
   engine --> editor_wrapper
   gapi_dynamic --> editor_wrapper
+  renderer --> editor_wrapper
   core --> engine
   core_object --> engine
   renderer --> engine
