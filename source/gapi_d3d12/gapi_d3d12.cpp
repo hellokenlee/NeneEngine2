@@ -104,12 +104,18 @@ t::shared_ptr<gapi_cmd_context> gapi_d3d12::get_cmd_context(const int32 id)
 
 void gapi_d3d12::start_frame()
 {
-	m_viewport->start_frame();
+	if (m_viewport != nullptr)
+	{
+		m_viewport->start_frame();
+	}
 }
 
 void gapi_d3d12::finish_frame()
 {
-	m_viewport->finish_frame();
+	if (m_viewport != nullptr)
+	{
+		m_viewport->finish_frame();
+	}
 }
 
 t::shared_ptr<gapi_vertex_shader> gapi_d3d12::create_vertex_shader(const gapi_shader_initializer& initializer)

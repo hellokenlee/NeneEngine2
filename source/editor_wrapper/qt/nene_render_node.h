@@ -20,13 +20,15 @@ namespace q
         void update(const QQuickItem* parent);
 
     public:
-        void render(const RenderState* state) override;
+        virtual void render(const RenderState* state) override;
 
-        void releaseResources() override;
+        virtual void releaseResources() override;
 
-        RenderingFlags flags() const override;
+        virtual RenderingFlags flags() const override;
 
-        QRectF rect() const override;
+        virtual StateFlags changedStates() const override; 
+
+        virtual QRectF rect() const override;
 
     protected:
         int32 m_width, m_height;

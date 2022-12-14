@@ -40,16 +40,19 @@ QSGNode* nene_render_item::updatePaintNode(QSGNode* node, UpdatePaintNodeData* d
     {
         // Api validation
         const QSGRendererInterface* rhi = window()->rendererInterface();
+        nene_render_node* nene_node = dynamic_cast<nene_render_node*>(node);
         if (rhi != nullptr && rhi->graphicsApi() == QSGRendererInterface::GraphicsApi::Direct3D12)
         {
-            nene_render_node* nene_node = dynamic_cast<nene_render_node*>(node);
-            nene_node = (nene_node == nullptr) ? (new nene_render_node(window())) : nene_node;
+            if (nene_node == nullptr)
+            {
+                nene_node = new nene_render_node(window());
+            }
             nene_node->update(this);
         }
         else
         {
             LOG(editor, error, TXT("Invalid qt quick render context!"));
         }
-        return node;
+        return nene_node;
     }
 }
