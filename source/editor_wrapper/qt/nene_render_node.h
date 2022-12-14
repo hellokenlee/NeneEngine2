@@ -26,12 +26,11 @@ namespace q
 
         virtual RenderingFlags flags() const override;
 
-        virtual StateFlags changedStates() const override; 
-
         virtual QRectF rect() const override;
 
     protected:
         int32 m_width, m_height;
         t::shared_ptr<i::renderer> m_renderer;
+        t::shared_ptr<gapi_texture> m_render_target;
     };
 };

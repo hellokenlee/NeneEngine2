@@ -20,6 +20,7 @@ gapi_d3d12::gapi_d3d12(HWND hwnd)
 	, m_device(nullptr)
 	, m_adapter(nullptr)
 	, m_viewport(nullptr)
+	, m_swapchain(nullptr)
 {
 	//
 	m_adapter = d3d12_adapter::select_adapter();
@@ -29,7 +30,9 @@ gapi_d3d12::gapi_d3d12(HWND hwnd)
 	m_device->init();
 
 	//
-	m_viewport = t::make_shared<gapi_d3d12_viewport>(m_adapter, hwnd, g_d3d12_back_buffer_count, g_d3d12_back_buffer_multisample_count);
+	m_viewport = t::make_shared<gapi_d3d12_viewport>(gapi_d3d12_viewport::make_rect_from_hwnd(hwnd));
+	m_swapchain = t::make_shared<gapi_d3d12_swapchain>(m_adapter, hwnd, g_d3d12_back_buffer_count, g_d3d12_back_buffer_multisample_count);
+	
 	// Init non-default contexts
 	constexpr uint32 worker_thread_num = 1;
 	for (uint32 idx = 0; idx < worker_thread_num; ++idx)
@@ -41,6 +44,11 @@ gapi_d3d12::gapi_d3d12(HWND hwnd)
 }
 
 gapi_d3d12::gapi_d3d12(ID3D12Device* device)
+	: super()
+	, m_device(nullptr)
+	, m_adapter(nullptr)
+	, m_viewport(nullptr)
+	, m_swapchain(nullptr)
 {
 	// Get existing device
 	const LUID luid = device->GetAdapterLuid();
@@ -48,8 +56,8 @@ gapi_d3d12::gapi_d3d12(ID3D12Device* device)
 	m_device = t::make_shared<d3d12_device>(m_adapter, device);
 	m_device->init();
 
-	// We dont need swapchain, let viewport be none
-	m_viewport.reset();
+	// We dont need swapchain 
+	m_viewport = t::make_shared<gapi_d3d12_viewport>(rect{});
 
 	// Init non-default contexts
 	constexpr uint32 worker_thread_num = 1;
@@ -70,7 +78,10 @@ gapi_d3d12::~gapi_d3d12()
 	}
 
 	//
-	m_viewport->finish_frame();
+	m_swapchain->finish_frame();
+	m_swapchain.reset();
+
+	//
 	m_viewport.reset();
 
 	//
@@ -104,17 +115,17 @@ t::shared_ptr<gapi_cmd_context> gapi_d3d12::get_cmd_context(const int32 id)
 
 void gapi_d3d12::start_frame()
 {
-	if (m_viewport != nullptr)
+	if (m_swapchain != nullptr)
 	{
-		m_viewport->start_frame();
+		m_swapchain->start_frame();
 	}
 }
 
 void gapi_d3d12::finish_frame()
 {
-	if (m_viewport != nullptr)
+	if (m_swapchain != nullptr)
 	{
-		m_viewport->finish_frame();
+		m_swapchain->finish_frame();
 	}
 }
 

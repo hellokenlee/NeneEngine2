@@ -20,8 +20,8 @@ simple_renderer::simple_renderer()
 {
 	auto api = gapi_manager::get();
 
-	auto vertex_shader = api->create_vertex_shader({TXT("./shader/simple.hlsl"), TXT("MainVS")});
-	auto pixel_sahder = api->create_pixel_shader({TXT("./shader/simple.hlsl"), TXT("MainPS")});
+	auto vertex_shader = api->create_vertex_shader({"./shader/simple.hlsl", "MainVS"});
+	auto pixel_sahder = api->create_pixel_shader({"./shader/simple.hlsl", "MainPS"});
 	t::dynamic_array<gapi_vertex_element> vertex_declaration {
 		{"POSITION", 0, gapi_vertex_element_type::float4, 0, 0, 0, 0},
 		{"COLOR", 0, gapi_vertex_element_type::float4, 0, 16, 0, 0}
@@ -43,7 +43,7 @@ simple_renderer::simple_renderer()
 	api->unlock_vertex_buffer(m_vertex_buffer);
 }
 
-void simple_renderer::render_view_family()
+void simple_renderer::render_view_family(t::shared_ptr<gapi_texture> view_family_render_target)
 {
 	auto api = gapi_manager::get();
 
@@ -51,13 +51,13 @@ void simple_renderer::render_view_family()
 
 	context->set_graphic_pipeline_states(m_graphics_pipeline_state);
 
-	context->start_drawing_viewport(api->get_viewport());
+	context->start_drawing(api->get_viewport(), view_family_render_target);
 
 	context->set_vertex_stream(m_vertex_buffer);
 
 	context->draw_primitive(3, 1, 0, 0);
 
-	context->finish_drawing_viewport(api->get_viewport());
+	context->finish_drawing(api->get_viewport(), view_family_render_target);
 
 	context->flush();
 }

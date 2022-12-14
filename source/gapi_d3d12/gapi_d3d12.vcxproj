@@ -127,6 +127,8 @@ py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(Outp
     <ClCompile Include="gapi_d3d12_pipeline_state.cpp" />
     <ClCompile Include="gapi_d3d12_resource.cpp" />
     <ClCompile Include="gapi_d3d12_shader.cpp" />
+    <ClCompile Include="gapi_d3d12_swapchain.cpp" />
+    <ClCompile Include="gapi_d3d12_texture.cpp" />
     <ClCompile Include="gapi_d3d12_viewport.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -154,6 +156,8 @@ py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(Outp
     <ClInclude Include="gapi_d3d12_pipeline_state.h" />
     <ClInclude Include="gapi_d3d12_resource.h" />
     <ClInclude Include="gapi_d3d12_shader.h" />
+    <ClInclude Include="gapi_d3d12_swapchain.h" />
+    <ClInclude Include="gapi_d3d12_texture.h" />
     <ClInclude Include="gapi_d3d12_viewport.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

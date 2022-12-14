@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "gapi_d3d12_swapchain.h"
 #include "gapi/gapi.h"
 #include "d3d12/d3d12_device.h"
 #include "gapi_d3d12_viewport.h"
@@ -27,6 +28,8 @@ public:
 	void finish_frame() override;
 
 	t::shared_ptr<gapi_viewport> get_viewport() override { return m_viewport; }
+
+	t::shared_ptr<gapi_swapchain> get_swapchain() override { return m_swapchain; }
 	// <<< View Port Related <<<
 
 
@@ -56,9 +59,10 @@ public:
 	t::shared_ptr<d3d12_device> get_device() { return m_device; }
 
 protected:
-	t::shared_ptr<d3d12_device> m_device{};
-	t::shared_ptr<d3d12_adapter> m_adapter{};
-	t::shared_ptr<gapi_d3d12_viewport> m_viewport{};
+	t::shared_ptr<d3d12_device> m_device;
+	t::shared_ptr<d3d12_adapter> m_adapter;
+	t::shared_ptr<gapi_d3d12_viewport> m_viewport;
+	t::shared_ptr<gapi_d3d12_swapchain> m_swapchain;
 
-	t::dynamic_array<t::shared_ptr<gapi_d3d12_cmd_context>> m_contexts{};
+	t::dynamic_array<t::shared_ptr<gapi_d3d12_cmd_context>> m_contexts;
 };

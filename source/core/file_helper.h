@@ -14,7 +14,7 @@ namespace file_helper
 {
 	NENE_API wstring load_file_to_wstring(const string& filepath);
 
-	NENE_API sstring load_file_to_sstring(const string& filepath);
+	NENE_API sstring load_file_to_sstring(const sstring& filepath);
 	
 	NENE_API wstring sstring_to_wstring(const sstring& in_string);
 

@@ -24,9 +24,10 @@ void engine_loop::init(void* window)
 
 void engine_loop::update()
 {
+	
 	gapi_manager::get()->start_frame();
 
-	m_renderer->render_view_family();
+	m_renderer->render_view_family(gapi_manager::get()->get_swapchain()->get_back_buffer_texture());
 	
 	gapi_manager::get()->finish_frame();
 }

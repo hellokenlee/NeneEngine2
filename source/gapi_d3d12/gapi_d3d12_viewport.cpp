@@ -9,50 +9,26 @@
 #include "d3d12/d3d12_cmd_allocator.h"
 
 
-gapi_d3d12_viewport::gapi_d3d12_viewport(t::shared_ptr<d3d12_adapter> adapter, HWND hwnd, uint32 back_buffer_num, uint32 multi_sample_num)
-	: m_last_fence_value(0)
-	, m_back_buffer_index(0)
-	, m_fence(nullptr)
-	, m_swap_chain(nullptr)
+gapi_d3d12_viewport::gapi_d3d12_viewport(const rect& area)
+	: super()
 {
-	//
-	m_fence = t::make_shared<d3d12_fence>(adapter->get_device(0));
+	gapi_d3d12_viewport::set_rect(area);
+}
 
-	//
-	m_swap_chain = t::make_shared<d3d12_swap_chain>(adapter, hwnd, back_buffer_num, multi_sample_num);
+void gapi_d3d12_viewport::set_rect(const rect& area)
+{
+	const uint16 width = area.right - area.left;
+	const uint16 height = area.bottom - area.top;
+	m_viewport = CD3DX12_VIEWPORT {0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height)};
+	m_scissor_rect = CD3DX12_RECT {0, 0, width, height};
+}
 
-	//
-	m_back_buffer_index = m_swap_chain->get_current_back_buffer_index();
-	//
-	RECT rect;
-	if(GetWindowRect(hwnd, &rect))
+rect gapi_d3d12_viewport::make_rect_from_hwnd(HWND hwnd)
+{
+	RECT win {0, 0, 0, 0};
+	if (!GetWindowRect(hwnd, &win))
 	{
-		int32 width = rect.right - rect.left;
-		int32 height = rect.bottom - rect.top;
-		m_viewport = CD3DX12_VIEWPORT{0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height)};
-		m_scissor_rect = CD3DX12_RECT{0, 0, width, height};
+		LOG(d3d12, warning, TXT("Failed to get rect area from window handler!"));
 	}
+	return rect {static_cast<uint32>(win.left), static_cast<uint32>(win.top), static_cast<uint32>(win.right), static_cast<uint32>(win.bottom)};
 }
-
-void gapi_d3d12_viewport::start_frame()
-{
-	// Wait for last submitted frame
-	m_fence->wait(m_last_fence_value);
-
-	//
-	m_back_buffer_index = m_swap_chain->get_current_back_buffer_index();
-}
-
-void gapi_d3d12_viewport::finish_frame()
-{
-	//
-	m_swap_chain->present();
-	//
-	m_last_fence_value = m_fence->signal();
-}
-
-t::shared_ptr<d3d12_texture2d> gapi_d3d12_viewport::get_back_buffer_texture()
-{
-	return m_swap_chain->get_back_buffer_texture(m_back_buffer_index);
-}
-

@@ -28,6 +28,8 @@ namespace t
 	public:
 		typedef impl super;
 
+		using gapi_interface_type::gapi_interface_type;
+
 		static shared_ptr<gapi_dynamic_type> cast(shared_ptr<gapi_interface_type> inst)
 		{
 #if GAPI_USE_DYNAMIC_CAST

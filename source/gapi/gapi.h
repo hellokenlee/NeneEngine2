@@ -26,6 +26,8 @@ public:
 
 	virtual t::shared_ptr<gapi_viewport> get_viewport() = 0;
 
+	virtual t::shared_ptr<gapi_swapchain> get_swapchain() = 0;
+
 	// <<< View Port Related <<<
 
 

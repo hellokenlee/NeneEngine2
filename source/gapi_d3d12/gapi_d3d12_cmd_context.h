@@ -3,7 +3,6 @@
 #pragma once
 
 #include "gapi/gapi_cmd_context.h"
-
 #include "d3d12/d3d12_cmd_list.h"
 #include "d3d12/d3d12_cmd_list_mgr.h"
 
@@ -15,9 +14,9 @@ public:
 
 	void flush(const bool& wait) override;
 
-	void start_drawing_viewport(t::shared_ptr<gapi_viewport> viewport) override;
+	void start_drawing(t::shared_ptr<gapi_viewport> viewport, t::shared_ptr<gapi_texture> rendertarget) override;
 
-	void finish_drawing_viewport(t::shared_ptr<gapi_viewport> viewport) override;
+	void finish_drawing(t::shared_ptr<gapi_viewport> viewport, t::shared_ptr<gapi_texture> rendertarget) override;
 
 	void draw_primitive(uint32 vertex_num, uint32 instance_num, uint32 base_vertex_index, uint32 instance_base_index) override;
 

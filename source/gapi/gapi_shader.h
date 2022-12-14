@@ -52,7 +52,7 @@ public:
 class NENE_API gapi_shader_initializer
 {
 public:
-	gapi_shader_initializer(const string& filepath, const string& entry);
+	gapi_shader_initializer(const sstring& filepath, const sstring& entry);
 
 	[[nodiscard]] const sstring& get_shader_file() const;
 	[[nodiscard]] const sstring& get_shader_source() const;

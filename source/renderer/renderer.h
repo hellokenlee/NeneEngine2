@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "gapi/gapi_texture.h"
 
 namespace i
 {
@@ -11,6 +12,6 @@ public:
 	renderer() = default;
 	virtual ~renderer() = default;
 
-	virtual void render_view_family() = 0;
+	virtual void render_view_family(t::shared_ptr<gapi_texture> view_family_render_target) = 0;
 };
 }

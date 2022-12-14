@@ -280,7 +280,6 @@ nene_render_node::nene_render_node(QQuickWindow* window)
     : m_width(0)
     , m_height(0)
 {
-    /*
     if (gapi_manager::get() == nullptr)
     {
         const QSGRendererInterface* rhi = window->rendererInterface();
@@ -293,9 +292,10 @@ nene_render_node::nene_render_node(QQuickWindow* window)
         {
             m_renderer = t::make_shared<simple_renderer>();
         }
+
+        // m_render_target = 
     }
-    */
-    impl = t::make_shared<render_node_impl>(window);
+    // impl = t::make_shared<render_node_impl>(window);
 }
 
 nene_render_node::~nene_render_node()
@@ -307,19 +307,19 @@ void nene_render_node::update(const QQuickItem* parent)
 {
     m_width = static_cast<int32>(parent->width());
     m_height = static_cast<int32>(parent->height());
-    impl->sync(parent);
-    LOG(editor, info, TXT("Update: %d %d"), m_width, m_height);
+    // impl->sync(parent);
+    gapi_manager::get()->get_viewport()->set_rect(rect32{0, 0, static_cast<uint32>(m_width), static_cast<uint32>(m_height)});
 }
 
 void nene_render_node::render(const RenderState* state)
 {
-    //gapi_manager::get()->start_frame();
-
-    //m_renderer->render_view_family();
+    gapi_manager::get()->start_frame();
+    
+    m_renderer->render_view_family();
 	
-    //gapi_manager::get()->finish_frame();
+    gapi_manager::get()->finish_frame();
 
-    impl->render(state, matrix(), inheritedOpacity());
+    // impl->render(state, matrix(), inheritedOpacity());
 }
 
 void nene_render_node::releaseResources()
@@ -333,12 +333,7 @@ void nene_render_node::releaseResources()
     
     gapi_manager::destroy();
 
-    impl.reset();
-}
-
-QSGRenderNode::StateFlags nene_render_node::changedStates() const
-{
-    return BlendState | ScissorState | StencilState | DepthState;
+    // impl.reset();
 }
 
 QSGRenderNode::RenderingFlags nene_render_node::flags() const

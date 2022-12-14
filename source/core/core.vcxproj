@@ -183,6 +183,7 @@ py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(Outp
     <ClInclude Include="math\dxmath\DirectXMath.h" />
     <ClInclude Include="math\dxmath\DirectXPackedVector.h" />
     <ClInclude Include="math\math.h" />
+    <ClInclude Include="math\rect.inl" />
     <ClInclude Include="platform.h" />
     <ClInclude Include="template.h" />
     <ClInclude Include="template\container.h" />

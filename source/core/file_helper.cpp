@@ -27,7 +27,7 @@ namespace file_helper
 		return result;
 	}
 	
-	NENE_API sstring load_file_to_sstring(const string& filepath)
+	NENE_API sstring load_file_to_sstring(const sstring& filepath)
 	{
 		sstring content;
 		ifstream file_stream;

@@ -3,9 +3,10 @@
 #pragma once
 
 #include "core/core.h"
-#include "gapi_template.h"
+#include "gapi_texture.h"
 #include "gapi_viewport.h"
 #include "gapi_resource.h"
+#include "gapi_swapchain.h"
 #include "gapi_pipeline_state.h"
 
 
@@ -17,9 +18,9 @@ public:
 	virtual void flush(const bool& wait=false) = 0;
 
 	//
-	virtual void start_drawing_viewport(t::shared_ptr<gapi_viewport> viewport) = 0;
+	virtual void start_drawing(t::shared_ptr<gapi_viewport> viewport, t::shared_ptr<gapi_texture> rendertarget) = 0;
 
-	virtual void finish_drawing_viewport(t::shared_ptr<gapi_viewport> viewport) = 0;
+	virtual void finish_drawing(t::shared_ptr<gapi_viewport> viewport, t::shared_ptr<gapi_texture> rendertarget) = 0;
 
 	virtual void draw_primitive(uint32 vertex_num, uint32 instance_num, uint32 base_vertex_index, uint32 instance_base_index) = 0;
 

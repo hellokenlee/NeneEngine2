@@ -64,27 +64,30 @@ void gapi_d3d12_cmd_context::flush(const bool& wait)
 	}
 }
 
-void gapi_d3d12_cmd_context::start_drawing_viewport(t::shared_ptr<gapi_viewport> viewport)
+void gapi_d3d12_cmd_context::start_drawing(t::shared_ptr<gapi_viewport> inviewport, t::shared_ptr<gapi_texture> inrendertarget)
 {
-	t::shared_ptr<gapi_d3d12_viewport> d3dviewport = gapi_d3d12_viewport::cast(viewport);
+	const auto viewport = gapi_d3d12_viewport::cast(inviewport);
+	const auto rendertarget = gapi_d3d12_texture2d::cast(inrendertarget);
+	
 	m_cmd_list->get_d3d_graphics_cmd_list()->SetGraphicsRootSignature(
 		m_cmd_list->get_parent_device()->get_d3d_root_signature()
 	);
-	m_cmd_list->get_d3d_graphics_cmd_list()->RSSetViewports(1, &d3dviewport->m_viewport);
-	m_cmd_list->get_d3d_graphics_cmd_list()->RSSetScissorRects(1, &d3dviewport->m_scissor_rect);
+	m_cmd_list->get_d3d_graphics_cmd_list()->RSSetViewports(1, &viewport->get_d3d_viewport());
+	m_cmd_list->get_d3d_graphics_cmd_list()->RSSetScissorRects(1, &viewport->get_d3d_scissor_rect());
 	m_cmd_list->add_transition_barrier(
-		d3dviewport->get_back_buffer_texture(),
+		rendertarget->get_d3d_texture(),
 		D3D12_RESOURCE_STATE_PRESENT,
 		D3D12_RESOURCE_STATE_RENDER_TARGET
 	);
+	const auto rtv = rendertarget->get_d3d_texture()->get_render_target_view();
 	m_cmd_list->get_d3d_graphics_cmd_list()->OMSetRenderTargets(
 		1, 
-		d3dviewport->get_back_buffer_texture()->get_render_target_view()->get_d3d_descriptor_handle(), 
+		rtv->get_d3d_descriptor_handle(), 
 		FALSE, nullptr
 	);
 	constexpr float clear_color[] = { 0.0f, 0.2f, 0.4f, 1.0f };
     m_cmd_list->get_d3d_graphics_cmd_list()->ClearRenderTargetView(
-		*(d3dviewport->get_back_buffer_texture()->get_render_target_view()->get_d3d_descriptor_handle()),
+		*(rtv->get_d3d_descriptor_handle()),
 		clear_color, 
 		0, 
 		nullptr
@@ -92,12 +95,11 @@ void gapi_d3d12_cmd_context::start_drawing_viewport(t::shared_ptr<gapi_viewport>
 	m_cmd_list->get_d3d_graphics_cmd_list()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
-void gapi_d3d12_cmd_context::finish_drawing_viewport(t::shared_ptr<gapi_viewport> viewport)
+void gapi_d3d12_cmd_context::finish_drawing(t::shared_ptr<gapi_viewport> inviewport, t::shared_ptr<gapi_texture> inrendertarget)
 {
-	t::shared_ptr<gapi_d3d12_viewport> d3dviewport = gapi_d3d12_viewport::cast(viewport);
-
+	const auto rendertarget = gapi_d3d12_texture2d::cast(inrendertarget);
 	m_cmd_list->add_transition_barrier(
-		d3dviewport->get_back_buffer_texture(),
+		rendertarget->get_d3d_texture(),
 		D3D12_RESOURCE_STATE_RENDER_TARGET,
 		D3D12_RESOURCE_STATE_PRESENT
 	);

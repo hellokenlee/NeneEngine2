@@ -15,24 +15,17 @@
 class gapi_d3d12_viewport : public t::impl<gapi_d3d12_viewport, gapi_viewport>
 {
 public:
-	gapi_d3d12_viewport(t::shared_ptr<d3d12_adapter> adapter, HWND hwnd, uint32 back_buffer_num, uint32 multi_sample_num);
+	gapi_d3d12_viewport(const rect& area);
 	~gapi_d3d12_viewport() override = default;
 
-public:
-	void start_frame();
+	virtual void set_rect(const rect& area) override;
+	
+	[[nodiscard]] const D3D12_VIEWPORT& get_d3d_viewport() const { return m_viewport; }
+	[[nodiscard]] const D3D12_RECT& get_d3d_scissor_rect() const { return m_scissor_rect; }
 
-	void finish_frame();
-
-	t::shared_ptr<d3d12_texture2d> get_back_buffer_texture();
-
+	static rect make_rect_from_hwnd(HWND hwnd);
 public:
 	//
 	CD3DX12_VIEWPORT m_viewport;
 	CD3DX12_RECT m_scissor_rect;
-	//
-	uint64 m_last_fence_value;
-	uint32 m_back_buffer_index;
-	//
-	t::shared_ptr<d3d12_fence> m_fence;
-	t::shared_ptr<d3d12_swap_chain> m_swap_chain;
 };

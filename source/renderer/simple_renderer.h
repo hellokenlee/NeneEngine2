@@ -12,7 +12,7 @@ class NENE_API simple_renderer : public i::renderer
 public:
 	simple_renderer();
 
-	void render_view_family() override;
+	void render_view_family(t::shared_ptr<gapi_texture> view_family_render_target) override;
 
 protected:
 	t::shared_ptr<gapi_vertex_buffer> m_vertex_buffer{};
