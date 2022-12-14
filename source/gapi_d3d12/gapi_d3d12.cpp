@@ -15,7 +15,7 @@
 #include <dxgidebug.h>
 
 
-gapi_d3d12::gapi_d3d12(void* hwnd)
+gapi_d3d12::gapi_d3d12(HWND hwnd)
 	: super()
 	, m_device(nullptr)
 	, m_adapter(nullptr)
@@ -30,7 +30,7 @@ gapi_d3d12::gapi_d3d12(void* hwnd)
 
 	//
 	m_viewport = t::make_shared<gapi_d3d12_viewport>(m_adapter, hwnd, g_d3d12_back_buffer_count, g_d3d12_back_buffer_multisample_count);
-	// Init context
+	// Init non-default contexts
 	constexpr uint32 worker_thread_num = 1;
 	for (uint32 idx = 0; idx < worker_thread_num; ++idx)
 	{
@@ -42,9 +42,23 @@ gapi_d3d12::gapi_d3d12(void* hwnd)
 
 gapi_d3d12::gapi_d3d12(ID3D12Device* device)
 {
+	// Get existing device
 	const LUID luid = device->GetAdapterLuid();
 	m_adapter = d3d12_adapter::select_adapter(luid);
 	m_device = t::make_shared<d3d12_device>(m_adapter, device);
+	m_device->init();
+
+	// We dont need swapchain, let viewport be none
+	m_viewport.reset();
+
+	// Init non-default contexts
+	constexpr uint32 worker_thread_num = 1;
+	for (uint32 idx = 0; idx < worker_thread_num; ++idx)
+	{
+		m_contexts.emplace_back(
+			t::make_shared<gapi_d3d12_cmd_context>(m_device)
+		);
+	}
 }
 
 gapi_d3d12::~gapi_d3d12()
@@ -58,7 +72,6 @@ gapi_d3d12::~gapi_d3d12()
 	//
 	m_viewport->finish_frame();
 	m_viewport.reset();
-	m_viewport = nullptr;
 
 	//
 	m_contexts.clear();
@@ -66,13 +79,10 @@ gapi_d3d12::~gapi_d3d12()
 	//
 	m_device->clear();
 	m_device.reset();
-	m_device = nullptr;
 
 	//
 	m_adapter->remove_all_devices();
 	m_adapter.reset();
-	m_adapter = nullptr;
-
 
 	//
 	if (g_d3d12_debug)
@@ -104,18 +114,12 @@ void gapi_d3d12::finish_frame()
 
 t::shared_ptr<gapi_vertex_shader> gapi_d3d12::create_vertex_shader(const gapi_shader_initializer& initializer)
 {
-	t::shared_ptr<gapi_d3d12_vertex_shader> result(
-		new gapi_d3d12_vertex_shader(initializer.get_shader_source(), initializer.get_shader_entry(), initializer.get_shader_file())
-	);
-	return result;
+	return t::make_shared<gapi_d3d12_vertex_shader>(initializer.get_shader_source(), initializer.get_shader_entry(), initializer.get_shader_file());
 }
 
 t::shared_ptr<gapi_pixel_shader> gapi_d3d12::create_pixel_shader(const gapi_shader_initializer& initializer)
 {
-	t::shared_ptr<gapi_d3d12_pixel_shader> result(
-		new gapi_d3d12_pixel_shader(initializer.get_shader_source(), initializer.get_shader_entry(), initializer.get_shader_file())
-	);
-	return result;
+	return t::make_shared<gapi_d3d12_pixel_shader>(initializer.get_shader_source(), initializer.get_shader_entry(), initializer.get_shader_file());
 }
 
 t::shared_ptr<gapi_compute_pipeline_state> gapi_d3d12::create_compute_pipeline_state(const gapi_compute_pipeline_state_initializer&)
@@ -125,14 +129,12 @@ t::shared_ptr<gapi_compute_pipeline_state> gapi_d3d12::create_compute_pipeline_s
 
 t::shared_ptr<gapi_graphics_pipeline_state> gapi_d3d12::create_graphic_pipeline_state(const gapi_graphics_pipeline_state_initializer& initializer)
 {
-	t::shared_ptr<gapi_d3d12_graphics_pipeline_state> result(new gapi_d3d12_graphics_pipeline_state(m_device, initializer));
-	return result;
+	return t::make_shared<gapi_d3d12_graphics_pipeline_state>(m_device, initializer);
 }
 
 t::shared_ptr<gapi_vertex_buffer> gapi_d3d12::create_vertex_buffer(const size_t& buffer_stride, const size_t& buffer_size, const gapi_resource_usage& buffer_usage)
 {
-	t::shared_ptr<gapi_d3d12_vertex_buffer> result(new gapi_d3d12_vertex_buffer(m_device, buffer_stride, buffer_size));
-	return result;
+	return t::make_shared<gapi_d3d12_vertex_buffer>(m_device, buffer_stride, buffer_size);
 }
 
 void* gapi_d3d12::lock_vertex_buffer(t::shared_ptr<gapi_vertex_buffer> vertex_buffer)

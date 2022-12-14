@@ -7,9 +7,9 @@
 #include "d3d12_cmd_list_mgr.h"
 
 
-d3d12_swap_chain::d3d12_swap_chain(t::shared_ptr<d3d12_adapter> adapter, void* hwnd, uint32 back_buffer_num, uint32 multi_sample_num)
+d3d12_swap_chain::d3d12_swap_chain(t::shared_ptr<d3d12_adapter> adapter, HWND hwnd, uint32 back_buffer_num, uint32 multi_sample_num)
 	: d3d12_adapter_child(adapter)
-	, m_hwnd(static_cast<HWND>(hwnd))
+	, m_hwnd(hwnd)
 	, m_back_buffer_num(back_buffer_num)
 	, m_multi_sample_num(multi_sample_num)
 {

@@ -17,7 +17,7 @@ void engine_loop::init(void* window)
 	//
 	LOG(engine, info, TXT("Engine Init!"));
 	//
-	gapi_manager::create(window);
+	gapi_manager::create(gapi_platform::direct3d12, window);
 	//
 	m_renderer = t::make_shared<simple_renderer>();
 }

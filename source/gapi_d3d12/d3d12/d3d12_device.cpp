@@ -30,7 +30,20 @@ d3d12_device::d3d12_device(t::shared_ptr<d3d12_adapter> adapter)
 d3d12_device::d3d12_device(t::shared_ptr<d3d12_adapter> adapter, ID3D12Device* d3d_device)
 	: d3d12_adapter_child(adapter)
 {
+	// Record external device
 	m_device = d3d_device;
+	
+	// Create root signature
+	CD3DX12_ROOT_SIGNATURE_DESC desc;
+	desc.Init(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+	WinComPtr<ID3DBlob> signature;
+	WinComPtr<ID3DBlob> error;
+	D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error);
+	VERIFY(
+		m_device->CreateRootSignature(
+			0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_root_signature)
+		)
+	);
 }
 
 d3d12_device::~d3d12_device()
@@ -40,6 +53,8 @@ d3d12_device::~d3d12_device()
 
 void d3d12_device::init()
 {
+	LOG(d3d12, info, TXT("Initializing d3d12 device."));
+	
 	// Register device
 	get_parent_adapter()->append_device(shared_from_this());
 
@@ -47,8 +62,9 @@ void d3d12_device::init()
 	m_global_descriptor_heap = t::shared_ptr<d3d12_descriptor_heap>(
 		new d3d12_descriptor_heap(shared_from_this(), g_d3d12_max_global_descriptor_count, D3D12_DESCRIPTOR_HEAP_TYPE_RTV)
 	);
-
+	
 	// Create command list manager
+	LOG(d3d12, info, TXT("Creating command list managers."));
 	m_copy_cmd_list_mgr = t::make_shared<d3d12_cmd_list_mgr>(this->shared_from_this(), d3d12_cmd_type::copy);
 	m_compute_cmd_list_mgr = t::make_shared<d3d12_cmd_list_mgr>(shared_from_this(), d3d12_cmd_type::compute);
 	m_graphics_cmd_list_mgr = t::make_shared<d3d12_cmd_list_mgr>(shared_from_this(), d3d12_cmd_type::graphics);

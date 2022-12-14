@@ -14,7 +14,7 @@ static LRESULT CALLBACK WindowProcessFunction(HWND hWnd, UINT msg, WPARAM wParam
 	{
 	case WM_CREATE:
 	{
-		LPCREATESTRUCT p_create_struct = reinterpret_cast<LPCREATESTRUCT>(lParam);
+		const LPCREATESTRUCT p_create_struct = reinterpret_cast<LPCREATESTRUCT>(lParam);
 		SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(p_create_struct->lpCreateParams));
 		break;
 	}
@@ -86,7 +86,7 @@ bool win_client::should_exit()
 void win_client::poll_messages()
 {
 	MSG msg;
-	while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+	while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
 	{
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);

@@ -18,7 +18,6 @@ int main()
 	
 	engine_loop::shutdown();
 	//*/
-	// n::object::test();
 	return 0;
 	
 }

@@ -15,7 +15,7 @@
 class gapi_d3d12_viewport : public t::impl<gapi_d3d12_viewport, gapi_viewport>
 {
 public:
-	gapi_d3d12_viewport(t::shared_ptr<d3d12_adapter> adapter, void* hwnd, uint32 back_buffer_num, uint32 multi_sample_num);
+	gapi_d3d12_viewport(t::shared_ptr<d3d12_adapter> adapter, HWND hwnd, uint32 back_buffer_num, uint32 multi_sample_num);
 	~gapi_d3d12_viewport() override = default;
 
 public:

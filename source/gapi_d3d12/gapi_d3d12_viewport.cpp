@@ -9,7 +9,7 @@
 #include "d3d12/d3d12_cmd_allocator.h"
 
 
-gapi_d3d12_viewport::gapi_d3d12_viewport(t::shared_ptr<d3d12_adapter> adapter, void* hwnd, uint32 back_buffer_num, uint32 multi_sample_num)
+gapi_d3d12_viewport::gapi_d3d12_viewport(t::shared_ptr<d3d12_adapter> adapter, HWND hwnd, uint32 back_buffer_num, uint32 multi_sample_num)
 	: m_last_fence_value(0)
 	, m_back_buffer_index(0)
 	, m_fence(nullptr)
@@ -25,7 +25,7 @@ gapi_d3d12_viewport::gapi_d3d12_viewport(t::shared_ptr<d3d12_adapter> adapter, v
 	m_back_buffer_index = m_swap_chain->get_current_back_buffer_index();
 	//
 	RECT rect;
-	if(GetWindowRect(static_cast<HWND>(hwnd), &rect))
+	if(GetWindowRect(hwnd, &rect))
 	{
 		int32 width = rect.right - rect.left;
 		int32 height = rect.bottom - rect.top;
