@@ -35,8 +35,8 @@ namespace t
     {
     public:
         typedef nene_qml super;
-
         using derived_t::derived_t;
+        static void register_qml_type() {}
     };
 #endif
 };

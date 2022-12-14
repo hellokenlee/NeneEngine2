@@ -22,7 +22,7 @@ nene_render_item::~nene_render_item() = default;
 
 QSGNode* nene_render_item::updatePaintNode(QSGNode* node, UpdatePaintNodeData* data)
 {
-    if (!m_render_3d)
+    if (!m_should_render_3d)
     {
         QSGRectangleNode * rect = dynamic_cast<QSGRectangleNode*>(node);
         if (rect == nullptr)
@@ -40,7 +40,7 @@ QSGNode* nene_render_item::updatePaintNode(QSGNode* node, UpdatePaintNodeData* d
     {
         // Api validation
         const QSGRendererInterface* rhi = window()->rendererInterface();
-        if (rhi != nullptr && rhi->graphicsApi() != QSGRendererInterface::GraphicsApi::Direct3D12)
+        if (rhi != nullptr && rhi->graphicsApi() == QSGRendererInterface::GraphicsApi::Direct3D12)
         {
             nene_render_node* nene_node = dynamic_cast<nene_render_node*>(node);
             nene_node = (nene_node == nullptr) ? (new nene_render_node(window())) : nene_node;

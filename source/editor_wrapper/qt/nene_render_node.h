@@ -6,6 +6,7 @@
 #include <QtQuick/QQuickWindow>
 
 #include "core/template/fundamental.h"
+#include "renderer/simple_renderer.h"
 
 namespace q
 {
@@ -29,5 +30,6 @@ namespace q
 
     protected:
         int32 m_width, m_height;
+        t::shared_ptr<i::renderer> m_renderer;
     };
 };

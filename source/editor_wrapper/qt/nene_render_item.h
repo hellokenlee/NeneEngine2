@@ -16,12 +16,12 @@ namespace q
 
         virtual ~nene_render_item() override;
 
-        static void set_render_3d(const bool& render) { m_render_3d = render; }
+        static void set_should_render_3d(const bool& should) { m_should_render_3d = should; }
 
     public:
         QSGNode* updatePaintNode(QSGNode* node, UpdatePaintNodeData* data) override;
 
     protected:
-        inline static bool m_render_3d = true;
+        inline static bool m_should_render_3d = true;
     };
 };
