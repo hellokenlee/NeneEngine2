@@ -14,9 +14,6 @@ from editor import Editor
 
 def main():
 	#
-	config = Config()
-	config.initialize()
-	#
 	sys.exit(Editor().run())
 	pass
 

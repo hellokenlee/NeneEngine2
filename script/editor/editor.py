@@ -1,7 +1,7 @@
 # -*- coding=utf-8 -*-
 # __author__ = "KenLee"
 # __email__ = "hellokenlee@163.com"
-
+import nene
 from common.singleton import Singleton
 
 from PySide2.QtCore import QUrl
@@ -25,6 +25,8 @@ class Editor(object, metaclass=Singleton):
 		#
 		self.set_context("windowTitle", "Nene Engine Editor")
 		self.set_context("neneRuntime", True)
+		#
+		# nene.set_should_render_3d(False)
 		pass
 
 	def run(self):

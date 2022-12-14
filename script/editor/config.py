@@ -21,11 +21,15 @@ class Config(metaclass=Singleton):
 			engine_binary_path = build_config["binary_path"]
 			sys.path.append(engine_binary_path)
 		self.inited = False
+		self.initialize()
 		pass
 
 	def initialize(self):
 		if not self.inited:
 			import nene
-			nene.initialize()
+			nene.initialize(True)
 			self.inited = True
 		pass
+
+
+Config()
