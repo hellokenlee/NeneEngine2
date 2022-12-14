@@ -158,7 +158,7 @@ class VcProjTool(ToolBase):
 
 		# Modify compiler and linker settings
 		for group in root.findall("ItemDefinitionGroup", self.namespaces):
-			if VcAttrib.Condition in group.attrib:
+			if self.is_configuration_item_definition_group(group):
 				# Compiler Options
 				if clcompile := group.find("ClCompile", self.namespaces):
 					cxxstd = self.find_or_add_element(clcompile, "LanguageStandard")
@@ -306,6 +306,14 @@ class VcProjTool(ToolBase):
 				if property_group.attrib[VcAttrib.Label] == "Configuration":
 					return True
 		return False
+
+	def is_configuration_item_definition_group(self, definition_group: ElementTree.Element) -> bool:
+		assert (self.tag(VcTag.ItemDefinitionGroup) == definition_group.tag)
+		if VcAttrib.Condition in definition_group.attrib:
+			if VcAttrib.Label in definition_group.attrib:
+				if definition_group.attrib[VcAttrib.Label] == "Configuration":
+					return True
+		pass
 
 	def is_3rd_party_lib(self, lib: str):
 		externpath = os.path.abspath(os.path.join(self.engine_root, "extern", lib))
