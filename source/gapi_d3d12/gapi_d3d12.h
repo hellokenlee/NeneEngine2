@@ -53,6 +53,8 @@ public:
 	void* lock_vertex_buffer(t::shared_ptr<gapi_vertex_buffer> vertex_buffer) override;
 
 	void unlock_vertex_buffer(t::shared_ptr<gapi_vertex_buffer> vertex_buffer) override;
+
+	t::shared_ptr<gapi_texture> create_texture_2d(const gapi_texture_desc& desc) override;
 	// <<< Resource Related <<<
 
 public:

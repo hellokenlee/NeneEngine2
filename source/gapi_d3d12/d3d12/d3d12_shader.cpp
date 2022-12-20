@@ -31,13 +31,13 @@ static sstring d3d_cast(const gapi_shader_type& type, const gapi_shader_feature_
 
 	switch (level)
 	{
-	case gapi_shader_feature_level::shading_model_5_0:
+	case gapi_shader_feature_level::sm_5_0:
 		shader_target += "5_0";
 		break;
-	case gapi_shader_feature_level::shading_model_5_1:
+	case gapi_shader_feature_level::sm_5_1:
 		shader_target += "5_1";
 		break;
-	case gapi_shader_feature_level::shading_model_6_0:
+	case gapi_shader_feature_level::sm_6_0:
 		shader_target += "6_0";
 		break;
 	}

@@ -10,9 +10,9 @@ public:
 	d3d12_buffer(t::shared_ptr<d3d12_device> device, const size_t& buffer_size);
 	~d3d12_buffer() override = default;
 
-	void* map();
+	void* map() const;
 
-	void unmap();
+	void unmap() const;
 
 protected:
 	size_t m_buffer_size;

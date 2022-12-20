@@ -171,3 +171,8 @@ void gapi_d3d12::unlock_vertex_buffer(t::shared_ptr<gapi_vertex_buffer> vertex_b
 	const uint64 fence_value = buffer_fence->signal();
 	buffer_fence->wait(fence_value);
 }
+
+t::shared_ptr<gapi_texture> gapi_d3d12::create_texture_2d(const gapi_texture_desc& desc)
+{
+	return t::make_shared<gapi_d3d12_texture_2d>(m_device, desc);
+}

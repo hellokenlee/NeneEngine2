@@ -1,3 +1,3 @@
 # -*- coding=utf-8 -*-
 
-DEPENDENCY = ["core", "gapi", "gapi_dynamic", "core_engine"]
+DEPENDENCY = ["core", "gapi", "gapi_dynamic", "core_engine", "core_render"]

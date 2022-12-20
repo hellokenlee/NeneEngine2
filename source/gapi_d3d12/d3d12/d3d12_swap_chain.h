@@ -16,7 +16,7 @@ public:
 
 	uint32 get_current_back_buffer_index();
 
-	t::shared_ptr<d3d12_texture2d> get_back_buffer_texture(uint32 index) { return m_back_buffers[index]; }
+	t::shared_ptr<d3d12_texture_2d> get_back_buffer_texture(uint32 index) { return m_back_buffers[index]; }
 
 protected:
 	//
@@ -30,5 +30,5 @@ protected:
 	WinComPtr<IDXGISwapChain3> m_swap_chain;
 
 	//
-	t::dynamic_array<t::shared_ptr<d3d12_texture2d>> m_back_buffers;
+	t::dynamic_array<t::shared_ptr<d3d12_texture_2d>> m_back_buffers;
 };

@@ -13,7 +13,7 @@ d3d12_render_target_view::d3d12_render_target_view(t::shared_ptr<d3d12_resource>
 	d3d_device->CreateRenderTargetView(resource->get_d3d_resource(), nullptr, m_descriptor->m_handle);
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE* d3d12_render_target_view::get_d3d_descriptor_handle()
+D3D12_CPU_DESCRIPTOR_HANDLE* d3d12_render_target_view::get_d3d_descriptor_handle() const
 {
 	return &(m_descriptor->m_handle);
 }

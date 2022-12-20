@@ -2,6 +2,9 @@
 
 #pragma once
 
+#include "core/core.h"
+
+constexpr uint32 MAX_RENDER_TARGET_COUNT = 8;
 
 enum class gapi_cmd_type
 {
@@ -30,9 +33,9 @@ enum class gapi_shader_type
 
 enum class gapi_shader_feature_level
 {
-	shading_model_5_0,
-	shading_model_5_1,
-	shading_model_6_0,
+	sm_5_0,
+	sm_5_1,
+	sm_6_0,
 };
 
 enum class gapi_vertex_element_type
@@ -61,8 +64,14 @@ enum class gapi_primitive_type
 
 enum class gapi_pixel_format
 {
+	unknown,
+	// 8 bits
+
+	// 16 bits
 	
+	// 32 bits
+	r8g8b8a8,
+
+	// 64 bits
+	r16g16b16a16,
 };
-
-
-constexpr int32 MAX_RENDER_TARGET_COUNT = 8;

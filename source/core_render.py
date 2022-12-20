@@ -3,6 +3,6 @@
     Nene Module File
 """
 
-DEPENDENCY = []
+DEPENDENCY = ["core", "gapi", "gapi_dynamic"]
 
 EXTERNAL_LIB = []

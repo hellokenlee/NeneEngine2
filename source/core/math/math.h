@@ -19,3 +19,4 @@ typedef DirectX::XMFLOAT4 vector4;
  */
 
 #include "rect.inl"
+#include "point.inl"

@@ -176,6 +176,7 @@ py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(Outp
     <ClInclude Include="core.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="file_helper.h" />
+    <ClInclude Include="flag_enum_class.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="log.h" />
     <ClInclude Include="math\dxmath\DirectXCollision.h" />
@@ -183,6 +184,7 @@ py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(Outp
     <ClInclude Include="math\dxmath\DirectXMath.h" />
     <ClInclude Include="math\dxmath\DirectXPackedVector.h" />
     <ClInclude Include="math\math.h" />
+    <ClInclude Include="math\point.inl" />
     <ClInclude Include="math\rect.inl" />
     <ClInclude Include="platform.h" />
     <ClInclude Include="template.h" />

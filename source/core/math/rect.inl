@@ -6,13 +6,13 @@
 
 namespace t
 {
-    template<typename int_t>
+    template<typename T>
     struct rect
     {
-        int_t left;
-        int_t top;
-        int_t right;
-        int_t bottom;
+        T left;
+        T top;
+        T right;
+        T bottom;
     };
 };
 

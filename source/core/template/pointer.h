@@ -6,13 +6,16 @@
 
 namespace t
 {
-template<class T>
+template <typename T>
+using weak_ptr = std::weak_ptr<T>;
+
+template <typename T>
 using shared_ptr = std::shared_ptr<T>;
 
-template<class T>
+template <typename T>
 using unique_ptr = std::unique_ptr<T>;
 
-template<class T>
+template <typename T>
 using enable_shared_from_this = std::enable_shared_from_this<T>;
 
 template <typename T, typename ...Args>

@@ -12,21 +12,19 @@ d3d12_buffer::d3d12_buffer(t::shared_ptr<d3d12_device> device, const size_t& buf
 	const CD3DX12_RESOURCE_DESC states = CD3DX12_RESOURCE_DESC::Buffer(buffer_size);
 
 	//
-	get_parent_device()->get_d3d_device()->CreateCommittedResource(
-		&properties,
-		D3D12_HEAP_FLAG_NONE,
-		&states,
-		D3D12_RESOURCE_STATE_GENERIC_READ,
-		nullptr,
-		IID_PPV_ARGS(&m_resource)
-	);
-
-	//
-	d3d12_buffer::init();
+	VERIFY(
+		get_parent_device()->get_d3d_device()->CreateCommittedResource(
+			&properties,
+			D3D12_HEAP_FLAG_NONE,
+			&states,
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			nullptr,
+			IID_PPV_ARGS(&m_resource)
+		);
+	)
 }
 
-
-void* d3d12_buffer::map()
+void* d3d12_buffer::map() const
 {
 	void* result = nullptr;
 	CD3DX12_RANGE read_range(0, 0);
@@ -34,11 +32,10 @@ void* d3d12_buffer::map()
 	return result;
 }
 
-void d3d12_buffer::unmap()
+void d3d12_buffer::unmap() const
 {
 	m_resource->Unmap(0, nullptr);
 }
-
 
 
 d3d12_vertex_buffer::d3d12_vertex_buffer(t::shared_ptr<d3d12_device> device, const size_t& buffer_stride, const size_t& buffer_size)

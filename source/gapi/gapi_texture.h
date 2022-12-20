@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "gapi_resource.h"
+
 
 class gapi_texture
 {

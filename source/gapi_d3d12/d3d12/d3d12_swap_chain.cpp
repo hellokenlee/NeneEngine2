@@ -45,11 +45,9 @@ d3d12_swap_chain::d3d12_swap_chain(t::shared_ptr<d3d12_adapter> adapter, HWND hw
 	m_back_buffers.clear();
 	for (uint32 i = 0; i < m_back_buffer_num; ++i)
 	{
-		t::shared_ptr<d3d12_texture2d> back_buffer(new d3d12_texture2d(device));
-		WinComPtr<ID3D12Resource> render_target;
-		VERIFY(m_swap_chain->GetBuffer(i, IID_PPV_ARGS(&render_target)));
-		back_buffer->set_d3d_resource(render_target);
-		m_back_buffers.push_back(back_buffer);
+		WinComPtr<ID3D12Resource> back_buffer;
+		VERIFY(m_swap_chain->GetBuffer(i, IID_PPV_ARGS(&back_buffer)));
+		m_back_buffers.emplace_back(d3d12_texture_2d::wrap(device, back_buffer));
 	}
 }
 

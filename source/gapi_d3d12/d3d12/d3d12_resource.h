@@ -5,7 +5,7 @@
 #include "d3d12_device.h"
 #include "d3d12_descriptor_heap.h"
 
-class d3d12_resource : public t::enable_shared_from_this<d3d12_resource>, public d3d12_device_child
+class d3d12_resource : public d3d12_device_child
 {
 public:
 	// Allocate in global desc. heap
@@ -15,17 +15,12 @@ public:
 	d3d12_resource(t::shared_ptr<d3d12_device> device, t::shared_ptr<d3d12_descriptor_heap> heap);
 
 	~d3d12_resource() override = default;
+	
+	[[nodiscard]] ID3D12Resource* get_d3d_resource() const { return m_resource.Get(); }
 
-public:
-	ID3D12Resource* get_d3d_resource() { return m_resource.Get(); }
+	void set_d3d_resource(WinComPtr<ID3D12Resource> resource) { m_resource = resource; }
 
-	void set_d3d_resource(WinComPtr<ID3D12Resource> resource) { m_resource = resource; init(); }
-
-	t::shared_ptr<d3d12_descriptor_heap> get_located_heap() { return m_located_heap; };
-
-protected:
-	virtual void init() {};
-	virtual void release() {};
+	t::shared_ptr<d3d12_descriptor_heap> get_located_heap() { return m_located_heap; }
 
 protected:
 	WinComPtr<ID3D12Resource> m_resource;

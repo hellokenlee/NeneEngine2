@@ -34,5 +34,5 @@ void gapi_d3d12_swapchain::finish_frame()
 
 t::shared_ptr<gapi_texture> gapi_d3d12_swapchain::get_back_buffer_texture() const
 {
-    return t::make_shared<gapi_d3d12_texture2d>(m_swap_chain->get_back_buffer_texture(m_back_buffer_index));
+    return gapi_d3d12_texture_2d::wrap(m_swap_chain->get_back_buffer_texture(m_back_buffer_index));
 }

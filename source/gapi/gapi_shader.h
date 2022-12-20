@@ -19,6 +19,8 @@ struct gapi_vertex_element
 	uint16 stride;
 };
 
+typedef t::dynamic_array<gapi_vertex_element> gapi_vertex_declartions;
+
 class gapi_vertex_shader
 {
 public:
@@ -68,7 +70,7 @@ class NENE_API gapi_bound_shader_state
 {
 public:
 	explicit gapi_bound_shader_state(
-		const t::dynamic_array<gapi_vertex_element>& vertex_declaration,
+		const gapi_vertex_declartions& vertex_declaration,
 		t::shared_ptr<gapi_vertex_shader> vertex_shader,
 		t::shared_ptr<gapi_pixel_shader> pixel_shader
 	) : gapi_bound_shader_state(

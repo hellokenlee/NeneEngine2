@@ -33,7 +33,7 @@ d3d12_vertex_elements d3d_cast(const t::dynamic_array<gapi_vertex_element>& elem
 			elements[idx].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 			break;
 		default:
-				CHECK(0);
+			CHECK(0);
 		}
 		elements[idx].InputSlot = element_list[idx].stream_index;
 		elements[idx].AlignedByteOffset = element_list[idx].offset;

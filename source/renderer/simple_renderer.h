@@ -15,6 +15,7 @@ public:
 	void render_view_family(t::shared_ptr<gapi_texture> view_family_render_target) override;
 
 protected:
-	t::shared_ptr<gapi_vertex_buffer> m_vertex_buffer{};
-	t::shared_ptr<gapi_graphics_pipeline_state> m_graphics_pipeline_state{};
+	t::shared_ptr<gapi_graphics_pipeline_state> m_mesh_pass_pipeline_state;
+	t::shared_ptr<gapi_graphics_pipeline_state> m_screen_pass_pipeline_state;
+	t::shared_ptr<gapi_texture> m_screen_texture;
 };
