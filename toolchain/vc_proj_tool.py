@@ -310,10 +310,9 @@ class VcProjTool(ToolBase):
 	def is_configuration_item_definition_group(self, definition_group: ElementTree.Element) -> bool:
 		assert (self.tag(VcTag.ItemDefinitionGroup) == definition_group.tag)
 		if VcAttrib.Condition in definition_group.attrib:
-			if VcAttrib.Label in definition_group.attrib:
-				if definition_group.attrib[VcAttrib.Label] == "Configuration":
-					return True
-		pass
+			if definition_group.find("QtMoc", self.namespaces) is None:
+				return True
+		return False
 
 	def is_3rd_party_lib(self, lib: str):
 		externpath = os.path.abspath(os.path.join(self.engine_root, "extern", lib))
