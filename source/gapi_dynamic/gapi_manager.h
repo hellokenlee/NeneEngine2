@@ -3,6 +3,7 @@
 #pragma once
 
 #include "gapi/gapi.h"
+#include "core_render/global_render_resource.h"
 
 enum class gapi_platform
 {
@@ -24,6 +25,8 @@ public:
 	static void destroy();
 
 	static t::shared_ptr<gapi> get();
+
+	static void register_global_render_resource(t::shared_ptr<i::global_render_resource> resource);
 	// <<< Static Methods <<<
 
 
@@ -39,4 +42,5 @@ public:
 
 protected:
 	static t::shared_ptr<gapi> m_instance;
+	static t::dynamic_array<t::shared_ptr<i::global_render_resource>> m_global_render_resources;
 };

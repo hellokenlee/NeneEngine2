@@ -15,12 +15,23 @@ public:
     virtual ~gapi_d3d12_texture_2d() override = default;
 
     t::shared_ptr<d3d12_texture_2d> get_d3d_texture() { return m_d3d12_texture; }
+    t::shared_ptr<d3d12_render_target_view> get_d3d_render_target_view() { return m_d3d12_rtv; }
 
     // Wrap existing texture
-    static t::shared_ptr<gapi_d3d12_texture_2d> wrap(t::shared_ptr<d3d12_texture_2d> d3dtexture);
+    static t::shared_ptr<gapi_d3d12_texture_2d> wrap(t::shared_ptr<d3d12_texture_2d> d3dtexture, const gapi_texture_create_flag& flags);
 
 protected:
     gapi_d3d12_texture_2d();
+
+    void initialize_resource_views(const gapi_texture_create_flag& flags);
     
     t::shared_ptr<d3d12_texture_2d> m_d3d12_texture;
+
+    t::shared_ptr<d3d12_render_target_view> m_d3d12_rtv;
+    t::shared_ptr<d3d12_shader_resource_view> m_d3d12_srv;
+    t::shared_ptr<d3d12_unordered_access_view> m_d3d12_uav;
+
+    bool m_needs_rtv;
+    bool m_needs_srv;
+    bool m_needs_uav;
 };

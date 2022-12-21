@@ -57,7 +57,7 @@ void gapi_d3d12_cmd_context::flush(const bool& wait)
 		}
 
 		// Open a new command list since current is already being executing
-		if (is_cmd_list_open)
+		if (is_cmd_list_open && !wait)
 		{
 			open_cmd_list();
 		}
@@ -79,7 +79,7 @@ void gapi_d3d12_cmd_context::start_drawing(t::shared_ptr<gapi_viewport> inviewpo
 		D3D12_RESOURCE_STATE_PRESENT,
 		D3D12_RESOURCE_STATE_RENDER_TARGET
 	);
-	const auto rtv = rendertarget->get_d3d_texture()->get_render_target_view();
+	const auto rtv = rendertarget->get_d3d_render_target_view();
 	m_cmd_list->get_d3d_graphics_cmd_list()->OMSetRenderTargets(
 		1, 
 		rtv->get_d3d_descriptor_handle(), 

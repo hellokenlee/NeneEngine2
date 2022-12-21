@@ -48,7 +48,7 @@ namespace i
 {
     t::queue<wstring> log_category::m_wlog_queue;
     t::queue<sstring> log_category::m_slog_queue;
-    bool log_category::m_consume_log_to_stdout = false;
+    bool log_category::m_consume_log_to_stdout = true;
     t::dynamic_array<log_category*> log_category::m_all_log_categories;
     
     log_category::log_category()

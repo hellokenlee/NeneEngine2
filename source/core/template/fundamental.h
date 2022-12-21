@@ -80,3 +80,6 @@ typedef std::tm time_struct;
 typedef time_t time_type;
 
 /* >>> Other types >>> */
+
+
+#define NO_INLINE __declspec(noinline)

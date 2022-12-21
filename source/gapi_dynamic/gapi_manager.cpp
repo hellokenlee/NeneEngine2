@@ -4,6 +4,7 @@
 #include "gapi_d3d12/gapi_d3d12.h"
 
 t::shared_ptr<gapi> gapi_manager::m_instance = nullptr;
+t::dynamic_array<t::shared_ptr<i::global_render_resource>> gapi_manager::m_global_render_resources;
 
 void gapi_manager::create(const gapi_platform& platform, void* window)
 {
@@ -58,6 +59,11 @@ void gapi_manager::destroy()
 {
 	CHECK(m_instance != nullptr);
 
+	for (const auto resource : m_global_render_resources)
+	{
+		resource->release();
+	}
+
 	m_instance.reset();
 
 	m_instance = nullptr;
@@ -66,4 +72,9 @@ void gapi_manager::destroy()
 t::shared_ptr<gapi> gapi_manager::get()
 {
 	return m_instance;
+}
+
+void gapi_manager::register_global_render_resource(t::shared_ptr<i::global_render_resource> resource)
+{
+	m_global_render_resources.emplace_back(resource);
 }

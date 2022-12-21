@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include <initializer_list>
-
 
 #define DEFINE_FLAG_ENUM_CLASS_OPERATORS(T) \
     inline           T&   operator|=(T& lhs, T rhs) { return lhs = (T)((__underlying_type(T))lhs | (__underlying_type(T))rhs); } \
@@ -21,20 +19,20 @@
 namespace t
 {
     template <typename T>
-    constexpr bool has_any_flag(const T& flags, ...)
+    bool has_any_flag(T flags, T tests)
     {
-        return false; 
+        return (static_cast<__underlying_type(T)>(flags) & static_cast<__underlying_type(T)>(tests)) != 0;
     }
 
     template <typename T>
-    void add_flag(T& flags, const T& to_add)
+    void add_flag(T& flags, const T& flag_to_add)
     {
-        return;
+        flags |= flag_to_add;
     }
 
     template <typename T>
-    void remove_flag(T& flags, const T& to_remove)
+    void remove_flag(T& flags, const T& flag_to_remove)
     {
-        return;
+        flags &= ~flag_to_remove;
     }
 }

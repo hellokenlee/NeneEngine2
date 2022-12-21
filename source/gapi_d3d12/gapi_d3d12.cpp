@@ -72,6 +72,16 @@ gapi_d3d12::gapi_d3d12(ID3D12Device* device)
 gapi_d3d12::~gapi_d3d12()
 {
 	//
+	if (g_d3d12_debug)
+	{
+		WinComPtr<IDXGIDebug1> debug_com;
+		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug_com))))
+		{
+			debug_com->ReportLiveObjects(DXGI_DEBUG_ALL, static_cast<DXGI_DEBUG_RLO_FLAGS>(DXGI_DEBUG_RLO_SUMMARY | DXGI_DEBUG_RLO_IGNORE_INTERNAL));
+		}
+	}
+	
+	//
 	for (uint32 idx = 0; idx < m_contexts.size(); ++idx)
 	{
 		m_contexts[idx]->flush(true);

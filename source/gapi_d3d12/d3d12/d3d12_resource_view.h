@@ -23,8 +23,14 @@ protected:
 
 class d3d12_shader_resource_view
 {
+public:
+	d3d12_shader_resource_view() = delete;
+	d3d12_shader_resource_view(t::shared_ptr<d3d12_resource> resource);
 };
 
 class d3d12_unordered_access_view
 {
+public:
+	d3d12_unordered_access_view() = delete;
+	d3d12_unordered_access_view(t::shared_ptr<d3d12_resource> resource);
 };
