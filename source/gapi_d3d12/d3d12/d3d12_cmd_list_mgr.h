@@ -13,7 +13,7 @@ class d3d12_cmd_list_mgr : public noncopyable, public t::enable_shared_from_this
 {
 public:
 	d3d12_cmd_list_mgr(t::shared_ptr<d3d12_device> device, d3d12_cmd_type type);
-	~d3d12_cmd_list_mgr();
+	~d3d12_cmd_list_mgr() override;
 
 	/* Command List Functions */
 	t::shared_ptr<d3d12_cmd_list> create_cmd_list(t::shared_ptr<d3d12_cmd_allocator>);
@@ -25,7 +25,7 @@ public:
 	void release_cmd_allocator(t::shared_ptr<d3d12_cmd_allocator> allocator);
 
 public:
-	ID3D12CommandQueue* get_d3d_command_queue() { return m_command_queue.Get(); }
+	ID3D12CommandQueue* get_d3d_command_queue() const { return m_command_queue.Get(); }
 
 protected:
 	/* The Command Type*/

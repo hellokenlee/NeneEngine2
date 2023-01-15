@@ -8,7 +8,7 @@ d3d12_texture_2d::d3d12_texture_2d(t::shared_ptr<d3d12_device> device, d3d12_res
 {}
 
 d3d12_texture_2d::d3d12_texture_2d(t::shared_ptr<d3d12_device> device, t::shared_ptr<d3d12_descriptor_heap> heap, d3d12_resource_creation_args args)
-	: d3d12_texture_2d(device, heap)
+	: d3d12_texture_2d(device)
 {
 	//
 	const CD3DX12_HEAP_PROPERTIES properties(D3D12_HEAP_TYPE_DEFAULT);
@@ -21,14 +21,14 @@ d3d12_texture_2d::d3d12_texture_2d(t::shared_ptr<d3d12_device> device, t::shared
 	);
 }
 
-d3d12_texture_2d::d3d12_texture_2d(t::shared_ptr<d3d12_device> device, t::shared_ptr<d3d12_descriptor_heap> heap)
-	: d3d12_resource(device, heap)
+d3d12_texture_2d::d3d12_texture_2d(t::shared_ptr<d3d12_device> device)
+	: d3d12_texture(device)
 {}
 
 t::shared_ptr<d3d12_texture_2d> d3d12_texture_2d::wrap(t::shared_ptr<d3d12_device> device, WinComPtr<ID3D12Resource> resource)
 {
 	// Empty object
-	t::shared_ptr<d3d12_texture_2d> result(new d3d12_texture_2d{device, device->get_global_descriptor_heap()});
+	t::shared_ptr<d3d12_texture_2d> result(new d3d12_texture_2d(device));
 
 	// Set the actual texture
 	result->set_d3d_resource(resource);

@@ -23,13 +23,13 @@ system_vertex_buffers::system_vertex_buffers()
 
     // All in CCW direction
 
-    static constexpr auto create_and_upload_vertex_buffer = [](t::shared_ptr<gapi> api, const t::dynamic_array<vertex>& vertices) -> t::shared_ptr<gapi_vertex_buffer>
+    static constexpr auto create_and_upload_vertex_buffer = [](t::shared_ptr<gapi> api, const t::dynamic_array<vertex>& vertices) -> t::shared_ptr<gapi_buffer>
     {
-        t::shared_ptr<gapi_vertex_buffer> result =
-            api->create_vertex_buffer(sizeof(vertex), sizeof(vertex) * vertices.size(), gapi_resource_usage::usage_dynamic);
-        void* mapped_buffer = api->lock_vertex_buffer(result);
+        t::shared_ptr<gapi_buffer> result =
+            api->create_buffer(sizeof(vertex), sizeof(vertex) * vertices.size(), gapi_buffer_usage_flag::dynamic_buffer);
+        void* mapped_buffer = api->lock_buffer(result);
         memcpy(mapped_buffer, vertices.data(), sizeof(vertex) * vertices.size());
-        api->unlock_vertex_buffer(result);
+        api->unlock_buffer(result);
         return result;
     };
     
@@ -39,7 +39,7 @@ system_vertex_buffers::system_vertex_buffers()
             { { 0.25f, -0.25f, 0.0f, 0.0f}, { 0.0f, 1.0f, 0.0f, 1.0f } },
             { { -0.25f, -0.25f, 0.0f, 0.0f}, { 0.0f, 0.0f, 1.0f, 1.0f } }
         };
-        triangle = create_and_upload_vertex_buffer(api, vertices);
+        m_triangle = create_and_upload_vertex_buffer(api, vertices);
     }
 
     {
@@ -52,7 +52,7 @@ system_vertex_buffers::system_vertex_buffers()
             { { -1.0f,  1.0f, 0.0f, 0.0f}, { 1.0f, 1.0f, 1.0f, 1.0f } },
             { {  1.0f,  1.0f, 0.0f, 0.0f}, { 1.0f, 1.0f, 1.0f, 1.0f } },
         };
-        screen_quad = create_and_upload_vertex_buffer(api, vertices);
+        m_screen_quad = create_and_upload_vertex_buffer(api, vertices);
     }
    
 }
@@ -69,8 +69,8 @@ t::shared_ptr<system_vertex_buffers> system_vertex_buffers::get()
 
 void system_vertex_buffers::release()
 {
-    triangle.reset();
-    screen_quad.reset();
+    m_triangle.reset();
+    m_screen_quad.reset();
 }
 
 
@@ -85,11 +85,11 @@ system_vertex_declarations::system_vertex_declarations()
     }
 
     {
-        position4_color4 = t::make_shared<gapi_vertex_declartions>();
-        position4_color4->emplace_back(
+        m_position4_color4 = t::make_shared<gapi_vertex_declartions>();
+        m_position4_color4->emplace_back(
             "POSITION", 0, gapi_vertex_element_type::float4, 0, 0, 0, 0
         );
-        position4_color4->emplace_back(
+        m_position4_color4->emplace_back(
             "COLOR", 0, gapi_vertex_element_type::float4, 0, 16, 0, 0
         );
     }
@@ -97,7 +97,7 @@ system_vertex_declarations::system_vertex_declarations()
 
 void system_vertex_declarations::release()
 {
-    position4_color4.reset();
+    m_position4_color4.reset();
 }
 
 t::shared_ptr<system_vertex_declarations> system_vertex_declarations::get()

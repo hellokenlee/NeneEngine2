@@ -7,11 +7,13 @@
 #include "gapi_shader.h"
 #include "gapi_template.h"
 
+
 class gapi_compute_pipeline_state
 {
 public:
 	virtual ~gapi_compute_pipeline_state() = default;
 };
+
 
 class gapi_graphics_pipeline_state
 {
@@ -19,6 +21,7 @@ class gapi_graphics_pipeline_state
 public:
 	virtual ~gapi_graphics_pipeline_state() = default;
 };
+
 
 class gapi_compute_pipeline_state_initializer
 {
@@ -33,11 +36,13 @@ public:
 	virtual ~gapi_blend_state_initializer() = default;
 };
 
+
 class gapi_rasterizer_state_initializer
 {
 public:
 	virtual ~gapi_rasterizer_state_initializer() = default;
 };
+
 
 class gapi_depth_stencil_state_initializer
 {
@@ -53,6 +58,7 @@ public:
 		gapi_bound_shader_state bound_shader_state
 	) : m_bound_shader_state(bound_shader_state)
 	{}
+	
 	virtual ~gapi_graphics_pipeline_state_initializer() = default;
 	
 	[[nodiscard]] const gapi_bound_shader_state& get_bound_shader_state() const;

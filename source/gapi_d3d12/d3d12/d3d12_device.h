@@ -10,6 +10,7 @@
 
 class d3d12_descriptor_heap;
 class d3d12_cmd_list_mgr;
+class d3d12_root_signature_mgr;
 
 
 class d3d12_device : public noncopyable, public t::enable_shared_from_this<d3d12_device>, public d3d12_adapter_child
@@ -19,13 +20,12 @@ public:
 	d3d12_device(t::shared_ptr<d3d12_adapter> adapter);
 	d3d12_device(t::shared_ptr<d3d12_adapter> adapter, ID3D12Device* d3d_device);
 	
-	~d3d12_device();
+	~d3d12_device() override;
 
 	void init();
 	void clear();
 
 	[[nodiscard]] ID3D12Device* get_d3d_device() const { return m_device.Get(); }
-	[[nodiscard]] ID3D12RootSignature* get_d3d_root_signature() const { return m_root_signature.Get(); }
 
 	[[nodiscard]] t::shared_ptr<d3d12_descriptor_heap> get_rtv_descriptor_heap() const { return m_rtv_descriptor_heap; }
 	[[nodiscard]] t::shared_ptr<d3d12_descriptor_heap> get_dsv_descriptor_heap() const { return m_dsv_descriptor_heap; }
@@ -36,7 +36,9 @@ public:
 	[[nodiscard]] t::shared_ptr<d3d12_cmd_list_mgr> get_compute_cmd_list_mgr() const { return m_compute_cmd_list_mgr; }
 	[[nodiscard]] t::shared_ptr<d3d12_cmd_list_mgr> get_graphics_cmd_list_mgr() const { return m_graphics_cmd_list_mgr; }
 
-public:
+	[[nodiscard]] t::shared_ptr<d3d12_root_signature_mgr> get_root_signature_mgr() const { return m_root_signature_mgr; }
+	
+protected:
 	// Descriptor allocators
 	t::shared_ptr<d3d12_descriptor_heap> m_rtv_descriptor_heap;
 	t::shared_ptr<d3d12_descriptor_heap> m_dsv_descriptor_heap;
@@ -47,9 +49,11 @@ public:
 	t::shared_ptr<d3d12_cmd_list_mgr> m_compute_cmd_list_mgr;
 	t::shared_ptr<d3d12_cmd_list_mgr> m_graphics_cmd_list_mgr;
 
-protected:
+	// Root signature manager
+	t::shared_ptr<d3d12_root_signature_mgr> m_root_signature_mgr;
+
+	// Raw device pointer
 	WinComPtr<ID3D12Device> m_device;
-	WinComPtr<ID3D12RootSignature> m_root_signature;
 };
 
 

@@ -32,6 +32,8 @@ namespace t
 
 		static shared_ptr<gapi_dynamic_type> cast(shared_ptr<gapi_interface_type> inst)
 		{
+			// static_assert(is_abstract<gapi_interface_type>::value == true, "Template `t::impl` only support for abstract type!");
+
 #if GAPI_USE_DYNAMIC_CAST
 			return dynamic_pointer_cast<gapi_dynamic_type>(inst);
 #else

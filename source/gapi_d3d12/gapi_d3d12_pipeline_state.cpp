@@ -47,34 +47,40 @@ d3d12_graphics_pipeline_creation_args d3d_cast(const gapi_graphics_pipeline_stat
 {
 	d3d12_graphics_pipeline_creation_args desc = {};
 
-	t::shared_ptr<gapi_d3d12_vertex_shader> vertex_shader = gapi_d3d12_vertex_shader::cast(initializer.get_bound_shader_state().m_vertex_shader);
-	t::shared_ptr<gapi_d3d12_pixel_shader> pixel_shader = gapi_d3d12_pixel_shader::cast(initializer.get_bound_shader_state().m_pixel_shader);
+	const t::shared_ptr<gapi_d3d12_vertex_shader> vertex_shader = gapi_d3d12_vertex_shader::cast(initializer.get_bound_shader_state().m_vertex_shader);
+	const t::shared_ptr<gapi_d3d12_pixel_shader> pixel_shader = gapi_d3d12_pixel_shader::cast(initializer.get_bound_shader_state().m_pixel_shader);
 
 	CHECK(vertex_shader->get_d3d12_shader()->get_d3d_blob() != nullptr);
 	CHECK(pixel_shader->get_d3d12_shader()->get_d3d_blob() != nullptr);
 
-	desc.VS = CD3DX12_SHADER_BYTECODE(vertex_shader->get_d3d12_shader()->get_d3d_blob());
-	desc.PS = CD3DX12_SHADER_BYTECODE(pixel_shader->get_d3d12_shader()->get_d3d_blob());
-	desc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-	desc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
-	desc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-	desc.DepthStencilState.DepthEnable = FALSE;
-    desc.DepthStencilState.StencilEnable = FALSE;
-    desc.SampleMask = UINT_MAX;
-    desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-    desc.NumRenderTargets = 1;
-    desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
-    desc.SampleDesc.Count = 1;
+	desc.m_desc.VS = CD3DX12_SHADER_BYTECODE(vertex_shader->get_d3d12_shader()->get_d3d_blob());
+	desc.m_desc.PS = CD3DX12_SHADER_BYTECODE(pixel_shader->get_d3d12_shader()->get_d3d_blob());
+	desc.m_desc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+	desc.m_desc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+	desc.m_desc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+	desc.m_desc.DepthStencilState.DepthEnable = FALSE;
+    desc.m_desc.DepthStencilState.StencilEnable = FALSE;
+    desc.m_desc.SampleMask = UINT_MAX;
+    desc.m_desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+    desc.m_desc.NumRenderTargets = 1;
+    desc.m_desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+    desc.m_desc.SampleDesc.Count = 1;
+
+	desc.m_input_layout = d3d_cast(initializer.get_bound_shader_state().m_vertex_declaration);
+
+	desc.m_vertex_shader = vertex_shader->get_d3d12_shader();
+	desc.m_pixel_shader = pixel_shader->get_d3d12_shader();
+	
 	return desc;
 }
 
 gapi_d3d12_graphics_pipeline_state::gapi_d3d12_graphics_pipeline_state(t::shared_ptr<d3d12_device> device, const gapi_graphics_pipeline_state_initializer& initializer)
-	: m_d3d12_state(new d3d12_pipeline_state(device, d3d_cast(initializer), d3d_cast(initializer.get_bound_shader_state().m_vertex_declaration)))
+	: m_d3d12_state(nullptr)
 {
-
+	m_d3d12_state = t::make_shared<d3d12_graphics_pipeline_state>(device, d3d_cast(initializer));
 }
 
 gapi_d3d12_compute_pipeline_state::gapi_d3d12_compute_pipeline_state(t::shared_ptr<d3d12_device> device, const gapi_compute_pipeline_state_initializer& initializer)
 {
-	
+	CHECK(false); // TODO
 }

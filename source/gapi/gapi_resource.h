@@ -6,13 +6,6 @@
 #include "core/flag_enum_class.h"
 
 
-enum class gapi_resource_usage
-{
-	usage_none,
-	usage_static,
-	usage_dynamic,
-};
-
 enum class gapi_resource_type
 {
 	none,
@@ -20,6 +13,14 @@ enum class gapi_resource_type
 	texture1d,
 	texture2d,
 	texture3d,
+};
+
+enum class gapi_resource_state
+{
+	unknown,
+	present,
+	render_target,
+	shader_resource,
 };
 
 enum class gapi_texture_create_flag : uint64
@@ -31,6 +32,24 @@ enum class gapi_texture_create_flag : uint64
 	as_unordered_access	= 1ull << 3,
 };
 DEFINE_FLAG_ENUM_CLASS_OPERATORS(gapi_texture_create_flag);
+
+enum class gapi_buffer_usage_flag : uint64
+{
+	none				= 0,
+
+	static_buffer			= 1ull << 0,
+	dynamic_buffer			= 1ull << 1,
+	volatile_buffer			= 1ull << 2,
+
+	shader_resource			= 1ull << 3,
+
+	usage_vertex_buffer		= 1ull << 4,
+	usage_index_buffer		= 1ull << 5,
+	usage_structured_buffer	= 1ull << 6,
+	usage_argument_buffer	= 1ull << 7,
+};
+DEFINE_FLAG_ENUM_CLASS_OPERATORS(gapi_buffer_usage_flag);
+
 
 class NENE_API gapi_resource_desc
 {
@@ -88,8 +107,8 @@ public:
 	using gapi_resource_desc::gapi_resource_desc;
 };
 
-class gapi_vertex_buffer
+class gapi_buffer
 {
 public:
-	virtual ~gapi_vertex_buffer() = default;
+	virtual ~gapi_buffer() = default;
 };

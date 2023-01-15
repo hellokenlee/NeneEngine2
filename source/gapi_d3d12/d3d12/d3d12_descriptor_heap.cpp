@@ -35,7 +35,7 @@ d3d12_descriptor_heap::d3d12_descriptor_heap(t::shared_ptr<d3d12_device> device,
 
 t::shared_ptr<d3d12_descriptor_handle> d3d12_descriptor_heap::allocate_descriptor()
 {
-	uint32 index = m_free_descriptor_indices.front();
+	int32 index = m_free_descriptor_indices.front();
 	m_free_descriptor_indices.pop();
 	
 	CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_cpu_base);
@@ -46,5 +46,5 @@ t::shared_ptr<d3d12_descriptor_handle> d3d12_descriptor_heap::allocate_descripto
 
 void d3d12_descriptor_heap::free_descriptor(t::shared_ptr<d3d12_descriptor_handle> handle)
 {
-
+	m_free_descriptor_indices.push(handle->m_index);
 }

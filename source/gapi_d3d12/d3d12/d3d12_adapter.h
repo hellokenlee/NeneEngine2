@@ -51,7 +51,7 @@ public:
 
 	d3d12_adapter_child(t::shared_ptr<d3d12_adapter> adapter) : m_adapter(adapter) {}
 
-	~d3d12_adapter_child() = default;
+	virtual ~d3d12_adapter_child() = default;
 
 	t::shared_ptr<d3d12_adapter> get_parent_adapter() { return m_adapter; }
 

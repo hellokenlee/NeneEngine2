@@ -4,6 +4,7 @@
 
 #include "gapi/gapi_pipeline_state.h"
 #include "d3d12/d3d12_pipeline_state.h"
+#include "d3d12/d3d12_shader.h"
 
 
 class gapi_d3d12_compute_pipeline_state: public t::impl<gapi_d3d12_compute_pipeline_state, gapi_compute_pipeline_state>

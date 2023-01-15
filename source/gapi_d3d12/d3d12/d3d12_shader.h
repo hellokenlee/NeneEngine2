@@ -23,6 +23,21 @@ protected:
 };            
 
 
+class d3d12_shader_resource_table
+{
+public:
+	d3d12_shader_resource_table() = default;
+};
+
+struct d3d12_shader_resource_count
+{
+	uint32 m_num_sampler;
+	uint32 m_num_srv;
+	uint32 m_num_cbv;
+	uint32 m_num_uav;
+};
+
+
 class d3d12_shader_base
 {
 public:
@@ -38,7 +53,7 @@ public:
 
 	virtual bool compile();
 
-	ID3DBlob* get_d3d_blob() { return m_bytecode.Get(); }
+	[[nodiscard]] ID3DBlob* get_d3d_blob() const { return m_bytecode.Get(); }
 
 public:
 	sstring m_name;
@@ -47,6 +62,9 @@ public:
 	gapi_shader_type m_type;
 	gapi_shader_feature_level m_level;
 
+	d3d12_shader_resource_count m_resource_count;
+	d3d12_shader_resource_table m_resource_table;
+	
 protected:
 	WinComPtr<ID3DBlob> m_bytecode;
 	WinComPtr<ID3DBlob> m_error_message;
@@ -73,3 +91,4 @@ public:
 	d3d12_pixel_shader(const sstring& codes, const sstring& entry, const sstring& name);
 	virtual ~d3d12_pixel_shader() override = default;
 };
+

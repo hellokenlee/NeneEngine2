@@ -3,16 +3,24 @@
 #pragma once
 
 #include "d3d12_device.h"
-#include "d3d12_descriptor_heap.h"
+
+
+enum class d3d12_global_sampler_register : uint32
+{
+	point_wrap = 0,
+	point_clamp = 1,
+	linear_wrap = 2,
+	linear_clamp = 3,
+
+
+	register_space = 100,
+};
+
 
 class d3d12_resource : public d3d12_device_child
 {
 public:
-	// Allocate in global desc. heap
 	d3d12_resource(t::shared_ptr<d3d12_device> device);
-
-	// Allocate in given desc. heap
-	d3d12_resource(t::shared_ptr<d3d12_device> device, t::shared_ptr<d3d12_descriptor_heap> heap);
 
 	~d3d12_resource() override = default;
 	
@@ -20,9 +28,23 @@ public:
 
 	void set_d3d_resource(WinComPtr<ID3D12Resource> resource) { m_resource = resource; }
 
-	t::shared_ptr<d3d12_descriptor_heap> get_located_heap() { return m_located_heap; }
 
 protected:
 	WinComPtr<ID3D12Resource> m_resource;
-	t::shared_ptr<d3d12_descriptor_heap> m_located_heap;
 };
+
+
+class d3d12_buffer : public d3d12_resource
+{
+public:
+	d3d12_buffer(t::shared_ptr<d3d12_device> device, const size_t& buffer_size);
+	~d3d12_buffer() override = default;
+
+	[[nodiscard]] void* map() const;
+
+	void unmap() const;
+
+protected:
+	size_t m_buffer_size;
+};
+

@@ -29,4 +29,9 @@ using map = std::unordered_map<KT, VT>;
 template<class KT, class VT>
 using pair = std::pair<KT, VT>;
 
+template <class T, class U>
+auto make_pair(T&& t, U&& u)
+{
+    return std::make_pair<T, U>(t, u);
+}
 }

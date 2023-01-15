@@ -5,7 +5,7 @@
 #include <complex>
 
 #include "d3d12_device.h"
-#include "d3d12_buffer.h"
+#include "d3d12_resource.h"
 #include "d3d12_pipeline_state.h"
 
 
@@ -24,11 +24,11 @@ public:
 
 	void close();
 
-	bool is_closed();
+	bool is_closed() const;
 
 	void reset(t::shared_ptr<d3d12_cmd_allocator>);
 
-	void set_vertex_buffer(const uint32 slot_index, t::shared_ptr<d3d12_vertex_buffer> vertex_buffer);
+	void set_vertex_buffer(uint32 slot_index, const t::dynamic_array<D3D12_VERTEX_BUFFER_VIEW>& views);
 
 	void set_graphic_pipeline_states(t::shared_ptr<d3d12_pipeline_state> state);
 

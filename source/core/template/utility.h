@@ -3,6 +3,8 @@
 #pragma once
 
 #include <algorithm>
+#include <functional>
+
 
 namespace t
 {
@@ -16,4 +18,7 @@ namespace t
     
         char value[N];
     };
+
+    template <typename T>
+    using hash = std::hash<T>;
 }

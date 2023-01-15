@@ -41,14 +41,14 @@ void d3d12_cmd_list::close()
 	}
 }
 
-bool d3d12_cmd_list::is_closed()
+bool d3d12_cmd_list::is_closed() const
 {
 	return m_is_closed;
 }
 
-void d3d12_cmd_list::set_vertex_buffer(const uint32 slot_index, t::shared_ptr<d3d12_vertex_buffer> vertex_buffer)
+void d3d12_cmd_list::set_vertex_buffer(uint32 slot_index, const t::dynamic_array<D3D12_VERTEX_BUFFER_VIEW>& views)
 {
-	get_d3d_graphics_cmd_list()->IASetVertexBuffers(slot_index, 1, vertex_buffer->get_d3d_vertex_buffer_view());
+	get_d3d_graphics_cmd_list()->IASetVertexBuffers(slot_index, static_cast<uint32>(views.size()), views.data());
 }
 
 void d3d12_cmd_list::draw_instanced(uint32 vertex_num, uint32 instance_num, uint32 base_vertex_index, uint32 instance_base_index)
