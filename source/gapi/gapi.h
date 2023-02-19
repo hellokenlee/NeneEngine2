@@ -58,7 +58,7 @@ public:
  
 	virtual void unlock_buffer(t::shared_ptr<gapi_buffer> buffer) = 0;
 
-	virtual t::shared_ptr<gapi_texture> create_texture_2d(const gapi_texture_desc& desc) = 0;
+	virtual t::shared_ptr<gapi_texture> create_texture_2d(const gapi_resource_desc& desc) = 0;
 	// <<< Resource Related <<<
 
 public:

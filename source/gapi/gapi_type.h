@@ -33,7 +33,6 @@ enum class gapi_shader_type
 
 enum class gapi_shader_feature_level
 {
-	sm_5_0,
 	sm_5_1,
 	sm_6_0,
 };

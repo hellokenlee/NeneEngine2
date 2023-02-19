@@ -106,6 +106,7 @@ py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(Outp
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="gapi_pipeline_state.cpp" />
+    <ClCompile Include="gapi_resource.cpp" />
     <ClCompile Include="gapi_shader.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -116,7 +117,6 @@ py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(Outp
     <ClInclude Include="gapi_shader.h" />
     <ClInclude Include="gapi_swapchain.h" />
     <ClInclude Include="gapi_template.h" />
-    <ClInclude Include="gapi_texture.h" />
     <ClInclude Include="gapi_type.h" />
     <ClInclude Include="gapi_utils.h" />
     <ClInclude Include="gapi_viewport.h" />

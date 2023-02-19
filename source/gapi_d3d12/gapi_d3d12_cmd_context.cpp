@@ -103,7 +103,35 @@ void gapi_d3d12_cmd_context::end_pass()
 
 void gapi_d3d12_cmd_context::transition_resource(t::shared_ptr<gapi_texture> resource, const gapi_resource_state& from, const gapi_resource_state& to)
 {
+	auto d3d_cast = [](const gapi_resource_state& state) -> D3D12_RESOURCE_STATES
+	{
+		switch (state)
+		{
+		case gapi_resource_state::unknown:
+			return D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COMMON;
+		case gapi_resource_state::present:
+			return D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_PRESENT;
+		case gapi_resource_state::shader_resource:
+			return D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+		case gapi_resource_state::render_target:
+			return D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RENDER_TARGET;
+		}
+		return D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COMMON;
+	};
+
+	if (resource->get_resource_state() == to)
+	{
+		return;
+	}
+	CHECK(resource->get_resource_state() == from);
+
+	const auto texture = gapi_d3d12_texture_2d::cast(resource);
 	
+	m_cmd_list->add_transition_barrier(
+		texture->get_d3d12_texture(),
+		d3d_cast(from),
+		d3d_cast(to)
+	);
 }
 
 void gapi_d3d12_cmd_context::draw_primitive(uint32 vertex_num, uint32 instance_num, uint32 base_vertex_index, uint32 instance_base_index)

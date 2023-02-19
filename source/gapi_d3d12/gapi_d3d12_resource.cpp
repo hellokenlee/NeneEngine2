@@ -4,7 +4,7 @@
 
 
 gapi_d3d12_buffer::gapi_d3d12_buffer(t::shared_ptr<d3d12_device> device, const size_t& buffer_stride, const size_t& buffer_size, const gapi_buffer_usage_flag& usage_flag)
-	: super()
+	: super(gapi_buffer_desc::create())
 	, d3d12_buffer(device, buffer_size)
 	, m_usage(usage_flag)
 	, m_index_buffer_view(nullptr)

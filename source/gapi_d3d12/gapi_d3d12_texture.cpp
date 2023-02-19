@@ -43,7 +43,7 @@ D3D12_RESOURCE_FLAGS d3d_cast(const gapi_texture_create_flag& flag)
     return resource_flags;
 }
 
-d3d12_resource_creation_args d3d_cast(const gapi_texture_desc& desc)
+d3d12_resource_creation_args d3d_cast(const gapi_resource_desc& desc)
 {
     d3d12_resource_creation_args args = {};
     args.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
@@ -59,15 +59,15 @@ d3d12_resource_creation_args d3d_cast(const gapi_texture_desc& desc)
     return args;
 }
 
-gapi_d3d12_texture_2d::gapi_d3d12_texture_2d(t::shared_ptr<d3d12_device> device, const gapi_texture_desc& desc)
-    : gapi_d3d12_texture_2d()
+gapi_d3d12_texture_2d::gapi_d3d12_texture_2d(t::shared_ptr<d3d12_device> device, const gapi_resource_desc& desc)
+    : gapi_d3d12_texture_2d(desc)
 {
     m_d3d12_texture = t::make_shared<d3d12_texture_2d>(device, d3d_cast(desc));
     initialize_resource_views(desc);
 }
 
-gapi_d3d12_texture_2d::gapi_d3d12_texture_2d()
-    : super()
+gapi_d3d12_texture_2d::gapi_d3d12_texture_2d(const gapi_resource_desc& desc)
+    : super(desc)
     , m_d3d12_texture(nullptr)
     , m_d3d12_rtv(nullptr)
     , m_d3d12_srv(nullptr)
@@ -76,7 +76,7 @@ gapi_d3d12_texture_2d::gapi_d3d12_texture_2d()
     , m_needs_uav(false)
 {}
 
-void gapi_d3d12_texture_2d::initialize_resource_views(const gapi_texture_desc& desc)
+void gapi_d3d12_texture_2d::initialize_resource_views(const gapi_resource_desc& desc)
 {
     m_needs_rtv = t::has_any_flag(desc.m_texture_create_flag, gapi_texture_create_flag::as_render_target);
     m_needs_srv = t::has_any_flag(desc.m_texture_create_flag, gapi_texture_create_flag::as_shader_resource);
@@ -87,16 +87,18 @@ void gapi_d3d12_texture_2d::initialize_resource_views(const gapi_texture_desc& d
     if (m_needs_rtv)
     {
         m_d3d12_rtv = t::make_shared<d3d12_render_target_view>(m_d3d12_texture, args);
+        set_resource_state(gapi_resource_state::render_target);
     }
     if (m_needs_srv)
     {
         m_d3d12_srv = t::make_shared<d3d12_shader_resource_view>(m_d3d12_texture, args);
+        set_resource_state(gapi_resource_state::shader_resource);
     }
 }
 
-t::shared_ptr<gapi_d3d12_texture_2d> gapi_d3d12_texture_2d::wrap(t::shared_ptr<d3d12_texture_2d> d3dtexture, const gapi_texture_desc& desc)
+t::shared_ptr<gapi_d3d12_texture_2d> gapi_d3d12_texture_2d::wrap(t::shared_ptr<d3d12_texture_2d> d3dtexture, const gapi_resource_desc& desc)
 {
-    t::shared_ptr<gapi_d3d12_texture_2d> result(new gapi_d3d12_texture_2d{});
+    t::shared_ptr<gapi_d3d12_texture_2d> result(new gapi_d3d12_texture_2d{desc});
     result->m_d3d12_texture = d3dtexture;
     result->initialize_resource_views(desc);
     return result;

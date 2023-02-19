@@ -64,7 +64,7 @@ void d3d12_cmd_list::set_graphic_pipeline_states(t::shared_ptr<d3d12_pipeline_st
 
 void d3d12_cmd_list::add_transition_barrier(t::shared_ptr<d3d12_resource> resource, D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after)
 {
-	CD3DX12_RESOURCE_BARRIER transition = CD3DX12_RESOURCE_BARRIER::Transition (
+	const CD3DX12_RESOURCE_BARRIER transition = CD3DX12_RESOURCE_BARRIER::Transition(
 		resource->get_d3d_resource(), 
 		before, 
 		after

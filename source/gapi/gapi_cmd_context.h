@@ -3,7 +3,6 @@
 #pragma once
 
 #include "core/core.h"
-#include "gapi_texture.h"
 #include "gapi_viewport.h"
 #include "gapi_resource.h"
 #include "gapi_swapchain.h"

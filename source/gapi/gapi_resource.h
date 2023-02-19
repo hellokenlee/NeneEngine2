@@ -15,6 +15,7 @@ enum class gapi_resource_type
 	texture3d,
 };
 
+
 enum class gapi_resource_state
 {
 	unknown,
@@ -22,6 +23,7 @@ enum class gapi_resource_state
 	render_target,
 	shader_resource,
 };
+
 
 enum class gapi_texture_create_flag : uint64
 {
@@ -32,6 +34,7 @@ enum class gapi_texture_create_flag : uint64
 	as_unordered_access	= 1ull << 3,
 };
 DEFINE_FLAG_ENUM_CLASS_OPERATORS(gapi_texture_create_flag);
+
 
 enum class gapi_buffer_usage_flag : uint64
 {
@@ -88,10 +91,10 @@ public:
 	gapi_texture_create_flag m_texture_create_flag;
 };
 
-class NENE_API gapi_texture_desc : public gapi_resource_desc
+
+namespace gapi_texture_desc
 {
-public:
-	static gapi_texture_desc create_2d(
+	inline gapi_resource_desc create_2d(
 		point extent
 		, gapi_pixel_format pformat
 		, gapi_texture_create_flag flags
@@ -101,14 +104,52 @@ public:
 	{
 		constexpr uint16 depth = 1;
 		constexpr uint16 array_size = 1;
-		return gapi_texture_desc(gapi_resource_type::texture2d, extent.x, extent.y, depth, array_size, num_mips, num_samples, pformat, flags);
+		return gapi_resource_desc(gapi_resource_type::texture2d, extent.x, extent.y, depth, array_size, num_mips, num_samples, pformat, flags);
 	}
+}
 
-	using gapi_resource_desc::gapi_resource_desc;
-};
 
-class gapi_buffer
+namespace gapi_buffer_desc
+{
+	// TODO:
+	inline gapi_resource_desc create()
+	{
+		return gapi_resource_desc{
+			gapi_resource_type::buffer, 0, 0, 0, 0, 0, 0, gapi_pixel_format::unknown, gapi_texture_create_flag::none
+		};
+	}
+}
+
+
+class NENE_API gapi_resource
 {
 public:
-	virtual ~gapi_buffer() = default;
+	gapi_resource(const gapi_resource_desc& desc);
+	
+	virtual ~gapi_resource() = default;
+
+	const gapi_resource_state& get_resource_state() const { return m_state; }
+	void set_resource_state(const gapi_resource_state& state) { m_state = state; }
+
+protected:
+	gapi_resource_desc m_desc;
+	gapi_resource_state m_state;
+};
+
+
+class NENE_API gapi_buffer : public gapi_resource
+{
+public:
+	using gapi_resource::gapi_resource;
+	
+	virtual ~gapi_buffer() override = default;
+};
+
+
+class NENE_API gapi_texture : public gapi_resource
+{
+public:
+	using gapi_resource::gapi_resource;
+	
+	virtual ~gapi_texture() override = default;
 };

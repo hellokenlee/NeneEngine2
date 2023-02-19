@@ -55,13 +55,17 @@ class NENE_API gapi_graphics_pipeline_state_initializer
 {
 public:
 	gapi_graphics_pipeline_state_initializer(
-		gapi_bound_shader_state bound_shader_state
-	) : m_bound_shader_state(bound_shader_state)
+		const gapi_bound_shader_state& bound_shader_state
+	)
+	: m_bound_shader_state(bound_shader_state)
+	, m_primitive_type(gapi_primitive_type::triangle)
+	, m_depth_stencil_format(gapi_pixel_format::unknown)
+	, m_render_target_formats({gapi_pixel_format::unknown})
 	{}
 	
 	virtual ~gapi_graphics_pipeline_state_initializer() = default;
 	
-	[[nodiscard]] const gapi_bound_shader_state& get_bound_shader_state() const;
+	[[nodiscard]] const gapi_bound_shader_state& get_bound_shader_state() const { return m_bound_shader_state; } 
 	
 	[[nodiscard]] const gapi_blend_state_initializer& get_blend_state() const;
 

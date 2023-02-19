@@ -3,8 +3,8 @@ struct PSInput
     float4 position : SV_POSITION;
 };
 
-Texture2D screen_texture : register(t0);
-SamplerState screen_sampler : register(s0);
+Texture2D screen_texture : register(t0, space0);
+SamplerState screen_sampler : register(s0, space100);
 
 PSInput MainVS(float4 position : POSITION, float4 color : COLOR)
 {

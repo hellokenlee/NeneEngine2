@@ -4,6 +4,7 @@
 #include "d3d12_globals.h"
 #include "d3d12_descriptor_heap.h"
 #include "d3d12_cmd_list_mgr.h"
+#include "d3d12_root_signature_mgr.h"
 
 #include <windows.h>
 
@@ -47,9 +48,13 @@ void d3d12_device::init()
 	
 	// Create command list manager
 	LOG(d3d12, info, TXT("Creating command list managers."));
-	m_copy_cmd_list_mgr = t::make_shared<d3d12_cmd_list_mgr>(this->shared_from_this(), d3d12_cmd_type::copy);
+	m_copy_cmd_list_mgr = t::make_shared<d3d12_cmd_list_mgr>(shared_from_this(), d3d12_cmd_type::copy);
 	m_compute_cmd_list_mgr = t::make_shared<d3d12_cmd_list_mgr>(shared_from_this(), d3d12_cmd_type::compute);
 	m_graphics_cmd_list_mgr = t::make_shared<d3d12_cmd_list_mgr>(shared_from_this(), d3d12_cmd_type::graphics);
+
+	//
+	LOG(d3d12, info, TXT("Creating root signature list managers."));
+	m_root_signature_mgr = t::make_shared<d3d12_root_signature_mgr>(shared_from_this());
 }
 
 void d3d12_device::clear()
@@ -58,9 +63,10 @@ void d3d12_device::clear()
 	m_compute_cmd_list_mgr.reset();
 	m_graphics_cmd_list_mgr.reset();
 	m_global_descriptor_heap.reset();
+	m_root_signature_mgr.reset();
 }
 
-t::shared_ptr<d3d12_cmd_list_mgr> d3d12_device::get_cmd_list_mgr(d3d12_cmd_type type)
+t::shared_ptr<d3d12_cmd_list_mgr> d3d12_device::get_cmd_list_mgr(d3d12_cmd_type type) const
 {
 	switch (type)
 	{

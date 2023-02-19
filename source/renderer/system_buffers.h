@@ -4,7 +4,7 @@
 
 #include "core/template/pointer.h"
 #include "gapi/gapi_shader.h"
-#include "gapi/gapi_texture.h"
+#include "gapi/gapi_resource.h"
 #include "core_render/global_render_resource.h"
 
 

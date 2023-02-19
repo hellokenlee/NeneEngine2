@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "gapi/gapi_texture.h"
+#include "gapi/gapi_resource.h"
 
 namespace i
 {

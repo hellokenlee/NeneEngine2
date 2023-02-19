@@ -16,6 +16,6 @@ constexpr uint32 g_d3d12_max_global_descriptor_count = 2048;
 constexpr bool g_d3d12_shader_compile_debug = true;
 constexpr bool g_d3d12_shader_compile_skip_optimazation = true;
 
-constexpr gapi_shader_feature_level g_d3d12_default_feature_level = gapi_shader_feature_level::sm_5_0;
+constexpr gapi_shader_feature_level g_d3d12_default_feature_level = gapi_shader_feature_level::sm_5_1;
 
 // << GAPI Globals <<<

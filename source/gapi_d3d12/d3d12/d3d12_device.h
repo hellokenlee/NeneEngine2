@@ -3,7 +3,6 @@
 #pragma once
 
 #include <d3d12.h>
-#include <dxgi1_6.h>
 
 #include "d3d12_utils.h"
 #include "d3d12_adapter.h"
@@ -31,7 +30,7 @@ public:
 	[[nodiscard]] t::shared_ptr<d3d12_descriptor_heap> get_dsv_descriptor_heap() const { return m_dsv_descriptor_heap; }
 	[[nodiscard]] t::shared_ptr<d3d12_descriptor_heap> get_global_descriptor_heap() const { return m_global_descriptor_heap; }
 
-	[[nodiscard]] t::shared_ptr<d3d12_cmd_list_mgr> get_cmd_list_mgr(d3d12_cmd_type type);
+	[[nodiscard]] t::shared_ptr<d3d12_cmd_list_mgr> get_cmd_list_mgr(d3d12_cmd_type type) const;
 	[[nodiscard]] t::shared_ptr<d3d12_cmd_list_mgr> get_copy_cmd_list_mgr() const { return m_copy_cmd_list_mgr; }
 	[[nodiscard]] t::shared_ptr<d3d12_cmd_list_mgr> get_compute_cmd_list_mgr() const { return m_compute_cmd_list_mgr; }
 	[[nodiscard]] t::shared_ptr<d3d12_cmd_list_mgr> get_graphics_cmd_list_mgr() const { return m_graphics_cmd_list_mgr; }

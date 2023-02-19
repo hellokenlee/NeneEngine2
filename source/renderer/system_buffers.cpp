@@ -26,7 +26,7 @@ system_vertex_buffers::system_vertex_buffers()
     static constexpr auto create_and_upload_vertex_buffer = [](t::shared_ptr<gapi> api, const t::dynamic_array<vertex>& vertices) -> t::shared_ptr<gapi_buffer>
     {
         t::shared_ptr<gapi_buffer> result =
-            api->create_buffer(sizeof(vertex), sizeof(vertex) * vertices.size(), gapi_buffer_usage_flag::dynamic_buffer);
+            api->create_buffer(sizeof(vertex), sizeof(vertex) * vertices.size(), gapi_buffer_usage_flag::dynamic_buffer | gapi_buffer_usage_flag::usage_vertex_buffer);
         void* mapped_buffer = api->lock_buffer(result);
         memcpy(mapped_buffer, vertices.data(), sizeof(vertex) * vertices.size());
         api->unlock_buffer(result);

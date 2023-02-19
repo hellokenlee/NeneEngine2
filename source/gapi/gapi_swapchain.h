@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "gapi_texture.h"
+#include "gapi_resource.h"
 
 
 class gapi_swapchain
