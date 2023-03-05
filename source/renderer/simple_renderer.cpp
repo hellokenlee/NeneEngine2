@@ -9,6 +9,7 @@ simple_renderer::simple_renderer()
 	: renderer()
 	, m_mesh_pass_pipeline_state(nullptr)
 	, m_screen_pass_pipeline_state(nullptr)
+	, m_screen_texture(nullptr)
 {
 	const auto api = gapi_manager::get();
 	const auto vertex_declarations = system_vertex_declarations::get();
@@ -30,7 +31,7 @@ void simple_renderer::render_view_family(t::shared_ptr<gapi_texture> view_family
 	const auto api = gapi_manager::get();
 	const auto context = api->get_cmd_context();
 	const auto vertex_buffers = system_vertex_buffers::get();
-
+	
 	context->transition_resource(m_screen_texture, gapi_resource_state::shader_resource, gapi_resource_state::render_target);
 	{
 		context->begin_pass({m_screen_texture});

@@ -15,7 +15,7 @@ gapi_d3d12_buffer::gapi_d3d12_buffer(t::shared_ptr<d3d12_device> device, const s
 		m_vertex_buffer_view = t::make_shared<gapi_d3d12_vertex_buffer_view>();
 		m_vertex_buffer_view->BufferLocation = m_resource->GetGPUVirtualAddress();
 		m_vertex_buffer_view->StrideInBytes = static_cast<uint32>(buffer_stride);
-		m_vertex_buffer_view->SizeInBytes = static_cast<uint32>(usage_flag);
+		m_vertex_buffer_view->SizeInBytes = static_cast<uint32>(buffer_size);
 	}
 
 	if (t::has_any_flag(m_usage, gapi_buffer_usage_flag::usage_index_buffer))

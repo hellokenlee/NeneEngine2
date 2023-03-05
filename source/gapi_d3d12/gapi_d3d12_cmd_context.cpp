@@ -77,12 +77,13 @@ void gapi_d3d12_cmd_context::begin_pass(const render_target_slots& rendertargets
 		rtvs[i] = gapi_d3d12_texture_2d::cast(rendertargets[i])->get_d3d12_render_target_view()->get_d3d_descriptor_handle();
 	}
 	m_cmd_list->get_d3d_graphics_cmd_list()->OMSetRenderTargets(
-		rendertargets.size(), 
+		static_cast<uint32>(rendertargets.size()), 
 		rtvs.data(), 
 		FALSE, nullptr
 	);
 
 	// TODO: Remove clear action in here
+	/*
 	constexpr float clear_color[] = { 0.0f, 0.2f, 0.4f, 1.0f };
 	for (int32 i = 0; i < rendertargets.size(); ++i)
 	{
@@ -93,7 +94,7 @@ void gapi_d3d12_cmd_context::begin_pass(const render_target_slots& rendertargets
 			nullptr
 		);
 	}
-    
+	*/
 	m_cmd_list->get_d3d_graphics_cmd_list()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
@@ -125,6 +126,7 @@ void gapi_d3d12_cmd_context::transition_resource(t::shared_ptr<gapi_texture> res
 	}
 	CHECK(resource->get_resource_state() == from);
 
+	// TODO: Not only texture can be transit
 	const auto texture = gapi_d3d12_texture_2d::cast(resource);
 	
 	m_cmd_list->add_transition_barrier(
@@ -132,6 +134,8 @@ void gapi_d3d12_cmd_context::transition_resource(t::shared_ptr<gapi_texture> res
 		d3d_cast(from),
 		d3d_cast(to)
 	);
+	
+	resource->set_resource_state(to);
 }
 
 void gapi_d3d12_cmd_context::draw_primitive(uint32 vertex_num, uint32 instance_num, uint32 base_vertex_index, uint32 instance_base_index)
@@ -148,7 +152,7 @@ void gapi_d3d12_cmd_context::set_vertex_stream(t::shared_ptr<gapi_buffer> vertex
 void gapi_d3d12_cmd_context::set_graphic_pipeline_states(t::shared_ptr<gapi_graphics_pipeline_state> state)
 {
 	const t::shared_ptr<gapi_d3d12_graphics_pipeline_state> pipeline_state = gapi_d3d12_graphics_pipeline_state::cast(state);
-
+	
 	m_cmd_list->set_graphic_pipeline_states(pipeline_state->get_d3d12_pipeline_state());
 }
 

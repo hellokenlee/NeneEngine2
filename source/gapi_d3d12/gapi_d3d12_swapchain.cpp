@@ -36,9 +36,14 @@ t::shared_ptr<gapi_texture> gapi_d3d12_swapchain::get_back_buffer_texture() cons
 {
     static const gapi_resource_desc args = []() -> gapi_resource_desc
     {
-        const gapi_resource_desc args = gapi_texture_desc::create_2d({0, 0}, gapi_pixel_format::r8g8b8a8_unorm, gapi_texture_create_flag::as_render_target);
+        const gapi_resource_desc args = gapi_texture_desc::create_2d(
+            {0, 0}, gapi_pixel_format::r8g8b8a8_unorm,
+            gapi_texture_create_flag::as_render_target | gapi_texture_create_flag::as_shader_resource
+        );
         return args;
     }();
     
-    return gapi_d3d12_texture_2d::wrap(m_swap_chain->get_back_buffer_texture(m_back_buffer_index), args);
+    auto back_buffer_texture = gapi_d3d12_texture_2d::wrap(m_swap_chain->get_back_buffer_texture(m_back_buffer_index), args);
+    back_buffer_texture->set_resource_state(gapi_resource_state::present);
+    return back_buffer_texture;
 }

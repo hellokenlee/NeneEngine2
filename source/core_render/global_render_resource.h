@@ -6,11 +6,13 @@
 
 namespace i
 {
-class NENE_API global_render_resource
-{
-public:
-    virtual ~global_render_resource() = default;
+    class global_render_resource
+    {
+    public:
+        global_render_resource() = default;
+        
+        virtual ~global_render_resource() = default;
 
-    virtual void release() = 0;
-};
+        virtual void release() = 0;
+    };
 }

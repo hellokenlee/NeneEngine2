@@ -60,6 +60,7 @@ void d3d12_cmd_list::draw_instanced(uint32 vertex_num, uint32 instance_num, uint
 void d3d12_cmd_list::set_graphic_pipeline_states(t::shared_ptr<d3d12_pipeline_state> state)
 {
 	get_d3d_graphics_cmd_list()->SetPipelineState(state->get_d3d_pipeline_state());
+	get_d3d_graphics_cmd_list()->SetGraphicsRootSignature(state->get_root_signature()->get_d3d_root_signature());
 }
 
 void d3d12_cmd_list::add_transition_barrier(t::shared_ptr<d3d12_resource> resource, D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after)
