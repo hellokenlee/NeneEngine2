@@ -21,34 +21,59 @@ struct gapi_vertex_element
 
 typedef t::dynamic_array<gapi_vertex_element> gapi_vertex_declartions;
 
-class gapi_vertex_shader
+class NENE_API gapi_shader
 {
 public:
-	virtual ~gapi_vertex_shader() = default;
+	gapi_shader(gapi_shader_type type)
+		: m_type(type)
+	{}
+	
+	virtual ~gapi_shader() = default;
+
+	gapi_shader_type get_shader_type() const { return m_type; }
+
+protected:
+	gapi_shader_type m_type;
 };
 
-class gapi_pixel_shader
+class NENE_API gapi_vertex_shader : public gapi_shader
 {
 public:
-	virtual ~gapi_pixel_shader() = default;
+	gapi_vertex_shader()
+		: gapi_shader(gapi_shader_type::vertex_shader)
+	{}
 };
 
-class gapi_domain_shader
+class NENE_API gapi_pixel_shader : public gapi_shader
 {
 public:
-	virtual ~gapi_domain_shader() = default;
+	gapi_pixel_shader()
+		: gapi_shader(gapi_shader_type::pixel_shader)
+	{}
 };
 
-class gapi_hull_shader
+class NENE_API gapi_domain_shader : public gapi_shader
 {
 public:
-	virtual ~gapi_hull_shader() = default;
+	gapi_domain_shader()
+		: gapi_shader(gapi_shader_type::domain_shader)
+	{}
 };
 
-class gapi_geometry_shader
+class NENE_API gapi_hull_shader : public gapi_shader
 {
 public:
-	virtual ~gapi_geometry_shader() = default;
+	gapi_hull_shader()
+		: gapi_shader(gapi_shader_type::domain_shader)
+	{}
+};
+
+class NENE_API gapi_geometry_shader : public gapi_shader
+{
+public:
+	gapi_geometry_shader()
+		: gapi_shader(gapi_shader_type::domain_shader)
+	{}
 };
 
 class NENE_API gapi_shader_initializer

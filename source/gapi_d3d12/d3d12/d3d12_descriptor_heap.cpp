@@ -13,7 +13,15 @@ d3d12_descriptor_heap::d3d12_descriptor_heap(t::shared_ptr<d3d12_device> device,
 	D3D12_DESCRIPTOR_HEAP_DESC desc = {};
 	desc.NumDescriptors = num_desc;
 	desc.Type = type;
-	desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	switch (type)
+	{
+	case D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV:
+	case D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER:
+		desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+		break;
+	default:
+		desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	}
 
 	VERIFY(d3d_device->CreateDescriptorHeap(
 		&desc, IID_PPV_ARGS(&m_descriptor_heap)
@@ -24,7 +32,7 @@ d3d12_descriptor_heap::d3d12_descriptor_heap(t::shared_ptr<d3d12_device> device,
 
 	// 
 	m_cpu_base = m_descriptor_heap->GetCPUDescriptorHandleForHeapStart();
-	m_gpu_base = { 0ull };
+	m_gpu_base = m_descriptor_heap->GetGPUDescriptorHandleForHeapStart();
 
 	//
 	for (uint32 i = 0; i < num_desc; ++i)

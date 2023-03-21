@@ -3,6 +3,7 @@
 #pragma once
 
 #include "core/core.h"
+#include "gapi_shader.h"
 #include "gapi_viewport.h"
 #include "gapi_resource.h"
 #include "gapi_swapchain.h"
@@ -29,6 +30,8 @@ public:
 	virtual void set_vertex_stream(t::shared_ptr<gapi_buffer> vertex_buffer) = 0;
 
 	virtual void set_graphic_pipeline_states(t::shared_ptr<gapi_graphics_pipeline_state> state) = 0;
+
+	virtual void set_shader_parameter(gapi_shader_type shader_type, t::shared_ptr<gapi_texture> resource) = 0;
 
 public:
 	gapi_cmd_context() = default;

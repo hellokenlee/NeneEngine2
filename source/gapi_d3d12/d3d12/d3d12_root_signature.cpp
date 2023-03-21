@@ -36,14 +36,15 @@ d3d12_root_signature::d3d12_root_signature(t::shared_ptr<d3d12_device> device)
     , m_root_signature(nullptr)
 {
     // TODO: Generates root parameters with shader reflections
+    constexpr uint32 NUM_DESCRIPTOR_TABLE_ITEMS = 1;
     constexpr uint32 NUM_DESCRIPTOR_TABLE = 1;
-    constexpr uint32 NUM_ROOT_PARAMETER = 1;
 
-    CD3DX12_DESCRIPTOR_RANGE descriptor_tables[NUM_DESCRIPTOR_TABLE];
-    descriptor_tables[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+    // Each item in descriptor table is a range in descriptor heap
+    CD3DX12_DESCRIPTOR_RANGE descriptor_table_items[NUM_DESCRIPTOR_TABLE_ITEMS];
+    descriptor_table_items[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
 
-    CD3DX12_ROOT_PARAMETER root_parameters[NUM_ROOT_PARAMETER];
-    root_parameters[0].InitAsDescriptorTable(1, descriptor_tables, D3D12_SHADER_VISIBILITY_PIXEL);
+    CD3DX12_ROOT_PARAMETER root_parameters[NUM_DESCRIPTOR_TABLE];
+    root_parameters[0].InitAsDescriptorTable(1, descriptor_table_items, D3D12_SHADER_VISIBILITY_PIXEL);
 
     //
     CD3DX12_ROOT_SIGNATURE_DESC desc;

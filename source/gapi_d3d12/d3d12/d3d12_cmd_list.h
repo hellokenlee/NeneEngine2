@@ -7,6 +7,7 @@
 #include "d3d12_device.h"
 #include "d3d12_resource.h"
 #include "d3d12_pipeline_state.h"
+#include "d3d12_resource_view.h"
 
 
 class d3d12_cmd_list_mgr;
@@ -35,6 +36,8 @@ public:
 	void draw_instanced(uint32 vertex_num, uint32 instance_num, uint32 base_vertex_index, uint32 instance_base_index);
 
 	void add_transition_barrier(t::shared_ptr<d3d12_resource> resource, D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after);
+
+	void set_root_parameter_srv(t::shared_ptr<d3d12_shader_resource_view> srv);
 
 public:
 	ID3D12CommandList* get_d3d_cmd_list() { return m_command_list.Get(); }

@@ -27,6 +27,8 @@ public:
 
 	void set_graphic_pipeline_states(t::shared_ptr<gapi_graphics_pipeline_state> state) override;
 
+	void set_shader_parameter(gapi_shader_type shader_type, t::shared_ptr<gapi_texture> resource) override;
+
 protected:
 	//
 	void open_cmd_list();
@@ -40,6 +42,8 @@ protected:
 
 	t::shared_ptr<d3d12_cmd_list> m_cmd_list;
 	t::shared_ptr<d3d12_cmd_allocator> m_cmd_allocator;
+
+	t::shared_ptr<d3d12_descriptor_heap> m_resource_binding_heap;
 
 	t::shared_ptr<gapi_d3d12_viewport> m_default_viewport;
 	

@@ -16,7 +16,7 @@ class d3d12_resource_view
 public:
 	d3d12_resource_view(t::shared_ptr<d3d12_resource> resource, t::shared_ptr<d3d12_descriptor_heap> heap);
 
-	[[nodiscard]] D3D12_CPU_DESCRIPTOR_HANDLE get_d3d_descriptor_handle() const { return m_descriptor->m_handle; }
+	[[nodiscard]] t::shared_ptr<d3d12_descriptor_handle> get_d3d_descriptor() const { return m_descriptor; }
 
 protected:
 	t::weak_ptr<d3d12_resource> m_resource;

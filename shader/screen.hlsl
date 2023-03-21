@@ -1,20 +1,30 @@
 struct PSInput
 {
-    float4 position : SV_POSITION;
+    float4 SvPosition : SV_POSITION;
+    float2 ScreenUV : TEXCOORD0;
 };
 
-Texture2D screen_texture : register(t0, space0);
-SamplerState screen_sampler : register(s0, space100);
+Texture2D ScreenTexture : register(t0, space0);
+SamplerState ScreenSampler : register(s0, space100);
 
-PSInput MainVS(float4 position : POSITION, float4 color : COLOR)
+float2 ScreenNdcToUv(float2 Ndc)
 {
-    PSInput result;
-    result.position = position;
-    return result;
+    float2 NormalizedNdc = (Ndc + float2(1.0, 1.0)) * 0.5;
+    float2 ScreenUV = float2(NormalizedNdc.x, 1.0 - NormalizedNdc.y);
+    return ScreenUV;
 }
 
-float4 MainPS(PSInput input) : SV_TARGET
+PSInput MainVS(float4 Position : POSITION, float4 Color : COLOR)
 {
-    float2 uv = input.position.xy;
-    return screen_texture.Sample(screen_sampler, uv);
+    PSInput Result;
+    Result.SvPosition = Position;
+    Result.SvPosition.z = 0.5;
+    Result.SvPosition.w = 1.0;
+    Result.ScreenUV = ScreenNdcToUv(Position.xy);
+    return Result;
+}
+
+float4 MainPS(PSInput Input) : SV_TARGET
+{
+    return ScreenTexture.Sample(ScreenSampler, Input.ScreenUV);
 }

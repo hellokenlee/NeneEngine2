@@ -4,6 +4,7 @@
 #include "d3d12_cmd_list_mgr.h"
 #include "d3d12_adapter.h"
 #include "d3d12_cmd_allocator.h"
+#include "d3d12_descriptor_heap.h"
 
 
 d3d12_cmd_list::d3d12_cmd_list(d3d12_cmd_type type, t::shared_ptr<d3d12_cmd_allocator> allocator, t::shared_ptr<d3d12_device> device)
@@ -60,7 +61,6 @@ void d3d12_cmd_list::draw_instanced(uint32 vertex_num, uint32 instance_num, uint
 void d3d12_cmd_list::set_graphic_pipeline_states(t::shared_ptr<d3d12_pipeline_state> state)
 {
 	get_d3d_graphics_cmd_list()->SetPipelineState(state->get_d3d_pipeline_state());
-	get_d3d_graphics_cmd_list()->SetGraphicsRootSignature(state->get_root_signature()->get_d3d_root_signature());
 }
 
 void d3d12_cmd_list::add_transition_barrier(t::shared_ptr<d3d12_resource> resource, D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after)
@@ -74,4 +74,8 @@ void d3d12_cmd_list::add_transition_barrier(t::shared_ptr<d3d12_resource> resour
 		1,
 		&transition
 	);
+}
+
+void d3d12_cmd_list::set_root_parameter_srv(t::shared_ptr<d3d12_shader_resource_view> srv)
+{
 }

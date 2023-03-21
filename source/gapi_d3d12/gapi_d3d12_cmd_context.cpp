@@ -16,6 +16,7 @@ gapi_d3d12_cmd_context::gapi_d3d12_cmd_context(t::shared_ptr<d3d12_device> devic
 	, m_device(device)
 	, m_cmd_list(nullptr)
 	, m_cmd_allocator(nullptr)
+	, m_resource_binding_heap(t::make_shared<d3d12_descriptor_heap>(device, 128, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV))
 	, m_default_viewport(gapi_d3d12_viewport::cast(viewport))
 {
 	open_cmd_list();
@@ -74,7 +75,7 @@ void gapi_d3d12_cmd_context::begin_pass(const render_target_slots& rendertargets
 	t::static_array<D3D12_CPU_DESCRIPTOR_HANDLE, MAX_RENDER_TARGET_COUNT> rtvs;
 	for (int32 i = 0; i < rendertargets.size(); ++i)
 	{
-		rtvs[i] = gapi_d3d12_texture_2d::cast(rendertargets[i])->get_d3d12_render_target_view()->get_d3d_descriptor_handle();
+		rtvs[i] = gapi_d3d12_texture_2d::cast(rendertargets[i])->get_d3d12_render_target_view()->get_d3d_descriptor()->m_handle;
 	}
 	m_cmd_list->get_d3d_graphics_cmd_list()->OMSetRenderTargets(
 		static_cast<uint32>(rendertargets.size()), 
@@ -140,6 +141,11 @@ void gapi_d3d12_cmd_context::transition_resource(t::shared_ptr<gapi_texture> res
 
 void gapi_d3d12_cmd_context::draw_primitive(uint32 vertex_num, uint32 instance_num, uint32 base_vertex_index, uint32 instance_base_index)
 {
+	// Bind descriptor table
+	const auto handle = m_resource_binding_heap->get_d3d_descriptor_heap()->GetGPUDescriptorHandleForHeapStart();
+	m_cmd_list->get_d3d_graphics_cmd_list()->SetGraphicsRootDescriptorTable(0, handle);
+	
+	//
 	m_cmd_list->draw_instanced(vertex_num, instance_num, base_vertex_index, instance_base_index);
 }
 
@@ -154,6 +160,23 @@ void gapi_d3d12_cmd_context::set_graphic_pipeline_states(t::shared_ptr<gapi_grap
 	const t::shared_ptr<gapi_d3d12_graphics_pipeline_state> pipeline_state = gapi_d3d12_graphics_pipeline_state::cast(state);
 	
 	m_cmd_list->set_graphic_pipeline_states(pipeline_state->get_d3d12_pipeline_state());
+	
+	m_cmd_list->get_d3d_graphics_cmd_list()->SetGraphicsRootSignature(pipeline_state->get_d3d12_pipeline_state()->get_root_signature()->get_d3d_root_signature());
+}
+
+void gapi_d3d12_cmd_context::set_shader_parameter(gapi_shader_type shader_type, t::shared_ptr<gapi_texture> resource)
+{
+	// TODO: Make it depends on shader
+	// TODO: Depends on the shader reflecion to get a layout of rootsignature
+	const auto resource_ = gapi_d3d12_texture_2d::cast(resource);
+	const auto src_descriptor = resource_->get_d3d12_shader_resource_view()->get_d3d_descriptor()->m_handle;
+
+	D3D12_CPU_DESCRIPTOR_HANDLE dst_descriptor = m_resource_binding_heap->get_cpu_handle(0);
+	const uint32 num_descriptor_copy = 1;
+	m_device->get_d3d_device()->CopyDescriptors(
+		1, &dst_descriptor, &num_descriptor_copy,
+		num_descriptor_copy, &src_descriptor, nullptr, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
+	);
 }
 
 void gapi_d3d12_cmd_context::open_cmd_list()

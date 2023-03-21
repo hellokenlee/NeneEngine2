@@ -22,7 +22,7 @@ simple_renderer::simple_renderer()
 	const auto screen_ps = api->create_pixel_shader({"./shader/screen.hlsl", "MainPS"});
 	m_screen_pass_pipeline_state = api->create_graphic_pipeline_state({gapi_bound_shader_state(*vertex_declarations->position4_color4(), screen_vs, screen_ps)});
 
-	const auto desc = gapi_texture_desc::create_2d({1920, 1080}, gapi_pixel_format::r8g8b8a8_unorm, gapi_texture_create_flag::as_shader_resource | gapi_texture_create_flag::as_render_target);
+	const auto desc = gapi_texture_desc::create_2d({800, 600}, gapi_pixel_format::r8g8b8a8_unorm, gapi_texture_create_flag::as_shader_resource | gapi_texture_create_flag::as_render_target);
 	m_screen_texture = api->create_texture_2d(desc);
 }
 
@@ -47,6 +47,7 @@ void simple_renderer::render_view_family(t::shared_ptr<gapi_texture> view_family
 		context->begin_pass({view_family_render_target});
 		context->set_graphic_pipeline_states(m_screen_pass_pipeline_state);
 		context->set_vertex_stream(vertex_buffers->screen_quad());
+		context->set_shader_parameter(gapi_shader_type::pixel_shader, m_screen_texture);
 		context->draw_primitive(6, 1, 0, 0);
 		context->end_pass();
 	}

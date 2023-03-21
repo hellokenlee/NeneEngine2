@@ -45,6 +45,6 @@ d3d12_shader_resource_view::d3d12_shader_resource_view(t::shared_ptr<d3d12_resou
 	desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	desc.Texture2D.MipLevels = 1;
 	//
-	d3d_device->CreateShaderResourceView(resource->get_d3d_resource(), &desc, m_descriptor->m_handle);	
+	d3d_device->CreateShaderResourceView(resource->get_d3d_resource(), &desc, m_descriptor->m_handle);
 }
 

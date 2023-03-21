@@ -17,6 +17,7 @@ public:
 
     t::shared_ptr<d3d12_texture_2d> get_d3d12_texture() { return m_d3d12_texture; }
     t::shared_ptr<d3d12_render_target_view> get_d3d12_render_target_view() { return m_d3d12_rtv; }
+    t::shared_ptr<d3d12_shader_resource_view> get_d3d12_shader_resource_view() { return m_d3d12_srv; }
 
     // Wrap existing texture
     static t::shared_ptr<gapi_d3d12_texture_2d> wrap(t::shared_ptr<d3d12_texture_2d> d3dtexture, const gapi_resource_desc& desc);
