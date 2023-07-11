@@ -7,6 +7,7 @@
 #include <d3d12.h>
 #include <d3dcommon.h>
 
+using d3d12_shader_resource_type = D3D_SHADER_INPUT_TYPE;
 
 class d3d12_vertex_declaration
 {
@@ -22,11 +23,30 @@ protected:
 	t::dynamic_array<D3D12_INPUT_ELEMENT_DESC> m_vertex_elements;
 };            
 
+struct d3d12_shader_resource_binding
+{
+	sstring m_variable_name;
+	uint32 m_register_space;
+	d3d12_shader_resource_type m_resource_type;
+	uint32 m_bind_point;
+
+	d3d12_shader_resource_binding(const sstring& name, uint32 register_space, d3d12_shader_resource_type resource_type, uint32 bind_point)
+		: m_variable_name(name), m_register_space(register_space), m_resource_type(resource_type), m_bind_point(bind_point) {}
+};
 
 class d3d12_shader_resource_table
 {
 public:
 	d3d12_shader_resource_table() = default;
+
+	uint32 size() const { return m_resource_bindings.size(); }
+
+	void add(const char* name, uint32 register_space, d3d12_shader_resource_type type, uint32 bind_point);
+
+	void clear() { m_resource_bindings.clear(); }
+
+protected:
+	t::dynamic_array<d3d12_shader_resource_binding> m_resource_bindings;
 };
 
 struct d3d12_shader_resource_count
@@ -36,7 +56,6 @@ struct d3d12_shader_resource_count
 	uint32 m_num_cbv;
 	uint32 m_num_uav;
 };
-
 
 class d3d12_shader_base
 {
@@ -51,11 +70,15 @@ public:
 
 	virtual ~d3d12_shader_base() = default;
 
-	virtual bool compile();
+	bool compile();
 
 	[[nodiscard]] ID3DBlob* get_d3d_blob() const { return m_bytecode.Get(); }
 
-public:
+	[[nodiscard]] const d3d12_shader_resource_table& get_resource_table() { return m_resource_table; }
+
+	[[nodiscard]] const d3d12_shader_resource_count& get_resource_count() { return m_resource_count; }
+
+protected:
 	sstring m_name;
 	sstring m_codes;
 	sstring m_entry;
@@ -65,9 +88,10 @@ public:
 	d3d12_shader_resource_count m_resource_count;
 	d3d12_shader_resource_table m_resource_table;
 	
-protected:
 	WinComPtr<ID3DBlob> m_bytecode;
 	WinComPtr<ID3DBlob> m_error_message;
+
+	friend class d3d12_shader_base_private;
 };
 
 

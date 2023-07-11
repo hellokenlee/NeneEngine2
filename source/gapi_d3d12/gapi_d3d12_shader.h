@@ -12,10 +12,10 @@ public:
 	gapi_d3d12_vertex_shader(const sstring& codes, const sstring& entry, const sstring& name);
 
 	
-	t::shared_ptr<d3d12_vertex_shader> get_d3d12_shader() { return m_d3d12_shader; }
+	t::shared_ptr<d3d12_vertex_shader> get_d3d12_shader() { return m_vertex_shader; }
 
 protected:
-	t::shared_ptr<d3d12_vertex_shader> m_d3d12_shader;
+	t::shared_ptr<d3d12_vertex_shader> m_vertex_shader;
 };
 
 
@@ -24,8 +24,8 @@ class gapi_d3d12_pixel_shader : public t::impl<gapi_d3d12_pixel_shader, gapi_pix
 public:
 	gapi_d3d12_pixel_shader(const sstring& codes, const sstring& entry, const sstring& name);
 
-	t::shared_ptr<d3d12_pixel_shader> get_d3d12_shader() { return m_d3d12_shader; }
+	t::shared_ptr<d3d12_pixel_shader> get_d3d12_shader() { return m_pixel_shader; }
 
 protected:
-	t::shared_ptr<d3d12_pixel_shader> m_d3d12_shader;
+	t::shared_ptr<d3d12_pixel_shader> m_pixel_shader;
 };

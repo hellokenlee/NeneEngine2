@@ -16,6 +16,7 @@ struct d3d12_graphics_pipeline_creation_args
 	d3d12_vertex_elements m_input_layout;
 	t::shared_ptr<d3d12_vertex_shader> m_vertex_shader;
 	t::shared_ptr<d3d12_pixel_shader> m_pixel_shader;
+	// TODO: Other shader stages
 };
 
 

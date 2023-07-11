@@ -31,33 +31,16 @@ static const t::static_array<D3D12_STATIC_SAMPLER_DESC, 4> shared_static_sampler
     make_static_sampler_desc(D3D12_FILTER_MIN_MAG_MIP_LINEAR, D3D12_TEXTURE_ADDRESS_MODE_CLAMP,d3d12_global_sampler_register::linear_wrap),
 };
 
-d3d12_root_signature::d3d12_root_signature(t::shared_ptr<d3d12_device> device)
+d3d12_root_signature::d3d12_root_signature(t::shared_ptr<d3d12_device> device, const d3d12_root_signature_desc& desc)
     : d3d12_device_child(device)
     , m_root_signature(nullptr)
 {
-    // TODO: Generates root parameters with shader reflections
-    constexpr uint32 NUM_DESCRIPTOR_TABLE_ITEMS = 1;
-    constexpr uint32 NUM_DESCRIPTOR_TABLE = 1;
-
-    // Each item in descriptor table is a range in descriptor heap
-    CD3DX12_DESCRIPTOR_RANGE descriptor_table_items[NUM_DESCRIPTOR_TABLE_ITEMS];
-    descriptor_table_items[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
-
-    CD3DX12_ROOT_PARAMETER root_parameters[NUM_DESCRIPTOR_TABLE];
-    root_parameters[0].InitAsDescriptorTable(1, descriptor_table_items, D3D12_SHADER_VISIBILITY_PIXEL);
-
     //
-    CD3DX12_ROOT_SIGNATURE_DESC desc;
-    
-    desc.Init(
-        1, root_parameters,
-        static_cast<uint32>(shared_static_sampler_descs.size()), shared_static_sampler_descs.data(),
-        D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT
-    );
-
     WinComPtr<ID3DBlob> signature;
     WinComPtr<ID3DBlob> error;
-    D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error);
+    //
+    D3D12SerializeRootSignature(&(desc.get_d3d_desc()), D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error);
+    //
     VERIFY(
         device->get_d3d_device()->CreateRootSignature(
             0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_root_signature)
