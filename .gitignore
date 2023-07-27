@@ -32,3 +32,4 @@ toolchain/.idea/*
 toolchain/__pycache__/*
 toolchain/common/__pycache__/*
 source/editor_wrapper/x64/*
+*.DotSettings
