@@ -2,14 +2,24 @@
 
 #pragma once
 
-
-class noncopyable 
+/**
+ *	Usage:
+ *	```
+ *	class my_class: private noncopyable
+ *	{
+ *	public:
+ *		
+ *	};
+ *	```
+ */
+class NENE_API noncopyable 
 {
 public:
 	noncopyable() = default;
 	virtual ~noncopyable() = default;
 
 	noncopyable(const noncopyable&) = delete;
-	noncopyable& operator=(const noncopyable) = delete;
+	noncopyable& operator=(const noncopyable&) = delete;
 };
+
 

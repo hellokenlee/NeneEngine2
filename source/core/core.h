@@ -6,5 +6,7 @@
 #include "debug.h"
 #include "globals.h"
 #include "platform.h"
-#include "template.h"
+#include "pattern.h"
 #include "math/math.h"
+#include "flag_enum_class.h"
+#include "console_var.h"

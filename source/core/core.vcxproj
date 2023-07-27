@@ -173,12 +173,14 @@ py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(Outp
     <ClInclude Include="async\taskflow\utility\stream.hpp" />
     <ClInclude Include="async\taskflow\utility\traits.hpp" />
     <ClInclude Include="async\taskflow\utility\uuid.hpp" />
+    <ClInclude Include="console_var.h" />
     <ClInclude Include="core.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="file_helper.h" />
     <ClInclude Include="flag_enum_class.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="log.h" />
+    <ClInclude Include="math\color.inl" />
     <ClInclude Include="math\dxmath\DirectXCollision.h" />
     <ClInclude Include="math\dxmath\DirectXColors.h" />
     <ClInclude Include="math\dxmath\DirectXMath.h" />
@@ -187,10 +189,19 @@ py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(Outp
     <ClInclude Include="math\point.inl" />
     <ClInclude Include="math\rect.inl" />
     <ClInclude Include="platform.h" />
-    <ClInclude Include="template.h" />
+    <ClInclude Include="pattern.h" />
     <ClInclude Include="template\container.h" />
     <ClInclude Include="template\fundamental.h" />
     <ClInclude Include="template\lambda.h" />
+    <ClInclude Include="template\magic_enum\magic_enum.hpp" />
+    <ClInclude Include="template\magic_enum\magic_enum_all.hpp" />
+    <ClInclude Include="template\magic_enum\magic_enum_containers.hpp" />
+    <ClInclude Include="template\magic_enum\magic_enum_flags.hpp" />
+    <ClInclude Include="template\magic_enum\magic_enum_format.hpp" />
+    <ClInclude Include="template\magic_enum\magic_enum_fuse.hpp" />
+    <ClInclude Include="template\magic_enum\magic_enum_iostream.hpp" />
+    <ClInclude Include="template\magic_enum\magic_enum_switch.hpp" />
+    <ClInclude Include="template\magic_enum\magic_enum_utility.hpp" />
     <ClInclude Include="template\pointer.h" />
     <ClInclude Include="template\trait.h" />
     <ClInclude Include="template\utility.h" />
@@ -206,6 +217,7 @@ py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(Outp
     <None Include="math\dxmath\DirectXPackedVector.inl" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="console_var.cpp" />
     <ClCompile Include="debug.cpp" />
     <ClCompile Include="file_helper.cpp" />
     <ClCompile Include="globals.cpp" />

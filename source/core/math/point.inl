@@ -9,8 +9,16 @@ namespace t
     template<typename T>
     struct point
     {
-        T x;
-        T y;
+        union
+        {
+            T x;
+            T w;
+        };
+        union
+        {
+            T y;
+            T h;
+        };
     };
 };
 
