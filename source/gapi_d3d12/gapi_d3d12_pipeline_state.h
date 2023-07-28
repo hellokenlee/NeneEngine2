@@ -3,30 +3,26 @@
 #pragma once
 
 #include "gapi/gapi_pipeline_state.h"
-#include "d3d12/d3d12_pipeline_state.h"
-#include "d3d12/d3d12_shader.h"
+#include "d3d12_utils.h"
 
 
-class gapi_d3d12_compute_pipeline_state: public t::impl<gapi_d3d12_compute_pipeline_state, gapi_compute_pipeline_state>
+class gapi_d3d12_pipeline_state : public t::impl<gapi_d3d12_pipeline_state, i::gapi_pipeline_state>
 {
 public:
-	gapi_d3d12_compute_pipeline_state(t::shared_ptr<d3d12_device> device, const gapi_compute_pipeline_state_initializer& initializer);
+	~gapi_d3d12_pipeline_state() override = default;
+	
+	bool is_compute() override { return m_pipeline_type == gapi_pipeline_state_type::compute; }
 
-	t::shared_ptr<d3d12_pipeline_state> get_d3d12_pipeline_state() { return m_d3d12_state; }
+	bool is_graphics() override { return m_pipeline_type == gapi_pipeline_state_type::graphics; }
 
-protected:
-	t::shared_ptr<d3d12_pipeline_state> m_d3d12_state{};
-};
-
-
-class gapi_d3d12_graphics_pipeline_state: public t::impl<gapi_d3d12_graphics_pipeline_state, gapi_graphics_pipeline_state>
-{
 public:
-	gapi_d3d12_graphics_pipeline_state(t::shared_ptr<d3d12_device> device, const gapi_graphics_pipeline_state_initializer& initializer);
+	gapi_d3d12_pipeline_state(const WinComPtr<ID3D12PipelineState>& pipeline_state, const gapi_pipeline_state_type& ptype);
+	
+private:
+	gapi_pipeline_state_type m_pipeline_type;
+	
+	WinComPtr<ID3D12PipelineState> m_pipeline_state;
 
-	t::shared_ptr<d3d12_pipeline_state> get_d3d12_pipeline_state() { return m_d3d12_state; }
-
-protected:
-	t::shared_ptr<d3d12_pipeline_state> m_d3d12_state{};
+	friend class gapi_d3d12_device;
+	friend class gapi_d3d12_cmd_list;
 };
-

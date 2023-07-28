@@ -9,6 +9,43 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="d3d12_shader_compiler.h" />
+    <ClInclude Include="d3d12_type_cast.h" />
+    <ClInclude Include="d3d12_utils.h" />
+    <ClInclude Include="gapi_d3d12_factory.h" />
+    <ClInclude Include="gapi_d3d12_cmd_allocator.h" />
+    <ClInclude Include="gapi_d3d12_cmd_list.h" />
+    <ClInclude Include="gapi_d3d12_cmd_queue.h" />
+    <ClInclude Include="gapi_d3d12_device.h" />
+    <ClInclude Include="gapi_d3d12_adapter.h" />
+    <ClInclude Include="gapi_d3d12_pipeline_layout.h" />
+    <ClInclude Include="gapi_d3d12_pipeline_state.h" />
+    <ClInclude Include="gapi_d3d12_resource_heap.h" />
+    <ClInclude Include="gapi_d3d12_resource.h" />
+    <ClInclude Include="gapi_d3d12_descriptor.h" />
+    <ClInclude Include="gapi_d3d12_descriptor_heap.h" />
+    <ClInclude Include="gapi_d3d12_shader.h" />
+    <ClInclude Include="gapi_d3d12_swap_chain.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="d3d12_shader_compiler.cpp" />
+    <ClCompile Include="d3d12_utils.cpp" />
+    <ClCompile Include="gapi_d3d12_cmd_list.cpp" />
+    <ClCompile Include="gapi_d3d12_factory.cpp" />
+    <ClCompile Include="gapi_d3d12_cmd_allocator.cpp" />
+    <ClCompile Include="gapi_d3d12_cmd_queue.cpp" />
+    <ClCompile Include="gapi_d3d12_device.cpp" />
+    <ClCompile Include="gapi_d3d12_adapter.cpp" />
+    <ClCompile Include="gapi_d3d12_pipeline_layout.cpp" />
+    <ClCompile Include="gapi_d3d12_pipeline_state.cpp" />
+    <ClCompile Include="gapi_d3d12_resource_heap.cpp" />
+    <ClCompile Include="gapi_d3d12_resource.cpp" />
+    <ClCompile Include="gapi_d3d12_descriptor.cpp" />
+    <ClCompile Include="gapi_d3d12_descriptor_heap.cpp" />
+    <ClCompile Include="gapi_d3d12_shader.cpp" />
+    <ClCompile Include="gapi_d3d12_swap_chain.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -106,63 +143,6 @@ py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(Outp
 py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(OutputPath) $(SolutionPath)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="d3d12\d3d12_adapter.cpp" />
-    <ClCompile Include="d3d12\d3d12_cmd_allocator.cpp" />
-    <ClCompile Include="d3d12\d3d12_cmd_list.cpp" />
-    <ClCompile Include="d3d12\d3d12_cmd_list_mgr.cpp" />
-    <ClCompile Include="d3d12\d3d12_descriptor_heap.cpp" />
-    <ClCompile Include="d3d12\d3d12_device.cpp" />
-    <ClCompile Include="d3d12\d3d12_fence.cpp" />
-    <ClCompile Include="d3d12\d3d12_pipeline_state.cpp" />
-    <ClCompile Include="d3d12\d3d12_resource.cpp" />
-    <ClCompile Include="d3d12\d3d12_resource_view.cpp" />
-    <ClCompile Include="d3d12\d3d12_root_signature.cpp" />
-    <ClCompile Include="d3d12\d3d12_root_signature_mgr.cpp" />
-    <ClCompile Include="d3d12\d3d12_shader.cpp" />
-    <ClCompile Include="d3d12\d3d12_swap_chain.cpp" />
-    <ClCompile Include="d3d12\d3d12_texture.cpp" />
-    <ClCompile Include="d3d12\d3d12_utils.cpp" />
-    <ClCompile Include="gapi_d3d12.cpp" />
-    <ClCompile Include="gapi_d3d12_cmd_context.cpp" />
-    <ClCompile Include="gapi_d3d12_pipeline_state.cpp" />
-    <ClCompile Include="gapi_d3d12_resource.cpp" />
-    <ClCompile Include="gapi_d3d12_shader.cpp" />
-    <ClCompile Include="gapi_d3d12_swapchain.cpp" />
-    <ClCompile Include="gapi_d3d12_texture.cpp" />
-    <ClCompile Include="gapi_d3d12_viewport.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="d3d12\d3d12_adapter.h" />
-    <ClInclude Include="d3d12\d3d12_cmd_allocator.h" />
-    <ClInclude Include="d3d12\d3d12_cmd_list.h" />
-    <ClInclude Include="d3d12\d3d12_cmd_list_mgr.h" />
-    <ClInclude Include="d3d12\d3d12_cmd_queue.h" />
-    <ClInclude Include="d3d12\d3d12_descriptor_heap.h" />
-    <ClInclude Include="d3d12\d3d12_device.h" />
-    <ClInclude Include="d3d12\d3d12_fence.h" />
-    <ClInclude Include="d3d12\d3d12_globals.h" />
-    <ClInclude Include="d3d12\d3d12_pipeline_state.h" />
-    <ClInclude Include="d3d12\d3d12_resource.h" />
-    <ClInclude Include="d3d12\d3d12_resource_view.h" />
-    <ClInclude Include="d3d12\d3d12_root_signature.h" />
-    <ClInclude Include="d3d12\d3d12_root_signature_cache.h" />
-    <ClInclude Include="d3d12\d3d12_root_signature_mgr.h" />
-    <ClInclude Include="d3d12\d3d12_shader.h" />
-    <ClInclude Include="d3d12\d3d12_swap_chain.h" />
-    <ClInclude Include="d3d12\d3d12_texture.h" />
-    <ClInclude Include="d3d12\d3d12_types.h" />
-    <ClInclude Include="d3d12\d3d12_utils.h" />
-    <ClInclude Include="d3d12\d3dx12.h" />
-    <ClInclude Include="gapi_d3d12.h" />
-    <ClInclude Include="gapi_d3d12_cmd_context.h" />
-    <ClInclude Include="gapi_d3d12_pipeline_state.h" />
-    <ClInclude Include="gapi_d3d12_resource.h" />
-    <ClInclude Include="gapi_d3d12_shader.h" />
-    <ClInclude Include="gapi_d3d12_swapchain.h" />
-    <ClInclude Include="gapi_d3d12_texture.h" />
-    <ClInclude Include="gapi_d3d12_viewport.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

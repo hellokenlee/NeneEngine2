@@ -105,21 +105,29 @@ py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(Outp
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="gapi_pipeline_state.cpp" />
-    <ClCompile Include="gapi_resource.cpp" />
-    <ClCompile Include="gapi_shader.cpp" />
+    <ClInclude Include="gapi_cmd_layout.h" />
+    <ClInclude Include="gapi_factory.h" />
+    <ClInclude Include="gapi_cmd_allocator.h" />
+    <ClInclude Include="gapi_cmd_list.h" />
+    <ClInclude Include="gapi_cmd_queue.h" />
+    <ClInclude Include="gapi_device.h" />
+    <ClInclude Include="gapi_adapter.h" />
+    <ClInclude Include="gapi_pipeline_layout.h" />
+    <ClInclude Include="gapi_pipeline_layout_desc.h" />
+    <ClInclude Include="gapi_pipeline_state.h" />
+    <ClInclude Include="gapi_pipeline_state_desc.h" />
+    <ClInclude Include="gapi_resource.h" />
+    <ClInclude Include="gapi_resource_desc.h" />
+    <ClInclude Include="gapi_descriptor.h" />
+    <ClInclude Include="gapi_descriptor_heap.h" />
+    <ClInclude Include="gapi_shader.h" />
+    <ClInclude Include="gapi_swap_chain.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="gapi.h" />
-    <ClInclude Include="gapi_cmd_context.h" />
-    <ClInclude Include="gapi_pipeline_state.h" />
-    <ClInclude Include="gapi_resource.h" />
-    <ClInclude Include="gapi_shader.h" />
-    <ClInclude Include="gapi_swapchain.h" />
-    <ClInclude Include="gapi_template.h" />
-    <ClInclude Include="gapi_type.h" />
-    <ClInclude Include="gapi_utils.h" />
-    <ClInclude Include="gapi_viewport.h" />
+    <ClInclude Include="gapi_resource_heap.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\gapi.py" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

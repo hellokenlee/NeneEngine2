@@ -123,7 +123,7 @@ t::shared_ptr<i::gapi_adapter> gapi_d3d12_factory::create_adapter()
 	LOG(d3d12, info, TXT("Select Adapter %d: %s."), adapter_index, desc.Description);
 
 	//
-	t::create_shared(new gapi_d3d12_adapter{adapter1});
+	return t::make_shared<gapi_d3d12_adapter>(adapter1);
 }
 
 t::shared_ptr<i::gapi_swap_chain> gapi_d3d12_factory::create_swap_chain(void* hwnd, const point32& resolution, const uint32& multibuffer,
@@ -148,7 +148,7 @@ t::shared_ptr<i::gapi_swap_chain> gapi_d3d12_factory::create_swap_chain(void* hw
 	
 	VERIFY(m_factory2->MakeWindowAssociation(static_cast<HWND>(hwnd), DXGI_MWA_NO_ALT_ENTER));
 	
-	return t::create_shared(new gapi_d3d12_swap_chain{swap_chain});
+	return t::make_shared<gapi_d3d12_swap_chain>(swap_chain);
 }
 
 int32 gapi_d3d12_factory::get_d3d12_version()

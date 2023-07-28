@@ -22,7 +22,7 @@ namespace i
 	public:
 		gapi_factory() = default;
 
-		virtual ~gapi_factory() = default;
+		~gapi_factory() override = default;
 		
 		virtual t::shared_ptr<gapi_adapter> create_adapter() = 0;
 

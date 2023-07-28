@@ -1,0 +1,99 @@
+/* Copyright reserved by KenLee@hellokenlee@163.com */
+
+#pragma once
+
+#include "core/core.h"
+
+
+enum class gapi_descriptor_type
+{
+	constant_buffer_view	= 0b000001,
+	shader_resource_view	= 0b000010,
+	unorederd_access_view	= 0b000100,
+	
+	texture_sampler			= 0b001000,
+
+	render_target_view		= 0b010000,
+	depth_stenicl_view		= 0b100000,
+
+	cbv_srv_uav = constant_buffer_view | shader_resource_view | unorederd_access_view,
+};
+
+enum class gapi_sampler_desc
+{
+	
+};
+
+namespace i
+{
+	/**
+	*	A descriptor is for how to treat ( view ) a resource aka. resource view.
+	*
+	*	Equivalents:
+	*		- DX: Logical object stores in `ID3D12DescriptorHeap`. ( Accessed by `D3D12_CPU_DESCRIPTOR_HANDLE` )
+	*		- VK: Logical object stores in `VkDescriptorPool`. 
+	*		- MT: ``
+	*/
+	class NENE_API gapi_descriptor : noncopyable
+	{
+	public:
+		gapi_descriptor() = default;
+		~gapi_descriptor() override = default;
+
+		// Check if this resouce view is submitted to GPU
+		virtual bool is_created() = 0;
+	};
+
+	class NENE_API gapi_shader_resource_view : virtual public gapi_descriptor
+	{
+	public:
+		gapi_shader_resource_view() = default;
+		~gapi_shader_resource_view() override = default;
+	};
+
+	class NENE_API gapi_unorder_access_view : virtual public gapi_descriptor
+	{
+	public:
+		gapi_unorder_access_view() = default;
+		~gapi_unorder_access_view() override = default;
+	};
+
+	class NENE_API gapi_constant_buffer_view : virtual public gapi_descriptor
+	{
+	public:
+		gapi_constant_buffer_view() = default;
+		~gapi_constant_buffer_view() override = default;
+	};
+
+	class NENE_API gapi_render_target_view : virtual public gapi_descriptor
+	{
+	public:
+		gapi_render_target_view() = default;
+		~gapi_render_target_view() override = default;
+	};
+
+	class NENE_API gapi_depth_stencil_view : virtual public gapi_descriptor
+	{
+	public:
+		gapi_depth_stencil_view() = default;
+		~gapi_depth_stencil_view() override = default;
+	};
+
+	class NENE_API gapi_sampler : public gapi_descriptor
+	{
+	public:
+		gapi_sampler() = default;
+		~gapi_sampler() override = default;
+	};
+
+	class NENE_API gapi_index_buffer_view
+	{
+		
+	};
+
+	class NENE_API gapi_vertex_buffer_view
+	{
+		
+	};
+}
+
