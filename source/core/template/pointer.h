@@ -34,9 +34,28 @@ namespace t
         return std::make_unique<T>(std::forward<Args>(args)...);
     }
 
-    template<class T>
-    auto create_shared(T* ptr)
+    template <class T1, class T2>
+    shared_ptr<T1> dynamic_pointer_cast(const shared_ptr<T2>& other) noexcept
     {
-        return shared_ptr<T>(ptr);
+        const auto ptr = dynamic_cast<typename shared_ptr<T1>::element_type*>(other.get());
+
+        if (ptr)
+        {
+            return shared_ptr<T1>(other, ptr);
+        }
+
+        return {};
+    }
+
+    template <class T1, class T2>
+    shared_ptr<T1> dynamic_pointer_cast(shared_ptr<T2>&& other) noexcept {
+        const auto ptr = dynamic_cast<typename shared_ptr<T1>::element_type*>(other.get());
+
+        if (ptr)
+        {
+            return shared_ptr<T1>(_STD move(other), ptr);
+        }
+
+        return {};
     }
 }
