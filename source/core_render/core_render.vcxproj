@@ -11,6 +11,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="global_render_resource.h" />
+    <ClInclude Include="render_graph.h" />
+    <ClInclude Include="render_pass.h" />
+    <ClInclude Include="render_resource.h" />
+    <ClInclude Include="render_threads.h" />
+    <ClInclude Include="render_texture2d.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

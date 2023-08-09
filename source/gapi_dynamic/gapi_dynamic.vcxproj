@@ -105,10 +105,17 @@ py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(Outp
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="gapi_manager.cpp" />
+    <ClCompile Include="gapi_cmd_context.cpp" />
+    <ClCompile Include="gapi_dynamic.cpp" />
+    <ClCompile Include="gapi_pipeline_state_manager.cpp" />
+    <ClCompile Include="gapi_shader_manager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="gapi_manager.h" />
+    <ClInclude Include="gapi_cmd_context.h" />
+    <ClInclude Include="gapi_descriptor_manager.h" />
+    <ClInclude Include="gapi_dynamic.h" />
+    <ClInclude Include="gapi_pipeline_state_manager.h" />
+    <ClInclude Include="gapi_shader_manager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
