@@ -126,9 +126,6 @@ py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(Outp
   <ItemGroup>
     <ClInclude Include="gapi_resource_heap.h" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="..\gapi.py" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
