@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include "gapi/gapi.h"
+#include "gapi/gapi_factory.h"
 
-class NENE_API placeholder
+class NENE_API gapi_vulkan : public i::gapi_factory
 {
 public:
-    placeholder();
+	gapi_vulkan();
 };

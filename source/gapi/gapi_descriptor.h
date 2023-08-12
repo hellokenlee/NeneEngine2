@@ -19,9 +19,44 @@ enum class gapi_descriptor_type
 	cbv_srv_uav = constant_buffer_view | shader_resource_view | unorederd_access_view,
 };
 
-enum class gapi_sampler_desc
+enum class gapi_filter
+{
+	point,
+	linear,
+	anisotropic,
+};
+
+enum class gapi_sample_test
+{
+	none,
+	minimun,
+	maximun,
+	comparison,
+};
+
+enum class gapi_address_mode
+{
+	wrap,
+	mirror,
+	clamp,
+	border,
+};
+
+enum class gapi_compare_func
 {
 	
+};
+
+struct gapi_sampler_desc
+{
+	gapi_filter m_filer;
+	gapi_sample_test m_sample_test;
+	gapi_address_mode m_address_mode_uvw[3];
+	float m_mipmap_bias;
+	uint32 m_max_anisotropy;
+	gapi_compare_func m_comparsion_func;
+	linear_color m_border_color;
+	float m_lod_min_max[2];
 };
 
 namespace i

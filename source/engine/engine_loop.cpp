@@ -2,7 +2,7 @@
 
 #include "engine_loop.h"
 #include "core/core.h"
-#include "gapi_dynamic/gapi_manager.h"
+#include "gapi_dynamic/gapi_dynamic.h"
 #include "renderer/renderer.h"
 #include "renderer/simple_renderer.h"
 
@@ -17,7 +17,7 @@ void engine_loop::init(void* window)
 	//
 	LOG(engine, info, TXT("Engine Init!"));
 	//
-	gapi_manager::create(gapi_platform::direct3d12, window);
+	gapi_dynamic::create(window);
 	//
 	m_renderer = t::make_shared<simple_renderer>();
 }
@@ -25,24 +25,22 @@ void engine_loop::init(void* window)
 void engine_loop::update()
 {
 	
-	gapi_manager::get()->start_frame();
+	gapi_dynamic::get()->start_frame();
 
-	m_renderer->render_view_family(gapi_manager::get()->get_swapchain()->get_back_buffer_texture());
+	m_renderer->render_view_family(gapi_dynamic::get()->get_back_buffer_texture());
 	
-	gapi_manager::get()->finish_frame();
+	gapi_dynamic::get()->finish_frame();
 }
 
 void engine_loop::shutdown()
 {
 	// Waiting for executing all commands
-	gapi_manager::get()->start_frame();
-	gapi_manager::get()->finish_frame();
+	gapi_dynamic::get()->start_frame();
+	gapi_dynamic::get()->finish_frame();
 
 	//
 	m_renderer.reset();
-
-	gapi_manager::destroy();
-
+	
 	//
 	LOG(engine, info, TXT("Engine Shutdown!"));
 }

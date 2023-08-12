@@ -2,6 +2,6 @@
 
 #include "gapi_vulkan.h"
 
-placeholder::placeholder()
+gapi_vulkan::gapi_vulkan()
 {
 }

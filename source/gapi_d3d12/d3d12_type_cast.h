@@ -4,7 +4,6 @@
 
 #include "d3d12_utils.h"
 #include "gapi/gapi_cmd_queue.h"
-#include "gapi/gapi_pipeline_layout_desc.h"
 #include "gapi/gapi_pipeline_state_desc.h"
 #include "gapi/gapi_resource_desc.h"
 #include "gapi/gapi_descriptor.h"
@@ -41,17 +40,6 @@ inline D3D12_COMMAND_LIST_TYPE d3d_cast(const gapi_cmd_type& qtype)
 	}
 	CHECK(false);
 	return D3D12_COMMAND_LIST_TYPE_DIRECT;
-}
-
-inline D3D12_ROOT_SIGNATURE_DESC d3d_cast(const gapi_pipeline_layout_desc& desc)
-{
-	D3D12_ROOT_SIGNATURE_DESC d3d_desc;
-	d3d_desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_NONE;
-	d3d_desc.NumParameters = 0; //static_cast<uint32>(desc.m_parameters.size());
-	d3d_desc.pParameters = nullptr;		// TODO
-	d3d_desc.NumStaticSamplers =  0; //static_cast<uint32>(desc.m_static_samplers.size());
-	d3d_desc.pStaticSamplers = nullptr; // TODO
-	return d3d_desc;
 }
 
 inline D3D12_BLEND d3d_cast(const gapi_blend_factor& factor)
@@ -141,6 +129,7 @@ inline D3D12_DEPTH_STENCIL_DESC d3d_cast(const gapi_depth_stencil_state_desc& de
 
 inline D3D12_INPUT_LAYOUT_DESC d3d_cast(const gapi_vertex_declartions& desc)
 {
+	
 }
 
 inline D3D12_PRIMITIVE_TOPOLOGY_TYPE d3d_cast(const gapi_primitive_type& type)
@@ -162,6 +151,11 @@ inline D3D12_DESCRIPTOR_HEAP_TYPE d3d_cast(const gapi_descriptor_type& type)
 }
 
 inline D3D12_RESOURCE_DESC d3d_cast(const gapi_resource_desc& desc)
+{
+	
+}
+
+inline D3D12_SAMPLER_DESC d3d_cast(const gapi_sampler_desc& desc)
 {
 	
 }

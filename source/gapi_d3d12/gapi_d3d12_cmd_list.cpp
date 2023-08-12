@@ -26,7 +26,7 @@ void gapi_d3d12_cmd_list::reset(const t::shared_ptr<i::gapi_cmd_allocator>& allo
 	const t::shared_ptr<i::gapi_pipeline_state>& pipeline_state)
 {
 	const auto d3d_allocator = gapi_d3d12_cmd_allocator::cast(allocator);
-	m_list->Reset(d3d_allocator->m_allocator.Get(), pipeline_state ? gapi_d3d12_pipeline_state::cast(pipeline_state)->m_pipeline_state.Get() : nullptr);
+	m_list->Reset(d3d_allocator->get_d3d_allocator(), pipeline_state ? gapi_d3d12_pipeline_state::cast(pipeline_state)->m_pipeline_state.Get() : nullptr);
 }
 
 void gapi_d3d12_cmd_list::clear_state(const t::shared_ptr<i::gapi_pipeline_state>& pipeline_state)
@@ -38,13 +38,13 @@ void gapi_d3d12_cmd_list::clear_state(const t::shared_ptr<i::gapi_pipeline_state
 void gapi_d3d12_cmd_list::clear_depth_stencil_view(const t::shared_ptr<i::gapi_depth_stencil_view>& depth_stencil, const float& depth, const uint8& stencil)
 {
 	const auto d3d_view = gapi_d3d12_descriptor::cast(depth_stencil);
-	m_list->ClearDepthStencilView(d3d_view->m_handle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, depth, stencil, 0, nullptr);
+	m_list->ClearDepthStencilView(d3d_view->get_d3d_cpu_handle(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, depth, stencil, 0, nullptr);
 }
 
 void gapi_d3d12_cmd_list::clear_render_target_view(const t::shared_ptr<i::gapi_render_target_view>& render_target, const linear_color& clear_color)
 {
 	const auto d3d_view = gapi_d3d12_descriptor::cast(render_target);
-	m_list->ClearRenderTargetView(d3d_view->m_handle, clear_color._rgba, 0, nullptr);
+	m_list->ClearRenderTargetView(d3d_view->get_d3d_cpu_handle(), clear_color._rgba, 0, nullptr);
 }
 
 void gapi_d3d12_cmd_list::clear_unordered_access_view(const t::shared_ptr<i::gapi_unorder_access_view>& unorder_access_view, const t::shared_ptr<i::gapi_resource>& resource, const linear_color& clear_color)
@@ -54,7 +54,7 @@ void gapi_d3d12_cmd_list::clear_unordered_access_view(const t::shared_ptr<i::gap
 	const auto& d3d_resource = gapi_d3d12_resource::cast(resource);
 	if (resource->get_resource_desc().m_format == gapi_pixel_format::r8g8b8a8)
 	{
-		m_list->ClearUnorderedAccessViewFloat(D3D12_GPU_DESCRIPTOR_HANDLE(), d3d_view->m_handle, d3d_resource->m_resource.Get(), clear_color._rgba, 0, nullptr);
+		m_list->ClearUnorderedAccessViewFloat(D3D12_GPU_DESCRIPTOR_HANDLE(), d3d_view->get_d3d_cpu_handle(), d3d_resource->get_d3d_resource(), clear_color._rgba, 0, nullptr);
 	}
 	// Unsigned integer format
 	else if (true)
@@ -64,7 +64,7 @@ void gapi_d3d12_cmd_list::clear_unordered_access_view(const t::shared_ptr<i::gap
 		color[1] = static_cast<uint32>(clear_color.g);
 		color[2] = static_cast<uint32>(clear_color.b);
 		color[3] = static_cast<uint32>(clear_color.a);
-		m_list->ClearUnorderedAccessViewUint(D3D12_GPU_DESCRIPTOR_HANDLE(), d3d_view->m_handle, d3d_resource->m_resource.Get(), color, 0, nullptr);
+		m_list->ClearUnorderedAccessViewUint(D3D12_GPU_DESCRIPTOR_HANDLE(), d3d_view->get_d3d_cpu_handle(), d3d_resource->get_d3d_resource(), color, 0, nullptr);
 	}
 	else
 	{
@@ -77,7 +77,7 @@ void gapi_d3d12_cmd_list::copy_resource(const t::shared_ptr<i::gapi_resource>& d
 	const auto& d3d_dst = gapi_d3d12_resource::cast(dst);
 	const auto& d3d_src = gapi_d3d12_resource::cast(src);
 
-	m_list->CopyResource(d3d_dst->m_resource.Get(), d3d_src->m_resource.Get());
+	m_list->CopyResource(d3d_dst->get_d3d_resource(), d3d_src->get_d3d_resource());
 }
 
 void gapi_d3d12_cmd_list::copy_resource_region(const t::shared_ptr<i::gapi_resource>& dst, const uint64& dst_offset, const t::shared_ptr<i::gapi_resource>& src, const uint64& src_offset, const uint64& num_bytes)
@@ -88,7 +88,7 @@ void gapi_d3d12_cmd_list::copy_resource_region(const t::shared_ptr<i::gapi_resou
 	
 	if (gapi_resource_desc::is_buffer_desc(dst->get_resource_desc()))
 	{
-		m_list->CopyBufferRegion(d3d_dst->m_resource.Get(), dst_offset, d3d_src->m_resource.Get(), src_offset, num_bytes);
+		m_list->CopyBufferRegion(d3d_dst->get_d3d_resource(), dst_offset, d3d_src->get_d3d_resource(), src_offset, num_bytes);
 	}
 	else if (gapi_resource_desc::is_texture_desc(dst->get_resource_desc()))
 	{
@@ -104,7 +104,7 @@ void gapi_d3d12_cmd_list::copy_resource_region(const t::shared_ptr<i::gapi_resou
 void gapi_d3d12_cmd_list::discard_resource(const t::shared_ptr<i::gapi_resource>& resource)
 {
 	const auto& d3d_resource = gapi_d3d12_resource::cast(resource);
-	m_list->DiscardResource(d3d_resource->m_resource.Get(), nullptr);
+	m_list->DiscardResource(d3d_resource->get_d3d_resource(), nullptr);
 }
 
 void gapi_d3d12_cmd_list::dispatch(const uvector3& thread_group_size)
@@ -129,7 +129,7 @@ void gapi_d3d12_cmd_list::execute_indirect(const t::shared_ptr<i::gapi_cmd_layou
 	// m_list->ExecuteIndirect()
 }
 
-void gapi_d3d12_cmd_list::set_pipeline_state(t::shared_ptr<i::gapi_pipeline_state>& pipeline_state)
+void gapi_d3d12_cmd_list::set_pipeline_state(const t::shared_ptr<i::gapi_pipeline_state>& pipeline_state)
 {
 	const auto& d3d_pipeline_state = gapi_d3d12_pipeline_state::cast(pipeline_state);
 	m_list->SetPipelineState(d3d_pipeline_state->m_pipeline_state.Get());
@@ -182,7 +182,7 @@ void gapi_d3d12_cmd_list::set_render_targets(const t::dynamic_array<t::shared_pt
 	for (const auto& view : render_target_views)
 	{
 		const auto& d3d_view = gapi_d3d12_render_target_view::cast(view);
-		d3d_handles.push_back(d3d_view->m_handle);
+		d3d_handles.push_back(d3d_view->get_d3d_cpu_handle());
 	}
 	
 	const auto& d3d_depth_stencil_view = gapi_d3d12_depth_stencil_view::cast(depth_stencil_view);
@@ -191,7 +191,7 @@ void gapi_d3d12_cmd_list::set_render_targets(const t::dynamic_array<t::shared_pt
 		d3d_handles.size(),
 		d3d_handles.data(),
 		false,
-		&(d3d_depth_stencil_view->m_handle)
+		&(d3d_depth_stencil_view->get_d3d_cpu_handle())
 	);
 }
 

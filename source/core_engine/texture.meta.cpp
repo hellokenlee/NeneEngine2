@@ -6,6 +6,6 @@
 
 NMETA
 {
-    NCLASS("object", n::texture)
+    NCLASS("texture", n::texture)
     ;
 };

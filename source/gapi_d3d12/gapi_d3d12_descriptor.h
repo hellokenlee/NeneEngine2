@@ -16,6 +16,10 @@ public:
 public:
 	gapi_d3d12_descriptor(const uint32& index, const CD3DX12_CPU_DESCRIPTOR_HANDLE& handle, const bool& created=false);
 
+	void hollow(uint32& out_index, CD3DX12_CPU_DESCRIPTOR_HANDLE& out_handle);
+	
+	const CD3DX12_CPU_DESCRIPTOR_HANDLE& get_d3d_cpu_handle() const { return m_handle; };
+	
 protected:
 	// If already submitted to GPU
 	bool m_created;
@@ -23,10 +27,6 @@ protected:
 	uint32 m_index;
 	// The cpu side address allocated by the heap 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE m_handle;
-
-	friend class gapi_d3d12_device;
-	friend class gapi_d3d12_cmd_list;
-	friend class gapi_d3d12_descriptor_heap;
 };
 
 class gapi_d3d12_shader_resource_view : public t::poly_impl<gapi_d3d12_shader_resource_view, gapi_d3d12_descriptor, i::gapi_shader_resource_view>

@@ -84,7 +84,7 @@ namespace t
 			static_assert(is_abstract<t_gapi_interface>::value == true, "Template `t::impl` only support for abstract type!");
 			//
 #if GAPI_USE_DYNAMIC_CAST
-			return dynamic_pointer_cast<t_gapi_dynamic_impl>(inst);
+			return t::dynamic_pointer_cast<t_gapi_dynamic_impl>(inst);
 #else
 			return reinterpret_pointer_cast<t_gapi_dynamic_impl>(inst);
 #endif
@@ -100,6 +100,7 @@ namespace t
 	public:
 		typedef poly_impl super;
 
+		using t_gapi_interface::t_gapi_interface;
 		using t_gapi_dynamic_impl_parent::t_gapi_dynamic_impl_parent;
 
 		static shared_ptr<t_gapi_dynamic_impl> cast(shared_ptr<t_gapi_interface> inst)
@@ -108,7 +109,7 @@ namespace t
 			static_assert(is_abstract<t_gapi_interface>::value == true, "Template `t::impl` only support for abstract type!");
 			//
 #if GAPI_USE_DYNAMIC_CAST
-			return dynamic_pointer_cast<t_gapi_dynamic_impl>(inst);
+			return t::dynamic_pointer_cast<t_gapi_dynamic_impl>(inst);
 #else
 			return reinterpret_pointer_cast<t_gapi_dynamic_impl>(inst);
 #endif

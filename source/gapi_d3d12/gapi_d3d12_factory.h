@@ -19,15 +19,14 @@ public:
 	t::shared_ptr<i::gapi_swap_chain> create_swap_chain(void* hwnd, const point32& resolution, const uint32& multibuffer,
 		const gapi_pixel_format& pixel_format, const uint32& multisample) override;
 
+public:
+	gapi_d3d12_factory(HWND hwnd);
+
 protected:
 	t::shared_ptr<i::gapi_swap_chain> m_swap_chain;
 	t::dynamic_array<t::shared_ptr<i::gapi_adapter>> m_adapters;
 	
-private:
+protected:
 	WinComPtr<IDXGIFactory2> m_factory2;
 	WinComPtr<IDXGIFactory7> m_factory7;
-
-	gapi_d3d12_factory(HWND hwnd);
-
-	friend class gapi_dynamic;
 };

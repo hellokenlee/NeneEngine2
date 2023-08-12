@@ -9,6 +9,7 @@
 #include "gapi_pipeline_state_desc.h"
 #include "gapi_resource.h"
 #include "gapi_descriptor.h"
+#include "gapi_descriptor_heap.h"
 
 
 namespace i
@@ -53,7 +54,12 @@ namespace i
 		virtual void execute_indirect(const t::shared_ptr<gapi_cmd_layout>& layout, const uint32& max_num_cmd, const t::shared_ptr<gapi_buffer>& arg_buffer, const uint32& arg_buffer_offset, const t::shared_ptr<gapi_buffer>& count_buffer, const uint32& count_buffer_offset) = 0;
 
 		// Pipeline State Setter
-		virtual void set_pipeline_state(t::shared_ptr<gapi_pipeline_state>& pipeline_state) = 0;
+		virtual void set_pipeline_state(const t::shared_ptr<gapi_pipeline_state>& pipeline_state) = 0;
+		virtual void set_root_constant_buffer_view(const t::shared_ptr<gapi_constant_buffer_view>& cbv) = 0;
+		virtual void set_root_shader_resource_view(const t::shared_ref<gapi_shader_resource_view>& srv) = 0;
+		virtual void set_root_unordered_access_view(const t::shared_ref<gapi_shader_resource_view>& srv) = 0;
+		virtual void set_root_descriptor_table() = 0;
+		virtual void set_descriptor_heaps(const t::dynamic_array<t::shared_ptr<gapi_descriptor_heap>>& heaps) = 0;
 
 		// Imput Assemble Settings
 		virtual void set_index_buffer(const t::shared_ptr<gapi_index_buffer_view>& index_buffer) = 0;

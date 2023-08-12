@@ -32,6 +32,8 @@ t::shared_ptr<i::gapi_descriptor> gapi_d3d12_descriptor_heap::allocate_resource_
 void gapi_d3d12_descriptor_heap::free_resouce_view(t::shared_ptr<i::gapi_descriptor>& view)
 {
 	const auto& d3d_view = gapi_d3d12_descriptor::cast(view);
-	m_free_descriptor_indices.push(d3d_view->m_index);
-	view.reset();
+	uint32 index;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE handle;
+	d3d_view->hollow(index, handle);
+	m_free_descriptor_indices.push(index);
 }

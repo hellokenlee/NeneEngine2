@@ -144,7 +144,7 @@ t::shared_ptr<i::gapi_swap_chain> gapi_d3d12_factory::create_swap_chain(void* hw
 	const auto d3d_graphic_cmd_queue = gapi_d3d12_cmd_queue::cast(m_adapters[0]->get_device(0)->get_cmd_queue(gapi_cmd_type::grahpics));
 
 	WinComPtr<IDXGISwapChain1> swap_chain;
-	VERIFY(m_factory2->CreateSwapChainForHwnd(d3d_graphic_cmd_queue->m_queue.Get(), static_cast<HWND>(hwnd), &desc, nullptr, nullptr, &swap_chain));
+	VERIFY(m_factory2->CreateSwapChainForHwnd(d3d_graphic_cmd_queue->get_d3d_queue(), static_cast<HWND>(hwnd), &desc, nullptr, nullptr, &swap_chain));
 	
 	VERIFY(m_factory2->MakeWindowAssociation(static_cast<HWND>(hwnd), DXGI_MWA_NO_ALT_ENTER));
 	

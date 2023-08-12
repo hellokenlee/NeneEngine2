@@ -25,8 +25,6 @@ public:
 protected:
 	t::dynamic_array<t::shared_ptr<i::gapi_device>> m_devices; 
 	
-private:
+protected:
 	WinComPtr<IDXGIAdapter1> m_adapter1;
-
-	friend class gapi_d3d12_factory;
 };

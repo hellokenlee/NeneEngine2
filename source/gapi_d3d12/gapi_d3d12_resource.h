@@ -21,12 +21,11 @@ public:
 public:
 	gapi_d3d12_resource(const WinComPtr<ID3D12Resource>& resource, const gapi_resource_desc& desc);
 
+	ID3D12Resource* get_d3d_resource() const { return m_resource.Get(); }
+
 protected:
 	gapi_resource_desc m_desc;
 	WinComPtr<ID3D12Resource> m_resource;
-
-	friend class gapi_d3d12_device;
-	friend class gapi_d3d12_cmd_list;
 };
 
 

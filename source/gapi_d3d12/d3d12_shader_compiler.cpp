@@ -62,10 +62,10 @@ d3d12_fxc_shader_compiler::~d3d12_fxc_shader_compiler()
 	
 }
 
-bool d3d12_fxc_shader_compiler::compile_shader(gapi_d3d12_shader& shader)
+bool d3d12_fxc_shader_compiler::compile_shader(gapi_d3d12_shader& shader, ID3DBlob*& bytecode, ID3DBlob*& message)
 {
 	//
-	if (get_shader_source(shader).empty() || get_function_entry(shader).empty())
+	if (shader.get_shader_source().empty() || shader.get_function_entry().empty())
 	{
 		return false;
 	}
@@ -79,26 +79,37 @@ bool d3d12_fxc_shader_compiler::compile_shader(gapi_d3d12_shader& shader)
 	{
 		flag |= D3DCOMPILE_SKIP_OPTIMIZATION;
 	}
-	const sstring target = d3d_cast(shader.get_shader_type(), get_feature_level(shader));
-	//
-	WinComPtr<ID3DBlob> byte_code;
-	WinComPtr<ID3DBlob> compiler_message;
+	const sstring target = d3d_cast(shader.get_shader_type(), shader.get_feature_level());
 	//
 	const HRESULT result = D3DCompile(
-		get_shader_source(shader).c_str(), get_shader_source(shader).size(), get_name(shader).c_str(), 
+		shader.get_shader_source().c_str(), shader.get_shader_source().size(), shader.get_name().c_str(), 
 		nullptr, nullptr,
-		get_function_entry(shader).c_str(), target.c_str(),
+		shader.get_function_entry().c_str(), target.c_str(),
 		flag, 0,
-		&(byte_code), &compiler_message
+		&bytecode, &message
 	);
-	//
-	set_d3d_bytecode(shader, byte_code);
-	set_d3d_compiler_message(shader, compiler_message);
 	//
 	return SUCCEEDED(result);
 }
 
-bool d3d12_fxc_shader_compiler::reflect_shader(gapi_d3d12_shader& shader)
+bool d3d12_fxc_shader_compiler::reflect_shader(gapi_d3d12_shader& shader, D3D12_SHADER_DESC& shader_desc)
 {
+	if (shader.is_compiled())
+	{
+		ID3D12ShaderReflection* reflection = nullptr;
+		const auto hres = D3DReflect(
+			shader.get_d3d_bytecode()->GetBufferPointer(), shader.get_d3d_bytecode()->GetBufferSize(),
+			IID_ID3D12ShaderReflection, reinterpret_cast<void**>(&reflection)
+		);
+		if (SUCCEEDED(hres))
+		{
+			reflection->GetDesc(&shader_desc);
+			for (uint32 i = 0; i < shader_desc.BoundResources; i++)
+			{
+				D3D12_SHADER_INPUT_BIND_DESC  resource_desc;
+				reflection->GetResourceBindingDesc(i, &resource_desc);
+			}
+		}
+	}
 	return false;
 }

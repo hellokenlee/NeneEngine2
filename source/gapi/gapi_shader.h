@@ -42,9 +42,7 @@ namespace i
 	class NENE_API gapi_shader : noncopyable
 	{
 	public:
-		gapi_shader() = delete;
-		
-		gapi_shader(sstring source, sstring entry="main", std::string name = "shader", const gapi_shader_feature_level& level=gapi_shader_feature_level::sm_5_1)
+		gapi_shader(sstring source, sstring entry, std::string name, const gapi_shader_feature_level& level)
 			: m_is_compiled(false)
 			, m_name(std::move(name))
 			, m_shader_source(std::move(source))
@@ -57,6 +55,12 @@ namespace i
 		virtual bool compile() = 0;
 
 		virtual gapi_shader_type get_shader_type() = 0;
+
+		inline bool is_compiled() const { return m_is_compiled; }
+		inline const sstring& get_name() const { return m_name; }
+		inline const sstring& get_shader_source() const { return m_shader_source; }
+		inline const sstring& get_function_entry() const { return m_function_entry; }
+		inline const gapi_shader_feature_level& get_feature_level() const { return m_feature_level; }
 		
 	protected:
 		bool m_is_compiled;
@@ -64,10 +68,13 @@ namespace i
 		sstring m_shader_source;
 		sstring m_function_entry;
 		gapi_shader_feature_level m_feature_level;
+
+		// For multiple inheritance
+		gapi_shader();
 	};
 
 	template<gapi_shader_type shader_type>
-	class NENE_API gapi_shader_base : public gapi_shader
+	class NENE_API gapi_shader_base : virtual public gapi_shader
 	{
 	public:
 		using gapi_shader::gapi_shader;
@@ -80,26 +87,31 @@ namespace i
 	*/
 	class NENE_API gapi_vertex_shader : public gapi_shader_base<gapi_shader_type::vertex_shader>
 	{
+	public:
 		using gapi_shader_base::gapi_shader_base;
 	};
 
 	class NENE_API gapi_hull_shader : public gapi_shader_base<gapi_shader_type::hull_shader>
 	{
+	public:
 		using gapi_shader_base::gapi_shader_base;
 	};
 
 	class NENE_API gapi_domain_shader : public gapi_shader_base<gapi_shader_type::domain_shader>
 	{
+	public:
 		using gapi_shader_base::gapi_shader_base;
 	};
 
 	class NENE_API gapi_geometry_shader : public gapi_shader_base<gapi_shader_type::geometry_shader>
 	{
+	public:
 		using gapi_shader_base::gapi_shader_base;
 	};
 
 	class NENE_API gapi_pixel_shader : public gapi_shader_base<gapi_shader_type::pixel_shader>
 	{
+	public:
 		using gapi_shader_base::gapi_shader_base;
 	};
 
@@ -108,6 +120,7 @@ namespace i
 	*/
 	class NENE_API gapi_compute_shader : public gapi_shader_base<gapi_shader_type::compute_shader>
 	{
+	public:
 		using gapi_shader_base::gapi_shader_base;
 	};
 
@@ -116,11 +129,13 @@ namespace i
 	*/
 	class NENE_API gapi_mesh_shader : public gapi_shader_base<gapi_shader_type::mesh_shader>
 	{
+	public:
 		using gapi_shader_base::gapi_shader_base;
 	};
 
 	class NENE_API gapi_amplification_shader : public gapi_shader_base<gapi_shader_type::amplification_shader>
 	{
+	public:
 		using gapi_shader_base::gapi_shader_base;
 	};
 
@@ -129,11 +144,13 @@ namespace i
 	*/
 	class NENE_API gapi_ray_gen_shader : public gapi_shader_base<gapi_shader_type::ray_gen_shader>
 	{
+	public:
 		using gapi_shader_base::gapi_shader_base;
 	};
 
 	class NENE_API gapi_ray_tracing_shader : public gapi_shader_base<gapi_shader_type::ray_tracing_shader>
 	{
+	public:
 		using gapi_shader_base::gapi_shader_base;
 	};
 }

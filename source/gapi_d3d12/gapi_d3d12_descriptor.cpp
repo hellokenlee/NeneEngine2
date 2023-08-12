@@ -10,3 +10,10 @@ gapi_d3d12_descriptor::gapi_d3d12_descriptor(const uint32& index, const CD3DX12_
 	, m_handle(handle)
 {
 }
+
+void gapi_d3d12_descriptor::hollow(uint32& out_index, CD3DX12_CPU_DESCRIPTOR_HANDLE& out_handle)
+{
+	out_index = m_index;
+	out_handle = m_handle;
+	m_created = false;
+}

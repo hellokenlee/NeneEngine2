@@ -15,10 +15,9 @@ public:
 
 public:
 	gapi_d3d12_cmd_queue(WinComPtr<ID3D12CommandQueue> queue);
+
+	ID3D12CommandQueue* get_d3d_queue() const { return m_queue.Get(); }
 	
 private:
 	WinComPtr<ID3D12CommandQueue> m_queue;
-
-	friend class gapi_d3d12_factory;
-	friend class gapi_d3d12_device;
 };

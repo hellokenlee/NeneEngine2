@@ -1,8 +1,8 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #include "system_buffers.h"
-#include "gapi/gapi.h"
-#include "gapi_dynamic/gapi_manager.h"
+#include "gapi/gapi_factory.h"
+#include "gapi_dynamic/gapi_dynamic.h"
 
 t::shared_ptr<system_vertex_buffers> system_vertex_buffers::m_instance = nullptr;
 
@@ -15,7 +15,7 @@ system_vertex_buffers::system_vertex_buffers()
         vector4 vertex_color;
     };
     
-    auto api = gapi_manager::get();
+    auto api = gapi_dynamic::get();
     if (api == nullptr)
     {
         CHECK(false);
@@ -62,7 +62,7 @@ t::shared_ptr<system_vertex_buffers> system_vertex_buffers::get()
     if (m_instance == nullptr)
     {
         m_instance = t::shared_ptr<system_vertex_buffers>(new system_vertex_buffers{});
-        gapi_manager::register_global_render_resource(m_instance);
+        gapi_dynamic::register_global_render_resource(m_instance);
     }
     return m_instance;
 }
@@ -78,7 +78,7 @@ t::shared_ptr<system_vertex_declarations> system_vertex_declarations::m_instance
 
 system_vertex_declarations::system_vertex_declarations()
 {
-    auto api = gapi_manager::get();
+    auto api = gapi_dynamic::get();
     if (api == nullptr)
     {
         CHECK(false);

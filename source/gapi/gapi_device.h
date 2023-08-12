@@ -65,5 +65,9 @@ namespace i
 		virtual t::shared_ptr<gapi_resource> create_resource(const gapi_resource_desc& desc) = 0;
 		virtual t::shared_ptr<gapi_resource> create_placed_resource(const gapi_resource_desc& desc) = 0;
 		virtual t::shared_ptr<gapi_resource> create_reserved_resource(const gapi_resource_desc& desc) = 0;
+
+		// Shaders
+		virtual t::shared_ptr<gapi_vertex_shader> create_vertex_shader(sstring source, sstring entry, const gapi_shader_feature_level& level, std::string debug_name) = 0;
+		virtual t::shared_ptr<gapi_pixel_shader> create_pixel_shader(sstring source, sstring entry, const gapi_shader_feature_level& level, std::string debug_name) = 0;
 	};
 }

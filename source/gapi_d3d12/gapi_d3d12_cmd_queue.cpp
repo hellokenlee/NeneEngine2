@@ -11,5 +11,5 @@ gapi_d3d12_cmd_queue::gapi_d3d12_cmd_queue(WinComPtr<ID3D12CommandQueue> queue)
 void gapi_d3d12_cmd_queue::signal(const t::shared_ptr<i::gapi_cmd_fence>& fence, uint64 value)
 {
 	const auto& d3d_fence = gapi_d3d12_cmd_fence::cast(fence);
-	VERIFY(m_queue->Signal(d3d_fence->m_fence.Get(), value));
+	VERIFY(m_queue->Signal(d3d_fence->get_d3d_fence(), value));
 }

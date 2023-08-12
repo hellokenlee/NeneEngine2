@@ -30,7 +30,12 @@ public:
 	void draw_indexed(const uint32& num_indices, const uint32& num_instances, const uint32& index_offset, const uint32& vertex_offset, const uint32& instance_offset) override;
 	void execute_indirect(const t::shared_ptr<i::gapi_cmd_layout>& layout, const uint32& max_num_cmd, const t::shared_ptr<i::gapi_buffer>& arg_buffer, const uint32& arg_buffer_offset, const t::shared_ptr<i::gapi_buffer>& count_buffer, const uint32& count_buffer_offset) override;
 
-	void set_pipeline_state(t::shared_ptr<i::gapi_pipeline_state>& pipeline_state) override;
+	void set_pipeline_state(const t::shared_ptr<i::gapi_pipeline_state>& pipeline_state) override;
+	void set_root_constant_buffer_view(const t::shared_ptr<i::gapi_constant_buffer_view>& cbv) override;
+	void set_root_shader_resource_view(t::shared_ref<i::gapi_shader_resource_view> srv) override;
+	void set_root_unordered_access_view(t::shared_ref<i::gapi_shader_resource_view> srv) override;
+	void set_root_descriptor_table() override;
+	void set_descriptor_heaps(const t::dynamic_array<t::shared_ptr<i::gapi_descriptor_heap>>& heaps) override;
 	
 	void set_index_buffer(const t::shared_ptr<i::gapi_index_buffer_view>& index_buffer) override;
 	void set_vertex_buffer(const t::shared_ptr<i::gapi_vertex_buffer_view>& vertex_buffer) override;
@@ -53,8 +58,6 @@ public:
 	
 private:
 	WinComPtr<ID3D12GraphicsCommandList> m_list;
-
-	friend class gapi_d3d12_device;
 };
 
 
@@ -67,10 +70,9 @@ public:
 
 public:
 	gapi_d3d12_cmd_fence(const WinComPtr<ID3D12Fence>& fence);
-
+	
+	ID3D12Fence* get_d3d_fence() const { return m_fence.Get(); }
+	
 private:
 	WinComPtr<ID3D12Fence> m_fence;
-	
-	friend class gapi_d3d12_device;
-	friend class gapi_d3d12_cmd_queue;
 };

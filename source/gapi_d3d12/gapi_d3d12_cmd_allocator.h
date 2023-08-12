@@ -15,10 +15,9 @@ public:
 	
 public:
 	gapi_d3d12_cmd_allocator(const WinComPtr<ID3D12CommandAllocator>& allocator);
+
+	ID3D12CommandAllocator* get_d3d_allocator() const { return m_allocator.Get(); }
 	
 private:
 	WinComPtr<ID3D12CommandAllocator> m_allocator;
-	
-	friend class gapi_d3d12_device;
-	friend class gapi_d3d12_cmd_list;
 };

@@ -8,6 +8,6 @@
 
 struct NENE_API gapi_pipeline_layout_desc
 {
-	t::dynamic_array<t::shared_ptr<i::gapi_sampler>> m_static_samplers;
-	t::dynamic_array<t::shared_ptr<i::gapi_pipeline_parameter>> m_parameters;
+	t::shared_ptr<i::gapi_immutable_samplers> m_samplers;
+	t::shared_ptr<i::gapi_pipeline_parameters> m_parameters;
 };

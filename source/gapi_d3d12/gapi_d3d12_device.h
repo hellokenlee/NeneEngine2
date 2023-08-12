@@ -35,7 +35,9 @@ public:
 	t::shared_ptr<i::gapi_resource> create_placed_resource(const gapi_resource_desc& desc) override;
 	t::shared_ptr<i::gapi_resource> create_reserved_resource(const gapi_resource_desc& desc) override;
 
-public:
+	t::shared_ptr<i::gapi_vertex_shader> create_vertex_shader(sstring source, sstring entry, const gapi_shader_feature_level& level, std::string debug_name) override;
+	t::shared_ptr<i::gapi_pixel_shader> create_pixel_shader(sstring source, sstring entry, const gapi_shader_feature_level& level, std::string debug_name) override;
+
 	gapi_d3d12_device(const WinComPtr<ID3D12Device>& device);
 
 protected:
