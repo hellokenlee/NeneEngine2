@@ -315,6 +315,8 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 			# External Libraries
 			for lib in nene_module.external_dependencies:
 				additional_dependencies.extend(self.extern_libraries[lib].get_static_link_libraries())
+			# System Libraries
+			additional_dependencies.extend(nene_module.system_library_dependencies)
 
 			additional_dependencies.append("%(AdditionalDependencies)")
 			ElementTree.SubElement(link, "AdditionalDependencies").text = ";".join(additional_dependencies)
@@ -359,7 +361,7 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 
 	@staticmethod
 	def get_existing_vcproj_file_path(nene_module: NeneModule) -> str:
-		return os.path.join(BuildConfiguration().source_root_abs_path, nene_module.name + ".vcxproj")
+		return os.path.join(BuildConfiguration().source_root_abs_path, nene_module.name, nene_module.name + ".vcxproj")
 
 	@staticmethod
 	def read_existing_vcproj_file_guid(nene_module: NeneModule) -> str:
