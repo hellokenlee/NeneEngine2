@@ -76,20 +76,12 @@ struct NENE_API gapi_bound_shader_desc
 		const t::shared_ptr<i::gapi_domain_shader>& domain_shader = {},
 		const t::shared_ptr<i::gapi_hull_shader>& hull_shader = {},
 		const t::shared_ptr<i::gapi_geometry_shader>& geometry_shader = {}
-	) : gapi_bound_shader_desc(
-		vertex_declaration, vertex_shader, pixel_shader, domain_shader, hull_shader, geometry_shader,
-		{}, {}, {}, {}, {}
-	)
-	{}
+	);
 
 	// Compute Shader Stages
 	gapi_bound_shader_desc(
 		const t::shared_ptr<i::gapi_compute_shader>& compute_shader
-	) : gapi_bound_shader_desc(
-		{}, {}, {}, {}, {}, {},
-		compute_shader, {}, {}, {}, {}
-	)
-	{}
+	);
 
 private:
 	gapi_bound_shader_desc(
@@ -326,18 +318,11 @@ struct gapi_depth_stencil_state_desc
 	gapi_depth_stencil_state_desc(
 		const bool& in_use_depth_write = true,
 		const gapi_cmp_func& in_depth_func = gapi_cmp_func::less_equal,
-		const gapi_stencil_state_desc& in_front_face_stencil_test = {false, gapi_cmp_func::never, gapi_stencil_op::keep, gapi_stencil_op::keep, gapi_stencil_op::keep},
-		const gapi_stencil_state_desc& in_back_face_stencil_test  = {false, gapi_cmp_func::never, gapi_stencil_op::keep, gapi_stencil_op::keep, gapi_stencil_op::keep},
+		const gapi_stencil_state_desc& in_front_face_stencil_test = {.m_use_stencil = false, .m_stencil_func = gapi_cmp_func::never, .m_stencil_fail_op = gapi_stencil_op::keep, .m_depth_fail_op = gapi_stencil_op::keep, .m_pass_op = gapi_stencil_op::keep},
+		const gapi_stencil_state_desc& in_back_face_stencil_test  = {.m_use_stencil = false, .m_stencil_func = gapi_cmp_func::never, .m_stencil_fail_op = gapi_stencil_op::keep, .m_depth_fail_op = gapi_stencil_op::keep, .m_pass_op = gapi_stencil_op::keep},
 		const uint8& in_stencil_read_mask = 0x00,
 		const uint8& in_stencil_write_mask = 0x00
-	)
-		: m_use_depth_write(in_use_depth_write)
-		, m_depth_func(in_depth_func)
-		, m_front_face_stencil_test(in_front_face_stencil_test)
-		, m_back_face_stenci_test(in_back_face_stencil_test)
-		, m_stencil_read_mask(in_stencil_read_mask)
-		, m_stencil_write_mask(in_stencil_write_mask)
-	{}
+	);
 };
 
 /**

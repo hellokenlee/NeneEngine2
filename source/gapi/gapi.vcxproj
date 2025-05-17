@@ -117,7 +117,9 @@
     <ClInclude Include="gapi_shader.h" />
     <ClInclude Include="gapi_swap_chain.h" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ClCompile Include="gapi_pipeline_state_desc.cpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

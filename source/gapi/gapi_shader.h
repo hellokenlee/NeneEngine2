@@ -56,11 +56,11 @@ namespace i
 
 		virtual gapi_shader_type get_shader_type() = 0;
 
-		inline bool is_compiled() const { return m_is_compiled; }
-		inline const sstring& get_name() const { return m_name; }
-		inline const sstring& get_shader_source() const { return m_shader_source; }
-		inline const sstring& get_function_entry() const { return m_function_entry; }
-		inline const gapi_shader_feature_level& get_feature_level() const { return m_feature_level; }
+		bool is_compiled() const { return m_is_compiled; }
+		const sstring& get_name() const { return m_name; }
+		const sstring& get_shader_source() const { return m_shader_source; }
+		const sstring& get_function_entry() const { return m_function_entry; }
+		const gapi_shader_feature_level& get_feature_level() const { return m_feature_level; }
 		
 	protected:
 		bool m_is_compiled;

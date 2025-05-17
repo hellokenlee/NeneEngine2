@@ -168,7 +168,7 @@ namespace gapi_buffer_desc
 		constexpr uint16 num_mips = 1;
 		constexpr uint16 num_samples = 1;
 		constexpr gapi_pixel_format pformat = gapi_pixel_format::unknown;
-		return gapi_resource_desc(gapi_resource_type::texture2d, width, height, depth, array_size, num_mips, num_samples, pformat, flags, gapi_texture_create_flag::none);
+		return {gapi_resource_type::texture2d, width, height, depth, array_size, num_mips, num_samples, pformat, flags, gapi_texture_create_flag::none};
 	}
 }
 
