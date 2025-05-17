@@ -121,15 +121,20 @@ inline D3D12_BLEND_DESC d3d_cast(const gapi_blend_state_desc& desc)
 
 inline D3D12_RASTERIZER_DESC d3d_cast(const gapi_rasterizer_state_desc& desc)
 {
+	CHECK(false);
+	return D3D12_RASTERIZER_DESC{};
 }
 
 inline D3D12_DEPTH_STENCIL_DESC d3d_cast(const gapi_depth_stencil_state_desc& desc)
 {
+	CHECK(false);
+	return D3D12_DEPTH_STENCIL_DESC{};
 }
 
 inline D3D12_INPUT_LAYOUT_DESC d3d_cast(const gapi_vertex_declartions& desc)
 {
-	
+	CHECK(false);
+	return D3D12_INPUT_LAYOUT_DESC{};
 }
 
 inline D3D12_PRIMITIVE_TOPOLOGY_TYPE d3d_cast(const gapi_primitive_type& type)
@@ -147,15 +152,18 @@ inline D3D12_PRIMITIVE_TOPOLOGY_TYPE d3d_cast(const gapi_primitive_type& type)
 
 inline D3D12_DESCRIPTOR_HEAP_TYPE d3d_cast(const gapi_descriptor_type& type)
 {
-	
+	CHECK(false);
+	return D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 }
 
 inline D3D12_RESOURCE_DESC d3d_cast(const gapi_resource_desc& desc)
 {
-	
+	CHECK(false);
+	return D3D12_RESOURCE_DESC{};
 }
 
 inline D3D12_SAMPLER_DESC d3d_cast(const gapi_sampler_desc& desc)
 {
-	
+	CHECK(false);
+	return D3D12_SAMPLER_DESC{};
 }

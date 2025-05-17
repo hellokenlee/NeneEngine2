@@ -42,11 +42,11 @@ public:
 	void set_primitive_topology(const gapi_primitive_type& ptype) override;
 
 	void set_viewports(const t::dynamic_array<gapi_viewport_desc>& viewports) override;
-	void set_scissor_rects(const t::dynamic_array<rect>& sissors) override;
+	void set_scissor_rects(const t::dynamic_array<rect>& scissors) override;
 	
 	void set_blend_factor(const vector4& blend) override;
 	void set_render_targets(const t::dynamic_array<t::shared_ptr<i::gapi_render_target_view>>& render_target_views, const t::shared_ptr<i::gapi_depth_stencil_view>& depth_stencil_view) override;
-	void set_stencil_ref(const uint32& stencilref) override;
+	void set_stencil_ref(const uint32& stencil_ref) override;
 	void transition_resource(const t::shared_ptr<i::gapi_resource>& resource, const gapi_resource_state& transition) override;
 	
 	void begin_query() override;

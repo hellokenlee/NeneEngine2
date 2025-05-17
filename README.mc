@@ -12,7 +12,7 @@ Nene Engine is an in-house game engine named after Sakura Nene's game engine in 
 Nene Engine use Python as main scripting language and tool-chain language. The following Python environment must be satisfied:
 
 - Python >= 3.10
-- Pyside2 == 5.15.2
+- Pyside6.9
 
 Note that Nene Engine use Visual Studio's Project file  ( instead of CMake ) as a primary way to organize the source files. The following C++ environment should be satisfied in Windows:
 
@@ -20,7 +20,7 @@ Note that Nene Engine use Visual Studio's Project file  ( instead of CMake ) as 
 - Compiler C++ Standard >= C++20 ( MSVC >= 143 )
 
 Currently Nene Engine only supports Microsoft Windows 10, 11 with Direct3D 12. 
-Apple's MacOS, iPadOS, iOS with Metal 2, Linux with Vulkan will be supported in the future.
+Apple's MacOS, iPadOS, iOS with Metal 2; Linux, Android with Vulkan will be supported in the future.
 
 [*] [Microsoft only supports `std::format` under C++20 after Visual Studio 17.2](https://github.com/microsoft/STL/issues/1814)
 
@@ -35,16 +35,16 @@ Currently Nene Engine is build with Visual Studio. To build Nene Engine, simply 
 
 
 
-#### Tool Chain
+#### Build Tool
 
 To deal with module dependency, we use a Python based custom build tool ( Nene Build Tool or NBT ) which modify the Visual Studio project and solution files.
 
-All source of the NBT is located in `toolchain` folder, which is also the main entrance python module of NBT.
+All source of the NBT is located in `script/builder` folder, which is also the main entrance python module of NBT.
 
 After adding, removing or modifying a module, the best way to ensure that IDE can successfully build is to run NBT once:
 
 ```bash
-$ NeneEngine>: py -3 toolchain
+$ NeneEngine>: py -3 script/builder
 ```
 
 The `--help` parameter is also supported by NBT.
@@ -103,11 +103,11 @@ You can use namespaces to organize your classes, functions and variables where a
 // Interface
 namespace i
 {
-class some_interface_class
-{
-public:
-    virtual void foo() = 0;
-};
+    class some_interface_class
+    {
+    public:
+        virtual void foo() = 0;
+    };
 } 
 ```
 
@@ -119,10 +119,10 @@ The namespace `i` is for interface classes which have at least one pure virtual 
 // Template
 namespace t
 {
-template<class tsometype>
-class some_class_template
-{
-};
+    template<class tsometype>
+    class some_class_template
+    {
+    };
 }
 ```
 
@@ -135,9 +135,9 @@ The namespace `t` is for class or function templates. For example, container suc
 #include "core_object/object.h"
 namespace n
 {
-class some_class : public object
-{
-};
+    class some_class : public object
+    {
+    };
 }
 ```
 
@@ -145,16 +145,33 @@ The namespace `n` is for class that has reflection in Nene Engine. The classes i
 
 
 
+```c++
+// QtExtension
+#include <QtWidgets/QWidget>
+namespace q
+{
+	class BINDINGS_API some_qt_widget : public QWidget
+    {
+        Q_OBJECT
+    };
+}
+```
+
+The namespace `q` is for 
+
+
+
 ## Open Source
 
 Nene Engine cannot live without the forces of open sources. Especially the following brilliant open source library:
 
-- [Qt5](https://www.qt.io/download-open-source) && [Pyside2](https://doc.qt.io/qtforpython-5/index.html)
+- [Pyside6](https://doc.qt.io/qtforpython-6/index.html)
 - [Python3](https://www.python.org/)
 - [Pybind11](https://github.com/pybind/pybind11)
 - [RTTR](https://www.rttr.org/)
 - [Taskflow](https://taskflow.github.io/)
 - [Assimp](https://github.com/assimp/assimp)
+- [NlohmannJson](https://github.com/nlohmann/json)
 
 
 

@@ -9,20 +9,12 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="global_render_resource.h" />
-    <ClInclude Include="render_graph.h" />
-    <ClInclude Include="render_pass.h" />
-    <ClInclude Include="render_resource.h" />
-    <ClInclude Include="render_threads.h" />
-    <ClInclude Include="render_texture2d.h" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{7b62a386-8edc-48f1-8764-5691d93eefd4}</ProjectGuid>
     <RootNamespace>corerender</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion />
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -43,12 +35,6 @@
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -60,14 +46,14 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir).bin\binary\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir).bin\intermediate\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <ExternalIncludePath>$(SolutionDir)source\;$(ProjectDir);$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>$(ProjectDir);$(SolutionDir)source\;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(SolutionDir).bin\binary\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir).bin\binary\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir).bin\intermediate\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <ExternalIncludePath>$(SolutionDir)source\;$(ProjectDir);$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>$(ProjectDir);$(SolutionDir)source\;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(SolutionDir).bin\binary\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -85,8 +71,7 @@
       <AdditionalDependencies>core.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>cd $(SolutionDir)
-py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(OutputPath) $(SolutionPath)</Command>
+      <Command />
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -108,10 +93,18 @@ py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(Outp
       <AdditionalDependencies>core.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>cd $(SolutionDir)
-py -3 toolchain bet $(ProjectName) $(PlatformTarget) $(ConfigurationName) $(OutputPath) $(SolutionPath)</Command>
+      <Command />
     </PostBuildEvent>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="global_render_resource.h" />
+    <ClInclude Include="render_graph.h" />
+    <ClInclude Include="render_pass.h" />
+    <ClInclude Include="render_resource.h" />
+    <ClInclude Include="render_texture2d.h" />
+    <ClInclude Include="render_threads.h" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

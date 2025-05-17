@@ -57,7 +57,7 @@ void gapi_d3d12_cmd_list::clear_unordered_access_view(const t::shared_ptr<i::gap
 		m_list->ClearUnorderedAccessViewFloat(D3D12_GPU_DESCRIPTOR_HANDLE(), d3d_view->get_d3d_cpu_handle(), d3d_resource->get_d3d_resource(), clear_color._rgba, 0, nullptr);
 	}
 	// Unsigned integer format
-	else if (true)
+	else
 	{
 		uint32 color[4];
 		color[0] = static_cast<uint32>(clear_color.r);
@@ -66,10 +66,7 @@ void gapi_d3d12_cmd_list::clear_unordered_access_view(const t::shared_ptr<i::gap
 		color[3] = static_cast<uint32>(clear_color.a);
 		m_list->ClearUnorderedAccessViewUint(D3D12_GPU_DESCRIPTOR_HANDLE(), d3d_view->get_d3d_cpu_handle(), d3d_resource->get_d3d_resource(), color, 0, nullptr);
 	}
-	else
-	{
-		CHECK(false);	
-	}
+	// TODO: Other formats...
 }
 
 void gapi_d3d12_cmd_list::copy_resource(const t::shared_ptr<i::gapi_resource>& dst, const t::shared_ptr<i::gapi_resource>& src)
@@ -135,6 +132,26 @@ void gapi_d3d12_cmd_list::set_pipeline_state(const t::shared_ptr<i::gapi_pipelin
 	m_list->SetPipelineState(d3d_pipeline_state->m_pipeline_state.Get());
 }
 
+void gapi_d3d12_cmd_list::set_root_constant_buffer_view(const t::shared_ptr<i::gapi_constant_buffer_view>& cbv)
+{
+}
+
+void gapi_d3d12_cmd_list::set_root_shader_resource_view(t::shared_ref<i::gapi_shader_resource_view> srv)
+{
+}
+
+void gapi_d3d12_cmd_list::set_root_unordered_access_view(t::shared_ref<i::gapi_shader_resource_view> srv)
+{
+}
+
+void gapi_d3d12_cmd_list::set_root_descriptor_table()
+{
+}
+
+void gapi_d3d12_cmd_list::set_descriptor_heaps(const t::dynamic_array<t::shared_ptr<i::gapi_descriptor_heap>>& heaps)
+{
+}
+
 void gapi_d3d12_cmd_list::set_index_buffer(const t::shared_ptr<i::gapi_index_buffer_view>& index_buffer)
 {
 	CHECK(false);
@@ -163,12 +180,12 @@ void gapi_d3d12_cmd_list::set_primitive_topology(const gapi_primitive_type& ptyp
 
 void gapi_d3d12_cmd_list::set_viewports(const t::dynamic_array<gapi_viewport_desc>& viewports)
 {
-	m_list->RSSetViewports(viewports.size(), reinterpret_cast<const D3D12_VIEWPORT*>(viewports.data()));
+	m_list->RSSetViewports(static_cast<uint32>(viewports.size()), reinterpret_cast<const D3D12_VIEWPORT*>(viewports.data()));
 }
 
-void gapi_d3d12_cmd_list::set_scissor_rects(const t::dynamic_array<rect>& sissors)
+void gapi_d3d12_cmd_list::set_scissor_rects(const t::dynamic_array<rect>& scissors)
 {
-	m_list->RSSetScissorRects(sissors.size(), reinterpret_cast<const RECT*>(sissors.data()));
+	m_list->RSSetScissorRects(static_cast<uint32>(scissors.size()), reinterpret_cast<const RECT*>(scissors.data()));
 }
 
 void gapi_d3d12_cmd_list::set_blend_factor(const vector4& blend)
@@ -188,16 +205,16 @@ void gapi_d3d12_cmd_list::set_render_targets(const t::dynamic_array<t::shared_pt
 	const auto& d3d_depth_stencil_view = gapi_d3d12_depth_stencil_view::cast(depth_stencil_view);
 	
 	m_list->OMSetRenderTargets(
-		d3d_handles.size(),
+		static_cast<uint32>(d3d_handles.size()),
 		d3d_handles.data(),
 		false,
 		&(d3d_depth_stencil_view->get_d3d_cpu_handle())
 	);
 }
 
-void gapi_d3d12_cmd_list::set_stencil_ref(const uint32& stencilref)
+void gapi_d3d12_cmd_list::set_stencil_ref(const uint32& stencil_ref)
 {
-	m_list->OMSetStencilRef(stencilref);
+	m_list->OMSetStencilRef(stencil_ref);
 }
 
 void gapi_d3d12_cmd_list::transition_resource(const t::shared_ptr<i::gapi_resource>& resource, const gapi_resource_state& transition)

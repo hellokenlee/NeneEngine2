@@ -69,4 +69,6 @@ class gapi_d3d12_sampler : public t::poly_impl<gapi_d3d12_sampler, gapi_d3d12_de
 public:
 	using super::super;
 	~gapi_d3d12_sampler() override = default;
+	
+	bool is_created() override { return true; };
 };

@@ -1,0 +1,2 @@
+packaging
+PySide6
