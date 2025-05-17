@@ -28,6 +28,7 @@ def get_class(mod: ModuleType) -> type:
 def main():
 	#
 	sys.path.append(os.path.abspath("."))
+	sys.dont_write_bytecode = True
 	#
 	from common.log import log
 	from common.build_common import Platform, Architecture, Configuration
