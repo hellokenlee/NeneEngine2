@@ -136,7 +136,7 @@ namespace gapi_texture_desc
 	{
 		constexpr uint16 depth = 1;
 		constexpr uint16 array_size = 1;
-		return gapi_resource_desc(gapi_resource_type::texture2d, extent.x, extent.y, depth, array_size, num_mips, num_samples, pformat, gapi_buffer_usage_flag::shader_resource, flags);
+		return gapi_resource_desc(gapi_resource_type::texture2d, extent.x, extent.y, depth, array_size, num_mips, num_samples, pformat, gapi_buffer_usage_flag::none, flags);
 	}
 	/*
 	inline gapi_resource_desc create_1d()
@@ -159,23 +159,22 @@ namespace gapi_texture_desc
 
 namespace gapi_buffer_desc
 {
-	
-	inline gapi_resource_desc create(const uint32& width, const gapi_buffer_usage_flag& flags, const uint32& aligment = 0)
+	inline gapi_resource_desc create(const uint32& size, const gapi_buffer_usage_flag& flags, const uint32& alignment = 0)
 	{
 		constexpr uint16 height = 1;
 		constexpr uint16 depth = 1;
 		constexpr uint16 array_size = 1;
 		constexpr uint16 num_mips = 1;
 		constexpr uint16 num_samples = 1;
-		constexpr gapi_pixel_format pformat = gapi_pixel_format::unknown;
-		return {gapi_resource_type::texture2d, width, height, depth, array_size, num_mips, num_samples, pformat, flags, gapi_texture_create_flag::none};
+		constexpr gapi_pixel_format pixel_format = gapi_pixel_format::unknown;
+		return {gapi_resource_type::buffer, size, height, depth, array_size, num_mips, num_samples, pixel_format, flags, gapi_texture_create_flag::none};
 	}
 }
 
 
 struct gapi_viewport_desc
 {
-	vector2 topleft;
+	vector2 top_left;
 	vector2 resolution;
 	vector2 depth_range;
 };

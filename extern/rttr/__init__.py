@@ -9,5 +9,7 @@ class Rttr(ExternalLibrary):
 
 	def __init__(self, name: str):
 		super().__init__(name)
-		self.add_static_link_libraries(["rttr.lib"])
+		self.dependent_libraries.extend(
+			["rttr"]
+		)
 		pass

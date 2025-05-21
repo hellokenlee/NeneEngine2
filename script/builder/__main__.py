@@ -21,6 +21,8 @@ from types import ModuleType
 
 def get_class(mod: ModuleType) -> type:
 	classes = [obj for name, obj in mod.__dict__.items() if isinstance(obj, type) and inspect.getmodule(obj) is mod]
+	if len(classes) != 1:
+		print("[NBT] Module define error in %s, check your `source/%s/__init__.py`" % (mod.__name__, mod.__name__))
 	assert (len(classes) == 1)
 	return classes[0]
 

@@ -14,9 +14,6 @@ namespace t
     using shared_ptr = std::shared_ptr<T>;
 
     template <typename T>
-    using shared_ref = const std::shared_ptr<T>&;
-
-    template <typename T>
     using unique_ptr = std::unique_ptr<T>;
 
     template <typename T>

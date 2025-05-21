@@ -24,7 +24,6 @@ void engine_loop::init(void* window)
 
 void engine_loop::update()
 {
-	
 	gapi_dynamic::get()->start_frame();
 
 	m_renderer->render_view_family(gapi_dynamic::get()->get_back_buffer_texture());

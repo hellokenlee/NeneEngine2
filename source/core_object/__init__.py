@@ -5,6 +5,8 @@
 from source import *
 from source.core import Core
 from extern.rttr import Rttr
+from extern.python import Python
+from extern.pybind11 import Pybind11
 
 
 class CoreObject(NeneModule):
@@ -15,6 +17,6 @@ class CoreObject(NeneModule):
             [Core]
         )
         self.external_dependencies.extend(
-            [Rttr]
+            [Rttr, Python, Pybind11]
         )
         pass

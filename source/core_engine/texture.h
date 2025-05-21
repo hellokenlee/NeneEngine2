@@ -4,6 +4,7 @@
 
 #include "core_object/object.h"
 #include "gapi/gapi_resource.h"
+#include "core/types.h"
 
 
 namespace n

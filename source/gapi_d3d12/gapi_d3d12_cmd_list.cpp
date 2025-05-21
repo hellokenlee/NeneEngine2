@@ -136,11 +136,11 @@ void gapi_d3d12_cmd_list::set_root_constant_buffer_view(const t::shared_ptr<i::g
 {
 }
 
-void gapi_d3d12_cmd_list::set_root_shader_resource_view(t::shared_ref<i::gapi_shader_resource_view> srv)
+void gapi_d3d12_cmd_list::set_root_shader_resource_view(const t::shared_ptr<i::gapi_shader_resource_view>& srv)
 {
 }
 
-void gapi_d3d12_cmd_list::set_root_unordered_access_view(t::shared_ref<i::gapi_shader_resource_view> srv)
+void gapi_d3d12_cmd_list::set_root_unordered_access_view(const t::shared_ptr<i::gapi_shader_resource_view>& srv)
 {
 }
 

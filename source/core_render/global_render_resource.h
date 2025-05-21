@@ -6,7 +6,7 @@
 
 namespace i
 {
-    class global_render_resource
+    class NENE_API global_render_resource
     {
     public:
         global_render_resource() = default;

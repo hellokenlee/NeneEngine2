@@ -21,13 +21,12 @@ t::console_var cvar_d3d_version(
 );
 
 
-gapi_d3d12_factory::gapi_d3d12_factory(HWND hwnd)
+gapi_d3d12_factory::gapi_d3d12_factory()
 	: gapi_factory()
-	, m_swap_chain(nullptr)
-	, m_adapters()
 	, m_factory2(nullptr)
 	, m_factory7(nullptr)
 {
+	
 	// Init dxgi crate flag
 	uint32 dxgi_factory_flags = 0;
 	
@@ -51,9 +50,6 @@ gapi_d3d12_factory::gapi_d3d12_factory(HWND hwnd)
 
 	// TODO: Support multiple adapters
 	m_adapters.emplace_back(gapi_d3d12_factory::create_adapter());
-
-	// TODO: Configurable
-	m_swap_chain = gapi_d3d12_factory::create_swap_chain(hwnd, point32{800, 600}, 2, gapi_pixel_format::r8g8b8a8_unorm, 1); 
 }
 
 t::shared_ptr<i::gapi_adapter> gapi_d3d12_factory::create_adapter()

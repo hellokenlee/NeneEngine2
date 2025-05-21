@@ -3,7 +3,6 @@
 # __email__ = "hellokenlee@163.com"
 
 from abc import ABC
-from typing import Dict
 from script.builder.common.nene_module import *
 
 

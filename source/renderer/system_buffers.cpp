@@ -23,13 +23,13 @@ system_vertex_buffers::system_vertex_buffers()
 
     // All in CCW direction
 
-    static constexpr auto create_and_upload_vertex_buffer = [](t::shared_ptr<gapi> api, const t::dynamic_array<vertex>& vertices) -> t::shared_ptr<gapi_buffer>
+    static constexpr auto create_and_upload_vertex_buffer = [](const t::shared_ptr<gapi_dynamic>& api, const t::dynamic_array<vertex>& vertices) -> t::shared_ptr<i::gapi_buffer>
     {
-        t::shared_ptr<gapi_buffer> result =
-            api->create_buffer(sizeof(vertex), sizeof(vertex) * vertices.size(), gapi_buffer_usage_flag::dynamic_buffer | gapi_buffer_usage_flag::usage_vertex_buffer);
-        void* mapped_buffer = api->lock_buffer(result);
-        memcpy(mapped_buffer, vertices.data(), sizeof(vertex) * vertices.size());
-        api->unlock_buffer(result);
+        auto desc = gapi_buffer_desc::create(sizeof(vertex) * vertices.size(), gapi_buffer_usage_flag::dynamic_buffer | gapi_buffer_usage_flag::usage_vertex_buffer, sizeof(vertex));
+        t::shared_ptr<i::gapi_buffer> result = api->create_buffer(desc);
+        // void* mapped_buffer = api->lock_buffer(result);
+        // memcpy(mapped_buffer, vertices.data(), sizeof(vertex) * vertices.size());
+        // api->unlock_buffer(result);
         return result;
     };
     
@@ -62,7 +62,6 @@ t::shared_ptr<system_vertex_buffers> system_vertex_buffers::get()
     if (m_instance == nullptr)
     {
         m_instance = t::shared_ptr<system_vertex_buffers>(new system_vertex_buffers{});
-        gapi_dynamic::register_global_render_resource(m_instance);
     }
     return m_instance;
 }

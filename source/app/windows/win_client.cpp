@@ -1,9 +1,9 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
+// ReSharper disable CppClangTidyPerformanceNoIntToPtr
+
 #include "win_client.h"
 #include "core/core.h"
-
-bool win_client::m_client_should_exit = false;
 
 
 static LRESULT CALLBACK WindowProcessFunction(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -29,7 +29,7 @@ static LRESULT CALLBACK WindowProcessFunction(HWND hWnd, UINT msg, WPARAM wParam
 	}
 	case WM_CLOSE: 
 	{
-		win_client::m_client_should_exit = true;
+		p_client->m_client_should_exit.store(true);
 		break;
 	}
 	default: 
@@ -73,14 +73,11 @@ win_client::win_client(const string& name)
 	ShowWindow(m_window, SW_SHOW);
 }
 
-win_client::~win_client()
-{
-	
-}
+win_client::~win_client() = default;
 
 bool win_client::should_exit()
 {
-	return m_client_should_exit;
+	return m_client_should_exit.load();
 }
 
 void win_client::poll_messages()

@@ -53,7 +53,7 @@ public:
 	static void create(void* window);
 	
 	/** Fetch the current gapi that is using. */
-	static t::shared_ptr<gapi_dynamic> get();
+	static const t::shared_ptr<gapi_dynamic>& get();
 
 protected:
 	/** Internal constructor. */

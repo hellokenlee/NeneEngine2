@@ -3,9 +3,10 @@
 #pragma once
 
 #include "core/template/pointer.h"
+#include "core_render/global_render_resource.h"
 #include "gapi/gapi_shader.h"
 #include "gapi/gapi_resource.h"
-#include "core_render/global_render_resource.h"
+#include "gapi/gapi_pipeline_state_desc.h"
 
 
 class NENE_API system_vertex_buffers : public i::global_render_resource
@@ -17,14 +18,14 @@ public:
 
     virtual void release() override;
 
-    t::shared_ptr<gapi_buffer> triangle() { return m_triangle; }
-    t::shared_ptr<gapi_buffer> screen_quad() { return m_screen_quad; }
+    t::shared_ptr<i::gapi_buffer> triangle() { return m_triangle; }
+    t::shared_ptr<i::gapi_buffer> screen_quad() { return m_screen_quad; }
 
 protected:
     system_vertex_buffers();
     
-    t::shared_ptr<gapi_buffer> m_triangle;
-    t::shared_ptr<gapi_buffer> m_screen_quad;
+    t::shared_ptr<i::gapi_buffer> m_triangle;
+    t::shared_ptr<i::gapi_buffer> m_screen_quad;
 
     static t::shared_ptr<system_vertex_buffers> m_instance;
 };

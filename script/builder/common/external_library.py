@@ -1,8 +1,10 @@
 # -*- coding=utf-8 -*-
 # __author__ = "KenLee"
 # __email__ = "hellokenlee@163.com"
+
 import os
-from typing import List
+
+from script.builder.common.build_common import Platform, Architecture, Configuration
 from script.builder.common.build_configuration import BuildConfiguration
 
 
@@ -21,58 +23,61 @@ class ExternalLibrary(object):
 
 	def __init__(self, name: str):
 		super().__init__()
-		self.__name = name
-		self.__version: str = self.get_latest_version()
-		self.__include_relpath = "{Version}/inc/"
-		self.__static_library_relpath = "{Version}/lib/{Platform}/{PlatformTarget}/{Configuration}/"
-		self.__dynamic_library_relpath = "{Version}/bin/{Platform}/{PlatformTarget}/{Configuration}/"
-		self.__static_libraries = []
-		self.__dynamic_libraries = []
+		self._name = name
+		self._version: str = self.get_latest_version(name)
+		#
+		self._include_rel_path = "{Version}/inc/"
+		self.__static_library_rel_path = "{Version}/lib/{Platform}/{Architecture}/{Configuration}/"
+		self.__dynamic_library_rel_path = "{Version}/bin/{Platform}/{Architecture}/{Configuration}/"
+		#
+		self.dependent_libraries = []
 		pass
 
 	@property
 	def name(self):
-		return self.__name
+		return self._name
 
-	def has_version(self, ver: str):
+	@staticmethod
+	def get_latest_version(name: str) -> str:
 		extern_root_path = BuildConfiguration().extern_root_abs_path
-		library_root_path = os.path.join(extern_root_path, self.__name)
-		return os.path.exists(os.path.join(library_root_path, ver))
-
-	def get_latest_version(self) -> str:
-		extern_root_path = BuildConfiguration().extern_root_abs_path
-		library_root_path = os.path.join(extern_root_path, self.__name)
+		library_root_path = os.path.join(extern_root_path, name)
 		versions = []
 		for subpath in os.listdir(library_root_path):
 			if os.path.isdir(os.path.join(library_root_path, subpath)):
 				versions.append(subpath)
 		versions.sort()
-		return versions[0]
+		if len(versions) > 0:
+			return versions[0]
+		return ""
 
-	def set_version_using(self, ver: str):
-		if self.has_version(ver):
-			self.__version = ver
-		pass
+	def get_include_abs_path(self, plat: Platform, arch: Architecture, con: Configuration) -> str:
+		include_rel_path = self._include_rel_path.format(Version=self._version, Platform=plat.value, Architecture=arch.name, Configuration=con.name)
+		return os.path.join(BuildConfiguration().extern_root_abs_path, self.name, include_rel_path)
 
-	def get_version_using(self):
-		return self.__version
+	def get_static_library_directory_abs_path(self, plat: Platform, arch: Architecture, con: Configuration) -> str:
+		static_library_rel_path = self.__static_library_rel_path.format(Version=self._version, Platform=plat.value, Architecture=arch.name, Configuration=con.name)
+		return os.path.join(BuildConfiguration().extern_root_abs_path, self.name, static_library_rel_path)
 
-	def set_include_relpath(self, include_path: str):
-		self.__include_relpath = include_path
+	def get_dynamic_library_directory_abs_path(self, plat: Platform, arch: Architecture, con: Configuration) -> str:
+		dynamic_library_rel_path = self.__dynamic_library_rel_path.format(Version=self._version, Platform=plat.value, Architecture=arch.name, Configuration=con.name)
+		return os.path.join(BuildConfiguration().extern_root_abs_path, self.name, dynamic_library_rel_path)
 
-	def get_include_relpath(self, plat: str, arch: str, con: str) -> str:
-		return self.__include_relpath.format(Version=self.__version, Platform=plat, PlatformTarget=arch, Configuration=con)
+	def get_static_library_filenames(self) -> list[str]:
+		if BuildConfiguration().platform == Platform.Windows:
+			file_extension = ".lib"
+		else:
+			raise NotImplementedError()
+		result = []
+		for lib in self.dependent_libraries:
+			result.append(lib + file_extension)
+		return result
 
-	def get_static_library_relpath(self, plat: str, arch: str, con: str) -> str:
-		return self.__static_library_relpath.format(Version=self.__version, Platform=plat, PlatformTarget=arch, Configuration=con)
-
-	def get_dynamic_library_relpath(self, plat: str, arch: str, con: str) -> str:
-		return self.__dynamic_library_relpath.format(Version=self.__version, Platform=plat, PlatformTarget=arch, Configuration=con)
-
-	def add_static_link_libraries(self, libs: List[str]):
-		self.__static_libraries.extend(libs)
-		pass
-
-	def get_static_link_libraries(self):
-		return self.__static_libraries
-
+	def get_dynamic_library_filenames(self) -> list[str]:
+		if BuildConfiguration().platform == Platform.Windows:
+			file_extension = ".dll"
+		else:
+			raise NotImplementedError()
+		result = []
+		for lib in self.dependent_libraries:
+			result.append(lib + file_extension)
+		return result

@@ -4,17 +4,16 @@
 
 namespace i
 {
-class client
-{
-public:
-	client() = default;
-	virtual ~client() = default;
+	class client
+	{
+	public:
+		client() = default;
+		virtual ~client() = default;
+		
+		virtual bool should_exit() = 0;
 
-public:
-	virtual bool should_exit() = 0;
+		virtual void poll_messages() = 0;
 
-	virtual void poll_messages() = 0;
-
-	virtual void* get_window() = 0;
-};
+		virtual void* get_window() = 0;
+	};
 }

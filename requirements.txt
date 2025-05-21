@@ -1,2 +1,3 @@
 packaging
 PySide6
+shiboken6_generator

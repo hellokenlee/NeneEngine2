@@ -30,6 +30,9 @@ class PySideConfig(metaclass=Singleton):
 	def install_path(self):
 		return self._install_path
 
+	def include_path(self):
+		return os.path.join(self._install_path, "include")
+
 	def print_brief(self):
 		log("PySide version: %s" % self.version())
 		log("PySide install path: %s" % self.install_path())

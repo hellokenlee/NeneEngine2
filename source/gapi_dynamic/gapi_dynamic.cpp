@@ -41,7 +41,7 @@ gapi_dynamic::gapi_dynamic(const gapi_platform& platform, void* window)
 	switch (platform)
 	{
 	case gapi_platform::direct3d12:
-		m_factory = t::make_shared<gapi_d3d12_factory>(static_cast<HWND>(window));
+		m_factory = t::shared_ptr<gapi_d3d12_factory>(new gapi_d3d12_factory());
 		break;
 	case gapi_platform::vulkan:
 	case gapi_platform::metal:
@@ -136,10 +136,10 @@ void gapi_dynamic::create(void* window)
 	CHECK(g_gapi_instance == nullptr);
 	
 	const auto platform = static_cast<gapi_platform>(cvar_gapi_platform.get_value_thread_unsafe());
-	g_gapi_instance = t::make_shared<gapi_dynamic>(platform, static_cast<HWND>(window));
+	g_gapi_instance = t::shared_ptr<gapi_dynamic>(new gapi_dynamic(platform, static_cast<HWND>(window)));
 }
 
-t::shared_ptr<gapi_dynamic> gapi_dynamic::get()
+const t::shared_ptr<gapi_dynamic>& gapi_dynamic::get()
 {
 	CHECKF(g_gapi_instance != nullptr, "Call `gapi_dynamic::create(...)` first for initialization.");
 	

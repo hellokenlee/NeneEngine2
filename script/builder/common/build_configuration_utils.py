@@ -14,7 +14,8 @@ class BuildConfigurationUtils(ABC):
 		source_root_path = BuildConfiguration().source_root_abs_path
 		for folder in os.listdir(source_root_path):
 			if not folder.startswith("__") and os.path.isdir(os.path.join(source_root_path, folder)):
-				yield folder
+				if os.path.exists(os.path.join(source_root_path, folder, "__init__.py")):
+					yield folder
 		pass
 
 	@classmethod

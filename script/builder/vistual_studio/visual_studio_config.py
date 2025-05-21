@@ -35,7 +35,7 @@ class VisualStudioConfig(metaclass=Singleton):
 		if not os.path.exists(self._windows_sdk_install_path):
 			self._windows_sdk_install_path = os.path.join(os.getenv("ProgramFiles(x86)"), self.MICROSOFT_SDKS, self.WINDOWS_KITS)
 		#
-		assert self._windows_sdk_install_path, "Failed to detect Windows SDK"
+		assert self._windows_sdk_install_path
 		self._window_sdk_version = os.listdir(self._windows_sdk_install_path)[0]
 		pass
 

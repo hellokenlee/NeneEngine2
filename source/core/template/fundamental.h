@@ -69,6 +69,8 @@ typedef std::wstringstream wstringstream;
 typedef std::stringstream sstringstream;
 
 typedef std::ifstream ifstream;
+typedef std::string_view sstring_view;
+typedef std::wstring_view wstring_view;
 /* <<< String types <<< */
 
 /* <<< Other types <<< */

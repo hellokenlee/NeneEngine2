@@ -56,12 +56,12 @@ namespace i
 		// Pipeline State Setter
 		virtual void set_pipeline_state(const t::shared_ptr<gapi_pipeline_state>& pipeline_state) = 0;
 		virtual void set_root_constant_buffer_view(const t::shared_ptr<gapi_constant_buffer_view>& cbv) = 0;
-		virtual void set_root_shader_resource_view(const t::shared_ref<gapi_shader_resource_view>& srv) = 0;
-		virtual void set_root_unordered_access_view(const t::shared_ref<gapi_shader_resource_view>& srv) = 0;
+		virtual void set_root_shader_resource_view(const t::shared_ptr<gapi_shader_resource_view>& srv) = 0;
+		virtual void set_root_unordered_access_view(const t::shared_ptr<gapi_shader_resource_view>& srv) = 0;
 		virtual void set_root_descriptor_table() = 0;
 		virtual void set_descriptor_heaps(const t::dynamic_array<t::shared_ptr<gapi_descriptor_heap>>& heaps) = 0;
 
-		// Imput Assemble Settings
+		// Input Assemble Settings
 		virtual void set_index_buffer(const t::shared_ptr<gapi_index_buffer_view>& index_buffer) = 0;
 		virtual void set_vertex_buffer(const t::shared_ptr<gapi_vertex_buffer_view>& vertex_buffer) = 0;
 		virtual void set_primitive_topology(const gapi_primitive_type& ptype) = 0;

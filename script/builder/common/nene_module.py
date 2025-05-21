@@ -49,6 +49,8 @@ class Linker(object):
 		# MSVC
 		self.msvc_com_dat_folding: bool = False
 		self.msvc_optimize_references: bool = False
+		#
+		self.additional_linker_flags: list[str] = []
 		pass
 
 
@@ -82,6 +84,14 @@ class NeneModuleConfig(object):
 	def platform(self):
 		return self.build_config.platform
 
+	def add_defines(self, defines: list[str]):
+		self.compiler.preprocessor_definitions.extend(defines)
+		pass
+
+	def set_cxx_standard(self, cxx_standard: CppStandard):
+		self.compiler.cxx_standard = cxx_standard
+		pass
+
 
 class NeneModule(object):
 	"""
@@ -114,20 +124,22 @@ class NeneModule(object):
 		#
 		module_config = NeneModuleConfig(build_config)
 		# Default Settings
-		module_config.compiler.disabled_warnings.extend({4251})
+		module_config.compiler.disabled_warnings.extend({4251, 4819})
 		if build_config.configuration == Configuration.Debug:
 			#
-			module_config.compiler.preprocessor_definitions.extend(["_DEBUG", "_CONSOLE"])
+			module_config.add_defines(['_DEBUG', "_CONSOLE"])
 			module_config.compiler.msvc_conformance_mode = False
 			#
 			module_config.linker.msvc_com_dat_folding = False
 			module_config.linker.msvc_optimize_references = False
 		else:
-			module_config.compiler.preprocessor_definitions.extend(["NDEBUG", "_CONSOLE"])
+			module_config.add_defines(["NDEBUG", "_CONSOLE"])
 			module_config.compiler.msvc_conformance_mode = False
 			module_config.compiler.msvc_function_level_linking = True
 			module_config.compiler.msvc_intrinsic_functions = True
 			#
 			module_config.linker.msvc_com_dat_folding = True
 			module_config.linker.msvc_optimize_references = True
+		#
+		module_config.linker.additional_linker_flags = ["/ignore:4099"]
 		return module_config

@@ -11,18 +11,21 @@ gapi_pipeline_state_manager::gapi_pipeline_state_manager()
 
 t::shared_ptr<i::gapi_pipeline_state> gapi_pipeline_state_manager::find_or_create_pipeline_state(const gapi_compute_pipeline_state_desc& desc)
 {
-	
+	CHECK(false);
+	return nullptr;
 }
 
 t::shared_ptr<i::gapi_pipeline_state> gapi_pipeline_state_manager::find_or_create_pipeline_state(const gapi_graphics_pipeline_state_desc& desc)
 {
+	CHECK(false);
+	return nullptr;
 }
 
 t::shared_ptr<gapi_pipeline_state_manager> gapi_pipeline_state_manager::get()
 {
 	if (g_gapi_pipeline_state_manager_instance == nullptr)
 	{
-		g_gapi_pipeline_state_manager_instance = t::make_shared<gapi_pipeline_state_manager>(new gapi_pipeline_state_manager{});
+		g_gapi_pipeline_state_manager_instance = t::shared_ptr<gapi_pipeline_state_manager>(new gapi_pipeline_state_manager());
 	}
 	return g_gapi_pipeline_state_manager_instance;
 }

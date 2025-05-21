@@ -233,13 +233,23 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 		import_group.text = "\n  "
 		pass
 
+	def _recursively_find_extern_libraries(self, nene_module: NeneModule) -> set[type[ExternalLibrary]]:
+		extern_librarie_classes: set[type[ExternalLibrary]] = set()
+		for extern_library_class in nene_module.external_dependencies:
+			extern_librarie_classes.add(extern_library_class)
+		for nene_module_class in nene_module.module_dependencies:
+			extern_librarie_classes.update(self._recursively_find_extern_libraries(self.nene_modules[nene_module_class]))
+		return extern_librarie_classes
+
 	def _add_property_group_per_configuration(self, vcproj_tree: ElementTree.ElementTree, nene_module: NeneModule, nene_module_configs: list[NeneModuleConfig]):
 		for nene_module_config in nene_module_configs:
 			property_group = ElementTree.SubElement(vcproj_tree.getroot(), VcTag.PropertyGroup)
 			property_group.attrib[VcAttrib.Condition] = "\'$(Configuration)|$(Platform)\'==\'%s|%s\'" % (nene_module_config.configuration.name, nene_module_config.architecture.name)
-			ElementTree.SubElement(property_group, VcTag.LinkIncremental).text = "true" if nene_module_config.configuration == Configuration.Debug else "false"
+			ElementTree.SubElement(property_group, VcTag.LinkIncremental).text = "false"
 			ElementTree.SubElement(property_group, VcTag.OutDir).text = VisualStudioModuleGenerator.PROJ_OUTPUT_PATH
 			ElementTree.SubElement(property_group, VcTag.IntDir).text = VisualStudioModuleGenerator.PROJ_INTERMEDIATE_PATH
+			#
+			dependent_extern_library_classes = self._recursively_find_extern_libraries(nene_module)
 			#
 			include_paths = [
 				# MSVC
@@ -249,11 +259,10 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 				# Module
 				"$(ProjectDir)",
 			]
-			for lib in nene_module.external_dependencies:
-				# Use visual studio's marco to save time
-				lib_include_path = "$(SolutionDir)%s\\%s\\%s" % (BuildConfiguration.EXTERN, self.extern_libraries[lib].name, self.extern_libraries[lib].get_include_relpath("$(Platform)", "$(PlatformTarget)", "$(Configuration)"))
-				lib_include_path = lib_include_path.replace("/", "\\")
-				include_paths.append(lib_include_path)
+			for extern_library_class in dependent_extern_library_classes:
+				include_abs_path = self.extern_libraries[extern_library_class].get_include_abs_path(nene_module_config.platform, nene_module_config.architecture, nene_module_config.configuration)
+				include_abs_path = include_abs_path.replace("/", "\\")
+				include_paths.append(include_abs_path)
 			include_paths.reverse()
 			ElementTree.SubElement(property_group, VcTag.ExternalIncludePath).text = ";".join(include_paths)
 			#
@@ -263,9 +272,8 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 				# Build Output
 				self.PROJ_OUTPUT_PATH,
 			]
-			for lib in nene_module.external_dependencies:
-				# Use visual studio's marco to save time
-				static_library_path = "$(SolutionDir)%s\\%s\\%s" % (BuildConfiguration.EXTERN, self.extern_libraries[lib].name, self.extern_libraries[lib].get_static_library_relpath("$(Platform)", "$(PlatformTarget)", "$(Configuration)"))
+			for extern_library_class in dependent_extern_library_classes:
+				static_library_path = self.extern_libraries[extern_library_class].get_static_library_directory_abs_path(nene_module_config.platform, nene_module_config.architecture, nene_module_config.configuration)
 				static_library_path = static_library_path.replace("/", "\\")
 				library_paths.append(static_library_path)
 			library_paths.reverse()
@@ -297,6 +305,7 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 			disabled_warnings = list(map(str, compiler.disabled_warnings))
 			disabled_warnings.append("%(DisableSpecificWarnings)")
 			ElementTree.SubElement(cl_compile, "DisableSpecificWarnings").text = ";".join(disabled_warnings)
+			ElementTree.SubElement(cl_compile, "AdditionalOptions").text = " ".join(compiler.additional_compiler_flags)
 			# Linker Settings
 			linker = nene_module_config.linker
 			link = ElementTree.SubElement(item_definition_group, VcTag.Link)
@@ -313,13 +322,15 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 			for dep in nene_module.module_dependencies:
 				additional_dependencies.append(self.nene_modules[dep].name + ".lib")
 			# External Libraries
-			for lib in nene_module.external_dependencies:
-				additional_dependencies.extend(self.extern_libraries[lib].get_static_link_libraries())
+			dependent_extern_library_classes = self._recursively_find_extern_libraries(nene_module)
+			for extern_library_class in dependent_extern_library_classes:
+				additional_dependencies.extend(self.extern_libraries[extern_library_class].get_static_library_filenames())
 			# System Libraries
 			additional_dependencies.extend(nene_module.system_library_dependencies)
 
 			additional_dependencies.append("%(AdditionalDependencies)")
 			ElementTree.SubElement(link, "AdditionalDependencies").text = ";".join(additional_dependencies)
+			ElementTree.SubElement(link, "AdditionalOptions").text = " ".join(linker.additional_linker_flags)
 
 			# Post Build Event
 			post_build_event = ElementTree.SubElement(item_definition_group, VcTag.PostBuildEvent)

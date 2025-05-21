@@ -9,23 +9,24 @@
 
 namespace n
 {
-class NENE_API object: public i::serializable
-{
-	NINHERIT()
-	
-public:
-	object(int data)
-		: data0(data)
-	{}
+	class NENE_API object: public i::serializable
+	{
+	public:
+		object(int data)
+			: data0(data)
+		{}
+		virtual ~object() = default;
 
-	void func0();
+		void func0();
 
-	void func1(int a);
+		void func1(int a);
 
-	static void test();
+		static void test();
 
-private:
-	int data0;
-};
+	private:
+		int data0;
+	};
 }
+
+void pybind11_init_object(::pybind11::module_ & m);
 

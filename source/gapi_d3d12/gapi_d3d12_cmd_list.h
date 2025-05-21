@@ -32,8 +32,8 @@ public:
 
 	void set_pipeline_state(const t::shared_ptr<i::gapi_pipeline_state>& pipeline_state) override;
 	void set_root_constant_buffer_view(const t::shared_ptr<i::gapi_constant_buffer_view>& cbv) override;
-	void set_root_shader_resource_view(t::shared_ref<i::gapi_shader_resource_view> srv) override;
-	void set_root_unordered_access_view(t::shared_ref<i::gapi_shader_resource_view> srv) override;
+	void set_root_shader_resource_view(const t::shared_ptr<i::gapi_shader_resource_view>& srv) override;
+	void set_root_unordered_access_view(const t::shared_ptr<i::gapi_shader_resource_view>& srv) override;
 	void set_root_descriptor_table() override;
 	void set_descriptor_heaps(const t::dynamic_array<t::shared_ptr<i::gapi_descriptor_heap>>& heaps) override;
 	

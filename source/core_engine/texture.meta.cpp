@@ -2,10 +2,3 @@
 
 #include "texture.h"
 #include "core_object/meta.h"
-
-
-NMETA
-{
-    NCLASS("texture", n::texture)
-    ;
-};
