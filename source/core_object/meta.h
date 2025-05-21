@@ -63,8 +63,7 @@ namespace n
 	public:
 		binding_globals() = delete;
 		~binding_globals() = delete;
-
-		static NENE_API t::dynamic_array<std::string> py_submodule_names;
+		
 		static NENE_API t::dynamic_array<void(*)(::pybind11::module_* m)> py_submodule_init_functions;
 	};
 }
@@ -90,23 +89,22 @@ namespace n
  *		}
  *		```
  */
-#define NMETA(module_name, variable)																					\
+#define NMETA(variable)																									\
 static void __nene_auto_register_func(::pybind11::module_*);															\
 namespace																												\
 {																														\
 	struct __nene_auto_register																							\
 	{																													\
-		__nene_auto_register(const char* name)																			\
+		__nene_auto_register()																							\
 		{																												\
 			/* 1st init for rttr */																						\
 			__nene_auto_register_func(nullptr); 																		\
 			/* 2nd init for pybind11 (deferred call) */																	\
-			::n::binding_globals::py_submodule_names.push_back(name);													\
 			::n::binding_globals::py_submodule_init_functions.push_back(__nene_auto_register_func);						\
 		}																												\
 	};																													\
 }																														\
-static const __nene_auto_register RTTR_CAT(__nene_auto_register_instance_, __LINE__)(PYBIND11_TOSTRING(module_name));	\
+static const __nene_auto_register RTTR_CAT(__nene_auto_register_instance_, __LINE__)();									\
 static void __nene_auto_register_func(::pybind11::module_* (variable))  // NOLINT(bugprone-macro-parentheses)
 
 

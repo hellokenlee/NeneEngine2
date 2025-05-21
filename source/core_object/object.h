@@ -28,5 +28,3 @@ namespace n
 	};
 }
 
-void pybind11_init_object(::pybind11::module_ & m);
-

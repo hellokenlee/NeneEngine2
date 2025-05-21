@@ -7,7 +7,7 @@
 #include "pybind11/pybind11.h"
 
 
-NMETA(object, m)
+NMETA(m)
 {
 	t::n::class_<n::object>("object", m)
 		.method("func0", &n::object::func0)
