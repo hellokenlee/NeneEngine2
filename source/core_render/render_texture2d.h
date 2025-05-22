@@ -11,7 +11,7 @@ class texture2d_resouce : public render_resource
 public:
 	
 protected:
-	t::shared_ptr<i::gapi_texture> m_textre;
-	t::shared_ptr<i::gapi_render_target_view> m_rtv;
-	t::shared_ptr<i::gapi_unorder_access_view> m_uav;
+	std::shared_ptr<i::gapi_texture> m_textre;
+	std::shared_ptr<i::gapi_render_target_view> m_rtv;
+	std::shared_ptr<i::gapi_unorder_access_view> m_uav;
 };

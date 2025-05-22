@@ -47,7 +47,7 @@ namespace i
 	class NENE_API gapi_immutable_samplers : noncopyable
 	{
 	public:
-		gapi_immutable_samplers(const t::dynamic_array<gapi_sampler_desc>& sampler_descs)
+		gapi_immutable_samplers(const std::vector<gapi_sampler_desc>& sampler_descs)
 			: m_sampler_descs(sampler_descs)
 		{}
 		
@@ -60,6 +60,6 @@ namespace i
 	protected:
 		gapi_immutable_samplers() = default;
 		
-		t::dynamic_array<gapi_sampler_desc> m_sampler_descs;
+		std::vector<gapi_sampler_desc> m_sampler_descs;
 	};
 }

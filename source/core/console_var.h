@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-enum class console_var_flag
+enum class console_var_flag : uint8
 {
 	none,
 	read_only,
@@ -16,7 +16,8 @@ namespace i
 	{
 	public:
 		console_var() = default;
-		
+		console_var(const console_var&) = default;
+		console_var& operator=(const console_var&) = default;
 		virtual ~console_var() = default;
 
 		virtual int32 as_int32() = 0;
@@ -27,13 +28,16 @@ namespace i
 	class NENE_API console_var_manager
 	{
 	public:
-		static t::shared_ptr<console_var_manager> get();
+		static std::shared_ptr<console_var_manager> get();
 
+		console_var_manager() = default;
+		console_var_manager(const console_var_manager&) = default;
+		console_var_manager& operator=(const console_var_manager&) = default;
 		virtual ~console_var_manager() = default;
 
-		virtual bool& register_var(const sstring& name, const bool& default_value, const sstring& help, console_var_flag flag) = 0;
+		virtual bool& register_var(const std::string& name, const bool& default_value, const std::string& help, console_var_flag flag) = 0;
 
-		virtual int32& register_var(const sstring& name, const int32& default_value, const sstring& help, console_var_flag flag) = 0;
+		virtual int32& register_var(const std::string& name, const int32& default_value, const std::string& help, console_var_flag flag) = 0;
 	};
 }
 
@@ -49,7 +53,7 @@ namespace t
 	class console_var
 	{
 	public:
-		console_var(const sstring& name, const T& default_value, const sstring& help, console_var_flag flag = console_var_flag::none)
+		console_var(const std::string& name, const T& default_value, const std::string& help, console_var_flag flag = console_var_flag::none)
 			: m_ref(i::console_var_manager::get()->register_var(name, default_value, help, flag))
 		{
 		}
@@ -59,8 +63,13 @@ namespace t
 			return m_ref;
 		}
 		
+		const T& get_value_thread_unsafe() const
+		{
+			return m_ref;
+		}
+		
 	protected:
-		T& m_ref;
+		T& m_ref;  // NOLINT(cppcoreguidelines-avoid-const-or-ref-data-members)
 	};
 }
 

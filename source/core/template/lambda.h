@@ -3,11 +3,3 @@
 #pragma once
 
 #include <functional>
-
-namespace t
-{
-
-template<class T>
-using function = std::function<T>;
-
-}

@@ -21,9 +21,9 @@ t::console_var<bool> cvar_gapi_d3d_shader_optimize(
 );
 
 
-static sstring d3d_cast(const gapi_shader_type& type, const gapi_shader_feature_level& level)
+static std::string d3d_cast(const gapi_shader_type& type, const gapi_shader_feature_level& level)
 {
-	sstring shader_target;
+	std::string shader_target;
 
 	switch (type)
 	{
@@ -79,7 +79,7 @@ bool d3d12_fxc_shader_compiler::compile_shader(gapi_d3d12_shader& shader, ID3DBl
 	{
 		flag |= D3DCOMPILE_SKIP_OPTIMIZATION;
 	}
-	const sstring target = d3d_cast(shader.get_shader_type(), shader.get_feature_level());
+	const std::string target = d3d_cast(shader.get_shader_type(), shader.get_feature_level());
 	//
 	const HRESULT result = D3DCompile(
 		shader.get_shader_source().c_str(), shader.get_shader_source().size(), shader.get_name().c_str(), 

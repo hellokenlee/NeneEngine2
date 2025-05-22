@@ -8,30 +8,3 @@
 #include <list>
 #include <ranges>
 #include <set>
-
-namespace t
-{
-template<class T>
-using dynamic_array = std::vector<T>;
-
-template<class T, size_t S>
-using static_array = std::array<T, S>;
-
-template<class T>
-using queue = std::queue<T>;
-
-template<class T>
-using set = std::set<T>;
-
-template<class KT, class VT>
-using map = std::unordered_map<KT, VT>;
-
-template<class KT, class VT>
-using pair = std::pair<KT, VT>;
-
-template <class T, class U>
-auto make_pair(T&& t, U&& u)
-{
-    return std::make_pair<T, U>(t, u);
-}
-}

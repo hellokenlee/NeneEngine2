@@ -2,11 +2,14 @@
 
 #pragma once
 
+#include "archive.h"
 
-namespace i
+
+namespace n
 {
-class serializable
-{
-	
-};	
+	class serializable
+	{
+	public:
+		void serialize(i::archive& ar) const;
+	};
 }

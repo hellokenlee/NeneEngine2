@@ -4,11 +4,11 @@
 
 gapi_bound_shader_desc::gapi_bound_shader_desc(
 	const gapi_vertex_declartions& vertex_declaration,
-	const t::shared_ptr<i::gapi_vertex_shader>& vertex_shader,
-	const t::shared_ptr<i::gapi_pixel_shader>& pixel_shader,
-	const t::shared_ptr<i::gapi_domain_shader>& domain_shader,
-	const t::shared_ptr<i::gapi_hull_shader>& hull_shader,
-	const t::shared_ptr<i::gapi_geometry_shader>& geometry_shader
+	const std::shared_ptr<i::gapi_vertex_shader>& vertex_shader,
+	const std::shared_ptr<i::gapi_pixel_shader>& pixel_shader,
+	const std::shared_ptr<i::gapi_domain_shader>& domain_shader,
+	const std::shared_ptr<i::gapi_hull_shader>& hull_shader,
+	const std::shared_ptr<i::gapi_geometry_shader>& geometry_shader
 ) : gapi_bound_shader_desc(
 	vertex_declaration, vertex_shader, pixel_shader, domain_shader, hull_shader, geometry_shader,
 {}, {}, {}, {}, {}
@@ -17,7 +17,7 @@ gapi_bound_shader_desc::gapi_bound_shader_desc(
 }
 
 gapi_bound_shader_desc::gapi_bound_shader_desc(
-	const t::shared_ptr<i::gapi_compute_shader>& compute_shader
+	const std::shared_ptr<i::gapi_compute_shader>& compute_shader
 ) : gapi_bound_shader_desc(
 	{}, {}, {}, {}, {}, {},
 	compute_shader, {}, {}, {}, {}

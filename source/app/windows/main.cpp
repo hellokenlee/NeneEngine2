@@ -22,8 +22,9 @@ int main()
 	
 	engine_loop::shutdown();
 	//*/
-
-	foo();
+	
+	n::binding::get().initialize();
+	n::object::test();
 
 	pybind11::scoped_interpreter guard{};
 	

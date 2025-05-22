@@ -9,8 +9,8 @@
 class gapi_d3d12_descriptor_heap : public t::impl<gapi_d3d12_descriptor_heap, i::gapi_descriptor_heap>
 {
 public:
-	t::shared_ptr<i::gapi_descriptor> allocate_resource_view() override;
-	void free_resouce_view(t::shared_ptr<i::gapi_descriptor>& view) override;
+	std::shared_ptr<i::gapi_descriptor> allocate_resource_view() override;
+	void free_resouce_view(std::shared_ptr<i::gapi_descriptor>& view) override;
 
 public:
 	gapi_d3d12_descriptor_heap(const WinComPtr<ID3D12DescriptorHeap>& heap, const uint32& num_descriptors, const uint32& descriptor_size);
@@ -18,7 +18,7 @@ public:
 private:
 	uint32 m_num_descriptors;
 	uint32 m_descriptor_size;
-	t::queue<uint32> m_free_descriptor_indices;
+	std::queue<uint32> m_free_descriptor_indices;
 	
 	D3D12_CPU_DESCRIPTOR_HANDLE m_cpu_base;
 	D3D12_GPU_DESCRIPTOR_HANDLE m_gpu_base;

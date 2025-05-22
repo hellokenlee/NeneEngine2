@@ -28,7 +28,7 @@ simple_renderer::simple_renderer()
 	m_screen_texture = api->create_texture(desc);
 }
 
-void simple_renderer::render_view_family(t::shared_ptr<i::gapi_texture> view_family_render_target)
+void simple_renderer::render_view_family(std::shared_ptr<i::gapi_texture> view_family_render_target)
 {
 	const auto api = gapi_dynamic::get();
 	const auto context = api->get_cmd_context();

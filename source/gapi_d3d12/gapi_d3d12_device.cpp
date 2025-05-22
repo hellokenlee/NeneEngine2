@@ -24,16 +24,16 @@ gapi_d3d12_device::gapi_d3d12_device(const WinComPtr<ID3D12Device>& device)
 	m_cmd_queues[static_cast<uint32>(gapi_cmd_type::copy)] = gapi_d3d12_device::create_cmd_queue(gapi_cmd_type::copy);
 }
 
-t::shared_ptr<i::gapi_cmd_fence> gapi_d3d12_device::create_cmd_fence(const uint64& initial_value)
+std::shared_ptr<i::gapi_cmd_fence> gapi_d3d12_device::create_cmd_fence(const uint64& initial_value)
 {
 	// TODO: LDA setup support
 	WinComPtr<ID3D12Fence> fence;
 	VERIFY(m_device->CreateFence(initial_value, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence)));
 
-	return t::make_shared<gapi_d3d12_cmd_fence>(fence);
+	return std::make_shared<gapi_d3d12_cmd_fence>(fence);
 }
 
-t::shared_ptr<i::gapi_cmd_queue> gapi_d3d12_device::create_cmd_queue(gapi_cmd_type type)
+std::shared_ptr<i::gapi_cmd_queue> gapi_d3d12_device::create_cmd_queue(gapi_cmd_type type)
 {
 	D3D12_COMMAND_QUEUE_DESC desc = {};
 	desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
@@ -42,28 +42,28 @@ t::shared_ptr<i::gapi_cmd_queue> gapi_d3d12_device::create_cmd_queue(gapi_cmd_ty
 	WinComPtr<ID3D12CommandQueue> cmd_queue;
 	VERIFY(m_device->CreateCommandQueue(&desc, IID_PPV_ARGS(&cmd_queue)));
 	
-	return t::make_shared<gapi_d3d12_cmd_queue>(cmd_queue);
+	return std::make_shared<gapi_d3d12_cmd_queue>(cmd_queue);
 }
 
-t::shared_ptr<i::gapi_cmd_allocator> gapi_d3d12_device::create_cmd_allocator(gapi_cmd_type type)
+std::shared_ptr<i::gapi_cmd_allocator> gapi_d3d12_device::create_cmd_allocator(gapi_cmd_type type)
 {
 	WinComPtr<ID3D12CommandAllocator> allocator;
 	VERIFY(m_device->CreateCommandAllocator(d3d_cast(type), IID_PPV_ARGS(&allocator)));
 
-	return t::make_shared<gapi_d3d12_cmd_allocator>(allocator);
+	return std::make_shared<gapi_d3d12_cmd_allocator>(allocator);
 }
 
-t::shared_ptr<i::gapi_cmd_list> gapi_d3d12_device::create_cmd_list(gapi_cmd_type type, t::shared_ptr<i::gapi_cmd_allocator>& allocator)
+std::shared_ptr<i::gapi_cmd_list> gapi_d3d12_device::create_cmd_list(gapi_cmd_type type, std::shared_ptr<i::gapi_cmd_allocator>& allocator)
 {
 	const auto d3d12_allocator = gapi_d3d12_cmd_allocator::cast(allocator);
 	
 	WinComPtr<ID3D12GraphicsCommandList> cmd_list;
 	VERIFY(m_device->CreateCommandList(0, d3d_cast(type), d3d12_allocator->get_d3d_allocator(), nullptr, IID_PPV_ARGS(&cmd_list)));
 
-	return t::make_shared<gapi_d3d12_cmd_list>(cmd_list);
+	return std::make_shared<gapi_d3d12_cmd_list>(cmd_list);
 }
 
-t::shared_ptr<i::gapi_pipeline_layout> gapi_d3d12_device::create_pipeline_layout(const gapi_pipeline_layout_desc& desc)
+std::shared_ptr<i::gapi_pipeline_layout> gapi_d3d12_device::create_pipeline_layout(const gapi_pipeline_layout_desc& desc)
 {
 	const auto d3d_parameters = gapi_d3d12_pipeline_parameters::cast(desc.m_parameters);
 	const auto d3d_static_samplers = gapi_d3d12_immutable_samplers::cast(desc.m_samplers);
@@ -83,12 +83,12 @@ t::shared_ptr<i::gapi_pipeline_layout> gapi_d3d12_device::create_pipeline_layout
 		// TODO: LDA setup support
 		WinComPtr<ID3D12RootSignature> signature;
 		VERIFY(m_device->CreateRootSignature(0, content->GetBufferPointer(), content->GetBufferSize(), IID_PPV_ARGS(&signature)));
-		return t::make_shared<gapi_d3d12_pipeline_layout>(signature);
+		return std::make_shared<gapi_d3d12_pipeline_layout>(signature);
 	}
 	return nullptr;
 }
 
-t::shared_ptr<i::gapi_pipeline_state> gapi_d3d12_device::create_compute_pipeline_state(const gapi_compute_pipeline_state_desc& desc)
+std::shared_ptr<i::gapi_pipeline_state> gapi_d3d12_device::create_compute_pipeline_state(const gapi_compute_pipeline_state_desc& desc)
 {
 	D3D12_COMPUTE_PIPELINE_STATE_DESC d3d_desc;
 	d3d_desc.pRootSignature = nullptr;
@@ -100,10 +100,10 @@ t::shared_ptr<i::gapi_pipeline_state> gapi_d3d12_device::create_compute_pipeline
 	
 	WinComPtr<ID3D12PipelineState> pipeline_state;
 	VERIFY(m_device->CreateComputePipelineState(&d3d_desc, IID_PPV_ARGS(&pipeline_state)));
-	return t::make_shared<gapi_d3d12_pipeline_state>(pipeline_state, gapi_pipeline_state_type::compute);
+	return std::make_shared<gapi_d3d12_pipeline_state>(pipeline_state, gapi_pipeline_state_type::compute);
 }
 
-t::shared_ptr<i::gapi_pipeline_state> gapi_d3d12_device::create_graphics_pipeline_state(const gapi_graphics_pipeline_state_desc& desc)
+std::shared_ptr<i::gapi_pipeline_state> gapi_d3d12_device::create_graphics_pipeline_state(const gapi_graphics_pipeline_state_desc& desc)
 {
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC d3d_desc = {};
 	d3d_desc.pRootSignature = gapi_d3d12_pipeline_layout::cast(desc.m_pipeline_layout)->get_d3d_root_signature();
@@ -136,10 +136,10 @@ t::shared_ptr<i::gapi_pipeline_state> gapi_d3d12_device::create_graphics_pipelin
 	
 	WinComPtr<ID3D12PipelineState> pipeline_state;
 	VERIFY(m_device->CreateGraphicsPipelineState(&d3d_desc, IID_PPV_ARGS(&pipeline_state)));
-	return t::make_shared<gapi_d3d12_pipeline_state>(pipeline_state, gapi_pipeline_state_type::graphics);
+	return std::make_shared<gapi_d3d12_pipeline_state>(pipeline_state, gapi_pipeline_state_type::graphics);
 }
 
-t::shared_ptr<i::gapi_descriptor_heap> gapi_d3d12_device::create_resource_view_heap(const gapi_descriptor_type& heap_type, const uint32& max_num_views)
+std::shared_ptr<i::gapi_descriptor_heap> gapi_d3d12_device::create_resource_view_heap(const gapi_descriptor_type& heap_type, const uint32& max_num_views)
 {
 	D3D12_DESCRIPTOR_HEAP_DESC d3d_desc;
 	
@@ -157,10 +157,10 @@ t::shared_ptr<i::gapi_descriptor_heap> gapi_d3d12_device::create_resource_view_h
 	WinComPtr<ID3D12DescriptorHeap> heap;
 	VERIFY(m_device->CreateDescriptorHeap(&d3d_desc, IID_PPV_ARGS(&heap)));
 	uint32 descriptor_size = m_device->GetDescriptorHandleIncrementSize(d3d_desc.Type);
-	return t::make_shared<gapi_d3d12_descriptor_heap>(heap, max_num_views, descriptor_size);
+	return std::make_shared<gapi_d3d12_descriptor_heap>(heap, max_num_views, descriptor_size);
 }
 
-t::shared_ptr<i::gapi_constant_buffer_view> gapi_d3d12_device::create_constant_buffer_view(const t::shared_ptr<i::gapi_descriptor>& allocated_view, const t::shared_ptr<i::gapi_buffer>& buffer)
+std::shared_ptr<i::gapi_constant_buffer_view> gapi_d3d12_device::create_constant_buffer_view(const std::shared_ptr<i::gapi_descriptor>& allocated_view, const std::shared_ptr<i::gapi_buffer>& buffer)
 {
 	//
 	const auto& d3d_buffer = gapi_d3d12_buffer::cast(buffer);
@@ -177,10 +177,10 @@ t::shared_ptr<i::gapi_constant_buffer_view> gapi_d3d12_device::create_constant_b
 	d3d_view->hollow(index, handle);
 	//
 	m_device->CreateConstantBufferView(&desc, handle);
-	return t::make_shared<gapi_d3d12_constant_buffer_view>(index, handle, true);
+	return std::make_shared<gapi_d3d12_constant_buffer_view>(index, handle, true);
 }
 
-t::shared_ptr<i::gapi_shader_resource_view> gapi_d3d12_device::create_shader_resource_view(const t::shared_ptr<i::gapi_descriptor>& allocated_view, const t::shared_ptr<i::gapi_resource>& resource)
+std::shared_ptr<i::gapi_shader_resource_view> gapi_d3d12_device::create_shader_resource_view(const std::shared_ptr<i::gapi_descriptor>& allocated_view, const std::shared_ptr<i::gapi_resource>& resource)
 {
 	const auto& d3d_resource = gapi_d3d12_resource::cast(resource);
 	const auto& d3d_view = gapi_d3d12_descriptor::cast(allocated_view);
@@ -240,10 +240,10 @@ t::shared_ptr<i::gapi_shader_resource_view> gapi_d3d12_device::create_shader_res
 	d3d_view->hollow(index, handle);
 	//
 	m_device->CreateShaderResourceView(d3d_resource->get_d3d_resource(), &desc, handle);
-	return t::make_shared<gapi_d3d12_shader_resource_view>(index, handle, true);
+	return std::make_shared<gapi_d3d12_shader_resource_view>(index, handle, true);
 }
 
-t::shared_ptr<i::gapi_unorder_access_view> gapi_d3d12_device::create_unordered_access_view(const t::shared_ptr<i::gapi_descriptor>& allocated_view, const t::shared_ptr<i::gapi_resource>& resource)
+std::shared_ptr<i::gapi_unorder_access_view> gapi_d3d12_device::create_unordered_access_view(const std::shared_ptr<i::gapi_descriptor>& allocated_view, const std::shared_ptr<i::gapi_resource>& resource)
 {
 	//
 	const auto& d3d_resource = gapi_d3d12_resource::cast(resource);
@@ -300,10 +300,10 @@ t::shared_ptr<i::gapi_unorder_access_view> gapi_d3d12_device::create_unordered_a
 	d3d_view->hollow(index, handle);
 	// TODO: Support UAV counter
 	m_device->CreateUnorderedAccessView(d3d_resource->get_d3d_resource(), nullptr, &desc, handle);
-	return t::make_shared<gapi_d3d12_unorder_access_view>(index, handle, true);
+	return std::make_shared<gapi_d3d12_unorder_access_view>(index, handle, true);
 }
 
-t::shared_ptr<i::gapi_render_target_view> gapi_d3d12_device::create_render_target_view(const t::shared_ptr<i::gapi_descriptor>& allocated_view, const t::shared_ptr<i::gapi_texture>& texture)
+std::shared_ptr<i::gapi_render_target_view> gapi_d3d12_device::create_render_target_view(const std::shared_ptr<i::gapi_descriptor>& allocated_view, const std::shared_ptr<i::gapi_texture>& texture)
 {
 	//
 	const auto& d3d_resource = gapi_d3d12_resource::cast(texture);
@@ -356,10 +356,10 @@ t::shared_ptr<i::gapi_render_target_view> gapi_d3d12_device::create_render_targe
 	d3d_view->hollow(index, handle);
 	m_device->CreateRenderTargetView(d3d_resource->get_d3d_resource(), &desc, handle);
 	//
-	return t::make_shared<gapi_d3d12_render_target_view>(index, handle, true);
+	return std::make_shared<gapi_d3d12_render_target_view>(index, handle, true);
 }
 
-t::shared_ptr<i::gapi_depth_stencil_view> gapi_d3d12_device::create_depth_stencil_view(const t::shared_ptr<i::gapi_descriptor>& allocated_view, const t::shared_ptr<i::gapi_texture>& texture)
+std::shared_ptr<i::gapi_depth_stencil_view> gapi_d3d12_device::create_depth_stencil_view(const std::shared_ptr<i::gapi_descriptor>& allocated_view, const std::shared_ptr<i::gapi_texture>& texture)
 {
 	//
 	const auto& d3d_resource = gapi_d3d12_resource::cast(texture);
@@ -396,10 +396,10 @@ t::shared_ptr<i::gapi_depth_stencil_view> gapi_d3d12_device::create_depth_stenci
 	d3d_view->hollow(index, handle);
 	m_device->CreateDepthStencilView(d3d_resource->get_d3d_resource(), &desc, handle);
 	//
-	return t::make_shared<gapi_d3d12_depth_stencil_view>(index, handle, true);
+	return std::make_shared<gapi_d3d12_depth_stencil_view>(index, handle, true);
 }
 
-t::shared_ptr<i::gapi_sampler> gapi_d3d12_device::create_sampler(const t::shared_ptr<i::gapi_descriptor>& allocated_view, const gapi_sampler_desc& desc)
+std::shared_ptr<i::gapi_sampler> gapi_d3d12_device::create_sampler(const std::shared_ptr<i::gapi_descriptor>& allocated_view, const gapi_sampler_desc& desc)
 {
 	//
 	const auto d3d_desc = d3d_cast(desc);
@@ -409,17 +409,17 @@ t::shared_ptr<i::gapi_sampler> gapi_d3d12_device::create_sampler(const t::shared
 	CD3DX12_CPU_DESCRIPTOR_HANDLE handle;
 	d3d_view->hollow(index, handle);
 	m_device->CreateSampler(&d3d_desc, handle);
-	return t::make_shared<gapi_d3d12_sampler>(index, handle, true);
+	return std::make_shared<gapi_d3d12_sampler>(index, handle, true);
 }
 
-t::shared_ptr<i::gapi_resource_heap> gapi_d3d12_device::create_resource_heap()
+std::shared_ptr<i::gapi_resource_heap> gapi_d3d12_device::create_resource_heap()
 {
 	// TODO: Placed resouce heap creation
 	CHECK(false);
 	return nullptr;
 }
 
-t::shared_ptr<i::gapi_resource> gapi_d3d12_device::create_resource(const gapi_resource_desc& desc)
+std::shared_ptr<i::gapi_resource> gapi_d3d12_device::create_resource(const gapi_resource_desc& desc)
 {
 	// TODO: Heap flag creation classify
 	const CD3DX12_HEAP_PROPERTIES properties(D3D12_HEAP_TYPE_UPLOAD);
@@ -436,36 +436,36 @@ t::shared_ptr<i::gapi_resource> gapi_d3d12_device::create_resource(const gapi_re
 
 	if (desc.m_type == gapi_resource_type::buffer)
 	{
-		return t::make_shared<gapi_d3d12_buffer>(resource, desc);
+		return std::make_shared<gapi_d3d12_buffer>(resource, desc);
 	}
 	else
 	{
-		return t::make_shared<gapi_d3d12_texture>(resource, desc);
+		return std::make_shared<gapi_d3d12_texture>(resource, desc);
 	}
 }
 
-t::shared_ptr<i::gapi_resource> gapi_d3d12_device::create_placed_resource(const gapi_resource_desc& desc)
+std::shared_ptr<i::gapi_resource> gapi_d3d12_device::create_placed_resource(const gapi_resource_desc& desc)
 {
 	// TODO: Placed resouce creation
 	CHECK(false);
 	return nullptr;
 }
 
-t::shared_ptr<i::gapi_resource> gapi_d3d12_device::create_reserved_resource(const gapi_resource_desc& desc)
+std::shared_ptr<i::gapi_resource> gapi_d3d12_device::create_reserved_resource(const gapi_resource_desc& desc)
 {
 	// TODO: Reserved resouce heap creation
 	CHECK(false);
 	return nullptr;
 }
 
-t::shared_ptr<i::gapi_vertex_shader> gapi_d3d12_device::create_vertex_shader(sstring source, sstring entry, const gapi_shader_feature_level& level, std::string debug_name)
+std::shared_ptr<i::gapi_vertex_shader> gapi_d3d12_device::create_vertex_shader(std::string source, std::string entry, const gapi_shader_feature_level& level, std::string debug_name)
 {
-	return t::make_shared<gapi_d3d12_vertex_shader>(source, debug_name, entry, level);
+	return std::make_shared<gapi_d3d12_vertex_shader>(source, debug_name, entry, level);
 }
 
-t::shared_ptr<i::gapi_pixel_shader> gapi_d3d12_device::create_pixel_shader(sstring source, sstring entry, const gapi_shader_feature_level& level, std::string debug_name)
+std::shared_ptr<i::gapi_pixel_shader> gapi_d3d12_device::create_pixel_shader(std::string source, std::string entry, const gapi_shader_feature_level& level, std::string debug_name)
 {
-	return t::make_shared<gapi_d3d12_pixel_shader>(source, debug_name, entry, level);
+	return std::make_shared<gapi_d3d12_pixel_shader>(source, debug_name, entry, level);
 }
 
 

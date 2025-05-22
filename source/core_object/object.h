@@ -9,22 +9,26 @@
 
 namespace n
 {
-	class NENE_API object: public i::serializable
+	class NENE_API object: public serializable
 	{
 	public:
 		object(int data)
-			: data0(data)
+			: m_data0(data)
+			, m_data1(234)
 		{}
 		virtual ~object() = default;
 
-		void func0();
+		void func0() const;
 
-		void func1(int a);
+		void func1(int a) const;
 
 		static void test();
 
-	private:
-		int data0;
+	public:
+		int m_data0;
+		int m_data1;
+
+		static int s_data2;
+		static int s_data3;
 	};
 }
-

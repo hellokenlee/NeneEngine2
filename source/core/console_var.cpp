@@ -8,7 +8,7 @@ namespace impl
 	class console_var : public i::console_var
 	{
 	public:
-		console_var(const T& default_value, const sstring& help)
+		console_var(const T& default_value, const std::string& help)
 			: i::console_var()
 			, m_value(default_value)
 			, m_default_value(default_value)
@@ -27,7 +27,7 @@ namespace impl
 	protected:
 		T m_value;
 		T m_default_value;
-		sstring m_help_text;
+		std::string m_help_text;
 
 		friend class console_var_manager;
 	};
@@ -46,19 +46,19 @@ namespace impl
 			}
 		}
 		
-		bool& register_var(const sstring& name, const bool& default_value, const sstring& help, console_var_flag flag) override
+		bool& register_var(const std::string& name, const bool& default_value, const std::string& help, console_var_flag flag) override
 		{
 			return internal_register_var<bool>(name, default_value, help, flag)->get_bool_ref();
 		}
 
-		int32& register_var(const sstring& name, const int32& default_value, const sstring& help, console_var_flag flag) override
+		int32& register_var(const std::string& name, const int32& default_value, const std::string& help, console_var_flag flag) override
 		{
 			return internal_register_var<int32>(name, default_value, help, flag)->get_int32_ref();
 		}
 		
 	protected:
 		template<class T>
-		console_var<T>* internal_register_var(const sstring& name, const T& default_value, const sstring& help, console_var_flag flag)
+		console_var<T>* internal_register_var(const std::string& name, const T& default_value, const std::string& help, console_var_flag flag)
 		{
 			if (!m_console_vars.contains(name))
 			{
@@ -71,7 +71,7 @@ namespace impl
 			return exist_var;
 		}
 		
-		t::map<sstring, i::console_var*> m_console_vars;
+		std::unordered_map<std::string, i::console_var*> m_console_vars;
 	};
 }
 
@@ -114,13 +114,13 @@ int32& impl::console_var<int32>::get_int32_ref()
 
 namespace i
 {
-	t::shared_ptr<console_var_manager> instance = nullptr;
+	std::shared_ptr<console_var_manager> instance = nullptr;
 	
-	t::shared_ptr<console_var_manager> console_var_manager::get()
+	std::shared_ptr<console_var_manager> console_var_manager::get()
 	{
 		if (instance == nullptr)
 		{
-			instance = t::make_shared<impl::console_var_manager>();
+			instance = std::make_shared<impl::console_var_manager>();
 		}
 		return instance;
 	}

@@ -15,11 +15,7 @@
  * Usage:
  *		LOG(engine, info, TXT("something wrong: %s"), str);
  */
-#ifdef _UNICODE
-	#define LOG(cat, level, fmt, ...) WLOG(cat, level, fmt, __VA_ARGS__)
-#else
-	#define LOG(cat, level, fmt, ...) SLOG(cat, level, fmt, __VA_ARGS__)
-#endif
+#define LOG(cat, level, fmt, ...) SLOG(cat, level, fmt, __VA_ARGS__)
 
 #define SLOG(cat, level, fmt, ...) zznn_log_category_instance_##cat.slog(level, fmt, __VA_ARGS__)
 #define WLOG(cat, level, fmt, ...) zznn_log_category_instance_##cat.wlog(level, fmt, __VA_ARGS__)
@@ -28,14 +24,14 @@
  * Usage:
  *		DECLARE_LOG_CATEGORY(engine)
  */
-#define DECLARE_LOG_CATEGORY(cat) \
-	class NENE_API zznn_log_category_##cat : public i::log_category \
-	{ \
-	public: \
-		zznn_log_category_##cat(): i::log_category() {} \
-		virtual wstring get_wname() override { return (L#cat); } \
-		virtual sstring get_sname() override { return (#cat); } \
-	}; \
+#define DECLARE_LOG_CATEGORY(cat)											\
+	class NENE_API zznn_log_category_##cat : public i::log_category			\
+	{																		\
+	public:																	\
+		zznn_log_category_##cat(): i::log_category() {}						\
+		virtual std::wstring get_wname() override { return (L#cat); }			\
+		virtual std::string get_sname() override { return (#cat); }				\
+	};																		\
 
 /**
  * Usage:
@@ -74,6 +70,7 @@ class NENE_API log_category
 {
 public:
 	log_category();
+	log_category(const log_category&) = delete;
 	virtual ~log_category();
 
 	/** Single char log */
@@ -87,17 +84,17 @@ public:
 	static void set_consume_log_to_stdout(const bool& sw);
 
 	/** Consumer methods from outside */
-	static bool consume_slog(sstring& log);
-	static bool consume_wlog(wstring& log);
+	static bool consume_slog(std::string& log);
+	static bool consume_wlog(std::wstring& log);
 
 	/** Category name interfaces */
-	virtual wstring get_wname() = 0;
-	virtual sstring get_sname() = 0;
+	virtual std::wstring get_wname() = 0;
+	virtual std::string get_sname() = 0;
 	
 protected:
-	static t::queue<wstring> m_wlog_queue;
-	static t::queue<sstring> m_slog_queue;
+	static std::queue<std::wstring> m_wlog_queue;
+	static std::queue<std::string> m_slog_queue;
 	static bool m_consume_log_to_stdout;
-	static t::dynamic_array<log_category*> m_all_log_categories;
+	static std::vector<log_category*> m_all_log_categories;
 };
 }

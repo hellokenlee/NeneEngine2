@@ -52,10 +52,10 @@ gapi_d3d12_factory::gapi_d3d12_factory()
 	m_adapters.emplace_back(gapi_d3d12_factory::create_adapter());
 }
 
-t::shared_ptr<i::gapi_adapter> gapi_d3d12_factory::create_adapter()
+std::shared_ptr<i::gapi_adapter> gapi_d3d12_factory::create_adapter()
 {
 	//
-	LOG(d3d12, info, TXT("Listing all adapters:"));
+	LOG(d3d12, info, "Listing all adapters:");
 	//
 	uint32 adapter_index = 0;
 	auto target_version = static_cast<D3D_FEATURE_LEVEL>(get_d3d12_version());
@@ -67,7 +67,7 @@ t::shared_ptr<i::gapi_adapter> gapi_d3d12_factory::create_adapter()
 		DXGI_ADAPTER_DESC1 desc;
 		adapter->GetDesc1(&desc);
 		//
-		LOG(d3d12, info, TXT("    %d: %s."), ++adapter_index, desc.Description);
+		LOG(d3d12, info, "    %d: %s.", ++adapter_index, desc.Description);
 
 		// Already selected
 		if (selected_adapter != nullptr)
@@ -116,13 +116,13 @@ t::shared_ptr<i::gapi_adapter> gapi_d3d12_factory::create_adapter()
 	// 
 	DXGI_ADAPTER_DESC1 desc;
 	adapter1->GetDesc1(&desc);
-	LOG(d3d12, info, TXT("Select Adapter %d: %s."), adapter_index, desc.Description);
+	LOG(d3d12, info, "Select Adapter %d: %s.", adapter_index, desc.Description);
 
 	//
-	return t::make_shared<gapi_d3d12_adapter>(adapter1);
+	return std::make_shared<gapi_d3d12_adapter>(adapter1);
 }
 
-t::shared_ptr<i::gapi_swap_chain> gapi_d3d12_factory::create_swap_chain(void* hwnd, const point32& resolution, const uint32& multibuffer,
+std::shared_ptr<i::gapi_swap_chain> gapi_d3d12_factory::create_swap_chain(void* hwnd, const point32& resolution, const uint32& multibuffer,
 	const gapi_pixel_format& pixel_format, const uint32& multisample)
 {
 	DXGI_SWAP_CHAIN_DESC1 desc = {};
@@ -144,7 +144,7 @@ t::shared_ptr<i::gapi_swap_chain> gapi_d3d12_factory::create_swap_chain(void* hw
 	
 	VERIFY(m_factory2->MakeWindowAssociation(static_cast<HWND>(hwnd), DXGI_MWA_NO_ALT_ENTER));
 	
-	return t::make_shared<gapi_d3d12_swap_chain>(swap_chain);
+	return std::make_shared<gapi_d3d12_swap_chain>(swap_chain);
 }
 
 int32 gapi_d3d12_factory::get_d3d12_version()

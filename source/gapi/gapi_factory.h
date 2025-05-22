@@ -24,9 +24,9 @@ namespace i
 
 		~gapi_factory() override = default;
 		
-		virtual t::shared_ptr<gapi_adapter> create_adapter() = 0;
+		virtual std::shared_ptr<gapi_adapter> create_adapter() = 0;
 
-		virtual t::shared_ptr<gapi_swap_chain> create_swap_chain(void* hwnd, const point32& resolution, const uint32& multibuffer = 2,
+		virtual std::shared_ptr<gapi_swap_chain> create_swap_chain(void* hwnd, const point32& resolution, const uint32& multibuffer = 2,
 			const gapi_pixel_format& pixel_format = gapi_pixel_format::r8g8b8a8_unorm, const uint32& multisample = 1
 		) = 0;
 	};

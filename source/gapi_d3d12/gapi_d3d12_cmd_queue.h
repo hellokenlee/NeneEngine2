@@ -11,7 +11,7 @@ class gapi_d3d12_cmd_queue : public t::impl<gapi_d3d12_cmd_queue, i::gapi_cmd_qu
 public:
 	~gapi_d3d12_cmd_queue() override = default;
 	
-	void signal(const t::shared_ptr<i::gapi_cmd_fence>& fence, uint64 value) override;
+	void signal(const std::shared_ptr<i::gapi_cmd_fence>& fence, uint64 value) override;
 
 public:
 	gapi_d3d12_cmd_queue(WinComPtr<ID3D12CommandQueue> queue);

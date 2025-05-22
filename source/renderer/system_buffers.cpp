@@ -4,7 +4,7 @@
 #include "gapi/gapi_factory.h"
 #include "gapi_dynamic/gapi_dynamic.h"
 
-t::shared_ptr<system_vertex_buffers> system_vertex_buffers::m_instance = nullptr;
+std::shared_ptr<system_vertex_buffers> system_vertex_buffers::m_instance = nullptr;
 
 
 system_vertex_buffers::system_vertex_buffers()
@@ -23,10 +23,10 @@ system_vertex_buffers::system_vertex_buffers()
 
     // All in CCW direction
 
-    static constexpr auto create_and_upload_vertex_buffer = [](const t::shared_ptr<gapi_dynamic>& api, const t::dynamic_array<vertex>& vertices) -> t::shared_ptr<i::gapi_buffer>
+    static constexpr auto create_and_upload_vertex_buffer = [](const std::shared_ptr<gapi_dynamic>& api, const std::vector<vertex>& vertices) -> std::shared_ptr<i::gapi_buffer>
     {
-        auto desc = gapi_buffer_desc::create(sizeof(vertex) * vertices.size(), gapi_buffer_usage_flag::dynamic_buffer | gapi_buffer_usage_flag::usage_vertex_buffer, sizeof(vertex));
-        t::shared_ptr<i::gapi_buffer> result = api->create_buffer(desc);
+        auto desc = gapi_buffer_desc::create(static_cast<uint32>(sizeof(vertex) * vertices.size()), gapi_buffer_usage_flag::dynamic_buffer | gapi_buffer_usage_flag::usage_vertex_buffer, sizeof(vertex));
+        std::shared_ptr<i::gapi_buffer> result = api->create_buffer(desc);
         // void* mapped_buffer = api->lock_buffer(result);
         // memcpy(mapped_buffer, vertices.data(), sizeof(vertex) * vertices.size());
         // api->unlock_buffer(result);
@@ -34,7 +34,7 @@ system_vertex_buffers::system_vertex_buffers()
     };
     
     {
-        const t::dynamic_array<vertex> vertices = {
+        const std::vector<vertex> vertices = {
             { { 0.0f, 0.25f, 0.0f, 0.0f}, { 1.0f, 0.0f, 0.0f, 1.0f } },
             { { 0.25f, -0.25f, 0.0f, 0.0f}, { 0.0f, 1.0f, 0.0f, 1.0f } },
             { { -0.25f, -0.25f, 0.0f, 0.0f}, { 0.0f, 0.0f, 1.0f, 1.0f } }
@@ -43,7 +43,7 @@ system_vertex_buffers::system_vertex_buffers()
     }
 
     {
-        const t::dynamic_array<vertex> vertices = {
+        const std::vector<vertex> vertices = {
             { { -1.0f, -1.0f, 0.0f, 0.0f}, { 1.0f, 1.0f, 1.0f, 1.0f } },
             { { -1.0f,  1.0f, 0.0f, 0.0f}, { 1.0f, 1.0f, 1.0f, 1.0f } },
             { {  1.0f, -1.0f, 0.0f, 0.0f}, { 1.0f, 1.0f, 1.0f, 1.0f } },
@@ -57,11 +57,11 @@ system_vertex_buffers::system_vertex_buffers()
    
 }
 
-t::shared_ptr<system_vertex_buffers> system_vertex_buffers::get()
+std::shared_ptr<system_vertex_buffers> system_vertex_buffers::get()
 {
     if (m_instance == nullptr)
     {
-        m_instance = t::shared_ptr<system_vertex_buffers>(new system_vertex_buffers{});
+        m_instance = std::shared_ptr<system_vertex_buffers>(new system_vertex_buffers{});
     }
     return m_instance;
 }
@@ -73,7 +73,7 @@ void system_vertex_buffers::release()
 }
 
 
-t::shared_ptr<system_vertex_declarations> system_vertex_declarations::m_instance = nullptr;
+std::shared_ptr<system_vertex_declarations> system_vertex_declarations::m_instance = nullptr;
 
 system_vertex_declarations::system_vertex_declarations()
 {
@@ -84,7 +84,7 @@ system_vertex_declarations::system_vertex_declarations()
     }
 
     {
-        m_position4_color4 = t::make_shared<gapi_vertex_declartions>();
+        m_position4_color4 = std::make_shared<gapi_vertex_declartions>();
         m_position4_color4->emplace_back(
             "POSITION", 0, gapi_vertex_element_type::float4, 0, 0, 0, 0
         );
@@ -99,11 +99,11 @@ void system_vertex_declarations::release()
     m_position4_color4.reset();
 }
 
-t::shared_ptr<system_vertex_declarations> system_vertex_declarations::get()
+std::shared_ptr<system_vertex_declarations> system_vertex_declarations::get()
 {
     if (m_instance == nullptr)
     {
-        m_instance = t::shared_ptr<system_vertex_declarations>(new system_vertex_declarations{});
+        m_instance = std::shared_ptr<system_vertex_declarations>(new system_vertex_declarations{});
     }
     return m_instance;
 }

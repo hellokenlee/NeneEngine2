@@ -31,6 +31,6 @@ namespace i
 
 		~gapi_cmd_queue() override = default;
 
-		virtual void signal(const t::shared_ptr<gapi_cmd_fence>& fence, uint64 value) = 0;
+		virtual void signal(const std::shared_ptr<gapi_cmd_fence>& fence, uint64 value) = 0;
 	};
 }

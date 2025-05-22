@@ -14,59 +14,87 @@
 #include "core/core.h"
 #include "pybind11/pybind11.h"
 
+namespace n
+{
+	class NENE_API binding
+	{
+	public:
+
+		using t_py_class_init_function = void(*)(::pybind11::module_* m);
+		
+		static binding& get();
+		
+		void initialize() const;
+
+		void add_py_class_init_function(t_py_class_init_function func) { py_class_init_functions.push_back(func); }
+		
+		const std::vector<t_py_class_init_function>& get_py_class_init_functions() const { return py_class_init_functions; }
+		
+	private:
+		binding() = default;
+		~binding() = default;
+
+		std::vector<t_py_class_init_function> py_class_init_functions;
+	};
+
+	namespace reflection
+	{
+		using type = ::rttr::type;
+		using variant = ::rttr::variant;
+	}
+}
+
 namespace t::n
 {
 	template<typename t_cxx_class>
 	class class_
 	{
 	public:
-		class_(const char* name, pybind11::module_* py_module)
-		{
-			if (py_module != nullptr)
-			{
-				pybind11_class = make_unique<pybind11::class_<t_cxx_class>>(*py_module, name);
-			}
-			else
-			{
-				rttr_class = make_unique<rttr::registration::class_<t_cxx_class>>(name);
-			}
-		}
-		
-		template<typename F>
-		class_& method(const char* name, F func)
-		{
-			if (pybind11_class != nullptr)
-			{
-				pybind11_class->template def<F>(name, std::forward<F>(func));
-			}
-			else if (rttr_class != nullptr)
-			{
-				rttr_class->template method<F>(name, std::forward<F>(func));
-			}
-			else
-			{
-				CHECK(false);
-			}
-			return *this;
-		}
+		class_(const char* name, pybind11::module_* py_module);
 
+		template<typename... Args>
+		class_& constructor();
+		
+		template<typename t_func>
+		class_& method(const char* name, t_func func);
+
+		template<typename t_func>
+		class_& static_method(const char* name, t_func func);
+
+		template<typename t_accessor>
+		class_& property(const char* name, t_accessor accessor);
+
+		template<typename t_accessor>
+		class_& property_readonly(const char* name, t_accessor accessor);
+
+		template<typename t_accessor>
+		class_& static_property(const char* name, t_accessor accessor);
+
+		template<typename t_accessor>
+		class_& static_property_readonly(const char* name, t_accessor accessor);
+		
 	private:
-		unique_ptr<rttr::registration::class_<t_cxx_class>> rttr_class = nullptr;
-		unique_ptr<pybind11::class_<t_cxx_class>> pybind11_class = nullptr; 
+		std::string m_class_name; 
+		std::unique_ptr<rttr::registration::class_<t_cxx_class>> m_rttr_class = nullptr;
+		std::unique_ptr<pybind11::class_<t_cxx_class>> m_pybind11_class = nullptr; 
 	};
+
+	template<typename t_func, typename t_class>
+	auto select_overload(t_func (t_class::*func)) -> decltype(func)
+	{
+		return func;
+	}
+
+	template<typename t_func>
+	t_func* select_overload(t_func* func)
+	{
+		return func;
+	}
+
+	
 }
 
-namespace n
-{
-	class binding_globals
-	{
-	public:
-		binding_globals() = delete;
-		~binding_globals() = delete;
-		
-		static NENE_API t::dynamic_array<void(*)(::pybind11::module_* m)> py_submodule_init_functions;
-	};
-}
+#include "meta.inl"
 
 /*	
  *	Usage:
@@ -100,12 +128,9 @@ namespace																												\
 			/* 1st init for rttr */																						\
 			__nene_auto_register_func(nullptr); 																		\
 			/* 2nd init for pybind11 (deferred call) */																	\
-			::n::binding_globals::py_submodule_init_functions.push_back(__nene_auto_register_func);						\
+			::n::binding::get().add_py_class_init_function(__nene_auto_register_func);									\
 		}																												\
 	};																													\
 }																														\
-static const __nene_auto_register RTTR_CAT(__nene_auto_register_instance_, __LINE__)();									\
+[[maybe_unused]] static const __nene_auto_register RTTR_CAT(__nene_auto_register_instance_, __LINE__);					\
 static void __nene_auto_register_func(::pybind11::module_* (variable))  // NOLINT(bugprone-macro-parentheses)
-
-
-NENE_API void foo();

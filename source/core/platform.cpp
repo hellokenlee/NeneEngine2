@@ -6,7 +6,7 @@
 
 DECLARE_LOG_CATEGORY(platform)
 
-void platform::local_time(time_struct* const tm, time_type const* const time)
+void platform::local_time(std::tm* const tm, std::time_t const* const time)
 {
 #ifdef _MSVC_LANG
 	localtime_s(tm, time);
@@ -15,15 +15,15 @@ void platform::local_time(time_struct* const tm, time_type const* const time)
 #endif
 }
 
-void platform::strftime(char* buffer, size_t buffer_size, const char* fmt, const time_struct* tm)
+void platform::strftime(char* buffer, size_t buffer_size, const char* fmt, const std::tm* tm)
 {
 	std::strftime(buffer, buffer_size, "[%y-%m-%d %H:%M:%S]", tm);
 }
 
 
-t::dynamic_array<void*> platform::get_windows(int32 pid)
+std::vector<void*> platform::get_windows(int32 pid)
 {
-	t::dynamic_array<void*> results;
+	std::vector<void*> results;
 #if defined(_WIN32) || defined(_WIN64)
 	if (pid < 0)
 	{

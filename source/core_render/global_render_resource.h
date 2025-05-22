@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "core/template/pointer.h"
+#include "core/core.h"
 
 namespace i
 {

@@ -1,6 +1,6 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
-#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING  // NOLINT(clang-diagnostic-reserved-macro-identifier)
 
 #include "types.h"
 #include "debug.h"
@@ -15,59 +15,59 @@ DEFINE_LOG_CATEGORY(filehelper)
 
 namespace file_helper
 {
-	NENE_API wstring sstring_to_wstring(const sstring& in_string)
+	NENE_API std::wstring string_to_wstring(const std::string& in_string)
 	{
-		wstring result = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(in_string);
+		std::wstring result = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(in_string);
 		return result;
 	}
 
-	NENE_API sstring wstring_to_sstring(const wstring& in_string)
+	NENE_API std::string wstring_to_string(const std::wstring& in_string)
 	{
-		sstring result = std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(in_string);
+		std::string result = std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(in_string);
 		return result;
 	}
 	
-	NENE_API sstring load_file_to_sstring(const sstring& filepath)
+	NENE_API std::string load_file_to_string(const std::string& filepath)
 	{
-		sstring content;
-		ifstream file_stream;
-		file_stream.exceptions(ifstream::failbit | ifstream::badbit);
+		std::string content;
+		std::ifstream file_stream;
+		file_stream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 		// Open File
 		try 
 		{
 			file_stream.open(filepath);
-			sstringstream content_stream;
+			std::stringstream content_stream;
 			content_stream << file_stream.rdbuf();
 			file_stream.close();
 			content = content_stream.str();
 		}
-		catch (const ifstream::failure& err) 
+		catch (const std::ifstream::failure& err) 
 		{
-			LOG(filehelper, error, TXT("Failed to read file: %s, reason: %s"), filepath.c_str(), sstring_to_wstring(err.what()).c_str());
+			LOG(filehelper, error, "Failed to read file: %s, reason: %s", filepath.c_str(), string_to_wstring(err.what()).c_str());
 			CHECK(false);
 		}
 		//
 		return content;
 	}
 	
-	NENE_API wstring load_file_to_wstring(const string& filepath)
+	NENE_API std::wstring load_file_to_wstring(const std::string& filepath)
 	{
-		wstring content;
-		ifstream file_stream;
-		file_stream.exceptions(ifstream::failbit | ifstream::badbit);
+		std::wstring content;
+		std::ifstream file_stream;
+		file_stream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 		// Open File
 		try 
 		{
 			file_stream.open(filepath);
-			wstringstream content_stream;
+			std::wstringstream content_stream;
 			content_stream << file_stream.rdbuf();
 			file_stream.close();
 			content = content_stream.str();
 		}
-		catch (const ifstream::failure& err) 
+		catch (const std::ifstream::failure& err) 
 		{
 			
-			LOG(filehelper, error, TXT("Failed to read file: %s, reason: %s"), filepath.c_str(), sstring_to_wstring(err.what()).c_str());
+			LOG(filehelper, error, "Failed to read file: %s, reason: %s", filepath.c_str(), string_to_wstring(err.what()).c_str());
 			CHECK(false);
 		}
 		//

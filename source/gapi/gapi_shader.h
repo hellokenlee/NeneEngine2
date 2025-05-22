@@ -42,7 +42,7 @@ namespace i
 	class NENE_API gapi_shader : noncopyable
 	{
 	public:
-		gapi_shader(sstring source, sstring entry, std::string name, const gapi_shader_feature_level& level)
+		gapi_shader(std::string source, std::string entry, std::string name, const gapi_shader_feature_level& level)
 			: m_is_compiled(false)
 			, m_name(std::move(name))
 			, m_shader_source(std::move(source))
@@ -57,16 +57,16 @@ namespace i
 		virtual gapi_shader_type get_shader_type() = 0;
 
 		bool is_compiled() const { return m_is_compiled; }
-		const sstring& get_name() const { return m_name; }
-		const sstring& get_shader_source() const { return m_shader_source; }
-		const sstring& get_function_entry() const { return m_function_entry; }
+		const std::string& get_name() const { return m_name; }
+		const std::string& get_shader_source() const { return m_shader_source; }
+		const std::string& get_function_entry() const { return m_function_entry; }
 		const gapi_shader_feature_level& get_feature_level() const { return m_feature_level; }
 		
 	protected:
 		bool m_is_compiled;
-		sstring m_name;
-		sstring m_shader_source;
-		sstring m_function_entry;
+		std::string m_name;
+		std::string m_shader_source;
+		std::string m_function_entry;
 		gapi_shader_feature_level m_feature_level;
 
 		// For multiple inheritance

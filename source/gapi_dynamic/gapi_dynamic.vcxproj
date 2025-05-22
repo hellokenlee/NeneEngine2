@@ -70,7 +70,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>core.lib;gapi.lib;gapi_d3d12.lib;gapi_vulkan.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/ignore:4099</AdditionalOptions>
+      <AdditionalOptions>/ignore:4099 /ignore:4075</AdditionalOptions>
     </Link>
     <PostBuildEvent>
       <Command />
@@ -94,7 +94,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>core.lib;gapi.lib;gapi_d3d12.lib;gapi_vulkan.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/ignore:4099</AdditionalOptions>
+      <AdditionalOptions>/ignore:4099 /ignore:4075</AdditionalOptions>
     </Link>
     <PostBuildEvent>
       <Command />

@@ -12,8 +12,8 @@ public:
 	~gapi_d3d12_swap_chain() override = default;
 	
 	void present() override;
-	t::shared_ptr<i::gapi_texture> get_back_buffer_texture() override;
-	t::shared_ptr<i::gapi_texture> reset_back_buffer(const point32& resolution, const uint32& multibuffer, const gapi_pixel_format& pixel_format, const uint32& swap_chain_flag) override;
+	std::shared_ptr<i::gapi_texture> get_back_buffer_texture() override;
+	std::shared_ptr<i::gapi_texture> reset_back_buffer(const point32& resolution, const uint32& multibuffer, const gapi_pixel_format& pixel_format, const uint32& swap_chain_flag) override;
 
 public:
 	gapi_d3d12_swap_chain(const WinComPtr<IDXGISwapChain1>& swap_chain);

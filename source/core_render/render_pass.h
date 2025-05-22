@@ -38,13 +38,13 @@ public:
 	
 	virtual ~render_node() = default;
 	
-	void emplace_render_pass(const t::unique_ptr<render_pass>& new_render_pass)
+	void emplace_render_pass(const std::unique_ptr<render_pass>& new_render_pass)
 	{
 		m_render_passes.push_back(new_render_pass);
 	}
 
 protected:
-	t::dynamic_array<t::unique_ptr<render_pass>> m_render_passes;
+	std::vector<std::unique_ptr<render_pass>> m_render_passes;
 };
 
 
@@ -75,7 +75,7 @@ protected:
 public:
 	shadow_render_node()
 	{
-		emplace_render_pass(t::make_unique<shadow_depth_render_pass>(*this));
-		emplace_render_pass(t::make_unique<shadow_projection_render_pass>(*this));
+		emplace_render_pass(std::make_unique<shadow_depth_render_pass>(*this));
+		emplace_render_pass(std::make_unique<shadow_projection_render_pass>(*this));
 	}
 };

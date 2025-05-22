@@ -21,7 +21,7 @@ namespace i
 	public:
 		gapi_descriptor_heap() = default;
 		~gapi_descriptor_heap() override = default;
-		virtual t::shared_ptr<gapi_descriptor> allocate_resource_view() = 0;
-		virtual void free_resouce_view(t::shared_ptr<gapi_descriptor>& view) = 0;
+		virtual std::shared_ptr<gapi_descriptor> allocate_resource_view() = 0;
+		virtual void free_resouce_view(std::shared_ptr<gapi_descriptor>& view) = 0;
 	};
 }

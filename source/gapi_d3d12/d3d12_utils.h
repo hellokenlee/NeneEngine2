@@ -18,12 +18,12 @@ using WinComPtr = Microsoft::WRL::ComPtr<T>;
 
 DECLARE_LOG_CATEGORY(d3d12);
 
-static string get_error_string(const HRESULT code)
+static std::string get_error_string(const HRESULT code)
 {
 	//
-	string res;
+	std::string res;
 	//
-	#define D3DERR(x) case x: res = TXT(#x); break;
+	#define D3DERR(x) case x: res = #x; break;
 	//
 	switch (code)
 	{
@@ -37,7 +37,7 @@ static string get_error_string(const HRESULT code)
 		D3DERR(E_NOINTERFACE)
 		D3DERR(DXGI_ERROR_DEVICE_REMOVED)
 	default:
-		res = std::format(TXT("Code: {}"), static_cast<int32>(code));
+		res = std::format("Code: {}", static_cast<int32>(code));
 	}
 
 	return res;
@@ -47,8 +47,8 @@ EXTERN_LOG_CATEGORY(d3d12)
 
 void inline verify_impl(const HRESULT hres, const wchar_t* code, const wchar_t* filename, uint32 line)
 {
-	const string error = get_error_string(hres);
-	LOG(d3d12, fatal, TXT("Function call failed!\n    Code at %s:%u:\n        `%s`\n    Error:\n        `%s`"), filename, line, code, error.c_str());
+	const std::string error = get_error_string(hres);
+	LOG(d3d12, fatal, "Function call failed!\n    Code at %s:%u:\n        `%s`\n    Error:\n        `%s`", filename, line, code, error.c_str());
 	DEBUG_BREAK();
 }
 
@@ -78,16 +78,16 @@ namespace t
 
 		using t_gapi_interface::t_gapi_interface;
 
-		static shared_ptr<t_gapi_dynamic_impl> cast(shared_ptr<t_gapi_interface> inst)
+		static std::shared_ptr<t_gapi_dynamic_impl> cast(const std::shared_ptr<t_gapi_interface>& inst)
 		{
 			//
-			static_assert(is_abstract<t_gapi_interface>::value == true, "Template `t::impl` only support for abstract type!");
+			static_assert(std::is_abstract<t_gapi_interface>::value == true, "Template `t::impl` only support for abstract type!");
 			//
 #if GAPI_USE_DYNAMIC_CAST
-			return t::dynamic_pointer_cast<t_gapi_dynamic_impl>(inst);
-#else
-			return reinterpret_pointer_cast<t_gapi_dynamic_impl>(inst);
-#endif
+			return std::dynamic_pointer_cast<t_gapi_dynamic_impl>(inst);
+#else  // GAPI_USE_DYNAMIC_CAST
+			return std::reinterpret_pointer_cast<t_gapi_dynamic_impl>(inst);
+#endif // GAPI_USE_DYNAMIC_CAST
 		}
 	};
 
@@ -103,15 +103,15 @@ namespace t
 		using t_gapi_interface::t_gapi_interface;
 		using t_gapi_dynamic_impl_parent::t_gapi_dynamic_impl_parent;
 
-		static shared_ptr<t_gapi_dynamic_impl> cast(shared_ptr<t_gapi_interface> inst)
+		static std::shared_ptr<t_gapi_dynamic_impl> cast(const std::shared_ptr<t_gapi_interface>& inst)
 		{
 			//
-			static_assert(is_abstract<t_gapi_interface>::value == true, "Template `t::impl` only support for abstract type!");
+			static_assert(std::is_abstract<t_gapi_interface>::value == true, "Template `t::impl` only support for abstract type!");
 			//
 #if GAPI_USE_DYNAMIC_CAST
-			return t::dynamic_pointer_cast<t_gapi_dynamic_impl>(inst);
+			return std::dynamic_pointer_cast<t_gapi_dynamic_impl>(inst);
 #else
-			return reinterpret_pointer_cast<t_gapi_dynamic_impl>(inst);
+			return std::reinterpret_pointer_cast<t_gapi_dynamic_impl>(inst);
 #endif
 		}
 	};

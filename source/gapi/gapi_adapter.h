@@ -23,10 +23,10 @@ namespace i
 
 		~gapi_adapter() override = default;
 
-		virtual t::shared_ptr<gapi_device> create_device() = 0;
+		virtual std::shared_ptr<gapi_device> create_device() = 0;
 
 		virtual uint32 get_device_num() = 0;
 	
-		virtual t::shared_ptr<gapi_device> get_device(const uint32& index) = 0;
+		virtual std::shared_ptr<gapi_device> get_device(const uint32& index) = 0;
 	};
 }

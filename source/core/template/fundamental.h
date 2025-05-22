@@ -54,34 +54,14 @@ typedef signed long long	int64;
         #define TXT(str) str
     #endif
 #endif
-
-#ifdef _UNICODE
-typedef std::wstringstream stringstream;
-typedef std::wstring string;
-#else
-typedef std::string  string;
-typedef std::stringstream stringstream;
-#endif // _UNICODE
-
-typedef std::string  sstring;
-typedef std::wstring wstring;
-typedef std::wstringstream wstringstream;
-typedef std::stringstream sstringstream;
-
-typedef std::ifstream ifstream;
-typedef std::string_view sstring_view;
-typedef std::wstring_view wstring_view;
 /* <<< String types <<< */
 
 /* <<< Other types <<< */
 
 #include <cctype>
 
-typedef std::tm time_struct;
-
-typedef time_t time_type;
-
 /* >>> Other types >>> */
 
 
 #define NO_INLINE __declspec(noinline)
+#define FORCE_INLINE __forceinline

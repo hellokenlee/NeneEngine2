@@ -18,7 +18,7 @@ gapi_d3d12_descriptor_heap::gapi_d3d12_descriptor_heap(const WinComPtr<ID3D12Des
 	}
 }
 
-t::shared_ptr<i::gapi_descriptor> gapi_d3d12_descriptor_heap::allocate_resource_view()
+std::shared_ptr<i::gapi_descriptor> gapi_d3d12_descriptor_heap::allocate_resource_view()
 {
 	int32 index = m_free_descriptor_indices.front();
 	m_free_descriptor_indices.pop();
@@ -26,10 +26,10 @@ t::shared_ptr<i::gapi_descriptor> gapi_d3d12_descriptor_heap::allocate_resource_
 	CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_cpu_base);
 	handle.Offset(index, m_descriptor_size);
 
-	return t::make_shared<gapi_d3d12_descriptor>(index, handle);
+	return std::make_shared<gapi_d3d12_descriptor>(index, handle);
 }
 
-void gapi_d3d12_descriptor_heap::free_resouce_view(t::shared_ptr<i::gapi_descriptor>& view)
+void gapi_d3d12_descriptor_heap::free_resouce_view(std::shared_ptr<i::gapi_descriptor>& view)
 {
 	const auto& d3d_view = gapi_d3d12_descriptor::cast(view);
 	uint32 index;

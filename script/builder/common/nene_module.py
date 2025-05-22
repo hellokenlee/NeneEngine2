@@ -141,5 +141,5 @@ class NeneModule(object):
 			module_config.linker.msvc_com_dat_folding = True
 			module_config.linker.msvc_optimize_references = True
 		#
-		module_config.linker.additional_linker_flags = ["/ignore:4099"]
+		module_config.linker.additional_linker_flags = ["/ignore:4099", "/ignore:4075"]
 		return module_config

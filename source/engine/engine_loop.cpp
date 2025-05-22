@@ -10,7 +10,7 @@
 DECLARE_LOG_CATEGORY(engine)
 DEFINE_LOG_CATEGORY(engine)
 
-t::shared_ptr<i::renderer> engine_loop::m_renderer = nullptr;
+std::shared_ptr<i::renderer> engine_loop::m_renderer = nullptr;
 
 void engine_loop::init(void* window)
 {
@@ -19,7 +19,7 @@ void engine_loop::init(void* window)
 	//
 	gapi_dynamic::create(window);
 	//
-	m_renderer = t::make_shared<simple_renderer>();
+	m_renderer = std::make_shared<simple_renderer>();
 }
 
 void engine_loop::update()

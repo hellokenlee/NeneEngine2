@@ -9,11 +9,11 @@
 class gapi_shader_manager
 {
 public:
-	t::shared_ptr<i::gapi_shader> find_or_create_shader();
+	std::shared_ptr<i::gapi_shader> find_or_create_shader();
 	
 public:
-	static t::shared_ptr<gapi_shader_manager> get();
+	static std::shared_ptr<gapi_shader_manager> get();
 
 protected:
-	t::map<uint64, t::shared_ptr<i::gapi_shader>> m_shader_map;
+	std::unordered_map<uint64, std::shared_ptr<i::gapi_shader>> m_shader_map;
 };

@@ -15,7 +15,7 @@ namespace n
         texture();
 
     protected:
-        t::shared_ptr<i::gapi_texture> m_gapi_texture;
+        std::shared_ptr<i::gapi_texture> m_gapi_texture;
     };
 };
  

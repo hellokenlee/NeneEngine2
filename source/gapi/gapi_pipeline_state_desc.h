@@ -31,7 +31,7 @@ enum class gapi_vertex_element_type
 
 struct gapi_vertex_element_desc
 {
-	sstring semantic_name;
+	std::string semantic_name;
 	uint8 attrib_index;
 	gapi_vertex_element_type type;
 	uint8 stream_index;
@@ -39,7 +39,7 @@ struct gapi_vertex_element_desc
 	uint8 use_instance_index;
 	uint16 stride;
 };
-typedef t::dynamic_array<gapi_vertex_element_desc> gapi_vertex_declartions;
+typedef std::vector<gapi_vertex_element_desc> gapi_vertex_declartions;
 
 enum class gapi_primitive_type
 {
@@ -52,50 +52,50 @@ enum class gapi_primitive_type
 struct NENE_API gapi_bound_shader_desc
 {
 	//
-	t::dynamic_array<gapi_vertex_element_desc> m_vertex_declaration;
+	std::vector<gapi_vertex_element_desc> m_vertex_declaration;
 	//
-	t::shared_ptr<i::gapi_vertex_shader> m_vertex_shader;
-	t::shared_ptr<i::gapi_pixel_shader> m_pixel_shader;
-	t::shared_ptr<i::gapi_domain_shader> m_domain_shader;
-	t::shared_ptr<i::gapi_hull_shader> m_hull_shader;
-	t::shared_ptr<i::gapi_geometry_shader> m_geometry_shader;
+	std::shared_ptr<i::gapi_vertex_shader> m_vertex_shader;
+	std::shared_ptr<i::gapi_pixel_shader> m_pixel_shader;
+	std::shared_ptr<i::gapi_domain_shader> m_domain_shader;
+	std::shared_ptr<i::gapi_hull_shader> m_hull_shader;
+	std::shared_ptr<i::gapi_geometry_shader> m_geometry_shader;
 	//
-	t::shared_ptr<i::gapi_compute_shader> m_compute_shader;
+	std::shared_ptr<i::gapi_compute_shader> m_compute_shader;
 	//
-	t::shared_ptr<i::gapi_mesh_shader> m_mesh_shader;
-	t::shared_ptr<i::gapi_amplification_shader> m_amplification_shader;
+	std::shared_ptr<i::gapi_mesh_shader> m_mesh_shader;
+	std::shared_ptr<i::gapi_amplification_shader> m_amplification_shader;
 	//
-	t::shared_ptr<i::gapi_ray_gen_shader> m_ray_gen_shader;
-	t::shared_ptr<i::gapi_ray_tracing_shader> m_ray_tracing_shader;
+	std::shared_ptr<i::gapi_ray_gen_shader> m_ray_gen_shader;
+	std::shared_ptr<i::gapi_ray_tracing_shader> m_ray_tracing_shader;
 
 	// Graphic Shader Stages
 	gapi_bound_shader_desc(
 		const gapi_vertex_declartions& vertex_declaration,
-		const t::shared_ptr<i::gapi_vertex_shader>& vertex_shader,
-		const t::shared_ptr<i::gapi_pixel_shader>& pixel_shader = {},
-		const t::shared_ptr<i::gapi_domain_shader>& domain_shader = {},
-		const t::shared_ptr<i::gapi_hull_shader>& hull_shader = {},
-		const t::shared_ptr<i::gapi_geometry_shader>& geometry_shader = {}
+		const std::shared_ptr<i::gapi_vertex_shader>& vertex_shader,
+		const std::shared_ptr<i::gapi_pixel_shader>& pixel_shader = {},
+		const std::shared_ptr<i::gapi_domain_shader>& domain_shader = {},
+		const std::shared_ptr<i::gapi_hull_shader>& hull_shader = {},
+		const std::shared_ptr<i::gapi_geometry_shader>& geometry_shader = {}
 	);
 
 	// Compute Shader Stages
 	gapi_bound_shader_desc(
-		const t::shared_ptr<i::gapi_compute_shader>& compute_shader
+		const std::shared_ptr<i::gapi_compute_shader>& compute_shader
 	);
 
 private:
 	gapi_bound_shader_desc(
-		const t::dynamic_array<gapi_vertex_element_desc>& in_vertex_declaration,
-		const t::shared_ptr<i::gapi_vertex_shader>& in_vertex_shader,
-		const t::shared_ptr<i::gapi_pixel_shader>& in_pixel_shader,
-		const t::shared_ptr<i::gapi_domain_shader>& in_domain_shader,
-		const t::shared_ptr<i::gapi_hull_shader>& in_hull_shader,
-		const t::shared_ptr<i::gapi_geometry_shader>& in_geometry_shader,
-		const t::shared_ptr<i::gapi_compute_shader>& in_compute_shader,
-		const t::shared_ptr<i::gapi_mesh_shader>& in_mesh_shader,
-		const t::shared_ptr<i::gapi_amplification_shader>& in_amplification_shader,
-		const t::shared_ptr<i::gapi_ray_gen_shader>& in_ray_gen_shader,
-		const t::shared_ptr<i::gapi_ray_tracing_shader>& in_ray_tracing_shader
+		const std::vector<gapi_vertex_element_desc>& in_vertex_declaration,
+		const std::shared_ptr<i::gapi_vertex_shader>& in_vertex_shader,
+		const std::shared_ptr<i::gapi_pixel_shader>& in_pixel_shader,
+		const std::shared_ptr<i::gapi_domain_shader>& in_domain_shader,
+		const std::shared_ptr<i::gapi_hull_shader>& in_hull_shader,
+		const std::shared_ptr<i::gapi_geometry_shader>& in_geometry_shader,
+		const std::shared_ptr<i::gapi_compute_shader>& in_compute_shader,
+		const std::shared_ptr<i::gapi_mesh_shader>& in_mesh_shader,
+		const std::shared_ptr<i::gapi_amplification_shader>& in_amplification_shader,
+		const std::shared_ptr<i::gapi_ray_gen_shader>& in_ray_gen_shader,
+		const std::shared_ptr<i::gapi_ray_tracing_shader>& in_ray_tracing_shader
 	)
 		: m_vertex_declaration(in_vertex_declaration)
 		, m_vertex_shader(in_vertex_shader)
@@ -201,7 +201,7 @@ struct gapi_blend_state_desc
 	}
 
 	template<uint32 num_render_targets>
-	gapi_blend_state_desc(const t::static_array<gapi_render_target_blend_desc, num_render_targets>& in_render_target_blend_descs, bool in_use_alpha_to_coverage)
+	gapi_blend_state_desc(const std::array<gapi_render_target_blend_desc, num_render_targets>& in_render_target_blend_descs, bool in_use_alpha_to_coverage)
 		: m_use_alpha_to_coverage(in_use_alpha_to_coverage)
 		, m_use_independent_blend(num_render_targets > 1)
 	{
@@ -211,7 +211,7 @@ struct gapi_blend_state_desc
 
 	bool m_use_alpha_to_coverage = false;
 	bool m_use_independent_blend = false;
-	t::static_array<gapi_render_target_blend_desc, MAX_RENDER_TARGET_COUNT> m_render_target_blend_descs;
+	std::array<gapi_render_target_blend_desc, MAX_RENDER_TARGET_COUNT> m_render_target_blend_descs;
 };
 
 
@@ -337,8 +337,8 @@ struct NENE_API gapi_graphics_pipeline_state_desc
 	gapi_primitive_type m_primitive_type;
 	uint16 m_num_samples;
 	gapi_pixel_format m_depth_stencil_format;
-	t::dynamic_array<gapi_pixel_format> m_render_target_formats;
-	t::shared_ptr<i::gapi_pipeline_layout> m_pipeline_layout; 
+	std::vector<gapi_pixel_format> m_render_target_formats;
+	std::shared_ptr<i::gapi_pipeline_layout> m_pipeline_layout; 
 
 	gapi_graphics_pipeline_state_desc(
 		const gapi_bound_shader_desc& bound_shader_state,
@@ -348,8 +348,8 @@ struct NENE_API gapi_graphics_pipeline_state_desc
 		const gapi_primitive_type& primitive_type,
 		const uint16& num_samples,
 		const gapi_pixel_format& depth_stencil_format,
-		const t::dynamic_array<gapi_pixel_format>& render_target_formats,
-		const t::shared_ptr<i::gapi_pipeline_layout>& pipeline_layout = nullptr
+		const std::vector<gapi_pixel_format>& render_target_formats,
+		const std::shared_ptr<i::gapi_pipeline_layout>& pipeline_layout = nullptr
 	)
 		: m_bound_shader_state(bound_shader_state)
 		, m_blend_state(blend_state)

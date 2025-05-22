@@ -15,15 +15,15 @@
 
 #define CHECKF(expr, hints) CHECKF_IMPL(expr, hints)
 
-NENE_API void check_failed(const string& filename, const uint32& line, const string& expression);
+NENE_API void check_failed(const std::string& filename, const uint32& line, const std::string& expression);
 
-NENE_API void checkf_failed(const string& filename, const uint32& line, const string& expression, const sstring& hints);
+NENE_API void checkf_failed(const std::string& filename, const uint32& line, const std::string& expression, const std::string& hints);
 
 #define CHECK_IMPL(expr) \
 	{ \
 		if (!(expr)) \
 		{ \
-			check_failed(TXT(__FILE__), __LINE__, TXT(#expr)); \
+			check_failed(__FILE__, __LINE__, #expr); \
 			DEBUG_BREAK(); \
 		} \
 	}
@@ -32,7 +32,7 @@ NENE_API void checkf_failed(const string& filename, const uint32& line, const st
 	{ \
 		if (!(expr)) \
 		{ \
-			checkf_failed(TXT(__FILE__), __LINE__, TXT(#expr), hints); \
+			checkf_failed(__FILE__, __LINE__, #expr, hints); \
 			DEBUG_BREAK(); \
 		} \
 	}
