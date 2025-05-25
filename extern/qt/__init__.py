@@ -8,13 +8,14 @@ from script.builder.pyside_config import PySideConfig
 
 class Qt(ExternalLibrary):
 
-	def __init__(self, name: str):
-		super().__init__(name)
+	def __init__(self):
+		super().__init__()
 		assert (PySideConfig().version() == self._version)
 		self.dependent_libraries.extend(
 			["Qt6Core", "Qt6Gui", "Qt6Widgets"]
 		)
 		pass
 
-	def get_include_abs_path(self, plat: Platform, arch: Architecture, con: Configuration) -> str:
-		return PySideConfig().include_path()
+	def get_static_library_directory_abs_path(self, plat: Platform, arch: Architecture, con: Configuration) -> str:
+		# We only have realse libs for Qt
+		return super().get_static_library_directory_abs_path(plat, arch, Configuration.Release)

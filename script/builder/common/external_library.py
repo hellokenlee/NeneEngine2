@@ -3,6 +3,7 @@
 # __email__ = "hellokenlee@163.com"
 
 import os
+import inspect
 
 from script.builder.common.build_common import Platform, Architecture, Configuration
 from script.builder.common.build_configuration import BuildConfiguration
@@ -21,10 +22,10 @@ class ExternalLibrary(object):
 		- {Configuration}: See enum class `Configuration`.
 	"""
 
-	def __init__(self, name: str):
+	def __init__(self):
 		super().__init__()
-		self._name = name
-		self._version: str = self.get_latest_version(name)
+		self._name = self.get_folder_name()
+		self._version: str = self.latest_version(self._name)
 		#
 		self._include_rel_path = "{Version}/inc/"
 		self.__static_library_rel_path = "{Version}/lib/{Platform}/{Architecture}/{Configuration}/"
@@ -37,8 +38,13 @@ class ExternalLibrary(object):
 	def name(self):
 		return self._name
 
+	@classmethod
+	def get_folder_name(cls):
+		folder_abs_path = os.path.dirname(os.path.abspath(inspect.getfile(cls)))
+		return os.path.basename(folder_abs_path)
+
 	@staticmethod
-	def get_latest_version(name: str) -> str:
+	def latest_version(name: str) -> str:
 		extern_root_path = BuildConfiguration().extern_root_abs_path
 		library_root_path = os.path.join(extern_root_path, name)
 		versions = []
@@ -47,8 +53,12 @@ class ExternalLibrary(object):
 				versions.append(subpath)
 		versions.sort()
 		if len(versions) > 0:
-			return versions[0]
+			return versions[-1]
 		return ""
+
+	@classmethod
+	def root_abs_path(cls):
+		return os.path.dirname(os.path.abspath(inspect.getfile(cls)))
 
 	def get_include_abs_path(self, plat: Platform, arch: Architecture, con: Configuration) -> str:
 		include_rel_path = self._include_rel_path.format(Version=self._version, Platform=plat.value, Architecture=arch.name, Configuration=con.name)
@@ -62,14 +72,19 @@ class ExternalLibrary(object):
 		dynamic_library_rel_path = self.__dynamic_library_rel_path.format(Version=self._version, Platform=plat.value, Architecture=arch.name, Configuration=con.name)
 		return os.path.join(BuildConfiguration().extern_root_abs_path, self.name, dynamic_library_rel_path)
 
-	def get_static_library_filenames(self) -> list[str]:
+	def get_static_library_filenames(self, plat: Platform, arch: Architecture, con: Configuration) -> list[str]:
 		if BuildConfiguration().platform == Platform.Windows:
 			file_extension = ".lib"
 		else:
 			raise NotImplementedError()
 		result = []
+		lib_folder_abs_path = self.get_static_library_directory_abs_path(plat, arch, con)
 		for lib in self.dependent_libraries:
-			result.append(lib + file_extension)
+			file_name = lib + file_extension
+			if not os.path.exists(os.path.join(lib_folder_abs_path, file_name)) and con == Configuration.Debug:
+				file_name = lib + "_d" + file_extension
+			assert os.path.exists(os.path.join(lib_folder_abs_path, file_name))
+			result.append(file_name)
 		return result
 
 	def get_dynamic_library_filenames(self) -> list[str]:

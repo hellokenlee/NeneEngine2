@@ -13,7 +13,7 @@ class win_client : public i::client
 public:
 	win_client() : win_client(TXT("NeneEngine")) {}
 	
-	win_client(const string& name);
+	win_client(const std::wstring& name);
 	
 	virtual ~win_client() override;
 

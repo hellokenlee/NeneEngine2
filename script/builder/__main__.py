@@ -96,7 +96,7 @@ def main():
 		mod = importlib.import_module(BuildConfiguration.EXTERN + "." + name)
 		external_library_class = get_class(mod)
 		assert (issubclass(external_library_class, ExternalLibrary))
-		external_libraries[external_library_class] = external_library_class(name)
+		external_libraries[external_library_class] = external_library_class()
 
 	# Generate per-module IDE project
 	log("Generate Visual C++ Project Files...", "\n")

@@ -8,8 +8,8 @@ from script.builder.python_confg import PythonConfig
 
 class Python(ExternalLibrary):
 
-	def __init__(self, name: str):
-		super().__init__(name)
+	def __init__(self):
+		super().__init__()
 		self._version = PythonConfig().version()
 		libraries = []
 		for filename in os.listdir(PythonConfig().library_path()):

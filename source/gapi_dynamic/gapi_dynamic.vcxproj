@@ -72,9 +72,6 @@
       <AdditionalDependencies>core.lib;gapi.lib;gapi_d3d12.lib;gapi_vulkan.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/ignore:4099 /ignore:4075</AdditionalOptions>
     </Link>
-    <PostBuildEvent>
-      <Command />
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -96,9 +93,6 @@
       <AdditionalDependencies>core.lib;gapi.lib;gapi_d3d12.lib;gapi_vulkan.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/ignore:4099 /ignore:4075</AdditionalOptions>
     </Link>
-    <PostBuildEvent>
-      <Command />
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="gapi_cmd_context.h" />
@@ -112,6 +106,9 @@
     <ClCompile Include="gapi_dynamic.cpp" />
     <ClCompile Include="gapi_pipeline_state_manager.cpp" />
     <ClCompile Include="gapi_shader_manager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="__init__.py" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

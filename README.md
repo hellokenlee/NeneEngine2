@@ -98,6 +98,8 @@ graph TD
   CoreObject --> CoreEngine
   Core --> CoreObject
   Core --> CoreRender
+  Core --> Editor
+  CoreObject --> Editor
   Core --> Engine
   CoreObject --> Engine
   Renderer --> Engine

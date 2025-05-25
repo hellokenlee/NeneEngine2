@@ -72,9 +72,6 @@
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/ignore:4099 /ignore:4075</AdditionalOptions>
     </Link>
-    <PostBuildEvent>
-      <Command />
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -96,9 +93,6 @@
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/ignore:4099 /ignore:4075</AdditionalOptions>
     </Link>
-    <PostBuildEvent>
-      <Command />
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="console_var.h" />
@@ -224,6 +218,9 @@
     <ClCompile Include="globals.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="platform.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="__init__.py" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

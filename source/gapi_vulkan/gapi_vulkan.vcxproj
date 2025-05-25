@@ -72,9 +72,6 @@
       <AdditionalDependencies>core.lib;gapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/ignore:4099 /ignore:4075</AdditionalOptions>
     </Link>
-    <PostBuildEvent>
-      <Command />
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -96,15 +93,15 @@
       <AdditionalDependencies>core.lib;gapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/ignore:4099 /ignore:4075</AdditionalOptions>
     </Link>
-    <PostBuildEvent>
-      <Command />
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="gapi_vulkan.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="gapi_vulkan.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="__init__.py" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

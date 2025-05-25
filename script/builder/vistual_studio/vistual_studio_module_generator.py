@@ -5,6 +5,7 @@
 import os
 import uuid
 from xml.etree import ElementTree
+from script.builder.common import utils
 from script.builder.common.nene_module import *
 from script.builder.common.build_configuration import BuildConfiguration
 from script.builder.common.module_generator import ModuleGenerator
@@ -38,7 +39,9 @@ class VcTag(object):
 	WholeProgramOptimization = "WholeProgramOptimization"
 	ClCompile = "ClCompile"
 	ClInclude = "ClInclude"
+	Content = "Content"
 	Link = "Link"
+	PreBuildEvent = "PreBuildEvent"
 	PostBuildEvent = "PostBuildEvent"
 	Command = "Command"
 	Target = "Target"
@@ -273,6 +276,7 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 				self.PROJ_OUTPUT_PATH,
 			]
 			for extern_library_class in dependent_extern_library_classes:
+				# Extern libraries only have Release version of libs
 				static_library_path = self.extern_libraries[extern_library_class].get_static_library_directory_abs_path(nene_module_config.platform, nene_module_config.architecture, nene_module_config.configuration)
 				static_library_path = static_library_path.replace("/", "\\")
 				library_paths.append(static_library_path)
@@ -324,7 +328,7 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 			# External Libraries
 			dependent_extern_library_classes = self._recursively_find_extern_libraries(nene_module)
 			for extern_library_class in dependent_extern_library_classes:
-				additional_dependencies.extend(self.extern_libraries[extern_library_class].get_static_library_filenames())
+				additional_dependencies.extend(self.extern_libraries[extern_library_class].get_static_library_filenames(nene_module_config.platform, nene_module_config.architecture, nene_module_config.configuration))
 			# System Libraries
 			additional_dependencies.extend(nene_module.system_library_dependencies)
 
@@ -332,9 +336,19 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 			ElementTree.SubElement(link, "AdditionalDependencies").text = ";".join(additional_dependencies)
 			ElementTree.SubElement(link, "AdditionalOptions").text = " ".join(linker.additional_linker_flags)
 
+			# Build Events
+			py_module_name = "%s.%s" % ("source", nene_module.name)
+			py_import_command = "import %s" % py_module_name
+			# Pre Build Event
+			if utils.overloaded(nene_module.__class__, "prebuild"):
+				pre_build_event = ElementTree.SubElement(item_definition_group, VcTag.PreBuildEvent)
+				call_function_command = "%s.%s.prebuild()" % (py_module_name, nene_module.__class__.__name__)
+				ElementTree.SubElement(pre_build_event, VcTag.Command).text = "cd %s\npy -3 -c \"import sys; sys.dont_write_bytecode = True; %s; %s\"" % (VcMacro.SolutionDir, py_import_command, call_function_command)
 			# Post Build Event
-			post_build_event = ElementTree.SubElement(item_definition_group, VcTag.PostBuildEvent)
-			ElementTree.SubElement(post_build_event, VcTag.Command).text = ""
+			if utils.overloaded(nene_module.__class__, "postbuild"):
+				post_build_event = ElementTree.SubElement(item_definition_group, VcTag.PostBuildEvent)
+				call_function_command = "%s.%s.postbuild()" % (py_module_name, nene_module.__class__.__name__)
+				ElementTree.SubElement(post_build_event, VcTag.Command).text = "cd %s\npy -3 -c \"import sys; sys.dont_write_bytecode = True; %s; %s\"" % (VcMacro.SolutionDir, py_import_command, call_function_command)
 		pass
 
 	@staticmethod
@@ -342,6 +356,7 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 		#
 		cpp_header_paths = []
 		cpp_source_paths = []
+		othder_content_paths = []
 		#
 		module_root_abs_path = os.path.join(BuildConfiguration().source_root_abs_path, nene_module.name)
 		#
@@ -350,9 +365,12 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 				if filename.endswith(".cpp"):
 					source_path = os.path.relpath(os.path.join(root, filename), module_root_abs_path)
 					cpp_source_paths.append(source_path)
-				if filename.endswith(".h") or filename.endswith(".inl") or filename.endswith(".hpp"):
+				elif filename.endswith(".h") or filename.endswith(".inl") or filename.endswith(".hpp"):
 					header_path = os.path.relpath(os.path.join(root, filename), module_root_abs_path)
 					cpp_header_paths.append(header_path)
+				elif filename == "__init__.py":
+					content_path = os.path.relpath(os.path.join(root, filename), module_root_abs_path)
+					othder_content_paths.append(content_path)
 		# C++ Includes
 		item_group_includes = ElementTree.SubElement(vcproj_tree.getroot(), VcTag.ItemGroup)
 		for header_path in cpp_header_paths:
@@ -361,6 +379,10 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 		item_group_sources = ElementTree.SubElement(vcproj_tree.getroot(), VcTag.ItemGroup)
 		for source_path in cpp_source_paths:
 			ElementTree.SubElement(item_group_sources, VcTag.ClCompile).attrib["Include"] = source_path
+		# Other Contents ( Won't Compile )
+		item_group_sources = ElementTree.SubElement(vcproj_tree.getroot(), VcTag.ItemGroup)
+		for content_path in othder_content_paths:
+			ElementTree.SubElement(item_group_sources, VcTag.Content).attrib["Include"] = content_path
 		pass
 
 	@staticmethod

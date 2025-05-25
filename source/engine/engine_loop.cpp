@@ -15,7 +15,7 @@ std::shared_ptr<i::renderer> engine_loop::m_renderer = nullptr;
 void engine_loop::init(void* window)
 {
 	//
-	LOG(engine, info, TXT("Engine Init!"));
+	LOG(engine, info, "Engine Init!");
 	//
 	gapi_dynamic::create(window);
 	//
@@ -41,5 +41,5 @@ void engine_loop::shutdown()
 	m_renderer.reset();
 	
 	//
-	LOG(engine, info, TXT("Engine Shutdown!"));
+	LOG(engine, info, "Engine Shutdown!");
 }

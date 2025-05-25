@@ -13,6 +13,7 @@
 #include "rttr/registration"
 #include "core/core.h"
 #include "pybind11/pybind11.h"
+#include "pybind11/embed.h"
 
 namespace n
 {
@@ -52,7 +53,7 @@ namespace t::n
 	public:
 		class_(const char* name, pybind11::module_* py_module);
 
-		template<typename... Args>
+		template<typename... t_args>
 		class_& constructor();
 		
 		template<typename t_func>
@@ -109,7 +110,7 @@ namespace t::n
  *		
  *		// In `*.meta.cpp`
  *		```c++
- *		NMETA
+ *		NMETA(m)
  *		{
  *			n::t::class_<my_class>("my_class", m)
  *				.method("func0", &my_class::func0)

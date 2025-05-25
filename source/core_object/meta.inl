@@ -23,16 +23,16 @@ namespace t::n
 	}
 
 	template<typename t_cxx_class>
-	template<typename... Args>
+	template<typename... t_args>
 	class_<t_cxx_class>& class_<t_cxx_class>::constructor()
 	{
 		if (m_pybind11_class != nullptr)
 		{
-			m_pybind11_class->def(pybind11::init<Args...>());
+			m_pybind11_class->def(pybind11::init<t_args...>());
 		}
 		else if (m_rttr_class != nullptr)
 		{
-			m_rttr_class->template constructor<Args...>();
+			m_rttr_class->template constructor<t_args...>();
 		}
 		else
 		{

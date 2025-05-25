@@ -2,6 +2,8 @@
 # __author__ = "KenLee"
 # __email__ = "hellokenlee@163.com"
 
+import os
+import inspect
 from script.builder.common.build_common import *
 from script.builder.common.external_library import ExternalLibrary
 
@@ -101,7 +103,7 @@ class NeneModule(object):
 	"""
 
 	@classmethod
-	def available(cls):
+	def available(cls) -> bool:
 		return True
 
 	def __init__(self, name: str):
@@ -143,3 +145,26 @@ class NeneModule(object):
 		#
 		module_config.linker.additional_linker_flags = ["/ignore:4099", "/ignore:4075"]
 		return module_config
+
+	@classmethod
+	def prebuild(cls):
+		"""
+		Prebuild actions
+		"""
+		pass
+
+	@classmethod
+	def postbuild(cls):
+		"""
+		Postbuild actions
+		"""
+		pass
+
+	@classmethod
+	def root_abs_path(cls):
+		return os.path.dirname(os.path.abspath(inspect.getfile(cls)))
+
+	@classmethod
+	def get_folder_name(cls):
+		folder_abs_path = os.path.dirname(os.path.abspath(inspect.getfile(cls)))
+		return os.path.basename(folder_abs_path)

@@ -7,9 +7,9 @@ from script.builder.common.external_library import ExternalLibrary
 
 class Rttr(ExternalLibrary):
 
-	def __init__(self, name: str):
-		super().__init__(name)
+	def __init__(self):
+		super().__init__()
 		self.dependent_libraries.extend(
-			["rttr"]
+			["librttr_core"]
 		)
 		pass

@@ -41,7 +41,7 @@ static LRESULT CALLBACK WindowProcessFunction(HWND hWnd, UINT msg, WPARAM wParam
 }
 
 
-win_client::win_client(const string& name)
+win_client::win_client(const std::wstring& name)
 	: m_window(nullptr)
 	, m_handle(nullptr)
 {
