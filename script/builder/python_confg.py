@@ -31,10 +31,6 @@ class PythonConfig(metaclass=Singleton):
 	def library_path(self):
 		return os.path.join(self.__python_root_abs_path, "libs")
 
-	@staticmethod
-	def library_name():
-		return "python3.lib"
-
 	def print_brief(self):
 		log("Python Version: %s" % self.version())
 		log("Python Install Path: %s" % self.install_path())

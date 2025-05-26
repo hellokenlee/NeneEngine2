@@ -4,13 +4,11 @@
 
 int main()
 {
-
 	n::binding::get().initialize();
-	n::object::test();
 
 	pybind11::scoped_interpreter guard{};
 	
-	auto content_module = pybind11::module::import("content.scripts.main");
+	auto content_module = pybind11::module::import("script.editor");
 	content_module.attr("main")();
 	return 0;
 }

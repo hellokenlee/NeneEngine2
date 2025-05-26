@@ -146,6 +146,15 @@ class NeneModule(object):
 		module_config.linker.additional_linker_flags = ["/ignore:4099", "/ignore:4075"]
 		return module_config
 
+	def generate(self):
+		pass
+
+	def get_additional_include_folder_abs_paths(self) -> list[str]:
+		return []
+
+	def get_additional_source_folder_abs_paths(self) -> list[str]:
+		return []
+
 	@classmethod
 	def prebuild(cls):
 		"""

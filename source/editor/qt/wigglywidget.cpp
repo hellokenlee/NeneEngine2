@@ -90,5 +90,3 @@ void WigglyWidget::setRunning(bool r)
     else
         m_timer.stop();
 }
-
-#include "../../.bin/intermediate/editor/moc/moc_wigglywidget.cpp"

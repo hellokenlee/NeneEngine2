@@ -20,7 +20,7 @@ class Python(ExternalLibrary):
 		)
 		pass
 
-	def get_include_abs_path(self, plat: Platform, arch: Architecture, con: Configuration) -> str:
+	def get_include_abs_path(self) -> str:
 		return PythonConfig().include_path()
 
 	def get_static_library_directory_abs_path(self, plat: Platform, arch: Architecture, con: Configuration) -> str:

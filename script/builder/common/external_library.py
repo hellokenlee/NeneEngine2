@@ -25,7 +25,7 @@ class ExternalLibrary(object):
 	def __init__(self):
 		super().__init__()
 		self._name = self.get_folder_name()
-		self._version: str = self.latest_version(self._name)
+		self._version: str = self.latest_version()
 		#
 		self._include_rel_path = "{Version}/inc/"
 		self.__static_library_rel_path = "{Version}/lib/{Platform}/{Architecture}/{Configuration}/"
@@ -43,13 +43,12 @@ class ExternalLibrary(object):
 		folder_abs_path = os.path.dirname(os.path.abspath(inspect.getfile(cls)))
 		return os.path.basename(folder_abs_path)
 
-	@staticmethod
-	def latest_version(name: str) -> str:
-		extern_root_path = BuildConfiguration().extern_root_abs_path
-		library_root_path = os.path.join(extern_root_path, name)
+	@classmethod
+	def latest_version(cls) -> str:
+		library_root_path = cls.root_abs_path()
 		versions = []
 		for subpath in os.listdir(library_root_path):
-			if os.path.isdir(os.path.join(library_root_path, subpath)):
+			if not subpath.startswith("__") and os.path.isdir(os.path.join(library_root_path, subpath)):
 				versions.append(subpath)
 		versions.sort()
 		if len(versions) > 0:
@@ -60,9 +59,13 @@ class ExternalLibrary(object):
 	def root_abs_path(cls):
 		return os.path.dirname(os.path.abspath(inspect.getfile(cls)))
 
-	def get_include_abs_path(self, plat: Platform, arch: Architecture, con: Configuration) -> str:
-		include_rel_path = self._include_rel_path.format(Version=self._version, Platform=plat.value, Architecture=arch.name, Configuration=con.name)
-		return os.path.join(BuildConfiguration().extern_root_abs_path, self.name, include_rel_path)
+	@classmethod
+	def get_binary_abs_path(cls):
+		return os.path.join(cls.root_abs_path(), cls.latest_version(), "bin")
+
+	def get_include_abs_path(self) -> str:
+		include_rel_path = self._include_rel_path.format(Version=self._version)
+		return os.path.join(self.root_abs_path(), include_rel_path)
 
 	def get_static_library_directory_abs_path(self, plat: Platform, arch: Architecture, con: Configuration) -> str:
 		static_library_rel_path = self.__static_library_rel_path.format(Version=self._version, Platform=plat.value, Architecture=arch.name, Configuration=con.name)

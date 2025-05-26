@@ -3,6 +3,7 @@
 # __email__ = "hellokenlee@163.com"
 
 import inspect
+import pathlib
 
 
 def overloaded(class_type: type, method_name: str):
@@ -12,3 +13,7 @@ def overloaded(class_type: type, method_name: str):
 	if method and base_method and inspect.ismethod(method) and inspect.ismethod(base_method):
 		return method.__func__ != base_method.__func__
 	return False
+
+
+def posix_path(path_str: str) -> str:
+	return path_str.replace("\\", "/")

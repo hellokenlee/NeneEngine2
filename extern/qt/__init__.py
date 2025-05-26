@@ -17,5 +17,5 @@ class Qt(ExternalLibrary):
 		pass
 
 	def get_static_library_directory_abs_path(self, plat: Platform, arch: Architecture, con: Configuration) -> str:
-		# We only have realse libs for Qt
+		# We only have release libs for Qt
 		return super().get_static_library_directory_abs_path(plat, arch, Configuration.Release)
