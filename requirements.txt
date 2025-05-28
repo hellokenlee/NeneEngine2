@@ -1,4 +1,3 @@
-shutil
 packaging
 PySide6==6.9.0
 shiboken6_generator==6.9.0
