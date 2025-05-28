@@ -147,7 +147,6 @@ class Solution(Serializable):
 			buffer = fp.readlines()
 			sln.parse(buffer, 0)
 			return sln
-		pass
 
 	def save(self, filepath):
 		with open(filepath, mode="w", encoding='utf-8') as fp:
@@ -172,7 +171,7 @@ class ProjectSection(Serializable):
 
 
 class Project(Serializable):
-	def __init__(self, cguid: str="", name: str="", file: str="", guid: str=""):
+	def __init__(self, cguid: str = "", name: str = "", file: str = "", guid: str = ""):
 		super(Project, self).__init__()
 		self.header = Header(
 			"Project(\"{}\") = \"{}\", \"{}\", \"{}\"",
@@ -220,6 +219,7 @@ class Global(Serializable):
 		self.project_configuration_platforms = GlobalSection("ProjectConfigurationPlatforms", "postSolution")
 		self.solution_properties = GlobalSection("SolutionProperties", "preSolution")
 		self.extensibility_globals = GlobalSection("ExtensibilityGlobals", "postSolution")
+		self.nested_projects = GlobalSection("NestedProjects", "preSolution")
 		self.tail = Header("EndGlobal")
 		pass
 

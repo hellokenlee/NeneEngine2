@@ -4,7 +4,9 @@
 
 import os
 import inspect
+
 from script.builder.common.build_common import *
+from script.builder.common.singleton import Singleton
 from script.builder.common.external_library import ExternalLibrary
 
 
@@ -95,7 +97,7 @@ class NeneModuleConfig(object):
 		pass
 
 
-class NeneModule(object):
+class NeneModule(object, metaclass=Singleton):
 	"""
 	Module Base Class
 
@@ -106,10 +108,10 @@ class NeneModule(object):
 	def available(cls) -> bool:
 		return True
 
-	def __init__(self, name: str):
+	def __init__(self):
 		super().__init__()
 		#
-		self.name: str = name
+		self.name: str = self.get_folder_name()
 		self.category: ModuleCategory = ModuleCategory.Library
 		#
 		self.build_target: BuildTarget = BuildTarget.DLL
@@ -155,15 +157,23 @@ class NeneModule(object):
 	def get_additional_source_folder_abs_paths(self) -> list[str]:
 		return []
 
+	def recursively_find_extern_libraries(self) -> set[type[ExternalLibrary]]:
+		extern_libraries_classes: set[type[ExternalLibrary]] = set()
+		for extern_library_class in self.external_dependencies:
+			extern_libraries_classes.add(extern_library_class)
+		for nene_module_class in self.module_dependencies:
+			extern_libraries_classes.update(nene_module_class().recursively_find_extern_libraries())
+		return extern_libraries_classes
+
 	@classmethod
-	def prebuild(cls):
+	def prebuild(cls, platform: Platform, arch: Architecture, con: Configuration):
 		"""
 		Prebuild actions
 		"""
 		pass
 
 	@classmethod
-	def postbuild(cls):
+	def postbuild(cls, platform: Platform, arch: Architecture, con: Configuration):
 		"""
 		Postbuild actions
 		"""
@@ -172,6 +182,12 @@ class NeneModule(object):
 	@classmethod
 	def root_abs_path(cls):
 		return os.path.dirname(os.path.abspath(inspect.getfile(cls)))
+
+	@classmethod
+	def engine_root_abs_path(cls):
+		root_abs_path = os.path.abspath(os.path.join(cls.root_abs_path(), "..", ".."))
+		assert os.path.basename(root_abs_path) == "NeneEngine2"
+		return root_abs_path
 
 	@classmethod
 	def get_folder_name(cls):

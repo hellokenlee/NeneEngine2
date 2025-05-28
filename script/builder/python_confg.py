@@ -13,7 +13,6 @@ class PythonConfig(metaclass=Singleton):
 
 	def __init__(self):
 		super().__init__()
-		log("Detecting Python version...", "\n")
 		self.__python_version = sys.version.split()[0]
 		self.__python_root_abs_path = os.path.abspath(os.path.dirname(sys.executable))
 		assert (Version(self.__python_version) > Version("3.10.0"))
@@ -32,6 +31,7 @@ class PythonConfig(metaclass=Singleton):
 		return os.path.join(self.__python_root_abs_path, "libs")
 
 	def print_brief(self):
+		log("Detected Python:", "\n")
 		log("Python Version: %s" % self.version())
 		log("Python Install Path: %s" % self.install_path())
 		pass

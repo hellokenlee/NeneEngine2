@@ -11,8 +11,8 @@ from source.gapi_dynamic import GapiDynamic
 
 class Engine(NeneModule):
 
-    def __init__(self, name: str):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__()
         self.module_dependencies.extend(
             [Core, CoreObject, Renderer, GapiDynamic]
         )

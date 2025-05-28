@@ -10,8 +10,8 @@ from source.engine import Engine
 
 class App(NeneModule):
 
-	def __init__(self, name: str):
-		super().__init__(name)
+	def __init__(self):
+		super().__init__()
 		self.category = ModuleCategory.App
 		self.build_target = BuildTarget.EXE
 		self.module_dependencies.extend(

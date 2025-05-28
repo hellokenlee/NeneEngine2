@@ -10,8 +10,8 @@ from extern.rttr import Rttr
 
 class CoreEngine(NeneModule):
 
-    def __init__(self, name: str):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__()
         self.module_dependencies.extend(
             [Core, CoreObject]
         )

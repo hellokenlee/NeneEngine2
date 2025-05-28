@@ -12,6 +12,22 @@ class Platform(Enum):
 	Android = "android"
 	Linux = "linx"
 
+	def get_static_library_extension(self) -> str:
+		if self == Platform.Windows:
+			return ".lib"
+		elif self == Platform.Linux:
+			return ".a"
+		else:
+			raise NotImplementedError
+
+	def get_dynamic_library_extension(self) -> str:
+		if self == Platform.Windows:
+			return ".dll"
+		elif self == Platform.Linux:
+			return ".so"
+		else:
+			raise NotImplementedError
+
 
 class Architecture(IntFlag):
 	x64 = auto()

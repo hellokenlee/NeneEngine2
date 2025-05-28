@@ -11,5 +11,5 @@ class ModuleGenerator(ABC):
 	Generate NeneModule into actual IDE buildable thing.
 	"""
 
-	def generate(self, nene_modules: dict[type[NeneModule], NeneModule], extern_libraries: dict[type[ExternalLibrary], ExternalLibrary]):
+	def generate(self, nene_module_classes: list[type[NeneModule]]):
 		pass

@@ -5,11 +5,12 @@
 import os
 import inspect
 
+from script.builder.common.singleton import Singleton
 from script.builder.common.build_common import Platform, Architecture, Configuration
 from script.builder.common.build_configuration import BuildConfiguration
 
 
-class ExternalLibrary(object):
+class ExternalLibrary(object, metaclass=Singleton):
 	"""
 	External Library Base Class.
 
@@ -27,10 +28,10 @@ class ExternalLibrary(object):
 		self._name = self.get_folder_name()
 		self._version: str = self.latest_version()
 		#
-		self._include_rel_path = "{Version}/inc/"
-		self.__static_library_rel_path = "{Version}/lib/{Platform}/{Architecture}/{Configuration}/"
-		self.__dynamic_library_rel_path = "{Version}/bin/{Platform}/{Architecture}/{Configuration}/"
-		#
+		self._include_rel_path = os.path.normpath("{Version}/inc/")
+		self.__static_library_rel_path = os.path.normpath("{Version}/lib/{Platform}/{Architecture}/{Configuration}/")
+		self.__dynamic_library_rel_path = os.path.normpath("{Version}/bin/{Platform}/{Architecture}/{Configuration}/")
+		# The names of `.dll` and `.lib`
 		self.dependent_libraries = []
 		pass
 
@@ -56,46 +57,39 @@ class ExternalLibrary(object):
 		return ""
 
 	@classmethod
-	def root_abs_path(cls):
+	def root_abs_path(cls) -> str:
 		return os.path.dirname(os.path.abspath(inspect.getfile(cls)))
 
 	@classmethod
 	def get_binary_abs_path(cls):
 		return os.path.join(cls.root_abs_path(), cls.latest_version(), "bin")
 
-	def get_include_abs_path(self) -> str:
+	def get_include_abs_paths(self) -> list[str]:
 		include_rel_path = self._include_rel_path.format(Version=self._version)
-		return os.path.join(self.root_abs_path(), include_rel_path)
+		return [os.path.join(self.root_abs_path(), include_rel_path)]
 
-	def get_static_library_directory_abs_path(self, plat: Platform, arch: Architecture, con: Configuration) -> str:
+	def get_static_library_directory_abs_paths(self, plat: Platform, arch: Architecture, con: Configuration) -> list[str]:
 		static_library_rel_path = self.__static_library_rel_path.format(Version=self._version, Platform=plat.value, Architecture=arch.name, Configuration=con.name)
-		return os.path.join(BuildConfiguration().extern_root_abs_path, self.name, static_library_rel_path)
+		return [os.path.join(self.root_abs_path(), static_library_rel_path)]
 
-	def get_dynamic_library_directory_abs_path(self, plat: Platform, arch: Architecture, con: Configuration) -> str:
+	def get_dynamic_library_directory_abs_paths(self, plat: Platform, arch: Architecture, con: Configuration) -> list[str]:
 		dynamic_library_rel_path = self.__dynamic_library_rel_path.format(Version=self._version, Platform=plat.value, Architecture=arch.name, Configuration=con.name)
-		return os.path.join(BuildConfiguration().extern_root_abs_path, self.name, dynamic_library_rel_path)
+		return [os.path.join(self.root_abs_path(), dynamic_library_rel_path)]
 
 	def get_static_library_filenames(self, plat: Platform, arch: Architecture, con: Configuration) -> list[str]:
-		if BuildConfiguration().platform == Platform.Windows:
-			file_extension = ".lib"
-		else:
-			raise NotImplementedError()
-		result = []
-		lib_folder_abs_path = self.get_static_library_directory_abs_path(plat, arch, con)
-		for lib in self.dependent_libraries:
-			file_name = lib + file_extension
-			if not os.path.exists(os.path.join(lib_folder_abs_path, file_name)) and con == Configuration.Debug:
-				file_name = lib + "_d" + file_extension
-			assert os.path.exists(os.path.join(lib_folder_abs_path, file_name))
-			result.append(file_name)
-		return result
+		return self._get_library_names(con, plat.get_static_library_extension(), self.get_static_library_directory_abs_paths(plat, arch, con))
 
-	def get_dynamic_library_filenames(self) -> list[str]:
-		if BuildConfiguration().platform == Platform.Windows:
-			file_extension = ".dll"
-		else:
-			raise NotImplementedError()
+	def get_dynamic_library_filenames(self, plat: Platform, arch: Architecture, con: Configuration) -> list[str]:
+		return self._get_library_names(con, plat.get_dynamic_library_extension(), self.get_dynamic_library_directory_abs_paths(plat, arch, con))
+
+	def _get_library_names(self, con: Configuration, ext: str, search_abs_paths: list[str]) -> list[str]:
 		result = []
 		for lib in self.dependent_libraries:
-			result.append(lib + file_extension)
+			file_name = lib + ext
+			debug_file_name = lib + "_d" + ext
+			if con == Configuration.Debug:
+				for search_bas_path in search_abs_paths:
+					if os.path.exists(os.path.join(search_bas_path, debug_file_name)):
+						file_name = debug_file_name
+			result.append(file_name)
 		return result

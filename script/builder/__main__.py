@@ -35,7 +35,7 @@ def main():
 	from common.log import log
 	from common.build_common import Platform, Architecture, Configuration
 	from common.build_configuration import BuildConfiguration
-	from common.module_generator import NeneModule, ExternalLibrary
+	from common.module_generator import NeneModule
 	from common.project_generator import NeneProject
 	from common.build_configuration_utils import BuildConfigurationUtils
 	from readme_builder import ReadmeBuilder
@@ -83,31 +83,24 @@ def main():
 	# Find all source modules
 	log("Searching Nene Module Files...", "\n")
 	#
-	nene_modules: dict[type[NeneModule], NeneModule] = {}
+	nene_module_classes: list[type[NeneModule]] = []
 	for name in BuildConfigurationUtils.list_modules():
 		mod = importlib.import_module(BuildConfiguration.SOURCE + "." + name)
 		nene_module_class = get_class(mod)
 		assert (issubclass(nene_module_class, NeneModule))
 		if nene_module_class.available():
-			nene_modules[nene_module_class] = nene_module_class(name)
-	#
-	external_libraries: dict[type[ExternalLibrary], ExternalLibrary] = {}
-	for name in BuildConfigurationUtils.list_extern_libraries():
-		mod = importlib.import_module(BuildConfiguration.EXTERN + "." + name)
-		external_library_class = get_class(mod)
-		assert (issubclass(external_library_class, ExternalLibrary))
-		external_libraries[external_library_class] = external_library_class()
+			nene_module_classes.append(nene_module_class)
 
 	# Generate per-module IDE project
 	log("Generate Visual C++ Project Files...", "\n")
-	module_generator.generate(nene_modules, external_libraries)
+	module_generator.generate(nene_module_classes)
 
 	# Generate engine IDE solution
 	log("Generate Visual Studio Solution File...", "\n")
 	mod = importlib.import_module(BuildConfiguration.SOURCE)
 	nene_project_class = get_class(mod)
 	assert (issubclass(nene_project_class, NeneProject))
-	nene_project = nene_project_class(nene_modules)
+	nene_project = nene_project_class(nene_module_classes)
 	project_generator.generate(nene_project)
 
 	# Generate README.md

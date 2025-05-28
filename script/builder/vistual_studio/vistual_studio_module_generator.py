@@ -2,8 +2,8 @@
 # __author__ = "KenLee"
 # __email__ = "hellokenlee@163.com"
 
-import os
 import uuid
+from platform import architecture
 from xml.etree import ElementTree
 from script.builder.common import utils
 from script.builder.common.nene_module import *
@@ -87,17 +87,13 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 	PROJ_INTERMEDIATE_PATH = "$(SolutionDir).bin\\intermediate\\$(ProjectName)\\$(Platform)\\$(Configuration)\\"
 
 	def __init__(self):
-		self.nene_modules: dict[type[NeneModule], NeneModule] = {}
-		self.extern_libraries: dict[type[ExternalLibrary], ExternalLibrary] = {}
+		self.nene_module_classes: list[type[NeneModule]] = []
 		pass
 
-	def generate(self, nene_modules: dict[type[NeneModule], NeneModule], extern_libraries: dict[type[ExternalLibrary], ExternalLibrary]):
-		self.nene_modules = nene_modules
-		self.extern_libraries = extern_libraries
-		for nene_module in nene_modules.values():
-			self._generate_vcxproj_file(nene_module)
-		self.nene_modules = {}
-		self.extern_libraries = {}
+	def generate(self, nene_module_classes: list[type[NeneModule]]):
+		self.nene_module_classes = nene_module_classes
+		for nene_module_class in nene_module_classes:
+			self._generate_vcxproj_file(nene_module_class())
 		pass
 
 	def _generate_vcxproj_file(self, nene_module: NeneModule):
@@ -238,14 +234,6 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 		import_group.text = "\n  "
 		pass
 
-	def _recursively_find_extern_libraries(self, nene_module: NeneModule) -> set[type[ExternalLibrary]]:
-		extern_libraries_classes: set[type[ExternalLibrary]] = set()
-		for extern_library_class in nene_module.external_dependencies:
-			extern_libraries_classes.add(extern_library_class)
-		for nene_module_class in nene_module.module_dependencies:
-			extern_libraries_classes.update(self._recursively_find_extern_libraries(self.nene_modules[nene_module_class]))
-		return extern_libraries_classes
-
 	def _add_property_group_per_configuration(self, vcproj_tree: ElementTree.ElementTree, nene_module: NeneModule, nene_module_configs: list[NeneModuleConfig]):
 		for nene_module_config in nene_module_configs:
 			property_group = ElementTree.SubElement(vcproj_tree.getroot(), VcTag.PropertyGroup)
@@ -254,7 +242,7 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 			ElementTree.SubElement(property_group, VcTag.OutDir).text = VisualStudioModuleGenerator.PROJ_OUTPUT_PATH
 			ElementTree.SubElement(property_group, VcTag.IntDir).text = VisualStudioModuleGenerator.PROJ_INTERMEDIATE_PATH
 			#
-			dependent_extern_library_classes = self._recursively_find_extern_libraries(nene_module)
+			dependent_extern_library_classes = nene_module.recursively_find_extern_libraries()
 			#
 			include_paths = [
 				# MSVC
@@ -264,10 +252,9 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 				# Module
 				"$(ProjectDir)",
 			]
+			# Add all dependent extern's include paths to avoid chain `#include <>`
 			for extern_library_class in dependent_extern_library_classes:
-				include_abs_path = self.extern_libraries[extern_library_class].get_include_abs_path()
-				include_abs_path = include_abs_path.replace("/", "\\")
-				include_paths.append(include_abs_path)
+				include_paths.extend(extern_library_class().get_include_abs_paths())
 			include_paths.extend(nene_module.get_additional_include_folder_abs_paths())
 			include_paths.reverse()
 			ElementTree.SubElement(property_group, VcTag.ExternalIncludePath).text = ";".join(include_paths)
@@ -279,16 +266,15 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 				self.PROJ_OUTPUT_PATH,
 			]
 			for extern_library_class in dependent_extern_library_classes:
-				# Extern libraries only have Release version of libs
-				static_library_path = self.extern_libraries[extern_library_class].get_static_library_directory_abs_path(nene_module_config.platform, nene_module_config.architecture, nene_module_config.configuration)
-				static_library_path = static_library_path.replace("/", "\\")
-				library_paths.append(static_library_path)
+				extern_static_library_directory_abs_pahs = extern_library_class().get_static_library_directory_abs_paths(nene_module_config.platform, nene_module_config.architecture, nene_module_config.configuration)
+				library_paths.extend(extern_static_library_directory_abs_pahs)
 			library_paths.reverse()
 			ElementTree.SubElement(property_group, VcTag.LibraryPath).text = ";".join(library_paths)
 			pass
 		pass
 
-	def _add_item_definition_group_per_configuration(self, vcproj_tree: ElementTree.ElementTree, nene_module: NeneModule, nene_module_configs: list[NeneModuleConfig]):
+	@staticmethod
+	def _add_item_definition_group_per_configuration(vcproj_tree: ElementTree.ElementTree, nene_module: NeneModule, nene_module_configs: list[NeneModuleConfig]):
 		for nene_module_config in nene_module_configs:
 			#
 			item_definition_group = ElementTree.SubElement(vcproj_tree.getroot(), VcTag.ItemDefinitionGroup)
@@ -326,12 +312,12 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 
 			# Dependencies
 			additional_dependencies = []
-			for dep in nene_module.module_dependencies:
-				additional_dependencies.append(self.nene_modules[dep].name + ".lib")
+			for dependent_nene_module_class in nene_module.module_dependencies:
+				additional_dependencies.append(dependent_nene_module_class().name + ".lib")
 			# External Libraries
-			dependent_extern_library_classes = self._recursively_find_extern_libraries(nene_module)
-			for extern_library_class in dependent_extern_library_classes:
-				additional_dependencies.extend(self.extern_libraries[extern_library_class].get_static_library_filenames(nene_module_config.platform, nene_module_config.architecture, nene_module_config.configuration))
+			for extern_library_class in nene_module.recursively_find_extern_libraries():
+				extern_static_library_filenames = extern_library_class().get_static_library_filenames(nene_module_config.platform, nene_module_config.architecture, nene_module_config.configuration)
+				additional_dependencies.extend(extern_static_library_filenames)
 			# System Libraries
 			additional_dependencies.extend(nene_module.system_library_dependencies)
 
@@ -342,16 +328,19 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 			# Build Events
 			py_module_name = "%s.%s" % ("source", nene_module.name)
 			py_import_command = "import %s" % py_module_name
+			platform_str = "%s.%s" % (nene_module_config.platform.__class__.__name__, nene_module_config.platform.name)
+			architecture_str = "%s.%s" % (nene_module_config.architecture.__class__.__name__, nene_module_config.architecture.name)
+			configuration_str = "%s.%s" % (nene_module_config.configuration.__class__.__name__, nene_module_config.configuration.name)
 			# Pre Build Event
-			if utils.overloaded(nene_module.__class__, "prebuild"):
+			if utils.overloaded(nene_module.prebuild):
 				pre_build_event = ElementTree.SubElement(item_definition_group, VcTag.PreBuildEvent)
-				call_function_command = "%s.%s.prebuild()" % (py_module_name, nene_module.__class__.__name__)
-				ElementTree.SubElement(pre_build_event, VcTag.Command).text = "cd %s\npy -3 -c \"import sys; sys.dont_write_bytecode = True; %s; %s\"" % (VcMacro.SolutionDir, py_import_command, call_function_command)
+				call_function_command = "%s.%s.prebuild(%s, %s, %s)" % (py_module_name, nene_module.__class__.__name__, platform_str, architecture_str, configuration_str)
+				ElementTree.SubElement(pre_build_event, VcTag.Command).text = "cd %s\npy -3 -c \"import sys; sys.dont_write_bytecode = True; from script.builder.common.build_common import *; %s; %s\"" % (VcMacro.SolutionDir, py_import_command, call_function_command)
 			# Post Build Event
-			if utils.overloaded(nene_module.__class__, "postbuild"):
+			if utils.overloaded(nene_module.postbuild):
 				post_build_event = ElementTree.SubElement(item_definition_group, VcTag.PostBuildEvent)
-				call_function_command = "%s.%s.postbuild()" % (py_module_name, nene_module.__class__.__name__)
-				ElementTree.SubElement(post_build_event, VcTag.Command).text = "cd %s\npy -3 -c \"import sys; sys.dont_write_bytecode = True; %s; %s\"" % (VcMacro.SolutionDir, py_import_command, call_function_command)
+				call_function_command = "%s.%s.postbuild(%s, %s, %s)" % (py_module_name, nene_module.__class__.__name__, platform_str, architecture_str, configuration_str)
+				ElementTree.SubElement(post_build_event, VcTag.Command).text = "cd %s\npy -3 -c \"import sys; sys.dont_write_bytecode = True; from script.builder.common.build_common import *; %s; %s\"" % (VcMacro.SolutionDir, py_import_command, call_function_command)
 		pass
 
 	@staticmethod
@@ -365,17 +354,17 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 		source_folder_abs_path = [module_root_abs_path]
 		source_folder_abs_path.extend(nene_module.get_additional_source_folder_abs_paths())
 		#
-		for root, _, files in os.walk(module_root_abs_path):
-			for filename in files:
-				if filename.endswith(".cpp"):
-					source_path = os.path.relpath(os.path.join(root, filename), module_root_abs_path)
-					cpp_source_paths.append(source_path)
-				elif filename.endswith(".h") or filename.endswith(".inl") or filename.endswith(".hpp"):
-					header_path = os.path.relpath(os.path.join(root, filename), module_root_abs_path)
-					cpp_header_paths.append(header_path)
-				elif filename == "__init__.py" or filename.endswith(".xml"):
-					content_path = os.path.relpath(os.path.join(root, filename), module_root_abs_path)
-					other_content_paths.append(content_path)
+		for source_folder_abs_path in source_folder_abs_path:
+			for root, _, files in os.walk(source_folder_abs_path):
+				for filename in files:
+					file_path = os.path.join(root, filename)
+					file_path = os.path.relpath(file_path, module_root_abs_path)
+					if filename.endswith(".cpp"):
+						cpp_source_paths.append(file_path)
+					elif filename.endswith(".h") or filename.endswith(".inl") or filename.endswith(".hpp"):
+						cpp_header_paths.append(file_path)
+					elif filename == "__init__.py" or filename.endswith(".xml"):
+						other_content_paths.append(file_path)
 		# C++ Includes
 		item_group_includes = ElementTree.SubElement(vcproj_tree.getroot(), VcTag.ItemGroup)
 		for header_path in cpp_header_paths:

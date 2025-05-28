@@ -6,6 +6,6 @@ from script.builder.common.nene_module import *
 
 
 class NeneProject(object):
-	def __init__(self, nene_modules: dict[type[NeneModule], NeneModule]):
-		self.nene_modules: dict[type[NeneModule], NeneModule] = nene_modules
+	def __init__(self, nene_module_classes: list[type[NeneModule]]):
+		self.nene_module_classes: list[type[NeneModule]] = nene_module_classes
 		pass

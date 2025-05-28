@@ -33,7 +33,8 @@ class ReadmeBuilder(object):
 		mermaids = "```mermaid\n"
 		mermaids = mermaids + "graph TD\n"
 
-		for nene_module in nene_project.nene_modules.values():
+		for nene_module_class in nene_project.nene_module_classes:
+			nene_module = nene_module_class()
 			depend_nene_modules = nene_module.module_dependencies
 			for depend_nene_module in depend_nene_modules:
 				mermaids = mermaids + ("  %s --> %s\n" % (depend_nene_module.__name__, nene_module.__class__.__name__))

@@ -14,8 +14,8 @@ class GapiD3D12(NeneModule):
 	def available(cls):
 		return BuildConfiguration().platform == Platform.Windows
 
-	def __init__(self, name: str):
-		super().__init__(name)
+	def __init__(self):
+		super().__init__()
 		self.module_dependencies.extend(
 			[Core, Gapi]
 		)

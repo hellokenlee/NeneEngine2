@@ -22,8 +22,6 @@ class VisualStudioConfig(metaclass=Singleton):
 		self._window_sdk_version = ""
 		self._windows_sdk_install_path = ""
 		#
-		log("Detecting Visual Studio version...", "\n")
-		#
 		vswhere_abs_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "tool", "vswhere.exe")
 		result = subprocess.run([vswhere_abs_path], capture_output=True, text=True, check=True)
 		for line in result.stdout.split("\n"):
@@ -49,6 +47,7 @@ class VisualStudioConfig(metaclass=Singleton):
 		return self._window_sdk_version
 
 	def print_brief(self):
+		log("Detected Visual Studio:", "\n")
 		log("Vistual Studio Version: %s" % self.current_version())
 		log("Vistual Studio Install Path: %s" % self.install_path())
 		log("Windows SDK Version: %s" % self.windows_sdk_version())

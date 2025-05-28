@@ -2,7 +2,6 @@
 # __author__ = "KenLee"
 # __email__ = "hellokenlee@163.com"
 
-import os
 from script.builder.common.nene_module import *
 from script.builder.common.project_generator import *
 from script.builder.vistual_studio.solution import *
@@ -18,6 +17,11 @@ class VisualStudioSolutionGenerator(ProjectGenerator):
 	Refs: https://learn.microsoft.com/en-us/visualstudio/extensibility/internals/solution-dot-sln-file?view=vs-2022
 	"""
 
+	CONST_MODULE_VCXPROJECT_GUIDS = {
+		ModuleCategory.App: "{174E1B50-38D0-4F5C-B5AC-74C1248197D8}",
+		ModuleCategory.Library: "{186E0ADC-35CD-48B9-BA78-A47C5BA414E4}",
+	}
+
 	def generate(self, nene_project: NeneProject):
 		# Generate `.sln` file
 		solution = Solution()
@@ -27,14 +31,19 @@ class VisualStudioSolutionGenerator(ProjectGenerator):
 		solution.min_vs_version.value = VisualStudioConfig.MIN_VS_VERSION
 
 		# Collect module guids
-		nene_module_guids: Dict[Type[NeneModule], str] = {}
-		for nene_module_class, nene_module in nene_project.nene_modules.items():
-			guid = VisualStudioModuleGenerator.read_existing_vcproj_file_guid(nene_module)
+		nene_module_guids: dict[type[NeneModule], str] = {}
+		for nene_module_class in nene_project.nene_module_classes:
+			guid = VisualStudioModuleGenerator.read_existing_vcproj_file_guid(nene_module_class())
 			nene_module_guids[nene_module_class] = guid.upper()
-			pass
+
+		# Categorys
+		for cat in ModuleCategory:
+			project = Project(VisualStudioProjectTypeGuid.Solution_Folder.value, cat.value, cat.value, self.CONST_MODULE_VCXPROJECT_GUIDS[cat])
+			solution.projects.append(project)
 
 		# Write module dependencies
-		for nene_module_class, nene_module in nene_project.nene_modules.items():
+		for nene_module_class in nene_project.nene_module_classes:
+			nene_module = nene_module_class()
 			vcx_proj_rel_path = os.path.relpath(VisualStudioModuleGenerator.get_existing_vcproj_file_path(nene_module), BuildConfiguration().engine_root_abs_path)
 			project = Project(VisualStudioProjectTypeGuid.Cxx.value, nene_module.name, vcx_proj_rel_path, nene_module_guids[nene_module_class])
 			project_section = ProjectSection("ProjectDependencies", "postProject")
@@ -60,8 +69,8 @@ class VisualStudioSolutionGenerator(ProjectGenerator):
 
 		for config_platform in config_platforms:
 			solution.globals.solution_configuration_platforms.attribs.append(Attribute(config_platform, config_platform))
-
-		for nene_module_class, nene_module in nene_project.nene_modules.items():
+		#
+		for nene_module_class in nene_project.nene_module_classes:
 			guid = nene_module_guids[nene_module_class]
 			for config_platform in config_platforms:
 				attribute = Attribute("%s.%s.ActiveCfg" % (guid, config_platform), config_platform)
@@ -70,10 +79,17 @@ class VisualStudioSolutionGenerator(ProjectGenerator):
 				solution.globals.project_configuration_platforms.attribs.append(attribute)
 		#
 		solution.globals.solution_properties.attribs.append(Attribute("HideSolutionNode", "FALSE"))
+		#
 		guid = self.read_existing_sln_file_guid(nene_project)
 		if guid:
 			solution.globals.extensibility_globals.attribs.append(Attribute("SolutionGuid", guid))
+		#
+		for nene_module_class in nene_project.nene_module_classes:
+			module_guid = nene_module_guids[nene_module_class]
+			category_guid = self.CONST_MODULE_VCXPROJECT_GUIDS[nene_module_class().category]
+			solution.globals.nested_projects.attribs.append(Attribute(module_guid, category_guid))
 
+		#
 		sln_path = os.path.join(BuildConfiguration().engine_root_abs_path, nene_project.__class__.__name__ + ".sln")
 		solution.save(sln_path)
 		print("[NBT] Save Visual Studio Solution File: %s" % sln_path)

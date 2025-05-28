@@ -22,8 +22,6 @@ class PySideConfig(metaclass=Singleton):
 		self._shiboken_generator_version = ""
 		self._shiboken_generator_install_path = ""
 		#
-		log("Detecting PySide version...", "\n")
-		#
 		self._pyside_version = importlib.metadata.version(self.PYSIDE6)
 		#
 		filepath = [filepath for filepath in importlib.metadata.files(self.PYSIDE6) if "__init__.py" in str(filepath)][0]
@@ -43,7 +41,7 @@ class PySideConfig(metaclass=Singleton):
 	def pyside_install_path(self):
 		return self._pyside_install_path
 
-	def pyside_include_path(self):
+	def pyside_include_path(self) -> str:
 		return os.path.join(self._pyside_install_path, "include")
 
 	def pyside_typesystem_abs_path(self):
@@ -59,6 +57,8 @@ class PySideConfig(metaclass=Singleton):
 		return os.path.join(self._shiboken_generator_install_path, "include")
 
 	def print_brief(self):
+		#
+		log("DetectedPySide", "\n")
 		log("PySide version: %s" % self.version())
 		log("PySide install path: %s" % self.pyside_install_path())
 		log("Shiboken version: %s" % self._shiboken_generator_version)

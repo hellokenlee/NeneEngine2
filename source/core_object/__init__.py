@@ -12,8 +12,8 @@ from extern.nlohmann_json import NlohmannJoson
 
 class CoreObject(NeneModule):
 
-    def __init__(self, name: str):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__()
         self.module_dependencies.extend(
             [Core]
         )
