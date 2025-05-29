@@ -4,7 +4,7 @@
 #include "core/core.h"
 #include <python.h>
 
-extern "C" NENE_API PyObject *PyInit_nene_qt();
+extern "C" NENE_API PyObject* NENE_CAT(PyInit_, NENE_EDITOR_MODULE_NAME)();
 
 namespace qt
 {
@@ -21,7 +21,7 @@ namespace qt
 			assert(!PyErr_Occurred());
 			throw std::runtime_error("Can't add new modules after the interpreter has been initialized");
 		}
-		auto result = PyImport_AppendInittab("nene_qt", PyInit_nene_qt);
+		auto result = PyImport_AppendInittab(NENE_STR(NENE_EDITOR_MODULE_NAME), NENE_CAT(PyInit_, NENE_EDITOR_MODULE_NAME));
 		if (result == -1)
 		{
 			assert(!PyErr_Occurred());

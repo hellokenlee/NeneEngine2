@@ -3,6 +3,9 @@
 # __email__ = "hellokenlee@163.com"
 
 import inspect
+import pathlib
+import time
+
 
 def overloaded(method: callable):
 	assert inspect.ismethod(method)
@@ -13,6 +16,8 @@ def overloaded(method: callable):
 		return method.__func__ != base_method.__func__
 	return False
 
-
 def posix_path(path_str: str) -> str:
 	return path_str.replace("\\", "/")
+
+def get_modify_time(path_str: str) -> float:
+	return pathlib.Path(path_str).stat().st_mtime

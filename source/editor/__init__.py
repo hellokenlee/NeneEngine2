@@ -6,6 +6,7 @@ import sys
 import shutil
 import tempfile
 import subprocess
+from xml.etree import ElementTree
 
 from extern.qt import Qt
 from extern.python import Python
@@ -14,11 +15,15 @@ from source.core import Core
 from source.core_object import CoreObject
 
 from script.builder.common.nene_module import *
+from script.builder.common import utils
 from script.builder.pyside_config import PySideConfig
 
 
 class Editor(NeneModule):
 
+	QT_FOLODER = "qt"
+	BINDING_H_FILEPATH = os.path.join(QT_FOLODER, "bindings.h")
+	BINDING_XML_FILEPATH = os.path.join(QT_FOLODER, "bindings.xml")
 	TARGET_EXEC_FOLDER = os.path.join(".bin", "binary", "{Architecture}", "{Configuration}")
 	GENERATED_MOC_TARGET_FOLDER = os.path.join(".bin", "intermediate", "editor", "qt_moc")
 	GENERATED_BINDING_TARGET_FOLDER = os.path.join(".bin", "intermediate", "editor", "qt_binding")
@@ -43,7 +48,7 @@ class Editor(NeneModule):
 			["/Zc:__cplusplus"]
 		)
 		module_config.compiler.preprocessor_definitions.extend(
-			["BINDINGS_BUILD"]
+			["_WINDLL", "NENE_EDITOR_MODULE_NAME=%s" % self._read_binding_module_name()]
 		)
 		# Deactivated "#pragma comment(lib)" in "$(PYTHON_HOME)/include/pyconfig.h"
 		module_config.linker.additional_linker_flags.extend(
@@ -67,7 +72,7 @@ class Editor(NeneModule):
 
 	def get_additional_include_folder_abs_paths(self) -> list[str]:
 		# cpp widgets files
-		return [os.path.join(self.root_abs_path(), "qt")]
+		return [os.path.join(self.root_abs_path(), self.QT_FOLODER)]
 
 	@classmethod
 	def _moc_target_folder_abs_path(cls) -> str:
@@ -79,8 +84,9 @@ class Editor(NeneModule):
 
 	@classmethod
 	def run_qt_moc(cls):
-		# Moc all `.h` files in `source/editor/qt/`
-		editor_qt_root_abs_path = os.path.join(cls.root_abs_path(), "qt")
+		# moc all `.h` files in `source/editor/qt/`
+		editor_qt_root_abs_path = os.path.join(cls.root_abs_path(), cls.QT_FOLODER)
+
 		mocable_file_abs_paths = []
 		for root, _, files in os.walk(editor_qt_root_abs_path):
 			for filename in files:
@@ -105,18 +111,21 @@ class Editor(NeneModule):
 
 	@classmethod
 	def run_pyside_shiboken(cls):
-		#
+		# refs: https://doc.qt.io/qtforpython-6/shiboken6/gettingstarted.html#using-the-wheels
 		shiboken_command = [
 			# exe
 			PySideConfig().shiboken_generator_abs_path(),
 			# options
+			"--compiler=msvc",
 			"--generator-set=shiboken",
 			"--enable-parent-ctor-heuristic",
 			"--enable-pyside-extensions",
 			"--enable-return-value-heuristic",
 			"--use-isnull-as-nb_nonzero",
 			"--avoid-protected-hack",
+			"--clang-option=-Wno-unused-command-line-argument",
 			# includes
+			"-I%s" % os.path.join(cls.engine_root_abs_path(), "source"),
 			"-I%s" % os.path.join(Qt().get_include_abs_paths()[0], "QtWidgets"),
 			"-I%s" % Qt().get_include_abs_paths()[0],
 			"-I%s" % cls().get_additional_include_folder_abs_paths()[0],
@@ -126,9 +135,9 @@ class Editor(NeneModule):
 			# outputs
 			"--output-directory=%s" % cls._shiboken_target_folder_abs_path(),
 			# input for `.h`
-			os.path.join(cls.root_abs_path(), "qt", "bindings.h"),
+			os.path.join(cls.root_abs_path(), cls.BINDING_H_FILEPATH),
 			# input for `.xml`
-			os.path.join(cls.root_abs_path(), "qt", "bindings.xml"),
+			os.path.join(cls.root_abs_path(), cls.BINDING_XML_FILEPATH),
 		]
 		#
 		print("Executing: `%s`" % " ".join(shiboken_command))
@@ -136,14 +145,31 @@ class Editor(NeneModule):
 		env = {
 			'TEMP': tempfile.gettempdir(),
 			'TMP': tempfile.gettempdir(),
+			"LLVM_INSTALL_DIR": os.path.join(PySide.root_abs_path(), "llvm"),
 		}
 		subprocess.run(" ".join(shiboken_command), shell=True, env=env)
+		# rename the module directory
+		src_target_folder_path = os.path.join(cls._shiboken_target_folder_abs_path(), cls._read_binding_module_name())
+		dst_target_folder_path = os.path.join(cls._shiboken_target_folder_abs_path(), "qt_pyside")
+		shutil.rmtree(dst_target_folder_path, ignore_errors=True)
+		shutil.move(src_target_folder_path, dst_target_folder_path)
+		print("rename `%s` -> `%s`" % (src_target_folder_path, dst_target_folder_path))
 		pass
 
 	@classmethod
 	def prebuild(cls, platform: Platform, arch: Architecture, con: Configuration):
-		cls.run_qt_moc()
-		cls.run_pyside_shiboken()
+		#
+		editor_qt_root_abs_path = os.path.join(cls.root_abs_path(), cls.QT_FOLODER)
+		#
+		if utils.get_modify_time(editor_qt_root_abs_path) < utils.get_modify_time(cls._moc_target_folder_abs_path()):
+			print("nothing changed. skipped moc.")
+		else:
+			cls.run_qt_moc()
+		#
+		if utils.get_modify_time(editor_qt_root_abs_path) < utils.get_modify_time(cls._shiboken_target_folder_abs_path()):
+			print("nothing changed. skipped shiboken.")
+		else:
+			cls.run_pyside_shiboken()
 		pass
 
 	@classmethod
@@ -160,3 +186,9 @@ class Editor(NeneModule):
 							print("cp %s -> %s" % (dynamic_library_file_abs_path, target_dynamic_library_file_abs_path))
 							shutil.copyfile(dynamic_library_file_abs_path, target_dynamic_library_file_abs_path)
 		pass
+
+	@classmethod
+	def _read_binding_module_name(cls) -> str:
+		bindings_xml = ElementTree.parse(os.path.join(cls.root_abs_path(), cls.BINDING_XML_FILEPATH))
+		assert bindings_xml.getroot().tag == "typesystem"
+		return bindings_xml.getroot().attrib["package"]

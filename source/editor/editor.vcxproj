@@ -46,21 +46,21 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir).bin\binary\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir).bin\intermediate\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <ExternalIncludePath>C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\source\editor\qt;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\pybind11\3.0.0\inc;C:\Python313\include;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\nlohmann_json\3.12.0\inc;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\rttr\0.9.7\inc;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\qt\6.9.0\inc\QtWidgets;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\qt\6.9.0\inc\QtGui;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\qt\6.9.0\inc\QtCore;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\qt\6.9.0\inc;C:\Python313\Lib\site-packages\shiboken6_generator\include;C:\Python313\Lib\site-packages\PySide6\include\QtWidgets;C:\Python313\Lib\site-packages\PySide6\include\QtGui;C:\Python313\Lib\site-packages\PySide6\include\QtCore;C:\Python313\Lib\site-packages\PySide6\include;$(ProjectDir);$(SolutionDir)source\;$(ExternalIncludePath)</ExternalIncludePath>
-    <LibraryPath>C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\pybind11\3.0.0\lib\windows\x64\Debug;C:\Python313\libs;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\nlohmann_json\3.12.0\lib\windows\x64\Debug;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\rttr\0.9.7\lib\windows\x64\Debug;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\qt\6.9.0\lib\windows\x64\Release;C:\Python313\Lib\site-packages\shiboken6;C:\Python313\Lib\site-packages\PySide6;$(SolutionDir).bin\binary\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <ExternalIncludePath>C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\source\editor\qt;C:\Python313\Lib\site-packages\shiboken6_generator\include;C:\Python313\Lib\site-packages\PySide6\include\QtWidgets;C:\Python313\Lib\site-packages\PySide6\include\QtGui;C:\Python313\Lib\site-packages\PySide6\include\QtCore;C:\Python313\Lib\site-packages\PySide6\include;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\rttr\0.9.7\inc;C:\Python313\include;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\pybind11\3.0.0\inc;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\nlohmann_json\3.12.0\inc;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\qt\6.9.0\inc\QtWidgets;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\qt\6.9.0\inc\QtGui;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\qt\6.9.0\inc\QtCore;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\qt\6.9.0\inc;$(ProjectDir);$(SolutionDir)source\;$(ExternalIncludePath)</ExternalIncludePath>
+    <LibraryPath>C:\Python313\Lib\site-packages\shiboken6;C:\Python313\Lib\site-packages\PySide6;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\rttr\0.9.7\lib\windows\x64\Debug;C:\Python313\libs;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\pybind11\3.0.0\lib\windows\x64\Debug;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\nlohmann_json\3.12.0\lib\windows\x64\Debug;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\qt\6.9.0\lib\windows\x64\Release;$(SolutionDir).bin\binary\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir).bin\binary\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir).bin\intermediate\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <ExternalIncludePath>C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\source\editor\qt;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\pybind11\3.0.0\inc;C:\Python313\include;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\nlohmann_json\3.12.0\inc;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\rttr\0.9.7\inc;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\qt\6.9.0\inc\QtWidgets;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\qt\6.9.0\inc\QtGui;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\qt\6.9.0\inc\QtCore;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\qt\6.9.0\inc;C:\Python313\Lib\site-packages\shiboken6_generator\include;C:\Python313\Lib\site-packages\PySide6\include\QtWidgets;C:\Python313\Lib\site-packages\PySide6\include\QtGui;C:\Python313\Lib\site-packages\PySide6\include\QtCore;C:\Python313\Lib\site-packages\PySide6\include;$(ProjectDir);$(SolutionDir)source\;$(ExternalIncludePath)</ExternalIncludePath>
-    <LibraryPath>C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\pybind11\3.0.0\lib\windows\x64\Release;C:\Python313\libs;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\nlohmann_json\3.12.0\lib\windows\x64\Release;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\rttr\0.9.7\lib\windows\x64\Release;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\qt\6.9.0\lib\windows\x64\Release;C:\Python313\Lib\site-packages\shiboken6;C:\Python313\Lib\site-packages\PySide6;$(SolutionDir).bin\binary\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <ExternalIncludePath>C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\source\editor\qt;C:\Python313\Lib\site-packages\shiboken6_generator\include;C:\Python313\Lib\site-packages\PySide6\include\QtWidgets;C:\Python313\Lib\site-packages\PySide6\include\QtGui;C:\Python313\Lib\site-packages\PySide6\include\QtCore;C:\Python313\Lib\site-packages\PySide6\include;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\rttr\0.9.7\inc;C:\Python313\include;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\pybind11\3.0.0\inc;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\nlohmann_json\3.12.0\inc;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\qt\6.9.0\inc\QtWidgets;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\qt\6.9.0\inc\QtGui;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\qt\6.9.0\inc\QtCore;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\qt\6.9.0\inc;$(ProjectDir);$(SolutionDir)source\;$(ExternalIncludePath)</ExternalIncludePath>
+    <LibraryPath>C:\Python313\Lib\site-packages\shiboken6;C:\Python313\Lib\site-packages\PySide6;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\rttr\0.9.7\lib\windows\x64\Release;C:\Python313\libs;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\pybind11\3.0.0\lib\windows\x64\Release;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\nlohmann_json\3.12.0\lib\windows\x64\Release;C:\Users\gzlixiaoliang\Qsync\Workspace\NeneEngine2\extern\qt\6.9.0\lib\windows\x64\Release;$(SolutionDir).bin\binary\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;BINDINGS_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_WINDLL;NENE_EDITOR_MODULE_NAME=nene_editor;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <DisableSpecificWarnings>4251;4819;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <AdditionalOptions>/Zc:__cplusplus</AdditionalOptions>
@@ -68,7 +68,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>core.lib;core_object.lib;pyside6.abi3.lib;pyside6qml.abi3.lib;shiboken6.abi3.lib;Qt6Core.lib;Qt6Gui.lib;Qt6Widgets.lib;librttr_core_d.lib;python3_d.lib;python313_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>core.lib;core_object.lib;Qt6Core.lib;Qt6Gui.lib;Qt6Widgets.lib;python3_d.lib;python313_d.lib;librttr_core_d.lib;pyside6.abi3.lib;pyside6qml.abi3.lib;shiboken6.abi3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/ignore:4099 /ignore:4075 /NODEFAULTLIB:python313.lib /NODEFAULTLIB:python313_d.lib</AdditionalOptions>
     </Link>
     <PreBuildEvent>
@@ -86,7 +86,7 @@ py -3 -c "import sys; sys.dont_write_bytecode = True; from script.builder.common
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;BINDINGS_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;_WINDLL;NENE_EDITOR_MODULE_NAME=nene_editor;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <DisableSpecificWarnings>4251;4819;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <AdditionalOptions>/Zc:__cplusplus</AdditionalOptions>
@@ -96,7 +96,7 @@ py -3 -c "import sys; sys.dont_write_bytecode = True; from script.builder.common
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>core.lib;core_object.lib;pyside6.abi3.lib;pyside6qml.abi3.lib;shiboken6.abi3.lib;Qt6Core.lib;Qt6Gui.lib;Qt6Widgets.lib;librttr_core.lib;python3.lib;python313.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>core.lib;core_object.lib;Qt6Core.lib;Qt6Gui.lib;Qt6Widgets.lib;python3.lib;python313.lib;librttr_core.lib;pyside6.abi3.lib;pyside6qml.abi3.lib;shiboken6.abi3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/ignore:4099 /ignore:4075 /NODEFAULTLIB:python313.lib /NODEFAULTLIB:python313_d.lib</AdditionalOptions>
     </Link>
     <PreBuildEvent>
@@ -110,22 +110,23 @@ py -3 -c "import sys; sys.dont_write_bytecode = True; from script.builder.common
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="qt\bindings.h" />
-    <ClInclude Include="qt\macros.h" />
+    <ClInclude Include="qt\nene_viewport_widget.h" />
     <ClInclude Include="qt\qt.h" />
     <ClInclude Include="qt\wigglywidget.h" />
-    <ClInclude Include="..\..\.bin\intermediate\editor\qt_binding\nene_qt\nene_qt_python.h" />
-    <ClInclude Include="..\..\.bin\intermediate\editor\qt_binding\nene_qt\wigglywidget_wrapper.h" />
+    <ClInclude Include="..\..\.bin\intermediate\editor\qt_binding\qt_pyside\nene_editor_python.h" />
+    <ClInclude Include="..\..\.bin\intermediate\editor\qt_binding\qt_pyside\wigglywidget_wrapper.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="qt\nene_viewport_widget.cpp" />
     <ClCompile Include="qt\qt.cpp" />
     <ClCompile Include="qt\wigglywidget.cpp" />
     <ClCompile Include="..\..\.bin\intermediate\editor\qt_moc\moc_bindings.cpp" />
-    <ClCompile Include="..\..\.bin\intermediate\editor\qt_moc\moc_macros.cpp" />
+    <ClCompile Include="..\..\.bin\intermediate\editor\qt_moc\moc_nene_viewport_widget.cpp" />
     <ClCompile Include="..\..\.bin\intermediate\editor\qt_moc\moc_qt.cpp" />
     <ClCompile Include="..\..\.bin\intermediate\editor\qt_moc\moc_wigglywidget.cpp" />
-    <ClCompile Include="..\..\.bin\intermediate\editor\qt_binding\nene_qt\nene_qt_module_wrapper.cpp" />
-    <ClCompile Include="..\..\.bin\intermediate\editor\qt_binding\nene_qt\wigglywidget_wrapper.cpp" />
+    <ClCompile Include="..\..\.bin\intermediate\editor\qt_binding\qt_pyside\nene_editor_module_wrapper.cpp" />
+    <ClCompile Include="..\..\.bin\intermediate\editor\qt_binding\qt_pyside\wigglywidget_wrapper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="__init__.py" />

@@ -105,6 +105,7 @@
     <ClInclude Include="pattern.h" />
     <ClInclude Include="platform.h" />
     <ClInclude Include="types.h" />
+    <ClInclude Include="windll.h" />
     <ClInclude Include="async\taskflow\taskflow.hpp" />
     <ClInclude Include="async\taskflow\algorithm\critical.hpp" />
     <ClInclude Include="async\taskflow\algorithm\data_pipeline.hpp" />

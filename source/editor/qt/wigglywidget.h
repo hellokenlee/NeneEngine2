@@ -4,13 +4,13 @@
 #ifndef WIGGLYWIDGET_H
 #define WIGGLYWIDGET_H
 
-#include "macros.h"
+#include "core/windll.h"
 
 #include <QtWidgets/QWidget>
 #include <QtCore/QBasicTimer>
 
 //! [0]
-class BINDINGS_API WigglyWidget : public QWidget
+class NENE_API WigglyWidget : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY(bool running READ isRunning WRITE setRunning)

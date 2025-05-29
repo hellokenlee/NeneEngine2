@@ -12,7 +12,7 @@ DEFINE_LOG_CATEGORY(engine)
 
 std::shared_ptr<i::renderer> engine_loop::m_renderer = nullptr;
 
-void engine_loop::init(void* window)
+void engine_loop::initialize(void* window)
 {
 	//
 	LOG(engine, info, "Engine Init!");
@@ -42,4 +42,9 @@ void engine_loop::shutdown()
 	
 	//
 	LOG(engine, info, "Engine Shutdown!");
+}
+
+bool engine_loop::is_initialized()
+{
+	return m_renderer != nullptr;
 }

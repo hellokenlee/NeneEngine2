@@ -5,7 +5,7 @@ from __future__ import annotations
 from PySide6.QtWidgets import QDialog, QLineEdit, QVBoxLayout
 
 # Python binding from the C++ widget
-from  import WigglyWidget as WigglyWidgetCPP
+from nene_editor import WigglyWidget as WigglyWidgetCPP
 from .wigglywidget import WigglyWidget as WigglyWidgetPY
 
 
@@ -14,7 +14,6 @@ class Dialog(QDialog):
         super().__init__(parent)
         wiggly_widget_py = WigglyWidgetPY(self)
         wiggly_widget_cpp = WigglyWidgetCPP(self)
-        print(wiggly_widget_cpp)
         lineEdit = QLineEdit(self)
 
         layout = QVBoxLayout(self)

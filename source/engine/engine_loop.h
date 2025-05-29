@@ -12,11 +12,13 @@ public:
 	engine_loop() = delete;
 	~engine_loop() = delete;
 	
-	static void init(void* window);
+	static void initialize(void* window);
 
 	static void update();
 
 	static void shutdown();
+
+	static bool is_initialized();
 
 protected:
 	static std::shared_ptr<i::renderer> m_renderer;

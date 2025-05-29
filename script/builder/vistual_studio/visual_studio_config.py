@@ -4,6 +4,8 @@
 
 import os
 import subprocess
+import packaging.version
+
 from script.builder.common.log import log
 from script.builder.common.singleton import Singleton
 
@@ -24,7 +26,11 @@ class VisualStudioConfig(metaclass=Singleton):
 		#
 		vswhere_abs_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "tool", "vswhere.exe")
 		result = subprocess.run([vswhere_abs_path], capture_output=True, text=True, check=True)
-		for line in result.stdout.split("\n"):
+		# multi instances
+		infos = result.stdout.split("\n\n")
+		# first section is copyright
+		assert len(infos) > 1
+		for line in infos[1].split("\n"):
 			key_value = line.split(": ")
 			if len(key_value) == 2:
 				self.attributes[key_value[0]] = key_value[1]
@@ -35,6 +41,24 @@ class VisualStudioConfig(metaclass=Singleton):
 		#
 		assert self._windows_sdk_install_path
 		self._window_sdk_version = os.listdir(self._windows_sdk_install_path)[0]
+
+		#
+		self._msvc_version = "uninstalled"
+		self._msvc_install_path = "uninstalled"
+		msvc_parent_dir_abs_path = os.path.join(self.attributes["installationPath"], "VC", "Tools", "MSVC")
+		versions = []
+		if os.path.exists(msvc_parent_dir_abs_path):
+			for version in os.listdir(msvc_parent_dir_abs_path):
+				try:
+					packaging.version.Version(version)
+					versions.append(version)
+				except packaging.version.InvalidVersion:
+					pass
+			versions.sort()
+			if len(versions) > 1:
+				# latest
+				self._msvc_version = versions[-1]
+			self._msvc_install_path = os.path.join(msvc_parent_dir_abs_path, self._msvc_version)
 		pass
 
 	def current_version(self):
@@ -46,10 +70,18 @@ class VisualStudioConfig(metaclass=Singleton):
 	def windows_sdk_version(self):
 		return self._window_sdk_version
 
+	def msvc_version(self):
+		return self._msvc_version
+
+	def msvc_install_path(self):
+		return self._msvc_install_path
+
 	def print_brief(self):
 		log("Detected Visual Studio:", "\n")
-		log("Vistual Studio Version: %s" % self.current_version())
-		log("Vistual Studio Install Path: %s" % self.install_path())
+		log("Visual Studio Version: %s" % self.current_version())
+		log("Visual Studio Install Path: %s" % self.install_path())
 		log("Windows SDK Version: %s" % self.windows_sdk_version())
 		log("Windows SDK InstallPath: %s" % self._windows_sdk_install_path)
+		log("MSVC Version: %s" % self.msvc_version())
+		log("MSVC InstallPath: %s" % self.msvc_install_path())
 		pass
