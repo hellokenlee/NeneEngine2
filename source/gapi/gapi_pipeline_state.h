@@ -28,8 +28,8 @@ namespace i
 
 		~gapi_pipeline_state() override = default;
 
-		virtual bool is_compute() = 0;
+		virtual bool is_compute() const = 0;
 		
-		virtual bool is_graphics() = 0;
+		virtual bool is_graphics() const = 0;
 	};
 }

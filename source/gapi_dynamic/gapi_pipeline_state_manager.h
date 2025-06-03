@@ -10,11 +10,14 @@
 class NENE_API gapi_pipeline_state_manager : noncopyable
 {
 public:
-	std::shared_ptr<i::gapi_pipeline_state> find_or_create_pipeline_state(const gapi_compute_pipeline_state_desc& desc);
-	std::shared_ptr<i::gapi_pipeline_state> find_or_create_pipeline_state(const gapi_graphics_pipeline_state_desc& desc);
+	static gapi_pipeline_state_manager& get();
 	
-	static std::shared_ptr<gapi_pipeline_state_manager> get();
+	const std::shared_ptr<i::gapi_pipeline_state>& find_or_create_pipeline_state(const gapi_compute_pipeline_state_desc& desc);
+	const std::shared_ptr<i::gapi_pipeline_state>& find_or_create_pipeline_state(const gapi_graphics_pipeline_state_desc& desc);
 
 protected:
 	gapi_pipeline_state_manager();
+
+	std::vector<std::shared_ptr<i::gapi_pipeline_state>> m_compute_pipeline_states;
+	std::vector<std::shared_ptr<i::gapi_pipeline_state>> m_graphics_pipeline_states;
 };

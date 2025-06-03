@@ -12,7 +12,5 @@ namespace i
         global_render_resource() = default;
         
         virtual ~global_render_resource() = default;
-
-        virtual void release() = 0;
     };
 }

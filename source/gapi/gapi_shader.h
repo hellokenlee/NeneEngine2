@@ -5,7 +5,7 @@
 #include "core/core.h"
 
 
-enum class gapi_shader_type
+enum class gapi_shader_type : uint8
 {
 	vertex_shader			= 0,
 	hull_shader				= 1,
@@ -23,7 +23,7 @@ enum class gapi_shader_type
 };
 
 
-enum class gapi_shader_feature_level
+enum class gapi_shader_feature_level : uint8
 {
 	sm_5_1,
 	sm_6_0,
@@ -35,122 +35,53 @@ namespace i
 	*	A gapi shader is an object contains a bindable GPU program to PSO.
 	*
 	*	Equivalents:
-	*		- DX: ``
+	*		- DX: Container of `D3D12_SHADER_BYTECODE`
 	*		- VK: ``
 	*		- MT: ``
 	*/
 	class NENE_API gapi_shader : noncopyable
 	{
 	public:
-		gapi_shader(std::string source, std::string entry, std::string name, const gapi_shader_feature_level& level)
+		gapi_shader(gapi_shader_type stype, gapi_shader_feature_level feature_level)
+			: gapi_shader(stype, feature_level, "", "", "")
+		{}
+		
+		gapi_shader(gapi_shader_type stype, gapi_shader_feature_level feature_level, std::string source, std::string entry, std::string name)
 			: m_is_compiled(false)
+			, m_shader_type(stype)
 			, m_name(std::move(name))
 			, m_shader_source(std::move(source))
 			, m_function_entry(std::move(entry))
-			, m_feature_level(level)
+			, m_feature_level(feature_level)
 		{}
 
 		~gapi_shader() override = default;
 
 		virtual bool compile() = 0;
 
-		virtual gapi_shader_type get_shader_type() = 0;
-
 		bool is_compiled() const { return m_is_compiled; }
+		const gapi_shader_type& get_shader_type() const { return m_shader_type; }
 		const std::string& get_name() const { return m_name; }
 		const std::string& get_shader_source() const { return m_shader_source; }
 		const std::string& get_function_entry() const { return m_function_entry; }
 		const gapi_shader_feature_level& get_feature_level() const { return m_feature_level; }
+
+		template<gapi_shader_type stype>
+		static bool is_a(const std::shared_ptr<gapi_shader>& shader)
+		{
+			if (shader != nullptr)
+			{
+				return shader->get_shader_type() == stype;
+			}
+			return true;
+		}
 		
 	protected:
 		bool m_is_compiled;
+		gapi_shader_type m_shader_type;
 		std::string m_name;
 		std::string m_shader_source;
 		std::string m_function_entry;
 		gapi_shader_feature_level m_feature_level;
-
-		// For multiple inheritance
-		gapi_shader();
-	};
-
-	template<gapi_shader_type shader_type>
-	class NENE_API gapi_shader_base : virtual public gapi_shader
-	{
-	public:
-		using gapi_shader::gapi_shader;
-
-		gapi_shader_type get_shader_type() override { return shader_type; }
-	};
-
-	/**
-	*  Graphics Pipeline Shader Types
-	*/
-	class NENE_API gapi_vertex_shader : public gapi_shader_base<gapi_shader_type::vertex_shader>
-	{
-	public:
-		using gapi_shader_base::gapi_shader_base;
-	};
-
-	class NENE_API gapi_hull_shader : public gapi_shader_base<gapi_shader_type::hull_shader>
-	{
-	public:
-		using gapi_shader_base::gapi_shader_base;
-	};
-
-	class NENE_API gapi_domain_shader : public gapi_shader_base<gapi_shader_type::domain_shader>
-	{
-	public:
-		using gapi_shader_base::gapi_shader_base;
-	};
-
-	class NENE_API gapi_geometry_shader : public gapi_shader_base<gapi_shader_type::geometry_shader>
-	{
-	public:
-		using gapi_shader_base::gapi_shader_base;
-	};
-
-	class NENE_API gapi_pixel_shader : public gapi_shader_base<gapi_shader_type::pixel_shader>
-	{
-	public:
-		using gapi_shader_base::gapi_shader_base;
-	};
-
-	/**
-	*  Compute Pipeline Shader Types 
-	*/
-	class NENE_API gapi_compute_shader : public gapi_shader_base<gapi_shader_type::compute_shader>
-	{
-	public:
-		using gapi_shader_base::gapi_shader_base;
-	};
-
-	/**
-	*  Mesh Pipeline Shader Types 
-	*/
-	class NENE_API gapi_mesh_shader : public gapi_shader_base<gapi_shader_type::mesh_shader>
-	{
-	public:
-		using gapi_shader_base::gapi_shader_base;
-	};
-
-	class NENE_API gapi_amplification_shader : public gapi_shader_base<gapi_shader_type::amplification_shader>
-	{
-	public:
-		using gapi_shader_base::gapi_shader_base;
-	};
-
-	/**
-	*  Ray Tracing Shader Types 
-	*/
-	class NENE_API gapi_ray_gen_shader : public gapi_shader_base<gapi_shader_type::ray_gen_shader>
-	{
-	public:
-		using gapi_shader_base::gapi_shader_base;
-	};
-
-	class NENE_API gapi_ray_tracing_shader : public gapi_shader_base<gapi_shader_type::ray_tracing_shader>
-	{
-	public:
-		using gapi_shader_base::gapi_shader_base;
 	};
 }

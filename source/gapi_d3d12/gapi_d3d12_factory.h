@@ -15,14 +15,14 @@ public:
 
 	static int32 get_d3d12_version();
 	
-	std::shared_ptr<i::gapi_adapter> create_adapter() override;
+	std::shared_ptr<i::gapi_gpu> create_adapter() override;
 
-	std::shared_ptr<i::gapi_swap_chain> create_swap_chain(void* hwnd, const point32& resolution, const uint32& multibuffer, const gapi_pixel_format& pixel_format, const uint32& multisample) override;
+	std::shared_ptr<i::gapi_swap_chain> create_swap_chain(void* hwnd, const upoint32& resolution, const uint32& multibuffer, const gapi_pixel_format& pixel_format, const uint32& multisample) override;
 
 protected:
-	std::vector<std::shared_ptr<i::gapi_adapter>> m_adapters;
+	std::vector<std::shared_ptr<i::gapi_gpu>> m_adapters;
 	
 protected:
-	WinComPtr<IDXGIFactory2> m_factory2;
+	WinComPtr<IDXGIFactory4> m_factory4;
 	WinComPtr<IDXGIFactory7> m_factory7;
 };

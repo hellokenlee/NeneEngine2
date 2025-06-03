@@ -8,32 +8,14 @@
 #include "gapi_d3d12/gapi_d3d12_factory.h"
 #include "gapi_d3d12/gapi_d3d12_shader.h"
 
-
-t::console_var cvar_gapi_platform(
-	"gapi.platform",
-	0,
-	"Select the platform that engine use:\n"
-	"	0: d3d12;\n"
-	"	1: vulkan;\n"
-	"	2: metal;\n"
-);
-
-t::console_var cvar_shader_feature_level(
-	"shader.feature_level",
-	0,
-	"Select the platform that engine use:\n"
-	"	0: shading model 5.0;\n"
-	"	1: shading model 6.0;\n"
-);
-
-static std::shared_ptr<gapi_dynamic> g_gapi_instance = {};
-
-static constexpr int32 g_num_gapi_worker_threads = 2;
+t::console_var<uint32> cvar_gapi_platform("gapi.platform", 0u, "The graphics api that engine use: 0: d3d12; 1: vulkan; 2:metal;");
+t::console_var<uint32> cvar_gapi_num_context_thread("gapi.num_context_thread", 1u, "How many cmd contexts to create;", console_var_flag::read_only);
+t::console_var<uint32> cvar_gapi_shader_feature_level("gapi.shader.feature_level", 0u, "Select the platform that engine use: 0: shading model 5.0;1: shading model 6.0;");
 
 
 gapi_dynamic::gapi_dynamic(const gapi_platform& platform, void* window)
 	: m_factory(nullptr)
-	, m_adapter(nullptr)
+	, m_gpu(nullptr)
 	, m_device(nullptr)
 	, m_swap_chain(nullptr)
 {
@@ -41,60 +23,40 @@ gapi_dynamic::gapi_dynamic(const gapi_platform& platform, void* window)
 	switch (platform)
 	{
 	case gapi_platform::direct3d12:
-		m_factory = std::shared_ptr<gapi_d3d12_factory>(new gapi_d3d12_factory());
+		m_factory = std::make_unique<gapi_d3d12_factory>();
 		break;
 	case gapi_platform::vulkan:
 	case gapi_platform::metal:
-		CHECK(false);
+		NOT_IMPLEMENTED();
 		break;
 	}
 	//
-	m_adapter = m_factory->create_adapter();
-	m_device = m_adapter->create_device();
-	m_swap_chain = m_factory->create_swap_chain(window, point32{800, 600});
+	m_gpu = m_factory->create_adapter();
+	m_device = m_gpu->create_device();
+	m_swap_chain = m_factory->create_swap_chain(window, upoint32{800, 600}, 2);
 	//
-	for (int i = 0; i < g_num_gapi_worker_threads; ++i)
+	for (uint32 i = 0; i < cvar_gapi_num_context_thread.get_value_thread_unsafe(); ++i)
 	{
-		m_cmd_contexts.push_back(std::make_shared<gapi_cmd_context>(m_device));
+		m_cmd_contexts.push_back(std::make_unique<gapi_cmd_context>(m_device));
 	}
 }
 
-gapi_dynamic::~gapi_dynamic()
-{
-	m_swap_chain.reset();
-	m_device.reset();
-	m_adapter.reset();
-	m_factory.reset();
-}
+gapi_dynamic::~gapi_dynamic() = default;
 
-std::shared_ptr<gapi_cmd_context> gapi_dynamic::get_cmd_context(const uint32& thread_id)
+gapi_cmd_context& gapi_dynamic::get_cmd_context(const uint32& context_id) const
 {
-	CHECK(thread_id < g_num_gapi_worker_threads);
-	return m_cmd_contexts[thread_id];
-}
-
-std::shared_ptr<i::gapi_vertex_shader> gapi_dynamic::create_vertex_shader(const std::string& filepath, const std::string& entry) const
-{
-	int32 feature_level = cvar_shader_feature_level.get_value_thread_unsafe();
-	const std::string source = file_helper::load_file_to_string(filepath);
-	return m_device->create_vertex_shader(source, entry, static_cast<gapi_shader_feature_level>(feature_level), std::string("vertex_shader::") + filepath);
-}
-
-std::shared_ptr<i::gapi_pixel_shader> gapi_dynamic::create_pixel_shader(const std::string& filepath, const std::string& entry) const
-{
-	int32 feature_level = cvar_shader_feature_level.get_value_thread_unsafe();
-	const std::string source = file_helper::load_file_to_string(filepath);
-	return m_device->create_pixel_shader(source, entry, static_cast<gapi_shader_feature_level>(feature_level), std::string("piexl_shader::") + filepath);
+	CHECK(context_id < cvar_gapi_num_context_thread.get_value_thread_unsafe());
+	return *m_cmd_contexts[context_id];
 }
 
 std::shared_ptr<i::gapi_pipeline_state> gapi_dynamic::create_compute_pipeline_state(const gapi_compute_pipeline_state_desc& desc) const
 {
-	return gapi_pipeline_state_manager::get()->find_or_create_pipeline_state(desc);
+	return m_device->create_compute_pipeline_state(desc);
 }
 
 std::shared_ptr<i::gapi_pipeline_state> gapi_dynamic::create_graphics_pipeline_state(const gapi_graphics_pipeline_state_desc& desc) const
 {
-	return gapi_pipeline_state_manager::get()->find_or_create_pipeline_state(desc);
+	return m_device->create_graphics_pipeline_state(desc);
 }
 
 std::shared_ptr<i::gapi_buffer> gapi_dynamic::create_buffer(const gapi_resource_desc& desc) const
@@ -114,34 +76,39 @@ std::shared_ptr<i::gapi_texture> gapi_dynamic::create_texture(const gapi_resourc
 }
 
 void gapi_dynamic::start_frame()
-{
-}
+{}
 
 void gapi_dynamic::finish_frame()
 {
-	for (const auto context : m_cmd_contexts)
+	for (auto& context : m_cmd_contexts)
 	{
 		context->flush();
 	}
 }
 
-std::shared_ptr<i::gapi_texture> gapi_dynamic::get_back_buffer_texture() const
+const std::shared_ptr<i::gapi_swap_chain>& gapi_dynamic::get_swap_chain() const
 {
-	return m_swap_chain->get_back_buffer_texture();
+	return m_swap_chain;
 }
+
+const std::shared_ptr<i::gapi_device>& gapi_dynamic::get_device() const
+{
+	return m_device;
+}
+
+std::unique_ptr<gapi_dynamic> gapi_dynamic::s_instance = {};
 
 void gapi_dynamic::create(void* window)
 {
 	CHECK(window != nullptr);
-	CHECK(g_gapi_instance == nullptr);
+	CHECK(s_instance == nullptr);
 	
 	const auto platform = static_cast<gapi_platform>(cvar_gapi_platform.get_value_thread_unsafe());
-	g_gapi_instance = std::shared_ptr<gapi_dynamic>(new gapi_dynamic(platform, static_cast<HWND>(window)));
+	s_instance = std::unique_ptr<gapi_dynamic>(new gapi_dynamic(platform, static_cast<HWND>(window)));
 }
 
-const std::shared_ptr<gapi_dynamic>& gapi_dynamic::get()
+gapi_dynamic& gapi_dynamic::get()
 {
-	CHECKF(g_gapi_instance != nullptr, "Call `gapi_dynamic::create(...)` first for initialization.");
-	
-	return g_gapi_instance;
+	CHECKF(s_instance != nullptr, "Call `gapi_dynamic::create(...)` first for initialization.");
+	return *s_instance;
 }

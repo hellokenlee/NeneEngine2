@@ -2,7 +2,8 @@
 
 #include "gapi_d3d12_factory.h"
 
-#include "gapi_d3d12_adapter.h"
+#include "d3d12_type_cast.h"
+#include "gapi_d3d12_gpu.h"
 #include "gapi_d3d12_cmd_queue.h"
 #include "gapi_d3d12_swap_chain.h"
 #include "gapi_d3d12_swap_chain.h"
@@ -23,7 +24,7 @@ t::console_var cvar_d3d_version(
 
 gapi_d3d12_factory::gapi_d3d12_factory()
 	: gapi_factory()
-	, m_factory2(nullptr)
+	, m_factory4(nullptr)
 	, m_factory7(nullptr)
 {
 	
@@ -43,16 +44,16 @@ gapi_d3d12_factory::gapi_d3d12_factory()
 	}
 	
 	// Get fallback interface
-	VERIFY(CreateDXGIFactory2(dxgi_factory_flags, IID_PPV_ARGS(&m_factory2)));
+	VERIFY(CreateDXGIFactory2(dxgi_factory_flags, IID_PPV_ARGS(&m_factory4)));
 	
-	// Try get newer interface
-	m_factory2->QueryInterface(IID_PPV_ARGS(&m_factory7));
+	// Try to get newer interface
+	m_factory4->QueryInterface(IID_PPV_ARGS(&m_factory7));
 
 	// TODO: Support multiple adapters
 	m_adapters.emplace_back(gapi_d3d12_factory::create_adapter());
 }
 
-std::shared_ptr<i::gapi_adapter> gapi_d3d12_factory::create_adapter()
+std::shared_ptr<i::gapi_gpu> gapi_d3d12_factory::create_adapter()
 {
 	//
 	LOG(d3d12, info, "Listing all adapters:");
@@ -104,10 +105,10 @@ std::shared_ptr<i::gapi_adapter> gapi_d3d12_factory::create_adapter()
 	}
 
 	// Factory 2 api ( fallback )
-	if (adapter1 == nullptr && m_factory2 != nullptr)
+	if (adapter1 == nullptr && m_factory4 != nullptr)
 	{
 		WinComPtr<IDXGIAdapter1> next_adapter = nullptr;
-		for (uint32 index = 0; SUCCEEDED(m_factory2->EnumAdapters1(index, &next_adapter)); ++index)
+		for (uint32 index = 0; SUCCEEDED(m_factory4->EnumAdapters1(index, &next_adapter)); ++index)
 		{
 			select_adapter(next_adapter, adapter1);
 		}
@@ -119,32 +120,35 @@ std::shared_ptr<i::gapi_adapter> gapi_d3d12_factory::create_adapter()
 	LOG(d3d12, info, "Select Adapter %d: %s.", adapter_index, desc.Description);
 
 	//
-	return std::make_shared<gapi_d3d12_adapter>(adapter1);
+	return std::make_shared<gapi_d3d12_gpu>(adapter1);
 }
 
-std::shared_ptr<i::gapi_swap_chain> gapi_d3d12_factory::create_swap_chain(void* hwnd, const point32& resolution, const uint32& multibuffer,
-	const gapi_pixel_format& pixel_format, const uint32& multisample)
+std::shared_ptr<i::gapi_swap_chain> gapi_d3d12_factory::create_swap_chain(void* hwnd, const upoint32& resolution, const uint32& multibuffer, const gapi_pixel_format& pixel_format, const uint32& multisample)
 {
-	DXGI_SWAP_CHAIN_DESC1 desc = {};
+	//
+	DXGI_SWAP_CHAIN_DESC desc = {};
 	desc.BufferCount = multibuffer;
-	desc.Width = resolution.w;
-	desc.Height = resolution.h;
-	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	desc.BufferDesc.Width = resolution.w;
+	desc.BufferDesc.Height = resolution.h;
+	desc.BufferDesc.Format = d3d_cast(pixel_format);
 	desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+	desc.OutputWindow = static_cast<HWND>(hwnd);
 	desc.SampleDesc.Count = multisample;
 
 	// Default create swap chain to default device
 	CHECK(m_adapters.size() > 0 && m_adapters[0]->get_device_num() > 0);
 	
-	const auto d3d_graphic_cmd_queue = gapi_d3d12_cmd_queue::cast(m_adapters[0]->get_device(0)->get_cmd_queue(gapi_cmd_type::grahpics));
+	const auto d3d_graphic_cmd_queue = gapi_d3d12_cmd_queue::cast(m_adapters[0]->get_device(0)->get_cmd_queue(gapi_cmd_type::graphics));
 
-	WinComPtr<IDXGISwapChain1> swap_chain;
-	VERIFY(m_factory2->CreateSwapChainForHwnd(d3d_graphic_cmd_queue->get_d3d_queue(), static_cast<HWND>(hwnd), &desc, nullptr, nullptr, &swap_chain));
+	WinComPtr<IDXGISwapChain> swap_chain;
+	VERIFY(m_factory4->CreateSwapChain(d3d_graphic_cmd_queue->get_d3d_queue(), &desc, &swap_chain));
 	
-	VERIFY(m_factory2->MakeWindowAssociation(static_cast<HWND>(hwnd), DXGI_MWA_NO_ALT_ENTER));
-	
-	return std::make_shared<gapi_d3d12_swap_chain>(swap_chain);
+	VERIFY(m_factory4->MakeWindowAssociation(static_cast<HWND>(hwnd), DXGI_MWA_NO_ALT_ENTER));
+
+	WinComPtr<IDXGISwapChain3> swap_chain3;
+	VERIFY(swap_chain->QueryInterface(IID_PPV_ARGS(&swap_chain3)));
+	return std::make_shared<gapi_d3d12_swap_chain>(swap_chain3, resolution, multibuffer, pixel_format, multisample);
 }
 
 int32 gapi_d3d12_factory::get_d3d12_version()

@@ -13,15 +13,16 @@
 #include "gapi_resource.h"
 #include "gapi_resource_heap.h"
 #include "gapi_resource_desc.h"
-#include "gapi_descriptor.h"
-#include "gapi_descriptor_heap.h"
+#include "gapi_resource_view.h"
+#include "gapi_resource_view_allocator.h"
 
 
 namespace i
 {
 	/**
-	 *	The abstraction of a driver context of a specified GPU hardware.
-	 *	Normally we should have one `gapi_device` in one `gapi_hardware` at runtime, but this is not necessary.
+	 *	The abstraction of a driver context ( logical device ) of a specified GPU hardware.
+	 *	Typically we should have one `gapi_device` in one `gapi_hardware` at runtime, but sometimes we have more.
+	 *
 	 *
 	 *	Equivalents:
 	 *		- DX: `ID3D12Device`
@@ -29,7 +30,7 @@ namespace i
 	 *		- MT: `MtlDevice`
 	 *		
 	 *	TODO: Support for LDA ( NvLink, Crossfire ) system
-	 *		- Note: In LDA system, multiple GPU can be access through one `gapi_device`
+	 *		- Note: In LDA system, multiple `gapi_gpu` can be shared through one `gapi_device`
 	 *		- Refs: https://learn.microsoft.com/en-us/windows-hardware/drivers/display/linked-display-adapter
 	 */
 	class NENE_API gapi_device : noncopyable
@@ -51,23 +52,22 @@ namespace i
 		virtual std::shared_ptr<gapi_pipeline_state> create_compute_pipeline_state(const gapi_compute_pipeline_state_desc& desc) = 0;
 		virtual std::shared_ptr<gapi_pipeline_state> create_graphics_pipeline_state(const gapi_graphics_pipeline_state_desc& desc) = 0;
 
-		// Descriptor
-		virtual std::shared_ptr<gapi_descriptor_heap> create_resource_view_heap(const gapi_descriptor_type& heap_type, const uint32& max_num_views) = 0;
-		virtual std::shared_ptr<gapi_constant_buffer_view> create_constant_buffer_view(const std::shared_ptr<gapi_descriptor>& allocated_view, const std::shared_ptr<gapi_buffer>& buffer) = 0;
-		virtual std::shared_ptr<gapi_shader_resource_view> create_shader_resource_view(const std::shared_ptr<gapi_descriptor>& allocated_view, const std::shared_ptr<gapi_resource>& resource) = 0;
-		virtual std::shared_ptr<gapi_unorder_access_view> create_unordered_access_view(const std::shared_ptr<gapi_descriptor>& allocated_view, const std::shared_ptr<gapi_resource>& resource) = 0;
-		virtual std::shared_ptr<gapi_render_target_view> create_render_target_view(const std::shared_ptr<gapi_descriptor>& allocated_view, const std::shared_ptr<gapi_texture>& texture) = 0;
-		virtual std::shared_ptr<gapi_depth_stencil_view> create_depth_stencil_view(const std::shared_ptr<gapi_descriptor>& allocated_view, const std::shared_ptr<gapi_texture>& texture) = 0;
-		virtual std::shared_ptr<gapi_sampler> create_sampler(const std::shared_ptr<i::gapi_descriptor>& allocated_view, const gapi_sampler_desc& desc) = 0;
-
 		// Resource
 		virtual std::shared_ptr<gapi_resource_heap> create_resource_heap() = 0;
 		virtual std::shared_ptr<gapi_resource> create_resource(const gapi_resource_desc& desc) = 0;
 		virtual std::shared_ptr<gapi_resource> create_placed_resource(const gapi_resource_desc& desc) = 0;
 		virtual std::shared_ptr<gapi_resource> create_reserved_resource(const gapi_resource_desc& desc) = 0;
 
-		// Shaders
-		virtual std::shared_ptr<gapi_vertex_shader> create_vertex_shader(std::string source, std::string entry, const gapi_shader_feature_level& level, std::string debug_name) = 0;
-		virtual std::shared_ptr<gapi_pixel_shader> create_pixel_shader(std::string source, std::string entry, const gapi_shader_feature_level& level, std::string debug_name) = 0;
+		// Resource View
+		virtual std::shared_ptr<gapi_resource_view_allocator> create_resource_view_allocator(const gapi_resource_view_type& heap_type, const uint32& max_num_views) = 0;
+		virtual std::shared_ptr<gapi_constant_buffer_view> create_constant_buffer_view(const std::shared_ptr<gapi_resource_view>& allocated_view, const std::shared_ptr<gapi_buffer>& buffer) = 0;
+		virtual std::shared_ptr<gapi_shader_resource_view> create_shader_resource_view(const std::shared_ptr<gapi_resource_view>& allocated_view, const std::shared_ptr<gapi_resource>& resource) = 0;
+		virtual std::shared_ptr<gapi_unorder_access_view> create_unordered_access_view(const std::shared_ptr<gapi_resource_view>& allocated_view, const std::shared_ptr<gapi_resource>& resource) = 0;
+		virtual std::shared_ptr<gapi_render_target_view> create_render_target_view(const std::shared_ptr<gapi_resource_view>& allocated_view, const std::shared_ptr<gapi_texture>& texture) = 0;
+		virtual std::shared_ptr<gapi_depth_stencil_view> create_depth_stencil_view(const std::shared_ptr<gapi_resource_view>& allocated_view, const std::shared_ptr<gapi_texture>& texture) = 0;
+		virtual std::shared_ptr<gapi_sampler> create_sampler(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const gapi_sampler_desc& desc) = 0;
+
+		// Shaders ( Synchronized Compilation )
+		virtual std::shared_ptr<gapi_shader> create_and_compile_shader(const gapi_shader_type& stype, const std::string& source, const std::string& entry, const gapi_shader_feature_level& level, const std::string& debug_name = "") = 0;
 	};
 }

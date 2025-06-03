@@ -95,6 +95,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="gapi.h" />
     <ClInclude Include="gapi_adapter.h" />
     <ClInclude Include="gapi_cmd_allocator.h" />
     <ClInclude Include="gapi_cmd_layout.h" />
@@ -104,6 +105,7 @@
     <ClInclude Include="gapi_descriptor_heap.h" />
     <ClInclude Include="gapi_device.h" />
     <ClInclude Include="gapi_factory.h" />
+    <ClInclude Include="gapi_gpu.h" />
     <ClInclude Include="gapi_harward.h" />
     <ClInclude Include="gapi_pipeline_layout.h" />
     <ClInclude Include="gapi_pipeline_layout_desc.h" />
@@ -112,11 +114,14 @@
     <ClInclude Include="gapi_resource.h" />
     <ClInclude Include="gapi_resource_desc.h" />
     <ClInclude Include="gapi_resource_heap.h" />
+    <ClInclude Include="gapi_resource_view.h" />
+    <ClInclude Include="gapi_resource_view_allocator.h" />
     <ClInclude Include="gapi_shader.h" />
     <ClInclude Include="gapi_swap_chain.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="gapi_pipeline_state_desc.cpp" />
+    <ClCompile Include="gapi_resource.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="__init__.py" />

@@ -5,8 +5,8 @@
 #include "core/core.h"
 
 
-/** The type of the reousrce*/
-enum class gapi_resource_type
+/** The type of the resource */
+enum class gapi_resource_type : uint8
 {
 	none,
 	buffer,
@@ -16,7 +16,7 @@ enum class gapi_resource_type
 };
 
 /** The usage flag to create a texture */
-enum class gapi_texture_create_flag : uint64
+enum class gapi_texture_create_flag : uint8
 {
 	none				= 0,
 	as_render_target	= 1ull << 0,
@@ -28,7 +28,7 @@ DEFINE_FLAG_ENUM_CLASS_OPERATORS(gapi_texture_create_flag);
 
 
 /** The usage flag to create a buffer */
-enum class gapi_buffer_usage_flag : uint64
+enum class gapi_buffer_usage_flag : uint16
 {
 	none				= 0,
 
@@ -46,7 +46,7 @@ enum class gapi_buffer_usage_flag : uint64
 DEFINE_FLAG_ENUM_CLASS_OPERATORS(gapi_buffer_usage_flag);
 
 
-enum class gapi_pixel_format
+enum class gapi_pixel_format : uint8
 {
 	unknown,
 	// 8 bits
@@ -60,6 +60,7 @@ enum class gapi_pixel_format
 	// 64 bits
 	r16g16b16a16,
 	r16g16b16a16_unorm,
+	
 };
 
 
@@ -80,36 +81,11 @@ struct NENE_API gapi_resource_desc
 	uint16 m_array_size;
 	uint8 m_num_mips;
 	uint8 m_num_samples;
+	uint16 m_buffer_alignment;
 	gapi_pixel_format m_format;
 	gapi_buffer_usage_flag m_buffer_usage_flag;
 	gapi_texture_create_flag m_texture_create_flag;
-
-	gapi_resource_desc(
-		gapi_resource_type in_type
-		, uint32 in_width
-		, uint32 in_height
-		, uint16 in_depth
-		, uint16 in_array_size
-		, uint8 in_num_mips
-		, uint8 in_num_samples
-		, gapi_pixel_format in_format
-		, gapi_buffer_usage_flag in_buffer_flags
-		, gapi_texture_create_flag in_texture_flags
-	)
-	: m_type(in_type)
-	, m_width(in_width)
-	, m_height(in_height)
-	, m_depth(in_depth)
-	, m_array_size(in_array_size)
-	, m_num_mips(in_num_mips)
-	, m_num_samples(in_num_samples)
-	, m_format(in_format)
-	, m_buffer_usage_flag(in_buffer_flags)
-	, m_texture_create_flag(in_texture_flags)
-	{
-		// TODO: Sanity checks
-	}
-
+	
 	static bool is_buffer_desc(const gapi_resource_desc& desc)
 	{
 		return desc.m_type == gapi_resource_type::buffer;
@@ -126,17 +102,21 @@ struct NENE_API gapi_resource_desc
  */
 namespace gapi_texture_desc
 {
-	inline gapi_resource_desc create_2d(
-		point extent
-		, gapi_pixel_format pformat
-		, gapi_texture_create_flag flags
-		, uint8 num_mips = 1
-		, uint8 num_samples = 1
-	)
+	inline gapi_resource_desc create_2d(const upoint32& extent, gapi_pixel_format pformat, gapi_texture_create_flag flags, uint8 num_mips = 1, uint8 num_samples = 1)
 	{
-		constexpr uint16 depth = 1;
-		constexpr uint16 array_size = 1;
-		return gapi_resource_desc(gapi_resource_type::texture2d, extent.x, extent.y, depth, array_size, num_mips, num_samples, pformat, gapi_buffer_usage_flag::none, flags);
+		return gapi_resource_desc{
+			.m_type = gapi_resource_type::texture2d,
+			.m_width = extent.x,
+			.m_height = extent.y,
+			.m_depth = 1,
+			.m_array_size = 1,
+			.m_num_mips = num_mips,
+			.m_num_samples = num_samples,
+			.m_buffer_alignment = 0,
+			.m_format = pformat,
+			.m_buffer_usage_flag = gapi_buffer_usage_flag::none,
+			.m_texture_create_flag = flags
+		};
 	}
 	/*
 	inline gapi_resource_desc create_1d()
@@ -159,15 +139,21 @@ namespace gapi_texture_desc
 
 namespace gapi_buffer_desc
 {
-	inline gapi_resource_desc create(const uint32& size, const gapi_buffer_usage_flag& flags, const uint32& alignment = 0)
+	inline gapi_resource_desc create(const uint32& size, const gapi_buffer_usage_flag& flags, const uint16& alignment = 0)
 	{
-		constexpr uint16 height = 1;
-		constexpr uint16 depth = 1;
-		constexpr uint16 array_size = 1;
-		constexpr uint16 num_mips = 1;
-		constexpr uint16 num_samples = 1;
-		constexpr gapi_pixel_format pixel_format = gapi_pixel_format::unknown;
-		return {gapi_resource_type::buffer, size, height, depth, array_size, num_mips, num_samples, pixel_format, flags, gapi_texture_create_flag::none};
+		return gapi_resource_desc{
+			.m_type = gapi_resource_type::buffer,
+			.m_width = size,
+			.m_height = 1,
+			.m_depth = 1,
+			.m_array_size = 1,
+			.m_num_mips = 1,
+			.m_num_samples = 1,
+			.m_buffer_alignment = alignment,
+			.m_format = gapi_pixel_format::unknown,
+			.m_buffer_usage_flag = flags,
+			.m_texture_create_flag = gapi_texture_create_flag::none
+		};
 	}
 }
 

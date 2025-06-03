@@ -19,23 +19,28 @@ void engine_loop::initialize(void* window)
 	//
 	gapi_dynamic::create(window);
 	//
-	m_renderer = std::make_shared<simple_renderer>();
+	// m_renderer = std::make_shared<simple_renderer>();
 }
 
 void engine_loop::update()
 {
-	gapi_dynamic::get()->start_frame();
-
-	m_renderer->render_view_family(gapi_dynamic::get()->get_back_buffer_texture());
-	
-	gapi_dynamic::get()->finish_frame();
+	// auto& swap_chain = gapi_dynamic::get().get_swap_chain();
+	//
+	// gapi_dynamic::get().start_frame();
+	// {
+	// 	m_renderer->render_view_family(swap_chain->get_back_buffer());
+	// 	gapi_dynamic::get().get_cmd_context().transition_resource(swap_chain->get_back_buffer(), gapi_resource_state::present);
+	// }
+	// gapi_dynamic::get().finish_frame();
+	//
+	// swap_chain->present();
 }
 
 void engine_loop::shutdown()
 {
 	// Waiting for executing all commands
-	gapi_dynamic::get()->start_frame();
-	gapi_dynamic::get()->finish_frame();
+	gapi_dynamic::get().start_frame();
+	gapi_dynamic::get().finish_frame();
 
 	//
 	m_renderer.reset();

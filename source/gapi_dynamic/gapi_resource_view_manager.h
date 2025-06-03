@@ -5,7 +5,7 @@
 #include "core/core.h"
 
 
-class gapi_descriptor_manager : noncopyable
+class NENE_API gapi_resource_view_manager : noncopyable
 {
 public:
 

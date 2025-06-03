@@ -8,7 +8,7 @@
 
 enum class gapi_cmd_type
 {
-	grahpics = 0,
+	graphics = 0,
 	compute,
 	copy,
 };

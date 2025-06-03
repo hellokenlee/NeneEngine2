@@ -103,14 +103,15 @@
     <ClInclude Include="gapi_d3d12_cmd_allocator.h" />
     <ClInclude Include="gapi_d3d12_cmd_list.h" />
     <ClInclude Include="gapi_d3d12_cmd_queue.h" />
-    <ClInclude Include="gapi_d3d12_descriptor.h" />
-    <ClInclude Include="gapi_d3d12_descriptor_heap.h" />
     <ClInclude Include="gapi_d3d12_device.h" />
     <ClInclude Include="gapi_d3d12_factory.h" />
+    <ClInclude Include="gapi_d3d12_gpu.h" />
     <ClInclude Include="gapi_d3d12_pipeline_layout.h" />
     <ClInclude Include="gapi_d3d12_pipeline_state.h" />
     <ClInclude Include="gapi_d3d12_resource.h" />
     <ClInclude Include="gapi_d3d12_resource_heap.h" />
+    <ClInclude Include="gapi_d3d12_resource_view.h" />
+    <ClInclude Include="gapi_d3d12_resource_view_allocator.h" />
     <ClInclude Include="gapi_d3d12_shader.h" />
     <ClInclude Include="gapi_d3d12_swap_chain.h" />
   </ItemGroup>
@@ -121,14 +122,15 @@
     <ClCompile Include="gapi_d3d12_cmd_allocator.cpp" />
     <ClCompile Include="gapi_d3d12_cmd_list.cpp" />
     <ClCompile Include="gapi_d3d12_cmd_queue.cpp" />
-    <ClCompile Include="gapi_d3d12_descriptor.cpp" />
-    <ClCompile Include="gapi_d3d12_descriptor_heap.cpp" />
     <ClCompile Include="gapi_d3d12_device.cpp" />
     <ClCompile Include="gapi_d3d12_factory.cpp" />
+    <ClCompile Include="gapi_d3d12_gpu.cpp" />
     <ClCompile Include="gapi_d3d12_pipeline_layout.cpp" />
     <ClCompile Include="gapi_d3d12_pipeline_state.cpp" />
     <ClCompile Include="gapi_d3d12_resource.cpp" />
     <ClCompile Include="gapi_d3d12_resource_heap.cpp" />
+    <ClCompile Include="gapi_d3d12_resource_view.cpp" />
+    <ClCompile Include="gapi_d3d12_resource_view_allocator.cpp" />
     <ClCompile Include="gapi_d3d12_shader.cpp" />
     <ClCompile Include="gapi_d3d12_swap_chain.cpp" />
   </ItemGroup>

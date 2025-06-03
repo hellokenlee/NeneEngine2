@@ -42,12 +42,6 @@ namespace t
         static_assert(!std::is_lvalue_reference_v<Ty>, "bad forward call");
         return static_cast<Ty&&>(arg);
     }
-
-    template <class Ty>
-    constexpr std::remove_reference_t<Ty>&& move(Ty&& arg) noexcept
-    {
-        return static_cast<std::remove_reference_t<Ty>&&>(arg);
-    }
     
     template <class Ty, class TOther = Ty>
     constexpr Ty exchange(Ty& val, TOther&& new_val) noexcept(std::conjunction_v<std::is_nothrow_move_constructible<Ty>, std::is_nothrow_assignable<Ty&, TOther>>)

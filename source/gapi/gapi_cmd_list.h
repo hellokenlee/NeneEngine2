@@ -8,8 +8,8 @@
 #include "gapi_pipeline_state.h"
 #include "gapi_pipeline_state_desc.h"
 #include "gapi_resource.h"
-#include "gapi_descriptor.h"
-#include "gapi_descriptor_heap.h"
+#include "gapi_resource_view.h"
+#include "gapi_resource_view_allocator.h"
 
 
 namespace i
@@ -45,7 +45,7 @@ namespace i
 		virtual void discard_resource(const std::shared_ptr<gapi_resource>& resource) = 0;
 
 		// Resource Transition
-		virtual void transition_resource(const std::shared_ptr<gapi_resource>& resource, const gapi_resource_state& transition) = 0;
+		virtual void transition_resource(const std::shared_ptr<gapi_resource>& resource, const gapi_resource_state& to) = 0;
 
 		// The Execution Command
 		virtual void dispatch(const uvector3& thread_group_size) = 0;
@@ -59,11 +59,11 @@ namespace i
 		virtual void set_root_shader_resource_view(const std::shared_ptr<gapi_shader_resource_view>& srv) = 0;
 		virtual void set_root_unordered_access_view(const std::shared_ptr<gapi_shader_resource_view>& srv) = 0;
 		virtual void set_root_descriptor_table() = 0;
-		virtual void set_descriptor_heaps(const std::vector<std::shared_ptr<gapi_descriptor_heap>>& heaps) = 0;
+		virtual void set_descriptor_heaps(const std::vector<std::shared_ptr<gapi_resource_view_allocator>>& heaps) = 0;
 
 		// Input Assemble Settings
-		virtual void set_index_buffer(const std::shared_ptr<gapi_index_buffer_view>& index_buffer) = 0;
-		virtual void set_vertex_buffer(const std::shared_ptr<gapi_vertex_buffer_view>& vertex_buffer) = 0;
+		virtual void set_index_buffer(const std::shared_ptr<gapi_buffer>& index_buffer) = 0;
+		virtual void set_vertex_buffer(const std::shared_ptr<gapi_buffer>& vertex_buffer) = 0;
 		virtual void set_primitive_topology(const gapi_primitive_type& ptype) = 0;
 
 		// Rasterization Settings

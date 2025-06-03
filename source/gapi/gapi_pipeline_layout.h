@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "gapi_descriptor.h"
+#include "gapi_resource_view.h"
 #include "core/core.h"
 
 

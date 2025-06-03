@@ -4,11 +4,13 @@
 #pragma warning(disable : 4250)
 
 #include "core/core.h"
+#include "gapi/gapi.h"
 
 #include <wrl/client.h>
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include "d3dx12.h"
+
 
 
 #define VERIFY(x) { HRESULT hres = x; if (FAILED(hres)) { verify_impl(hres, TXT(#x), TXT(__FILE__), __LINE__); }}
@@ -52,10 +54,32 @@ void inline verify_impl(const HRESULT hres, const wchar_t* code, const wchar_t* 
 	DEBUG_BREAK();
 }
 
-#define GAPI_USE_DYNAMIC_CAST 1
-
 namespace t
 {
+	template<typename t_gapi_dynamic_impl, typename t_gapi_interface>
+	std::shared_ptr<t_gapi_dynamic_impl> gapi_cast(const std::shared_ptr<t_gapi_interface>& inst)
+	{
+		static_assert(std::is_base_of_v<t_gapi_interface, t_gapi_dynamic_impl> == true, "Invalid inheritance for `gapi_cast(...)`!");
+#if GAPI_USE_DYNAMIC_CAST
+		return std::dynamic_pointer_cast<t_gapi_dynamic_impl>(inst);
+#else  // GAPI_USE_DYNAMIC_CAST
+		return std::reinterpret_pointer_cast<t_gapi_dynamic_impl>(inst);
+#endif // GAPI_USE_DYNAMIC_CAST
+	}
+
+	template<typename t_gapi_dynamic_impl, typename t_gapi_interface>
+	static t_gapi_dynamic_impl& gapi_pin(const std::shared_ptr<t_gapi_interface>& inst)
+	{
+		static_assert(std::is_base_of_v<t_gapi_interface, t_gapi_dynamic_impl> == true, "Invalid inheritance for `gapi_pin(...)`!");
+		CHECK(inst != nullptr);
+		//
+#if GAPI_USE_DYNAMIC_CAST
+		return dynamic_cast<t_gapi_dynamic_impl&>(*inst);
+#else  // GAPI_USE_DYNAMIC_CAST
+		return reinterpret_cast<t_gapi_dynamic_impl&>(*inst);
+#endif // GAPI_USE_DYNAMIC_CAST
+	}
+	
 	/*
 	 * Helper template for down casting within implementations
 	 * 
@@ -106,13 +130,25 @@ namespace t
 		static std::shared_ptr<t_gapi_dynamic_impl> cast(const std::shared_ptr<t_gapi_interface>& inst)
 		{
 			//
-			static_assert(std::is_abstract<t_gapi_interface>::value == true, "Template `t::impl` only support for abstract type!");
+			static_assert(std::is_abstract_v<t_gapi_interface> == true, "Template `t::impl` only support for abstract type!");
 			//
 #if GAPI_USE_DYNAMIC_CAST
 			return std::dynamic_pointer_cast<t_gapi_dynamic_impl>(inst);
-#else
+#else  //  GAPI_USE_DYNAMIC_CAST
 			return std::reinterpret_pointer_cast<t_gapi_dynamic_impl>(inst);
-#endif
+#endif //  GAPI_USE_DYNAMIC_CAST
+		}
+
+		static t_gapi_dynamic_impl& pin(const std::shared_ptr<t_gapi_interface>& inst)
+		{
+			static_assert(std::is_abstract_v<t_gapi_interface> == true, "Template `t::impl` only support for abstract type!");
+			CHECK(inst != nullptr);
+			//
+#if GAPI_USE_DYNAMIC_CAST
+			return dynamic_cast<t_gapi_dynamic_impl&>(*inst);
+#else  // GAPI_USE_DYNAMIC_CAST
+			return reinterpret_cast<t_gapi_dynamic_impl&>(*inst);
+#endif // GAPI_USE_DYNAMIC_CAST
 		}
 	};
 }

@@ -35,10 +35,10 @@ public:
 	void set_root_shader_resource_view(const std::shared_ptr<i::gapi_shader_resource_view>& srv) override;
 	void set_root_unordered_access_view(const std::shared_ptr<i::gapi_shader_resource_view>& srv) override;
 	void set_root_descriptor_table() override;
-	void set_descriptor_heaps(const std::vector<std::shared_ptr<i::gapi_descriptor_heap>>& heaps) override;
+	void set_descriptor_heaps(const std::vector<std::shared_ptr<i::gapi_resource_view_allocator>>& heaps) override;
 	
-	void set_index_buffer(const std::shared_ptr<i::gapi_index_buffer_view>& index_buffer) override;
-	void set_vertex_buffer(const std::shared_ptr<i::gapi_vertex_buffer_view>& vertex_buffer) override;
+	void set_index_buffer(const std::shared_ptr<i::gapi_buffer>& index_buffer) override;
+	void set_vertex_buffer(const std::shared_ptr<i::gapi_buffer>& vertex_buffer) override;
 	void set_primitive_topology(const gapi_primitive_type& ptype) override;
 
 	void set_viewports(const std::vector<gapi_viewport_desc>& viewports) override;
@@ -47,7 +47,7 @@ public:
 	void set_blend_factor(const vector4& blend) override;
 	void set_render_targets(const std::vector<std::shared_ptr<i::gapi_render_target_view>>& render_target_views, const std::shared_ptr<i::gapi_depth_stencil_view>& depth_stencil_view) override;
 	void set_stencil_ref(const uint32& stencil_ref) override;
-	void transition_resource(const std::shared_ptr<i::gapi_resource>& resource, const gapi_resource_state& transition) override;
+	void transition_resource(const std::shared_ptr<i::gapi_resource>& resource, const gapi_resource_state& to) override;
 	
 	void begin_query() override;
 	void end_query() override;

@@ -5,6 +5,7 @@
 
 DEFINE_LOG_CATEGORY(shader);
 
+t::console_var<bool> gapi_shader_keep_sources("gapi.d3d.shader.keep_sources", true, "", console_var_flag::read_only);
 
 bool gapi_d3d12_shader::compile()
 {

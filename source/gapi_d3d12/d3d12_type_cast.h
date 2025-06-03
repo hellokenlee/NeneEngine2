@@ -6,7 +6,7 @@
 #include "gapi/gapi_cmd_queue.h"
 #include "gapi/gapi_pipeline_state_desc.h"
 #include "gapi/gapi_resource_desc.h"
-#include "gapi/gapi_descriptor.h"
+#include "gapi/gapi_resource_view.h"
 
 
 inline DXGI_FORMAT d3d_cast(const gapi_pixel_format& source)
@@ -31,7 +31,7 @@ inline D3D12_COMMAND_LIST_TYPE d3d_cast(const gapi_cmd_type& qtype)
 {
 	switch (qtype)
 	{
-	case gapi_cmd_type::grahpics:
+	case gapi_cmd_type::graphics:
 		return D3D12_COMMAND_LIST_TYPE_DIRECT;
 	case gapi_cmd_type::compute:
 		return D3D12_COMMAND_LIST_TYPE_COMPUTE;
@@ -51,7 +51,7 @@ inline D3D12_BLEND d3d_cast(const gapi_blend_factor& factor)
 	case gapi_blend_factor::source_color: return D3D12_BLEND_SRC_COLOR;
 	case gapi_blend_factor::inverse_source_color: return D3D12_BLEND_INV_SRC_COLOR;
 	case gapi_blend_factor::source_alpha: return D3D12_BLEND_SRC_ALPHA;
-	case gapi_blend_factor::inver_sesource_alpha: return D3D12_BLEND_INV_SRC_ALPHA;
+	case gapi_blend_factor::invert_source_alpha: return D3D12_BLEND_INV_SRC_ALPHA;
 	case gapi_blend_factor::dest_alpha: return D3D12_BLEND_DEST_ALPHA;
 	case gapi_blend_factor::inverse_dest_alpha: return D3D12_BLEND_INV_DEST_ALPHA;;
 	case gapi_blend_factor::dest_color: return D3D12_BLEND_DEST_COLOR;
@@ -72,10 +72,10 @@ inline D3D12_BLEND_OP d3d_cast(const gapi_blend_op& op)
 	switch (op)
 	{
 	case gapi_blend_op::add: return D3D12_BLEND_OP_ADD;
-	case gapi_blend_op::substract: return D3D12_BLEND_OP_SUBTRACT;
+	case gapi_blend_op::subtract: return D3D12_BLEND_OP_SUBTRACT;
 	case gapi_blend_op::min: return D3D12_BLEND_OP_MIN;
 	case gapi_blend_op::max: return D3D12_BLEND_OP_MAX;
-	case gapi_blend_op::reverse_substract: return D3D12_BLEND_OP_REV_SUBTRACT;
+	case gapi_blend_op::reverse_subtract: return D3D12_BLEND_OP_REV_SUBTRACT;
 	}
 	CHECK(false);
 	return D3D12_BLEND_OP_ADD;
@@ -84,10 +84,10 @@ inline D3D12_BLEND_OP d3d_cast(const gapi_blend_op& op)
 inline UINT8 d3d_cast(const gapi_color_write_mask& mask)
 {
 	UINT8 val = 0;
-	val |= t::has_any_flag(mask, gapi_color_write_mask::r) ? 0b11000000 : 0;
-	val |= t::has_any_flag(mask, gapi_color_write_mask::g) ? 0b00110000 : 0;
-	val |= t::has_any_flag(mask, gapi_color_write_mask::b) ? 0b00001100 : 0;
-	val |= t::has_any_flag(mask, gapi_color_write_mask::a) ? 0b00000011 : 0;
+	val |= t::has_flag(mask, gapi_color_write_mask::r) ? 0b11000000 : 0;
+	val |= t::has_flag(mask, gapi_color_write_mask::g) ? 0b00110000 : 0;
+	val |= t::has_flag(mask, gapi_color_write_mask::b) ? 0b00001100 : 0;
+	val |= t::has_flag(mask, gapi_color_write_mask::a) ? 0b00000011 : 0;
 	return val;
 }
 
@@ -121,19 +121,19 @@ inline D3D12_BLEND_DESC d3d_cast(const gapi_blend_state_desc& desc)
 
 inline D3D12_RASTERIZER_DESC d3d_cast(const gapi_rasterizer_state_desc& desc)
 {
-	CHECK(false);
+	NOT_IMPLEMENTED();
 	return D3D12_RASTERIZER_DESC{};
 }
 
 inline D3D12_DEPTH_STENCIL_DESC d3d_cast(const gapi_depth_stencil_state_desc& desc)
 {
-	CHECK(false);
+	NOT_IMPLEMENTED();
 	return D3D12_DEPTH_STENCIL_DESC{};
 }
 
-inline D3D12_INPUT_LAYOUT_DESC d3d_cast(const gapi_vertex_declartions& desc)
+inline D3D12_INPUT_LAYOUT_DESC d3d_cast(const gapi_vertex_declaration& desc)
 {
-	CHECK(false);
+	NOT_IMPLEMENTED();
 	return D3D12_INPUT_LAYOUT_DESC{};
 }
 
@@ -150,10 +150,24 @@ inline D3D12_PRIMITIVE_TOPOLOGY_TYPE d3d_cast(const gapi_primitive_type& type)
 	return D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 }
 
-inline D3D12_DESCRIPTOR_HEAP_TYPE d3d_cast(const gapi_descriptor_type& type)
+inline D3D12_DESCRIPTOR_HEAP_TYPE d3d_cast(const gapi_resource_view_type& type)
 {
-	CHECK(false);
-	return D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+	switch (type)
+	{
+	case gapi_resource_view_type::constant_buffer_view:
+	case gapi_resource_view_type::shader_resource_view:
+	case gapi_resource_view_type::unordered_access_view:
+		return D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	case gapi_resource_view_type::texture_sampler:
+		return D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
+	case gapi_resource_view_type::render_target_view:
+		return D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+	case gapi_resource_view_type::depth_stencil_view:
+		return D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+	default:
+		CHECK(false);
+	}
+	return D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES;
 }
 
 inline D3D12_RESOURCE_DESC d3d_cast(const gapi_resource_desc& desc)

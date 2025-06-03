@@ -19,7 +19,7 @@
 namespace t
 {
     template <typename T>
-    bool has_any_flag(T flags, T tests)
+    bool has_flag(T flags, T tests)
     {
         return (static_cast<__underlying_type(T)>(flags) & static_cast<__underlying_type(T)>(tests)) != 0;
     }

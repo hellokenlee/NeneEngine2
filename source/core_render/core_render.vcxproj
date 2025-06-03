@@ -100,9 +100,12 @@
     <ClInclude Include="render_pass.h" />
     <ClInclude Include="render_resource.h" />
     <ClInclude Include="render_texture2d.h" />
+    <ClInclude Include="render_thread.h" />
     <ClInclude Include="render_threads.h" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ClCompile Include="render_thread.cpp" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="__init__.py" />
   </ItemGroup>

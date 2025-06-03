@@ -8,12 +8,16 @@
 
 #ifdef _MSVC_LANG
 	#include <Windows.h>
-#define DEBUG_BREAK() (__noop(), __debugbreak())
-#endif
+	#define DEBUG_BREAK() (__noop(), __debugbreak())
+#else  // _MSVC_LANG
+	#define DEBUG_BREAK raise(SIGTRAP)
+#endif // _MSVC_LANG
 
 #define CHECK(expr) CHECK_IMPL(expr)
 
 #define CHECKF(expr, hints) CHECKF_IMPL(expr, hints)
+
+#define NOT_IMPLEMENTED() DEBUG_BREAK()
 
 NENE_API void check_failed(const std::string& filename, const uint32& line, const std::string& expression);
 

@@ -38,6 +38,8 @@ namespace i
 		virtual bool& register_var(const std::string& name, const bool& default_value, const std::string& help, console_var_flag flag) = 0;
 
 		virtual int32& register_var(const std::string& name, const int32& default_value, const std::string& help, console_var_flag flag) = 0;
+
+		virtual uint32& register_var(const std::string& name, const uint32& default_value, const std::string& help, console_var_flag flag) = 0;
 	};
 }
 

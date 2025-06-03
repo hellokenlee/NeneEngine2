@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "core/core.h"
-#include "gapi_adapter.h"
+#include "core/windll.h"
+#include "gapi_gpu.h"
 #include "gapi_swap_chain.h"
 
 namespace i
@@ -24,10 +24,8 @@ namespace i
 
 		~gapi_factory() override = default;
 		
-		virtual std::shared_ptr<gapi_adapter> create_adapter() = 0;
+		virtual std::shared_ptr<gapi_gpu> create_adapter() = 0;
 
-		virtual std::shared_ptr<gapi_swap_chain> create_swap_chain(void* hwnd, const point32& resolution, const uint32& multibuffer = 2,
-			const gapi_pixel_format& pixel_format = gapi_pixel_format::r8g8b8a8_unorm, const uint32& multisample = 1
-		) = 0;
+		virtual std::shared_ptr<gapi_swap_chain> create_swap_chain(void* hwnd, const upoint32& resolution, const uint32& multibuffer, const gapi_pixel_format& pixel_format = gapi_pixel_format::r8g8b8a8_unorm, const uint32& multisample = 1) = 0;
 	};
 }

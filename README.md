@@ -96,6 +96,7 @@ graph TD
   Engine --> App
   Core --> CoreEngine
   CoreObject --> CoreEngine
+  Gapi --> CoreEngine
   Core --> CoreObject
   Core --> CoreRender
   Core --> Editor
@@ -103,6 +104,7 @@ graph TD
   Core --> Engine
   CoreObject --> Engine
   Renderer --> Engine
+  Gapi --> Engine
   GapiDynamic --> Engine
   Core --> Gapi
   Core --> GapiD3D12

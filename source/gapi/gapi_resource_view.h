@@ -5,28 +5,26 @@
 #include "core/core.h"
 
 
-enum class gapi_descriptor_type
+enum class gapi_resource_view_type : uint8
 {
 	constant_buffer_view	= 0b000001,
 	shader_resource_view	= 0b000010,
-	unorederd_access_view	= 0b000100,
+	unordered_access_view	= 0b000100,
 	
 	texture_sampler			= 0b001000,
 
 	render_target_view		= 0b010000,
-	depth_stenicl_view		= 0b100000,
-
-	cbv_srv_uav = constant_buffer_view | shader_resource_view | unorederd_access_view,
+	depth_stencil_view		= 0b100000,
 };
 
-enum class gapi_filter
+enum class gapi_filter : uint8
 {
 	point,
 	linear,
 	anisotropic,
 };
 
-enum class gapi_sample_test
+enum class gapi_sample_test : uint8
 {
 	none,
 	minimum,
@@ -34,7 +32,7 @@ enum class gapi_sample_test
 	comparison,
 };
 
-enum class gapi_address_mode
+enum class gapi_address_mode : uint8
 {
 	wrap,
 	mirror,
@@ -54,7 +52,7 @@ struct gapi_sampler_desc
 	gapi_address_mode m_address_mode_uvw[3];
 	float m_mipmap_bias;
 	uint32 m_max_anisotropy;
-	gapi_compare_func m_comparsion_func;
+	gapi_compare_func m_compare_func;
 	linear_color m_border_color;
 	float m_lod_min_max[2];
 };
@@ -62,73 +60,63 @@ struct gapi_sampler_desc
 namespace i
 {
 	/**
-	*	A descriptor is for how to treat ( view ) a resource aka. resource view.
+	*	A `gapi_resource_view` is for how to treat ( see ) a resource ( a memory in VRAM ) aka resource view.
 	*
 	*	Equivalents:
-	*		- DX: Logical object stores in `ID3D12DescriptorHeap`. ( Accessed by `D3D12_CPU_DESCRIPTOR_HANDLE` )
+	*		- DX: Accessed by `D3D12_CPU_DESCRIPTOR_HANDLE`, logical object stores in `ID3D12DescriptorHeap`.
 	*		- VK: Logical object stores in `VkDescriptorPool`. 
 	*		- MT: ``
 	*/
-	class NENE_API gapi_descriptor : noncopyable
+	class NENE_API gapi_resource_view : noncopyable
 	{
 	public:
-		gapi_descriptor() = default;
-		~gapi_descriptor() override = default;
+		gapi_resource_view() = default;
+		~gapi_resource_view() override = default;
 
-		// Check if this resouce view is submitted to GPU
+		// Check if this resource view is submitted to GPU
 		virtual bool is_created() = 0;
 	};
 
-	class NENE_API gapi_shader_resource_view : virtual public gapi_descriptor
+	class NENE_API gapi_shader_resource_view : virtual public gapi_resource_view
 	{
 	public:
 		gapi_shader_resource_view() = default;
 		~gapi_shader_resource_view() override = default;
 	};
 
-	class NENE_API gapi_unorder_access_view : virtual public gapi_descriptor
+	class NENE_API gapi_unorder_access_view : virtual public gapi_resource_view
 	{
 	public:
 		gapi_unorder_access_view() = default;
 		~gapi_unorder_access_view() override = default;
 	};
 
-	class NENE_API gapi_constant_buffer_view : virtual public gapi_descriptor
+	class NENE_API gapi_constant_buffer_view : virtual public gapi_resource_view
 	{
 	public:
 		gapi_constant_buffer_view() = default;
 		~gapi_constant_buffer_view() override = default;
 	};
 
-	class NENE_API gapi_render_target_view : virtual public gapi_descriptor
+	class NENE_API gapi_render_target_view : virtual public gapi_resource_view
 	{
 	public:
 		gapi_render_target_view() = default;
 		~gapi_render_target_view() override = default;
 	};
 
-	class NENE_API gapi_depth_stencil_view : virtual public gapi_descriptor
+	class NENE_API gapi_depth_stencil_view : virtual public gapi_resource_view
 	{
 	public:
 		gapi_depth_stencil_view() = default;
 		~gapi_depth_stencil_view() override = default;
 	};
 
-	class NENE_API gapi_sampler : public gapi_descriptor
+	class NENE_API gapi_sampler : public gapi_resource_view
 	{
 	public:
 		gapi_sampler() = default;
 		~gapi_sampler() override = default;
-	};
-
-	class NENE_API gapi_index_buffer_view
-	{
-		
-	};
-
-	class NENE_API gapi_vertex_buffer_view
-	{
-		
 	};
 }
 

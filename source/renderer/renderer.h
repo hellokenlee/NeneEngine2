@@ -13,6 +13,6 @@ public:
 	
 	virtual ~renderer() = default;
 
-	virtual void render_view_family(std::shared_ptr<gapi_texture> view_family_render_target) = 0;
+	virtual void render_view_family(const std::shared_ptr<gapi_texture>& view_family_texture) = 0;
 };
 }

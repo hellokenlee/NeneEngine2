@@ -25,8 +25,8 @@ namespace i
 
 		virtual void present() = 0;
 
-		virtual std::shared_ptr<gapi_texture> get_back_buffer_texture() = 0;
+		virtual const std::shared_ptr<gapi_texture>& get_back_buffer() = 0;
 
-		virtual std::shared_ptr<gapi_texture> reset_back_buffer(const point32& resolution, const uint32& multibuffer, const gapi_pixel_format& pixel_format, const uint32& swap_chain_flag = 0) = 0;
+		virtual void resize_back_buffer(const upoint32& resolution, const uint32& multibuffer, const gapi_pixel_format& pixel_format, const uint32& swap_chain_flag = 0) = 0;
 	};
 }

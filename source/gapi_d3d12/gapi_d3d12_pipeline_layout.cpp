@@ -10,12 +10,12 @@ gapi_d3d12_pipeline_layout::gapi_d3d12_pipeline_layout(const WinComPtr<ID3D12Roo
 
 const D3D12_ROOT_PARAMETER* gapi_d3d12_pipeline_parameters::get_d3d_data()
 {
-	CHECK(false);
+	NOT_IMPLEMENTED();
 	return nullptr;
 }
 
 const D3D12_STATIC_SAMPLER_DESC* gapi_d3d12_immutable_samplers::get_d3d_data()
 {
-	CHECK(false);
+	NOT_IMPLEMENTED();
 	return nullptr;
 }

@@ -7,6 +7,7 @@ from source.core import Core
 from source.gapi import Gapi
 from source.gapi_d3d12 import GapiD3D12
 from source.gapi_vulkan import GapiVulkan
+from extern.boost import Boost
 from script.builder.common.build_configuration import BuildConfiguration
 
 
@@ -16,6 +17,9 @@ class GapiDynamic(NeneModule):
 		super().__init__()
 		self.module_dependencies.extend(
 			[Core, Gapi]
+		)
+		self.external_dependencies.extend(
+			[Boost]
 		)
 
 		if BuildConfiguration().platform == Platform.Windows:

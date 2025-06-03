@@ -8,21 +8,23 @@ namespace impl
 	class console_var : public i::console_var
 	{
 	public:
-		console_var(const T& default_value, const std::string& help)
+		console_var(const T& default_value, std::string help)
 			: i::console_var()
 			, m_value(default_value)
 			, m_default_value(default_value)
-			, m_help_text(help)
+			, m_help_text(std::move(help))
 		{}
 		
-		virtual bool as_bool() override;
+		bool as_bool() override;
 
-		virtual int32 as_int32() override;
+		int32 as_int32() override;
 
 	protected:
 		bool& get_bool_ref();
 
 		int32& get_int32_ref();
+
+		uint32& get_uint32_ref();
 		
 	protected:
 		T m_value;
@@ -54,6 +56,11 @@ namespace impl
 		int32& register_var(const std::string& name, const int32& default_value, const std::string& help, console_var_flag flag) override
 		{
 			return internal_register_var<int32>(name, default_value, help, flag)->get_int32_ref();
+		}
+
+		uint32& register_var(const std::string& name, const uint32& default_value, const std::string& help, console_var_flag flag) override
+		{
+			return internal_register_var<uint32>(name, default_value, help, flag)->get_uint32_ref();
 		}
 		
 	protected:
@@ -107,6 +114,24 @@ int32 impl::console_var<int32>::as_int32()
 
 template <>
 int32& impl::console_var<int32>::get_int32_ref()
+{
+	return m_value;
+}
+
+template <>
+bool impl::console_var<uint32>::as_bool()
+{
+	return m_value ? true : false;
+}
+
+template <>
+int32 impl::console_var<uint32>::as_int32()
+{
+	return static_cast<int32>(m_value);
+}
+
+template <>
+uint32& impl::console_var<uint32>::get_uint32_ref()
 {
 	return m_value;
 }

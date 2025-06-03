@@ -12,7 +12,7 @@ namespace i
 	 *	Equivalents:
 	 *		- DX: `ID3D12CommandAllocator`
 	 *		- VK: `VkCommandPool`
-	 *		- MT: `MTLCommandBuffers`
+	 *		- MT: `MTLCommandEncoder`
 	 */
 	class NENE_API gapi_cmd_allocator : noncopyable
 	{

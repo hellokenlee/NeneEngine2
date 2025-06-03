@@ -6,24 +6,29 @@
 
 namespace t
 {
-    template<typename T>
+    template<typename t_data>
     struct point
     {
         union
         {
-            T x;
-            T w;
+            t_data x;
+            t_data w;
+            t_data begin;
         };
         union
         {
-            T y;
-            T h;
+            t_data y;
+            t_data h;
+            t_data end;
         };
+
+        static constexpr point zero()
+        {
+            return {};
+        }
     };
 };
 
-typedef t::point<uint32> point32;
+typedef t::point<uint32> upoint32;
 
-typedef t::point<uint64> point64;
-
-typedef point32 point;
+typedef t::point<uint64> upoint64;

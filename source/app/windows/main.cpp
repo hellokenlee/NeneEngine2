@@ -9,10 +9,8 @@
 
 int main()
 {
-	/*
 	win_client client;
-	
-	engine_loop::init(client.get_window());
+	engine_loop::initialize(client.get_window());
 
 	while (!client.should_exit())
 	{
@@ -21,12 +19,5 @@ int main()
 	}
 	
 	engine_loop::shutdown();
-	//*/
-
-
-	
-	
-
 	return 0;
-	
 }
