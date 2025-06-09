@@ -21,9 +21,9 @@ from script.builder.pyside_config import PySideConfig
 
 class Editor(NeneModule):
 
-	QT_FOLODER = "qt"
-	BINDING_H_FILEPATH = os.path.join(QT_FOLODER, "bindings.h")
-	BINDING_XML_FILEPATH = os.path.join(QT_FOLODER, "bindings.xml")
+	QT_FOLDER = "qt"
+	BINDING_H_FILEPATH = os.path.join(QT_FOLDER, "bindings.h")
+	BINDING_XML_FILEPATH = os.path.join(QT_FOLDER, "bindings.xml")
 	TARGET_EXEC_FOLDER = os.path.join(".bin", "binary", "{Architecture}", "{Configuration}")
 	GENERATED_MOC_TARGET_FOLDER = os.path.join(".bin", "intermediate", "editor", "qt_moc")
 	GENERATED_BINDING_TARGET_FOLDER = os.path.join(".bin", "intermediate", "editor", "qt_binding")
@@ -72,7 +72,7 @@ class Editor(NeneModule):
 
 	def get_additional_include_folder_abs_paths(self) -> list[str]:
 		# cpp widgets files
-		return [os.path.join(self.root_abs_path(), self.QT_FOLODER)]
+		return [os.path.join(self.root_abs_path(), self.QT_FOLDER)]
 
 	@classmethod
 	def _moc_target_folder_abs_path(cls) -> str:
@@ -85,7 +85,7 @@ class Editor(NeneModule):
 	@classmethod
 	def run_qt_moc(cls):
 		# moc all `.h` files in `source/editor/qt/`
-		editor_qt_root_abs_path = os.path.join(cls.root_abs_path(), cls.QT_FOLODER)
+		editor_qt_root_abs_path = os.path.join(cls.root_abs_path(), cls.QT_FOLDER)
 
 		mocable_file_abs_paths = []
 		for root, _, files in os.walk(editor_qt_root_abs_path):
@@ -145,9 +145,9 @@ class Editor(NeneModule):
 		env = {
 			'TEMP': tempfile.gettempdir(),
 			'TMP': tempfile.gettempdir(),
-			"LLVM_INSTALL_DIR": os.path.join(PySide.root_abs_path(), "llvm"),
+			"LLVM_INSTALL_DIR": "C:\\LLVM\\clang+llvm-18.1.8-x86_64-pc-windows-msvc",
 		}
-		subprocess.run(" ".join(shiboken_command), shell=True, env=env)
+		subprocess.run(" ".join(shiboken_command), shell=True, env=env).check_returncode()
 		# rename the module directory
 		src_target_folder_path = os.path.join(cls._shiboken_target_folder_abs_path(), cls._read_binding_module_name())
 		dst_target_folder_path = os.path.join(cls._shiboken_target_folder_abs_path(), "qt_pyside")
@@ -159,7 +159,7 @@ class Editor(NeneModule):
 	@classmethod
 	def prebuild(cls, platform: Platform, arch: Architecture, con: Configuration):
 		#
-		editor_qt_root_abs_path = os.path.join(cls.root_abs_path(), cls.QT_FOLODER)
+		editor_qt_root_abs_path = os.path.join(cls.root_abs_path(), cls.QT_FOLDER)
 		#
 		if utils.get_modify_time(editor_qt_root_abs_path) < utils.get_modify_time(cls._moc_target_folder_abs_path()):
 			print("nothing changed. skipped moc.")
