@@ -29,7 +29,8 @@ namespace n
 		//
 		// According to C++ standard: https://timsong-cpp.github.io/cppwp/basic.start#dynamic-3.1
 		//		"dynamic initialization of a non-block variable with static storage duration is unordered if the variable is an implicitly or explicitly instantiated specialization"
-		// If we use a global variable container `py_class_init_functions`, the access of this container may be invoked before the container constructed.
+		//
+		// If we use a global variable for container `py_class_init_functions`, the access of this container may be invoked before the container constructed.
 		// Use a singleton to make sure the container is fully constructed.
 		static binding instance;
 		return instance;

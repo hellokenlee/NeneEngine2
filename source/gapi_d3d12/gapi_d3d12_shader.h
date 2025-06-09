@@ -22,9 +22,11 @@ public:
 	ID3DBlob* get_d3d_bytecode() const { return m_bytecode.Get(); }
 	ID3DBlob* get_d3d_compiler_message() const { return m_compiler_message.Get(); }
 	const D3D12_SHADER_DESC& get_d3d_shader_desc() const { return m_shader_desc; }
-
+	const std::vector<D3D12_SHADER_INPUT_BIND_DESC>& get_d3d_input_bind_descs() const { return m_shader_input_bind_descs; }
+	
 protected:
 	WinComPtr<ID3DBlob> m_bytecode;
 	WinComPtr<ID3DBlob> m_compiler_message;
 	D3D12_SHADER_DESC m_shader_desc = {};
+	std::vector<D3D12_SHADER_INPUT_BIND_DESC> m_shader_input_bind_descs;
 };

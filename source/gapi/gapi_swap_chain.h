@@ -25,8 +25,14 @@ namespace i
 
 		virtual void present() = 0;
 
+		virtual upoint32 get_back_buffer_size() = 0;
+		
 		virtual const std::shared_ptr<gapi_texture>& get_back_buffer() = 0;
 
-		virtual void resize_back_buffer(const upoint32& resolution, const uint32& multibuffer, const gapi_pixel_format& pixel_format, const uint32& swap_chain_flag = 0) = 0;
+		virtual uint32 get_current_back_buffer_index() = 0;
+
+		virtual void resize_back_buffer(const upoint32& resolution) = 0;
+
+		virtual void set_debug_name(const std::string& debug_name) {};
 	};
 }

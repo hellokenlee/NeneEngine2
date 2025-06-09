@@ -12,7 +12,7 @@ public:
 	
 	virtual bool compile_shader(gapi_d3d12_shader& shader, ID3DBlob*& bytecode, ID3DBlob*& message) = 0;
 
-	virtual bool reflect_shader(gapi_d3d12_shader& shader, D3D12_SHADER_DESC& shader_desc) = 0;
+	virtual bool reflect_shader(const gapi_d3d12_shader& shader, D3D12_SHADER_DESC& out_shader_desc, std::vector<D3D12_SHADER_INPUT_BIND_DESC>& out_shader_input_descs) = 0;
 };
 
 
@@ -27,7 +27,7 @@ public:
 
 	bool compile_shader(gapi_d3d12_shader& shader, ID3DBlob*& bytecode, ID3DBlob*& message) override;
 	
-	bool reflect_shader(gapi_d3d12_shader& shader, D3D12_SHADER_DESC& shader_desc) override;
+	bool reflect_shader(const gapi_d3d12_shader& shader, D3D12_SHADER_DESC& out_shader_desc, std::vector<D3D12_SHADER_INPUT_BIND_DESC>& out_shader_input_descs) override;
 };
 
 
@@ -39,5 +39,5 @@ class d3d12_dxc_shader_compiler : public d3d12_shader_compiler
 public:
 	bool compile_shader(gapi_d3d12_shader& shader, ID3DBlob*& bytecode, ID3DBlob*& message) override;
 	
-	bool reflect_shader(gapi_d3d12_shader& shader, D3D12_SHADER_DESC& shader_desc) override;
+	bool reflect_shader(const gapi_d3d12_shader& shader, D3D12_SHADER_DESC& out_shader_desc, std::vector<D3D12_SHADER_INPUT_BIND_DESC>& out_shader_input_descs) override;
 };

@@ -4,12 +4,14 @@
 
 #include "core/core.h"
 
+#include <chrono>
+
+
 class NENE_API engine
 {
 public:
-	static engine& get();
-
-private:
 	engine() = default;
-	~engine() = default;
+	virtual ~engine() = default;
+
+	virtual void update(std::chrono::milliseconds delta) {}
 };

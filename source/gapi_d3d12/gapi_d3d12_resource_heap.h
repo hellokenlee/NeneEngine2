@@ -2,11 +2,11 @@
 
 #pragma once
 
-#include "gapi/gapi_resource_heap.h"
+#include "gapi/gapi_resource_allocator.h"
 #include "d3d12_utils.h"
 
 
-class gapi_d3d12_resource_heap : public t::impl<gapi_d3d12_resource_heap, i::gapi_resource_heap>
+class gapi_d3d12_resource_heap : public t::impl<gapi_d3d12_resource_heap, i::gapi_resource_allocator>
 {
 public:
 

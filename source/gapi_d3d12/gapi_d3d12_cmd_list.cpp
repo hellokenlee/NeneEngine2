@@ -13,26 +13,22 @@ gapi_d3d12_cmd_list::gapi_d3d12_cmd_list(const WinComPtr<ID3D12GraphicsCommandLi
 {}
 
 gapi_d3d12_cmd_list::~gapi_d3d12_cmd_list()
-{
-	// TODO: Delete `m_list`
-}
+{}
 
 void gapi_d3d12_cmd_list::close()
 {
 	m_list->Close();
 }
 
-void gapi_d3d12_cmd_list::reset(const std::shared_ptr<i::gapi_cmd_allocator>& allocator,
-	const std::shared_ptr<i::gapi_pipeline_state>& pipeline_state)
+void gapi_d3d12_cmd_list::reset(const std::shared_ptr<i::gapi_cmd_allocator>& allocator, const std::shared_ptr<i::gapi_pipeline_state>& pipeline_state)
 {
 	const auto d3d_allocator = gapi_d3d12_cmd_allocator::cast(allocator);
-	m_list->Reset(d3d_allocator->get_d3d_allocator(), pipeline_state ? gapi_d3d12_pipeline_state::cast(pipeline_state)->m_pipeline_state.Get() : nullptr);
+	m_list->Reset(d3d_allocator->get_d3d_allocator(), pipeline_state ? t::gapi_pin<gapi_d3d12_pipeline_state>(pipeline_state).get_d3d_pipeline_state() : nullptr);
 }
 
 void gapi_d3d12_cmd_list::clear_state(const std::shared_ptr<i::gapi_pipeline_state>& pipeline_state)
 {
-	const auto d3d_pipeline_state = gapi_d3d12_pipeline_state::cast(pipeline_state);
-	m_list->ClearState(d3d_pipeline_state->m_pipeline_state.Get());
+	m_list->ClearState(t::gapi_pin<gapi_d3d12_pipeline_state>(pipeline_state).get_d3d_pipeline_state());
 }
 
 void gapi_d3d12_cmd_list::clear_depth_stencil_view(const std::shared_ptr<i::gapi_depth_stencil_view>& depth_stencil, const float& depth, const uint8& stencil)
@@ -126,8 +122,7 @@ void gapi_d3d12_cmd_list::execute_indirect(const std::shared_ptr<i::gapi_cmd_lay
 
 void gapi_d3d12_cmd_list::set_pipeline_state(const std::shared_ptr<i::gapi_pipeline_state>& pipeline_state)
 {
-	const auto& d3d_pipeline_state = gapi_d3d12_pipeline_state::cast(pipeline_state);
-	m_list->SetPipelineState(d3d_pipeline_state->m_pipeline_state.Get());
+	m_list->SetPipelineState(t::gapi_cast<gapi_d3d12_pipeline_state>(pipeline_state)->get_d3d_pipeline_state());
 }
 
 void gapi_d3d12_cmd_list::set_root_constant_buffer_view(const std::shared_ptr<i::gapi_constant_buffer_view>& cbv)
@@ -215,9 +210,12 @@ void gapi_d3d12_cmd_list::set_stencil_ref(const uint32& stencil_ref)
 	m_list->OMSetStencilRef(stencil_ref);
 }
 
-void gapi_d3d12_cmd_list::transition_resource(const std::shared_ptr<i::gapi_resource>& resource, const gapi_resource_state& to)
+void gapi_d3d12_cmd_list::transition_resource(const std::shared_ptr<i::gapi_resource>& resource, const gapi_resource_state& to_state)
 {
-	NOT_IMPLEMENTED();
+	if (auto barrier = t::gapi_pin<gapi_d3d12_resource>(resource).d3d_transition(to_state); barrier.has_value())
+	{
+		m_list->ResourceBarrier(1, std::addressof(barrier.value()));		
+	}
 }
 
 void gapi_d3d12_cmd_list::begin_query()
@@ -233,14 +231,4 @@ void gapi_d3d12_cmd_list::end_query()
 void gapi_d3d12_cmd_list::resolve_query()
 {
 	NOT_IMPLEMENTED();
-}
-
-void gapi_d3d12_cmd_fence::singal(const uint64& value)
-{
-	VERIFY(m_fence->Signal(value));
-}
-
-gapi_d3d12_cmd_fence::gapi_d3d12_cmd_fence(const WinComPtr<ID3D12Fence>& fence)
-	: m_fence(fence)
-{
 }

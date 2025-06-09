@@ -5,6 +5,7 @@
 from source import *
 from source.core import Core
 from source.core_object import CoreObject
+from source.core_render import CoreRender
 from source.renderer import Renderer
 from source.gapi import Gapi
 from source.gapi_dynamic import GapiDynamic
@@ -15,6 +16,6 @@ class Engine(NeneModule):
     def __init__(self):
         super().__init__()
         self.module_dependencies.extend(
-            [Core, CoreObject, Renderer, Gapi, GapiDynamic]
+            [Core, CoreObject, CoreRender, Renderer, Gapi, GapiDynamic]
         )
         pass

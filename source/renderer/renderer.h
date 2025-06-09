@@ -6,13 +6,13 @@
 
 namespace i
 {
-class NENE_API renderer
-{
-public:
-	renderer() = default;
-	
-	virtual ~renderer() = default;
+	class NENE_API renderer
+	{
+	public:
+		renderer() = default;
+		
+		virtual ~renderer() = default;
 
-	virtual void render_view_family(const std::shared_ptr<gapi_texture>& view_family_texture) = 0;
-};
+		virtual void render_view_family(const std::shared_ptr<gapi_texture>& view_family_texture) = 0;
+	};
 }

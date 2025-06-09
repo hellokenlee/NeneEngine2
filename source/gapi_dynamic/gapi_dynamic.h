@@ -23,7 +23,7 @@ public:
 	~gapi_dynamic() override;
 
 	/** Create adapter and device from a window handler. */
-	static void create(void* window);
+	static void create(void* window, const upoint32& window_size);
 	
 	/** Fetch the current gapi that is using. */
 	static gapi_dynamic& get();
@@ -42,19 +42,25 @@ public:
 	std::shared_ptr<i::gapi_texture> create_texture(const gapi_resource_desc& desc) const;
 
 	/** Engine helpers. */
-	void start_frame();
+	void flush() const;
+	
+	void start_frame() const;
 
-	void finish_frame();
+	void finish_frame() const;
+
+	void present_frame();
 	
 	/** Internal getters. */
 	//
 	const std::shared_ptr<i::gapi_device>& get_device() const;
 	//
 	const std::shared_ptr<i::gapi_swap_chain>& get_swap_chain() const;
+	//
+	void resize_swap_chain(const upoint32& new_size);
 
 protected:
 	/** Internal constructor. */
-	gapi_dynamic(const gapi_platform& platform, void* window);
+	gapi_dynamic(const gapi_platform& platform, void* window, const upoint32& window_size);
 	//
 	std::unique_ptr<i::gapi_factory> m_factory;
 	std::shared_ptr<i::gapi_gpu> m_gpu;
@@ -63,7 +69,7 @@ protected:
 	//
 	std::vector<std::unique_ptr<gapi_cmd_context>> m_cmd_contexts;
 	//
-	
+	std::array<std::vector<uint64>, magic_enum::enum_count<gapi_cmd_type>()> m_cmd_queue_fence_values;
 	//
 	static std::unique_ptr<gapi_dynamic> s_instance;
 };

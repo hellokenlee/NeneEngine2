@@ -12,17 +12,14 @@ class win_client : public i::client
 {
 public:
 	win_client() : win_client(TXT("NeneEngine")) {}
-	
 	win_client(const std::wstring& name);
+	~win_client() override;
 	
-	virtual ~win_client() override;
+	bool should_exit() override;
 
-public:
-	virtual bool should_exit() override;
+	void poll_message() override;
 
-	virtual void poll_messages() override;
-
-	virtual void* get_window() override { return static_cast<void*>(m_window); }
+	void* get_window() override { return static_cast<void*>(m_window); }
 
 public:
 	std::atomic_bool m_client_should_exit = false;

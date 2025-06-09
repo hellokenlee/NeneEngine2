@@ -12,6 +12,7 @@ simple_renderer::simple_renderer()
 	, m_mesh_pass_pipeline_state(nullptr)
 	, m_screen_pass_pipeline_state(nullptr)
 {
+	/*
 	//
 	const auto desc = gapi_texture_desc::create_2d(
 		{800, 600}, gapi_pixel_format::r8g8b8a8_unorm, gapi_texture_create_flag::as_shader_resource | gapi_texture_create_flag::as_render_target
@@ -35,10 +36,12 @@ simple_renderer::simple_renderer()
 		)
 	);
 	m_screen_pass_pipeline_state = gapi_pipeline_state_manager::get().find_or_create_pipeline_state(screen_pso_desc);
+	*/
 }
 
 void simple_renderer::render_view_family(const std::shared_ptr<i::gapi_texture>& view_family_texture)
 {
+	/*
 	//
 	auto& context = gapi_dynamic::get().get_cmd_context();
 	auto& vertex_buffers = system_vertex_buffers::get();
@@ -61,4 +64,5 @@ void simple_renderer::render_view_family(const std::shared_ptr<i::gapi_texture>&
 		context.set_vertex_buffer(vertex_buffers.quad());
 		context.draw(6, 1, 0, 0);
 	}
+	*/
 }

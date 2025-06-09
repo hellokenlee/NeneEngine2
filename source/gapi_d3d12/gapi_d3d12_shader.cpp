@@ -15,20 +15,19 @@ bool gapi_d3d12_shader::compile()
 
 	if (!m_is_compiled)
 	{
-		SLOG(shader, warning, "Failed to compile shader ( %s::%s ) with compiler errors:!", m_name.c_str(), m_function_entry.c_str());
-
-		if (m_compiler_message != nullptr)
-		{
-			SLOG(shader, error, "    %s", m_compiler_message->GetBufferPointer());
-		}	
+		SLOG(
+			shader, error,
+			"Failed to compile shader ( %s::%s(...) ) with compiler errors:\n\t%s",
+			m_name.c_str(), m_function_entry.c_str(), m_compiler_message ?  m_compiler_message->GetBufferPointer() : ""
+		);
 	}
 	else
 	{
-		m_is_compiled = compiler.reflect_shader(*this, m_shader_desc);
+		m_is_compiled = compiler.reflect_shader(*this, m_shader_desc, m_shader_input_bind_descs);
 
 		if (!m_is_compiled)
 		{
-			SLOG(shader, error, "Failed to get reflection data from shader ( %s::%s )", m_name.c_str(), m_function_entry.c_str());
+			SLOG(shader, warning, "Failed to get reflection data from shader ( %s::%s(...) )", m_name.c_str(), m_function_entry.c_str());
 		}
 	}
 

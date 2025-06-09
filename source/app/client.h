@@ -12,7 +12,7 @@ namespace i
 		
 		virtual bool should_exit() = 0;
 
-		virtual void poll_messages() = 0;
+		virtual void poll_message() = 0;
 
 		virtual void* get_window() = 0;
 	};

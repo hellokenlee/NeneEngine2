@@ -113,7 +113,7 @@
     <ClInclude Include="gapi_pipeline_state_desc.h" />
     <ClInclude Include="gapi_resource.h" />
     <ClInclude Include="gapi_resource_desc.h" />
-    <ClInclude Include="gapi_resource_heap.h" />
+    <ClInclude Include="gapi_resource_allocator.h" />
     <ClInclude Include="gapi_resource_view.h" />
     <ClInclude Include="gapi_resource_view_allocator.h" />
     <ClInclude Include="gapi_shader.h" />

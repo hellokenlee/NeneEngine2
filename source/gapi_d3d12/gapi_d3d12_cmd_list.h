@@ -11,6 +11,7 @@
 class gapi_d3d12_cmd_list : public i::gapi_cmd_list
 {
 public:
+	gapi_d3d12_cmd_list(const WinComPtr<ID3D12GraphicsCommandList>& list);
 	~gapi_d3d12_cmd_list() override;
 
 	void close() override;
@@ -47,32 +48,15 @@ public:
 	void set_blend_factor(const vector4& blend) override;
 	void set_render_targets(const std::vector<std::shared_ptr<i::gapi_render_target_view>>& render_target_views, const std::shared_ptr<i::gapi_depth_stencil_view>& depth_stencil_view) override;
 	void set_stencil_ref(const uint32& stencil_ref) override;
-	void transition_resource(const std::shared_ptr<i::gapi_resource>& resource, const gapi_resource_state& to) override;
+	void transition_resource(const std::shared_ptr<i::gapi_resource>& resource, const gapi_resource_state& to_state) override;
 	
 	void begin_query() override;
 	void end_query() override;
 	void resolve_query() override;
 
 public:
-	gapi_d3d12_cmd_list(const WinComPtr<ID3D12GraphicsCommandList>& list);
+	ID3D12CommandList* get_d3d_cmd_list() const { return m_list.Get(); }
 	
 private:
 	WinComPtr<ID3D12GraphicsCommandList> m_list;
-};
-
-
-class gapi_d3d12_cmd_fence : public t::impl<gapi_d3d12_cmd_fence, i::gapi_cmd_fence>
-{
-public:
-	~gapi_d3d12_cmd_fence() override = default;
-	
-	void singal(const uint64& value) override;
-
-public:
-	gapi_d3d12_cmd_fence(const WinComPtr<ID3D12Fence>& fence);
-	
-	ID3D12Fence* get_d3d_fence() const { return m_fence.Get(); }
-	
-private:
-	WinComPtr<ID3D12Fence> m_fence;
 };

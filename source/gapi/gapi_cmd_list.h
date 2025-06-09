@@ -45,7 +45,7 @@ namespace i
 		virtual void discard_resource(const std::shared_ptr<gapi_resource>& resource) = 0;
 
 		// Resource Transition
-		virtual void transition_resource(const std::shared_ptr<gapi_resource>& resource, const gapi_resource_state& to) = 0;
+		virtual void transition_resource(const std::shared_ptr<gapi_resource>& resource, const gapi_resource_state& to_state) = 0;
 
 		// The Execution Command
 		virtual void dispatch(const uvector3& thread_group_size) = 0;
@@ -79,16 +79,5 @@ namespace i
 		virtual void begin_query() = 0;
 		virtual void end_query() = 0;
 		virtual void resolve_query() = 0;
-	};
-
-
-	class NENE_API gapi_cmd_fence : noncopyable
-	{
-	public:
-		gapi_cmd_fence() = default;
-
-		~gapi_cmd_fence() override = default;
-
-		virtual void singal(const uint64& value) = 0;
 	};
 }

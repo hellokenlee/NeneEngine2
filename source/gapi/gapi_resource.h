@@ -9,7 +9,6 @@
 /** The transition state of a resource */
 enum class gapi_resource_state : uint8
 {
-	unknown,
 	present,
 	render_target,
 	shader_resource,
@@ -29,11 +28,11 @@ namespace i
 	class NENE_API gapi_resource : noncopyable
 	{
 	public:
-		gapi_resource(const gapi_resource_desc& desc);
+		gapi_resource() = default;
 		gapi_resource(gapi_resource&& other) noexcept;
-		gapi_resource(const gapi_resource&) = delete;
-		gapi_resource& operator=(const gapi_resource&) = delete;
 		~gapi_resource() override = default;
+
+		virtual const gapi_resource_desc& get_resource_desc() const = 0;
 
 		template<typename t_lambda>
 		void map(t_lambda&& lambda)
@@ -42,14 +41,13 @@ namespace i
 		}
 		
 		virtual void map(const upoint64& read_range, std::function<void(void*)> buffer_operator) = 0;
-		virtual const gapi_resource_desc& get_resource_desc() const { return m_desc; }
+
+		virtual gapi_resource_state get_state() const { return m_state; }
+
+		virtual void set_debug_name(const std::wstring& debug_name) {};
 
 	protected:
-		//
-		gapi_resource_desc m_desc;
-		
-		// for virtual inheritance
-		gapi_resource() = default;
+		gapi_resource_state m_state = gapi_resource_state::present;
 	};
 
 	class NENE_API gapi_texture : virtual public gapi_resource

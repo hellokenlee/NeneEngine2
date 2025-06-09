@@ -50,8 +50,18 @@ EXTERN_LOG_CATEGORY(d3d12)
 void inline verify_impl(const HRESULT hres, const wchar_t* code, const wchar_t* filename, uint32 line)
 {
 	const std::string error = get_error_string(hres);
-	LOG(d3d12, fatal, "Function call failed!\n    Code at %s:%u:\n        `%s`\n    Error:\n        `%s`", filename, line, code, error.c_str());
+	LOG(d3d12, fatal, "Function call failed!\n    Code at %ls:%u:\n        `%ls`\n    Error:\n        `%s`", filename, line, code, error.c_str());
 	DEBUG_BREAK();
+}
+
+inline void d3d_set_debug_name(IDXGIObject& object, const std::string& debug_name)
+{
+	object.SetPrivateData(WKPDID_D3DDebugObjectName, static_cast<uint32>(debug_name.size()), debug_name.c_str());
+}
+	
+inline void d3d_set_debug_name(ID3D12Resource& object, const std::wstring& debug_name)
+{
+	object.SetName(debug_name.c_str());
 }
 
 namespace t

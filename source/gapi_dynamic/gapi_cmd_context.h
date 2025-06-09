@@ -18,19 +18,21 @@ class NENE_API gapi_cmd_context : noncopyable
 {
 public:
 	//
-	gapi_cmd_context(const std::shared_ptr<i::gapi_device>& device);
+	gapi_cmd_context(const std::shared_ptr<i::gapi_device>& device, uint32 num_cmd_list);
 	~gapi_cmd_context() override = default;
 	
 	// A render pass is a set of drawcalls shared same render targets.
 	void begin_render_pass(const std::vector<std::shared_ptr<i::gapi_texture>>& render_targets) const;
 	void end_render_pass() const;
 	scoped_render_pass render_pass(const std::vector<std::shared_ptr<i::gapi_texture>>& render_targets);
-	
+
+	//
+	void reset() const;
 	// A flush indicates that no more command will be call in this frame.
-	void flush();
+	void close();
 
 	// Specify resource state
-	void transition_resource(const std::shared_ptr<i::gapi_resource>& resource, const gapi_resource_state& to) const;
+	void transition_resource(const std::shared_ptr<i::gapi_resource>& resource, const gapi_resource_state& to_state) const;
 	
 	//
 	void dispatch(const uvector3& thread_group_size) const;
@@ -47,14 +49,17 @@ public:
 
 	//
 	void bind_shader_resource(const gapi_shader_type& stage, const std::shared_ptr<i::gapi_resource>& resource) const;
+	//
+	const std::shared_ptr<i::gapi_cmd_list>& get_current_cmd_list() const { return m_cmd_lists[m_current_index]; }
+	const std::shared_ptr<i::gapi_cmd_list>& get_previous_cmd_list() const { return m_cmd_lists[m_previous_index]; }
+	const std::shared_ptr<i::gapi_cmd_allocator>& get_current_cmd_allocator() const { return m_cmd_allocators[m_current_index]; }
+	const std::shared_ptr<i::gapi_cmd_allocator>& get_previous_cmd_allocator() const { return m_cmd_allocators[m_previous_index]; }
 
 protected:
-	const std::shared_ptr<i::gapi_cmd_list>& get_current_cmd_list() const { return m_cmd_lists[m_current]; }
-	const std::shared_ptr<i::gapi_cmd_list>& get_last_cmd_list() const { return m_cmd_lists[m_current ^ 1]; }
-	
-	uint32 m_current : 1;
-	std::array<std::shared_ptr<i::gapi_cmd_list>, 2> m_cmd_lists;
-	std::array<std::shared_ptr<i::gapi_cmd_allocator>, 2> m_cmd_allocators;
+	uint32 m_current_index;
+	uint32 m_previous_index;
+	std::vector<std::shared_ptr<i::gapi_cmd_list>> m_cmd_lists;
+	std::vector<std::shared_ptr<i::gapi_cmd_allocator>> m_cmd_allocators;
 };
 
 class NENE_API scoped_render_pass

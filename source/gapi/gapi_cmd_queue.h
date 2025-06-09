@@ -6,7 +6,7 @@
 #include "gapi_cmd_list.h"
 
 
-enum class gapi_cmd_type
+enum class gapi_cmd_type : uint8
 {
 	graphics = 0,
 	compute,
@@ -27,10 +27,23 @@ namespace i
 	class NENE_API gapi_cmd_queue : noncopyable
 	{
 	public:
-		gapi_cmd_queue() = default;
+		gapi_cmd_queue(gapi_cmd_type cmd_type)
+			: m_cmd_type(cmd_type)
+		{}
 
 		~gapi_cmd_queue() override = default;
 
-		virtual void signal(const std::shared_ptr<gapi_cmd_fence>& fence, uint64 value) = 0;
+		virtual void flush() = 0;
+		
+		virtual uint64 signal() = 0;
+
+		virtual void wait_for_fence_value(uint64 fence_value) = 0;
+		
+		virtual void execute_cmd_list(const std::shared_ptr<gapi_cmd_list>& cmd_list) = 0;
+
+		virtual gapi_cmd_type get_cmd_type() const { return m_cmd_type; }
+		
+	protected:
+		gapi_cmd_type m_cmd_type;
 	};
 }

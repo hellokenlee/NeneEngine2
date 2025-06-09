@@ -60,6 +60,11 @@ namespace t
 		{
 		}
 
+		const T& value() const
+		{
+			return m_ref;
+		}
+
 		T get_value_thread_unsafe()
 		{
 			return m_ref;

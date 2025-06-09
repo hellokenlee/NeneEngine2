@@ -57,6 +57,14 @@ struct gapi_sampler_desc
 	float m_lod_min_max[2];
 };
 
+enum class gapi_resource_view_state : uint8
+{
+	// offline means the resource view is only visible on CPU and is waiting to be commited to GPU
+	offline,
+	// online means the resource view is already commited to GPU, visible on both CPU and GPU
+	online, 
+};
+
 namespace i
 {
 	/**

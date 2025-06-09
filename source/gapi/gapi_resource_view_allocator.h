@@ -9,7 +9,7 @@
 namespace i
 {
 	/**
-	*	A descriptor heap is that place where descriptor actually allocate memory ( VRAM ) from.
+	*	A resource view allocator is the heap where resource view actually allocate memory ( VRAM ) from.
 	*
 	*	Equivalents:
 	*		- DX: `ID3D12DescriptorHeap`

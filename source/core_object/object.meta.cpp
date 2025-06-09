@@ -17,5 +17,6 @@ NMETA(m)
 		.property("m_data0", &n::object::m_data0)
 		.property_readonly("m_data1", &n::object::m_data1)
 		.static_property("s_data2", &n::object::s_data2)
-		.static_property_readonly("s_data3", &n::object::s_data3);
+		.static_property_readonly("s_data3", &n::object::s_data3)
+	;
 }

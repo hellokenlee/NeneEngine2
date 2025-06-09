@@ -5,7 +5,7 @@
 /**
  *	Usage:
  *	```
- *	class my_class: private noncopyable
+ *	class my_class: noncopyable
  *	{
  *	public:
  *		

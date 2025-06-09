@@ -12,13 +12,20 @@ public:
 	gapi_d3d12_resource(const WinComPtr<ID3D12Resource>& resource, const gapi_resource_desc& desc);
 	gapi_d3d12_resource(gapi_d3d12_resource&& other) noexcept;
 	~gapi_d3d12_resource() override = default;
+
+	const gapi_resource_desc& get_resource_desc() const override;
 	
 	void map(const upoint64& read_range, std::function<void(void*)> buffer_operator) override;
 
-public:
-	ID3D12Resource* get_d3d_resource() const { return m_d3d_resource.Get(); }
+	void set_debug_name(const std::wstring& debug_name) override;
 
+public:
+	std::optional<CD3DX12_RESOURCE_BARRIER> d3d_transition(const gapi_resource_state& to_state);
+	
+	ID3D12Resource* get_d3d_resource() const { return m_d3d_resource.Get(); }
+	
 protected:
+	gapi_resource_desc m_desc;
 	WinComPtr<ID3D12Resource> m_d3d_resource = nullptr;
 };
 
@@ -29,6 +36,9 @@ public:
 	using gapi_d3d12_resource::gapi_d3d12_resource;
 
 	~gapi_d3d12_texture() override = default;
+
+public:
+	void recreate_resource_views();
 };
 
 

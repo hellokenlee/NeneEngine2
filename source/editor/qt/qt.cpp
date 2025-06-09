@@ -16,12 +16,15 @@ namespace qt
 
 	void binding::initialize() const
 	{
+		//
+		static constexpr auto nene_editor_module_name = NENE_STR(NENE_EDITOR_MODULE_NAME);
+		//
 		if (Py_IsInitialized() != 0)
 		{
 			assert(!PyErr_Occurred());
 			throw std::runtime_error("Can't add new modules after the interpreter has been initialized");
 		}
-		auto result = PyImport_AppendInittab(NENE_STR(NENE_EDITOR_MODULE_NAME), NENE_CAT(PyInit_, NENE_EDITOR_MODULE_NAME));
+		auto result = PyImport_AppendInittab(nene_editor_module_name, NENE_CAT(PyInit_, NENE_EDITOR_MODULE_NAME));
 		if (result == -1)
 		{
 			assert(!PyErr_Occurred());

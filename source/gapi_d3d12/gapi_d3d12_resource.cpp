@@ -5,16 +5,21 @@
 
 
 gapi_d3d12_resource::gapi_d3d12_resource(const WinComPtr<ID3D12Resource>& resource, const gapi_resource_desc& desc)
-	: gapi_resource(desc)
+	: m_desc(desc)
 	, m_d3d_resource(resource)
 {
 }
 
 gapi_d3d12_resource::gapi_d3d12_resource(gapi_d3d12_resource&& other) noexcept
-	: gapi_resource(std::move(other))
+	: m_desc(std::move(other.m_desc))
 	, m_d3d_resource(std::move(other.m_d3d_resource))
 {
 	m_d3d_resource = std::move(other.m_d3d_resource);
+}
+
+const gapi_resource_desc& gapi_d3d12_resource::get_resource_desc() const
+{
+	return m_desc;
 }
 
 void gapi_d3d12_resource::map(const upoint64& read_range, std::function<void(void*)> buffer_operator)
@@ -24,6 +29,36 @@ void gapi_d3d12_resource::map(const upoint64& read_range, std::function<void(voi
 	m_d3d_resource->Map(0, &_read_range, &mapped_memory);
 	buffer_operator(mapped_memory);
 	m_d3d_resource->Unmap(0, nullptr);
+}
+
+void gapi_d3d12_resource::set_debug_name(const std::wstring& debug_name)
+{
+	d3d_set_debug_name(*m_d3d_resource.Get(), debug_name);
+}
+
+std::optional<CD3DX12_RESOURCE_BARRIER> gapi_d3d12_resource::d3d_transition(const gapi_resource_state& to_state)
+{
+	if (m_state == to_state)
+	{
+		return std::nullopt;
+	}
+	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		get_d3d_resource(),
+		d3d_cast(m_state),
+		d3d_cast(to_state)
+	);
+	m_state = to_state;
+	return barrier;
+}
+
+void gapi_d3d12_texture::recreate_resource_views()
+{
+	// create shader resource view
+	if (t::has_flag(m_desc.m_texture_create_flag, gapi_texture_create_flag::as_shader_resource))
+	{
+		
+	}
+	
 }
 
 gapi_d3d12_buffer::gapi_d3d12_buffer(const WinComPtr<ID3D12Resource>& resource, const gapi_resource_desc& desc)

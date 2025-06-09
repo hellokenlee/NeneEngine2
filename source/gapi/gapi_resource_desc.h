@@ -19,16 +19,28 @@ enum class gapi_resource_type : uint8
 enum class gapi_texture_create_flag : uint8
 {
 	none				= 0,
+	// texture can be used as a render target
 	as_render_target	= 1ull << 0,
+	// texture can be used as a shader resource
 	as_shader_resource	= 1ull << 1,
+	// texture can be used as a depth-stencil target
 	as_depth_stencil	= 1ull << 2,
+	// texture can be used through an unordered access view
 	as_unordered_access	= 1ull << 3,
+
+	// render target texture that will be displayed on screen (back buffer)
+	presentable			= 1ull << 4,
+
+	// texture data is writable by the CPU
+	cpu_writable		= 1ull << 5,
+	// texture data is accessible by the CPU
+	cpu_readable		= 1ull << 6,
 };
 DEFINE_FLAG_ENUM_CLASS_OPERATORS(gapi_texture_create_flag);
 
 
 /** The usage flag to create a buffer */
-enum class gapi_buffer_usage_flag : uint16
+enum class gapi_buffer_usage_flag : uint8
 {
 	none				= 0,
 

@@ -10,14 +10,11 @@
 int main()
 {
 	win_client client;
-	engine_loop::initialize(client.get_window());
 
 	while (!client.should_exit())
 	{
-		client.poll_messages();
-		engine_loop::update();
+		client.poll_message();
 	}
 	
-	engine_loop::shutdown();
 	return 0;
 }

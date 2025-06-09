@@ -172,12 +172,75 @@ inline D3D12_DESCRIPTOR_HEAP_TYPE d3d_cast(const gapi_resource_view_type& type)
 
 inline D3D12_RESOURCE_DESC d3d_cast(const gapi_resource_desc& desc)
 {
-	CHECK(false);
-	return D3D12_RESOURCE_DESC{};
+	D3D12_RESOURCE_DESC d3d_desc = {};
+	switch (desc.m_type)
+	{
+	case gapi_resource_type::none:
+		d3d_desc.Dimension = D3D12_RESOURCE_DIMENSION_UNKNOWN;
+		break;
+	case gapi_resource_type::buffer:
+		d3d_desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+		break;
+	case gapi_resource_type::texture1d:
+		d3d_desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE1D;
+		break;
+	case gapi_resource_type::texture2d:
+		d3d_desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+		break;
+	case gapi_resource_type::texture3d:
+		d3d_desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE3D;
+		break;
+	}
+	d3d_desc.Alignment = static_cast<uint64>(desc.m_buffer_alignment);
+	d3d_desc.Width = desc.m_width;
+	d3d_desc.Height = desc.m_height;
+	d3d_desc.DepthOrArraySize = desc.m_type == gapi_resource_type::texture3d ? desc.m_array_size : desc.m_depth;
+	d3d_desc.MipLevels = desc.m_num_mips;
+	d3d_desc.Format = d3d_cast(desc.m_format);
+	d3d_desc.SampleDesc.Count = desc.m_num_samples;
+	d3d_desc.SampleDesc.Quality = 0;
+	// refs: https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ne-d3d12-d3d12_texture_layout
+	d3d_desc.Layout = desc.m_type == gapi_resource_type::buffer ? D3D12_TEXTURE_LAYOUT_ROW_MAJOR : D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	d3d_desc.Flags = D3D12_RESOURCE_FLAG_NONE;
+	if (t::has_flag(desc.m_texture_create_flag, gapi_texture_create_flag::as_render_target))
+	{
+		d3d_desc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+	}
+	if (!t::has_flag(desc.m_texture_create_flag, gapi_texture_create_flag::as_shader_resource))
+	{
+		d3d_desc.Flags |= D3D12_RESOURCE_FLAG_DENY_SHADER_RESOURCE;
+	}
+	if (t::has_flag(desc.m_texture_create_flag, gapi_texture_create_flag::as_depth_stencil))
+	{
+		d3d_desc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+	}
+	if (t::has_flag(desc.m_texture_create_flag, gapi_texture_create_flag::as_unordered_access))
+	{
+		d3d_desc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+	}
+	// TODO: multi gpu support for `D3D12_RESOURCE_FLAG_ALLOW_CROSS_ADAPTER` and `D3D12_RESOURCE_FLAG_ALLOW_SIMULTANEOUS_ACCESS`
+	// TODO: vedio decoding support for `D3D12_RESOURCE_FLAG_VIDEO_DECODE_REFERENCE_ONLY`
+	return d3d_desc;
 }
 
 inline D3D12_SAMPLER_DESC d3d_cast(const gapi_sampler_desc& desc)
 {
-	CHECK(false);
+	NOT_IMPLEMENTED();
 	return D3D12_SAMPLER_DESC{};
+}
+
+inline D3D12_RESOURCE_STATES d3d_cast(const gapi_resource_state& state)
+{
+	switch (state)
+	{
+	case gapi_resource_state::present:
+		return D3D12_RESOURCE_STATE_PRESENT;
+	case gapi_resource_state::render_target:
+		return D3D12_RESOURCE_STATE_RENDER_TARGET;
+	case gapi_resource_state::shader_resource:
+		// FIXME: what about non-pixel shader resource
+		return D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+	}
+	NOT_IMPLEMENTED();
+	return D3D12_RESOURCE_STATE_COMMON;
 }

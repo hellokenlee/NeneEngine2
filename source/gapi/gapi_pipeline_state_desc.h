@@ -4,6 +4,7 @@
 
 #include "core/core.h"
 #include "gapi_pipeline_layout.h"
+#include "gapi_pipeline_layout_desc.h"
 #include "gapi_shader.h"
 #include "gapi_resource_desc.h"
 
@@ -302,6 +303,8 @@ struct NENE_API gapi_graphics_pipeline_state_desc
 	uint16 m_num_samples = 1;
 	gapi_pixel_format m_depth_stencil_format = gapi_pixel_format::unknown;
 	std::vector<gapi_pixel_format> m_render_target_formats;
+
+	gapi_pipeline_layout_desc m_pipeline_layout_desc;
 	std::shared_ptr<i::gapi_pipeline_layout> m_pipeline_layout; 
 
 	// Minimal Constructor

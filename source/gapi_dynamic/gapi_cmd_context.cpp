@@ -2,17 +2,17 @@
 
 #include "gapi_cmd_context.h"
 
+extern t::console_var<uint32> cvar_gapi_num_multi_buffer;
 
-gapi_cmd_context::gapi_cmd_context(const std::shared_ptr<i::gapi_device>& device)
-	: m_current(0)
-	, m_cmd_lists{nullptr, nullptr}
-	, m_cmd_allocators{nullptr, nullptr}
+gapi_cmd_context::gapi_cmd_context(const std::shared_ptr<i::gapi_device>& device, uint32 num_cmd_list)
+	: m_current_index(0)
+	, m_previous_index(num_cmd_list - 1)
 {
-	m_cmd_allocators[0] = device->create_cmd_allocator(gapi_cmd_type::graphics);
-	m_cmd_lists[0] = device->create_cmd_list(gapi_cmd_type::graphics, m_cmd_allocators[0]);
-
-	m_cmd_allocators[1] = device->create_cmd_allocator(gapi_cmd_type::graphics);
-	m_cmd_lists[1] = device->create_cmd_list(gapi_cmd_type::graphics, m_cmd_allocators[1]);
+	for (uint32 i = 0; i < num_cmd_list; i++)
+	{
+		m_cmd_allocators.emplace_back(device->create_cmd_allocator(gapi_cmd_type::graphics));
+		m_cmd_lists.emplace_back(device->create_cmd_list(gapi_cmd_type::graphics, m_cmd_allocators.back()));
+	}
 }
 
 void gapi_cmd_context::begin_render_pass(const std::vector<std::shared_ptr<i::gapi_texture>>& render_targets) const
@@ -34,15 +34,25 @@ scoped_render_pass gapi_cmd_context::render_pass(const std::vector<std::shared_p
 	return render_pass;
 }
 
-void gapi_cmd_context::flush()
+void gapi_cmd_context::reset() const
 {
-	m_current = m_current ^ 1;
+	get_current_cmd_allocator()->reset();
+	get_current_cmd_list()->reset(get_current_cmd_allocator(), nullptr);
 }
 
-void gapi_cmd_context::transition_resource(const std::shared_ptr<i::gapi_resource>& resource, const gapi_resource_state& to) const
+void gapi_cmd_context::close()
+{
+	//
+	get_current_cmd_list()->close();
+	//
+	m_previous_index = m_current_index;
+	m_current_index = (m_current_index + 1) % m_cmd_allocators.size();
+}
+
+void gapi_cmd_context::transition_resource(const std::shared_ptr<i::gapi_resource>& resource, const gapi_resource_state& to_state) const
 {
 	// TODO: from state check and skip
-	get_current_cmd_list()->transition_resource(resource, to);
+	get_current_cmd_list()->transition_resource(resource, to_state);
 }
 
 void gapi_cmd_context::dispatch(const uvector3& thread_group_size) const
@@ -98,7 +108,7 @@ void gapi_cmd_context::set_scissor_rects(const std::vector<rect>& scissors) cons
 
 void gapi_cmd_context::bind_shader_resource(const gapi_shader_type& stage, const std::shared_ptr<i::gapi_resource>& resource) const
 {
-	
+	NOT_IMPLEMENTED();
 }
 
 scoped_render_pass::scoped_render_pass(gapi_cmd_context* context, const std::vector<std::shared_ptr<i::gapi_texture>>& render_targets)

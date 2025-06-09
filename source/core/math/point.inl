@@ -26,6 +26,11 @@ namespace t
         {
             return {};
         }
+
+        bool operator==(const point& rhs) const
+        {
+            return this->x == rhs.x && this->y == rhs.y;
+        }
     };
 };
 

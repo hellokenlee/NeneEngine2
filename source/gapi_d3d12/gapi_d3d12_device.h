@@ -10,11 +10,11 @@
 class gapi_d3d12_device : public i::gapi_device
 {
 public:
+	gapi_d3d12_device(const WinComPtr<ID3D12Device>& device);
 	~gapi_d3d12_device() override = default;
-
-	std::shared_ptr<i::gapi_cmd_fence> create_cmd_fence(const uint64& initial_value) override;
-	std::shared_ptr<i::gapi_cmd_queue> create_cmd_queue(gapi_cmd_type type) override;
-	std::shared_ptr<i::gapi_cmd_allocator> create_cmd_allocator(gapi_cmd_type type) override;
+	
+	std::shared_ptr<i::gapi_cmd_queue> create_cmd_queue(gapi_cmd_type cmd_type) override;
+	std::shared_ptr<i::gapi_cmd_allocator> create_cmd_allocator(gapi_cmd_type cmd_type) override;
 	std::shared_ptr<i::gapi_cmd_list> create_cmd_list(gapi_cmd_type type, std::shared_ptr<i::gapi_cmd_allocator>& allocator) override;
 	std::shared_ptr<i::gapi_cmd_queue> get_cmd_queue(gapi_cmd_type type) override { return m_cmd_queues[static_cast<uint32>(type)]; }
 	
@@ -30,18 +30,17 @@ public:
 	std::shared_ptr<i::gapi_depth_stencil_view> create_depth_stencil_view(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const std::shared_ptr<i::gapi_texture>& texture) override;
 	std::shared_ptr<i::gapi_sampler> create_sampler(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const gapi_sampler_desc& desc) override;
 
-	std::shared_ptr<i::gapi_resource_heap> create_resource_heap() override;
+	std::shared_ptr<i::gapi_resource_allocator> create_resource_heap() override;
 	std::shared_ptr<i::gapi_resource> create_resource(const gapi_resource_desc& desc) override;
 	std::shared_ptr<i::gapi_resource> create_placed_resource(const gapi_resource_desc& desc) override;
 	std::shared_ptr<i::gapi_resource> create_reserved_resource(const gapi_resource_desc& desc) override;
 
 	std::shared_ptr<i::gapi_shader> create_and_compile_shader(const gapi_shader_type& stype, const std::string& source, const std::string& entry, const gapi_shader_feature_level& level, const std::string& debug_name) override;
 
-	gapi_d3d12_device(const WinComPtr<ID3D12Device>& device);
-
 protected:
 	std::shared_ptr<i::gapi_cmd_queue> m_cmd_queues[t::enum_count<gapi_cmd_type>()];
 	
 private:
 	WinComPtr<ID3D12Device> m_device;
+	WinComPtr<ID3D12Device2> m_device2;
 };

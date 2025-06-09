@@ -103,6 +103,7 @@ graph TD
   CoreObject --> Editor
   Core --> Engine
   CoreObject --> Engine
+  CoreRender --> Engine
   Renderer --> Engine
   Gapi --> Engine
   GapiDynamic --> Engine

@@ -5,7 +5,7 @@
 #include "core/core.h"
 
 
-enum class gapi_pipeline_state_type
+enum class gapi_pipeline_state_type : uint8
 {
 	compute,
 	graphics,

@@ -92,23 +92,25 @@ bool d3d12_fxc_shader_compiler::compile_shader(gapi_d3d12_shader& shader, ID3DBl
 	return SUCCEEDED(result);
 }
 
-bool d3d12_fxc_shader_compiler::reflect_shader(gapi_d3d12_shader& shader, D3D12_SHADER_DESC& shader_desc)
+bool d3d12_fxc_shader_compiler::reflect_shader(const gapi_d3d12_shader& shader, D3D12_SHADER_DESC& out_shader_desc, std::vector<D3D12_SHADER_INPUT_BIND_DESC>& out_shader_input_descs)
 {
 	if (shader.is_compiled())
 	{
 		ID3D12ShaderReflection* reflection = nullptr;
-		const auto hres = D3DReflect(
+		const auto res = D3DReflect(
 			shader.get_d3d_bytecode()->GetBufferPointer(), shader.get_d3d_bytecode()->GetBufferSize(),
 			IID_ID3D12ShaderReflection, reinterpret_cast<void**>(&reflection)
 		);
-		if (SUCCEEDED(hres))
+		if (SUCCEEDED(res))
 		{
-			reflection->GetDesc(&shader_desc);
-			for (uint32 i = 0; i < shader_desc.BoundResources; i++)
+			reflection->GetDesc(&out_shader_desc);
+			for (uint32 i = 0; i < out_shader_desc.BoundResources; i++)
 			{
-				D3D12_SHADER_INPUT_BIND_DESC  resource_desc;
+				D3D12_SHADER_INPUT_BIND_DESC resource_desc;
 				reflection->GetResourceBindingDesc(i, &resource_desc);
+				out_shader_input_descs.emplace_back(resource_desc);
 			}
+			return true;
 		}
 	}
 	return false;

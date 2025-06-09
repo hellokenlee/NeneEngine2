@@ -11,7 +11,7 @@
 #include "gapi_pipeline_state.h"
 #include "gapi_pipeline_state_desc.h"
 #include "gapi_resource.h"
-#include "gapi_resource_heap.h"
+#include "gapi_resource_allocator.h"
 #include "gapi_resource_desc.h"
 #include "gapi_resource_view.h"
 #include "gapi_resource_view_allocator.h"
@@ -41,7 +41,6 @@ namespace i
 		~gapi_device() override = default;
 
 		// Command
-		virtual std::shared_ptr<gapi_cmd_fence> create_cmd_fence(const uint64& initial_value) = 0;
 		virtual std::shared_ptr<gapi_cmd_queue> create_cmd_queue(gapi_cmd_type type) = 0;
 		virtual std::shared_ptr<gapi_cmd_allocator> create_cmd_allocator(gapi_cmd_type type) = 0;
 		virtual std::shared_ptr<gapi_cmd_list> create_cmd_list(gapi_cmd_type type, std::shared_ptr<gapi_cmd_allocator>& allocator) = 0;
@@ -53,7 +52,7 @@ namespace i
 		virtual std::shared_ptr<gapi_pipeline_state> create_graphics_pipeline_state(const gapi_graphics_pipeline_state_desc& desc) = 0;
 
 		// Resource
-		virtual std::shared_ptr<gapi_resource_heap> create_resource_heap() = 0;
+		virtual std::shared_ptr<gapi_resource_allocator> create_resource_heap() = 0;
 		virtual std::shared_ptr<gapi_resource> create_resource(const gapi_resource_desc& desc) = 0;
 		virtual std::shared_ptr<gapi_resource> create_placed_resource(const gapi_resource_desc& desc) = 0;
 		virtual std::shared_ptr<gapi_resource> create_reserved_resource(const gapi_resource_desc& desc) = 0;
