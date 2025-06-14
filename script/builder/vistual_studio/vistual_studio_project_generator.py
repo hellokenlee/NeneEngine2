@@ -27,7 +27,7 @@ class VisualStudioSolutionGenerator(ProjectGenerator):
 		solution = Solution()
 		solution.format.version = "12.00"
 		solution.comment.version = "17"
-		solution.vs_version.value = VisualStudioConfig().current_version()
+		solution.vs_version.value = VisualStudioConfig().visual_studio_version()
 		solution.min_vs_version.value = VisualStudioConfig.MIN_VS_VERSION
 
 		# Collect module guids

@@ -20,7 +20,7 @@ class VisualStudioConfig(metaclass=Singleton):
 	def __init__(self):
 		super(VisualStudioConfig, self).__init__()
 		#
-		self.attributes: dict[str, str] = {}
+		self.visual_studio_attributes: dict[str, str] = {}
 		self._window_sdk_version = ""
 		self._windows_sdk_install_path = ""
 		#
@@ -33,19 +33,26 @@ class VisualStudioConfig(metaclass=Singleton):
 		for line in infos[1].split("\n"):
 			key_value = line.split(": ")
 			if len(key_value) == 2:
-				self.attributes[key_value[0]] = key_value[1]
+				self.visual_studio_attributes[key_value[0]] = key_value[1]
 		#
-		self._windows_sdk_install_path = os.path.join(os.getenv("ProgramFiles"), self.MICROSOFT_SDKS, self.WINDOWS_KITS)
+		self._windows_sdk_install_path = os.path.join(os.getenv("ProgramFiles"), self.WINDOWS_KITS)
 		if not os.path.exists(self._windows_sdk_install_path):
-			self._windows_sdk_install_path = os.path.join(os.getenv("ProgramFiles(x86)"), self.MICROSOFT_SDKS, self.WINDOWS_KITS)
+			self._windows_sdk_install_path = os.path.join(os.getenv("ProgramFiles(x86)"), self.WINDOWS_KITS)
 		#
-		assert self._windows_sdk_install_path
-		self._window_sdk_version = os.listdir(self._windows_sdk_install_path)[0]
+		assert self._windows_sdk_install_path, "Fatal: can't find windows sdk in %s, please install windows sdk in VisualStudioInstaller!" % self._windows_sdk_install_path
+		#
+		windows_sdk_major_versions = os.listdir(self._windows_sdk_install_path)
+		assert "10" in windows_sdk_major_versions, "Fatal: nene require at least windows sdk 10, only `%s` major versions found!" % windows_sdk_major_versions
+		self._windows_sdk_install_path = os.path.join(self._windows_sdk_install_path, "10")
+		windows_sdk_minor_versions = os.listdir(os.path.join(self._windows_sdk_install_path, "Include"))
+		windows_sdk_minor_versions.sort()
+		assert len(windows_sdk_minor_versions) > 0
+		self._window_sdk_version = windows_sdk_minor_versions[-1]
 
 		#
 		self._msvc_version = "uninstalled"
 		self._msvc_install_path = "uninstalled"
-		msvc_parent_dir_abs_path = os.path.join(self.attributes["installationPath"], "VC", "Tools", "MSVC")
+		msvc_parent_dir_abs_path = os.path.join(self.visual_studio_attributes["installationPath"], "VC", "Tools", "MSVC")
 		versions = []
 		if os.path.exists(msvc_parent_dir_abs_path):
 			for version in os.listdir(msvc_parent_dir_abs_path):
@@ -55,20 +62,26 @@ class VisualStudioConfig(metaclass=Singleton):
 				except packaging.version.InvalidVersion:
 					pass
 			versions.sort()
-			if len(versions) > 1:
+			if len(versions) > 0:
 				# latest
 				self._msvc_version = versions[-1]
 			self._msvc_install_path = os.path.join(msvc_parent_dir_abs_path, self._msvc_version)
 		pass
 
-	def current_version(self):
-		return self.attributes["installationVersion"]
+	def visual_studio_version(self):
+		return self.visual_studio_attributes["installationVersion"]
 
-	def install_path(self):
-		return self.attributes["installationPath"]
+	def visual_studio_install_path(self):
+		return self.visual_studio_attributes["installationPath"]
 
 	def windows_sdk_version(self):
 		return self._window_sdk_version
+
+	def windows_sdk_install_path(self):
+		return self._windows_sdk_install_path
+
+	def windows_sdk_include_path(self):
+		return os.path.join(self._windows_sdk_install_path, "Include", self._window_sdk_version)
 
 	def msvc_version(self):
 		return self._msvc_version
@@ -78,8 +91,8 @@ class VisualStudioConfig(metaclass=Singleton):
 
 	def print_brief(self):
 		log("Detected Visual Studio:", "\n")
-		log("Visual Studio Version: %s" % self.current_version())
-		log("Visual Studio Install Path: %s" % self.install_path())
+		log("Visual Studio Version: %s" % self.visual_studio_version())
+		log("Visual Studio Install Path: %s" % self.visual_studio_install_path())
 		log("Windows SDK Version: %s" % self.windows_sdk_version())
 		log("Windows SDK InstallPath: %s" % self._windows_sdk_install_path)
 		log("MSVC Version: %s" % self.msvc_version())

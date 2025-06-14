@@ -18,6 +18,7 @@ from source.engine import Engine
 from script.builder.common.nene_module import *
 from script.builder.common import utils
 from script.builder.pyside_config import PySideConfig
+from script.builder.vistual_studio.visual_studio_config import VisualStudioConfig
 
 
 class Editor(NeneModule):
@@ -126,7 +127,11 @@ class Editor(NeneModule):
 			"--avoid-protected-hack",
 			"--clang-option=-Wno-unused-command-line-argument",
 			# "--debug-level=full",
+			# systems
+			"-isystem\"%s\"" % os.path.join(VisualStudioConfig().msvc_install_path(), "include"),
+			"-isystem\"%s\"" % os.path.join(VisualStudioConfig().windows_sdk_include_path(), "ucrt"),
 			# includes
+			#
 			"-I%s" % os.path.join(cls.engine_root_abs_path(), "source"),
 			"-I%s" % os.path.join(Qt().get_include_abs_paths()[0], "QtWidgets"),
 			"-I%s" % Qt().get_include_abs_paths()[0],
