@@ -165,7 +165,7 @@ namespace gapi_texture_desc
 
 namespace gapi_buffer_desc
 {
-	inline gapi_resource_desc create(const uint32& size, const gapi_buffer_usage_flag& flags, uint16 stride, const std::wstring& debug_name=L"UnnamedBuffer")
+	inline gapi_resource_desc create(const uint32& size, const gapi_buffer_usage_flag& flags, uint16 stride = 0, const std::wstring& debug_name= L"UnnamedBuffer")
 	{
 		return gapi_resource_desc{
 			.m_type = gapi_resource_type::buffer,
