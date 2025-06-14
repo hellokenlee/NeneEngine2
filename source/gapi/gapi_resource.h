@@ -12,6 +12,9 @@ enum class gapi_resource_state : uint8
 	present,
 	render_target,
 	shader_resource,
+
+	copy_source,
+	copy_destination,
 };
 
 

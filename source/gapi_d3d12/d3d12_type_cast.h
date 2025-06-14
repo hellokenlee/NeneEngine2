@@ -13,6 +13,8 @@ inline DXGI_FORMAT d3d_cast(const gapi_pixel_format& source)
 {
 	switch (source)
 	{
+	case gapi_pixel_format::unknown:
+		return DXGI_FORMAT_UNKNOWN;
 	case gapi_pixel_format::r8g8b8a8:
 		return DXGI_FORMAT_R8G8B8A8_TYPELESS;
 	case gapi_pixel_format::r8g8b8a8_unorm:
@@ -119,22 +121,184 @@ inline D3D12_BLEND_DESC d3d_cast(const gapi_blend_state_desc& desc)
 	return d3d_desc;
 }
 
+inline D3D12_FILL_MODE d3d_cast(const gapi_rasterizer_fill_mode& desc)
+{
+	switch (desc)
+	{
+	case gapi_rasterizer_fill_mode::wireframe:
+		return D3D12_FILL_MODE_WIREFRAME;
+	case gapi_rasterizer_fill_mode::solid:
+		return D3D12_FILL_MODE_SOLID;
+	default:
+		CHECK(false);
+		return D3D12_FILL_MODE_SOLID;
+	}
+}
+
+inline D3D12_CULL_MODE d3d_cast(const gapi_rasterizer_cull_mode& desc)
+{
+	switch (desc)
+	{
+	case gapi_rasterizer_cull_mode::none:
+		return D3D12_CULL_MODE_NONE;
+	case gapi_rasterizer_cull_mode::cw:
+		return D3D12_CULL_MODE_BACK;
+	case gapi_rasterizer_cull_mode::ccw:
+		return D3D12_CULL_MODE_FRONT;
+	default:
+		CHECK(false);
+		return D3D12_CULL_MODE_NONE;
+	}
+}
+
 inline D3D12_RASTERIZER_DESC d3d_cast(const gapi_rasterizer_state_desc& desc)
 {
-	NOT_IMPLEMENTED();
-	return D3D12_RASTERIZER_DESC{};
+	D3D12_RASTERIZER_DESC d3d_desc = {
+		.FillMode = d3d_cast(desc.m_fill_mode),
+		.CullMode = d3d_cast(desc.m_cull_mode),
+		// nene engine always use ccw as front face
+		.FrontCounterClockwise = true,
+		// since the maximum depth precision we support is 24 bits, normalize it within this scope
+		.DepthBias = static_cast<int>(std::floor(desc.m_depth_bias * static_cast<float>(1 << 24))),
+		.DepthBiasClamp = 0.0f,
+		.SlopeScaledDepthBias = desc.m_slope_scale_depth_bias,
+		.DepthClipEnable = desc.m_depth_clip_mode == gapi_rasterizer_depth_clip_mode::clip,
+		.MultisampleEnable = desc.m_use_msaa,
+		.AntialiasedLineEnable = desc.m_use_line_aa,
+		.ForcedSampleCount = 0,
+		.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF,
+	};
+	return d3d_desc;
+}
+
+inline D3D12_COMPARISON_FUNC d3d_cast(const gapi_cmp_func& desc)
+{
+	switch (desc)
+	{
+	case gapi_cmp_func::less:
+		return D3D12_COMPARISON_FUNC_LESS;
+	case gapi_cmp_func::less_equal:
+		return D3D12_COMPARISON_FUNC_LESS_EQUAL;
+	case gapi_cmp_func::greater:
+		return D3D12_COMPARISON_FUNC_GREATER;
+	case gapi_cmp_func::greater_equal:
+		return D3D12_COMPARISON_FUNC_GREATER_EQUAL;
+	case gapi_cmp_func::equal:
+		return D3D12_COMPARISON_FUNC_EQUAL;
+	case gapi_cmp_func::not_equal:
+		return D3D12_COMPARISON_FUNC_NOT_EQUAL;
+	case gapi_cmp_func::never:
+		return D3D12_COMPARISON_FUNC_NEVER;
+	case gapi_cmp_func::always:
+		return D3D12_COMPARISON_FUNC_ALWAYS;
+	default:
+		CHECK(false);
+		return D3D12_COMPARISON_FUNC_ALWAYS;
+	}
+}
+
+inline D3D12_STENCIL_OP d3d_cast(const gapi_stencil_op& desc)
+{
+	switch (desc)
+	{
+	case gapi_stencil_op::keep:
+		return D3D12_STENCIL_OP_KEEP;
+	case gapi_stencil_op::zero:
+		return D3D12_STENCIL_OP_ZERO;
+	case gapi_stencil_op::replace:
+		return D3D12_STENCIL_OP_REPLACE;
+	case gapi_stencil_op::saturated_increment:
+		return D3D12_STENCIL_OP_INCR_SAT;
+	case gapi_stencil_op::saturated_decrement:
+		return D3D12_STENCIL_OP_DECR_SAT;
+	case gapi_stencil_op::invert:
+		return D3D12_STENCIL_OP_INVERT;
+	case gapi_stencil_op::increment:
+		return D3D12_STENCIL_OP_INCR;
+	case gapi_stencil_op::decrement:
+		return D3D12_STENCIL_OP_DECR;
+	default:
+		CHECK(false);
+		return D3D12_STENCIL_OP_KEEP;
+	}
+}
+
+inline D3D12_DEPTH_STENCILOP_DESC d3d_cast(const gapi_depth_stencil_state_desc::gapi_stencil_state_desc& desc)
+{
+	D3D12_DEPTH_STENCILOP_DESC d3d_desc = {
+		.StencilFailOp = d3d_cast(desc.m_stencil_fail_op),
+		.StencilDepthFailOp = d3d_cast(desc.m_depth_fail_op),
+		.StencilPassOp = d3d_cast(desc.m_pass_op),
+		.StencilFunc = d3d_cast(desc.m_stencil_func)
+	};
+	return d3d_desc;
 }
 
 inline D3D12_DEPTH_STENCIL_DESC d3d_cast(const gapi_depth_stencil_state_desc& desc)
 {
-	NOT_IMPLEMENTED();
-	return D3D12_DEPTH_STENCIL_DESC{};
+	D3D12_DEPTH_STENCIL_DESC d3d_desc{
+		// 
+		.DepthEnable = desc.m_depth_func != gapi_cmp_func::always || desc.m_use_depth_write,
+		.DepthWriteMask = desc.m_use_depth_write ? D3D12_DEPTH_WRITE_MASK_ALL : D3D12_DEPTH_WRITE_MASK_ZERO,
+		.DepthFunc =  d3d_cast(desc.m_depth_func),
+		.StencilEnable = desc.m_ccw_stencil_test.m_use_stencil || desc.m_cw_stencil_test.m_use_stencil,
+		.StencilReadMask = desc.m_stencil_read_mask,
+		.StencilWriteMask = desc.m_stencil_write_mask,
+		// nene engine always use ccw as front face
+		.FrontFace = d3d_cast(desc.m_ccw_stencil_test),
+		.BackFace = d3d_cast(desc.m_cw_stencil_test),
+	};
+	return d3d_desc;
 }
 
-inline D3D12_INPUT_LAYOUT_DESC d3d_cast(const gapi_vertex_declaration& desc)
+inline DXGI_FORMAT d3d_cast(const gapi_vertex_element_type& vtype)
 {
-	NOT_IMPLEMENTED();
-	return D3D12_INPUT_LAYOUT_DESC{};
+	switch (vtype)
+	{
+	case gapi_vertex_element_type::float1:
+		return DXGI_FORMAT_R32_FLOAT;
+	case gapi_vertex_element_type::float2:
+		return DXGI_FORMAT_R32G32_FLOAT;
+	case gapi_vertex_element_type::float3:
+		return DXGI_FORMAT_R32G32B32_FLOAT;
+	case gapi_vertex_element_type::float4:
+		return DXGI_FORMAT_R32G32B32A32_FLOAT;
+	case gapi_vertex_element_type::half2:
+		return DXGI_FORMAT_R16_FLOAT;
+	case gapi_vertex_element_type::half4:
+		return DXGI_FORMAT_R16G16_FLOAT;
+	case gapi_vertex_element_type::packed_normal:
+	case gapi_vertex_element_type::unsigned_int:
+	case gapi_vertex_element_type::unsigned_byte4:
+		NOT_IMPLEMENTED();
+		return DXGI_FORMAT_UNKNOWN;
+	default:
+		CHECK(false);
+		return DXGI_FORMAT_UNKNOWN;
+	}
+}
+
+inline D3D12_INPUT_LAYOUT_DESC d3d_cast(const gapi_vertex_declaration& desc, std::vector<D3D12_INPUT_ELEMENT_DESC>& out_d3d_input_element_descs)
+{
+	for (const auto& vertex_declaration : desc)
+	{
+		out_d3d_input_element_descs.emplace_back(
+			D3D12_INPUT_ELEMENT_DESC{
+				.SemanticName = vertex_declaration.semantic_name.c_str(),
+				.SemanticIndex = vertex_declaration.attribute_index,
+				.Format = d3d_cast(vertex_declaration.element_type),
+				.InputSlot = vertex_declaration.stream_index,
+				.AlignedByteOffset = vertex_declaration.offset,
+				.InputSlotClass = vertex_declaration.b_use_instance_index ? D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA : D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+				.InstanceDataStepRate = vertex_declaration.b_use_instance_index ? 1u : 0u
+			}
+		);
+	}
+	D3D12_INPUT_LAYOUT_DESC d3d_desc{
+		.pInputElementDescs = out_d3d_input_element_descs.data(),
+		.NumElements = static_cast<uint32>(out_d3d_input_element_descs.size()),
+	};
+	return d3d_desc;
 }
 
 inline D3D12_PRIMITIVE_TOPOLOGY_TYPE d3d_cast(const gapi_primitive_type& type)
@@ -191,7 +355,7 @@ inline D3D12_RESOURCE_DESC d3d_cast(const gapi_resource_desc& desc)
 		d3d_desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE3D;
 		break;
 	}
-	d3d_desc.Alignment = static_cast<uint64>(desc.m_buffer_alignment);
+	d3d_desc.Alignment = 0;
 	d3d_desc.Width = desc.m_width;
 	d3d_desc.Height = desc.m_height;
 	d3d_desc.DepthOrArraySize = desc.m_type == gapi_resource_type::texture3d ? desc.m_array_size : desc.m_depth;
@@ -231,6 +395,7 @@ inline D3D12_SAMPLER_DESC d3d_cast(const gapi_sampler_desc& desc)
 
 inline D3D12_RESOURCE_STATES d3d_cast(const gapi_resource_state& state)
 {
+	// TODO: distinguish PS and NonPS SRV
 	switch (state)
 	{
 	case gapi_resource_state::present:
@@ -238,9 +403,12 @@ inline D3D12_RESOURCE_STATES d3d_cast(const gapi_resource_state& state)
 	case gapi_resource_state::render_target:
 		return D3D12_RESOURCE_STATE_RENDER_TARGET;
 	case gapi_resource_state::shader_resource:
-		// FIXME: what about non-pixel shader resource
-		return D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+		return D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
+	case gapi_resource_state::copy_source:
+		return D3D12_RESOURCE_STATE_COPY_SOURCE;
+	case gapi_resource_state::copy_destination:
+		return D3D12_RESOURCE_STATE_COPY_DEST;
 	}
-	NOT_IMPLEMENTED();
+	CHECK(false);
 	return D3D12_RESOURCE_STATE_COMMON;
 }

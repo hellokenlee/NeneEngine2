@@ -29,6 +29,19 @@ enum class gapi_shader_feature_level : uint8
 	sm_6_0,
 };
 
+struct gapi_shader_register_count
+{
+	uint32 num_shader_resource = 0;
+	uint32 num_constant_buffer = 0;
+	uint32 num_texture_sampler = 0;
+	uint32 num_unordered_access = 0;
+
+	bool empty() const
+	{
+		return num_shader_resource == 0 && num_constant_buffer == 0 && num_texture_sampler == 0 && num_unordered_access == 0;
+	}
+};
+
 namespace i
 {
 	/**
@@ -65,6 +78,7 @@ namespace i
 		const std::string& get_shader_source() const { return m_shader_source; }
 		const std::string& get_function_entry() const { return m_function_entry; }
 		const gapi_shader_feature_level& get_feature_level() const { return m_feature_level; }
+		const gapi_shader_register_count& get_register_count() const { return m_register_count; }
 
 		template<gapi_shader_type stype>
 		static bool is_a(const std::shared_ptr<gapi_shader>& shader)
@@ -83,5 +97,6 @@ namespace i
 		std::string m_shader_source;
 		std::string m_function_entry;
 		gapi_shader_feature_level m_feature_level;
+		gapi_shader_register_count m_register_count;
 	};
 }

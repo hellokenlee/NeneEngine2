@@ -13,6 +13,7 @@ from extern.python import Python
 from extern.pyside import PySide
 from source.core import Core
 from source.core_object import CoreObject
+from source.engine import Engine
 
 from script.builder.common.nene_module import *
 from script.builder.common import utils
@@ -33,7 +34,7 @@ class Editor(NeneModule):
 		self.category = ModuleCategory.App
 		self.build_target = BuildTarget.EXE
 		self.module_dependencies.extend(
-			[Core, CoreObject]
+			[Core, CoreObject, Engine]
 		)
 		self.external_dependencies.extend(
 			[Qt, Python, PySide]
@@ -124,6 +125,7 @@ class Editor(NeneModule):
 			"--use-isnull-as-nb_nonzero",
 			"--avoid-protected-hack",
 			"--clang-option=-Wno-unused-command-line-argument",
+			# "--debug-level=full",
 			# includes
 			"-I%s" % os.path.join(cls.engine_root_abs_path(), "source"),
 			"-I%s" % os.path.join(Qt().get_include_abs_paths()[0], "QtWidgets"),
@@ -145,7 +147,7 @@ class Editor(NeneModule):
 		env = {
 			'TEMP': tempfile.gettempdir(),
 			'TMP': tempfile.gettempdir(),
-			"LLVM_INSTALL_DIR": "C:\\LLVM\\clang+llvm-18.1.8-x86_64-pc-windows-msvc",
+			"LLVM_INSTALL_DIR": os.path.join(PySide.root_abs_path(), "llvm"),
 		}
 		subprocess.run(" ".join(shiboken_command), shell=True, env=env).check_returncode()
 		# rename the module directory

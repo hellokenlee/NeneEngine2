@@ -8,8 +8,9 @@
 #include "d3d12_type_cast.h"
 
 
-gapi_d3d12_cmd_list::gapi_d3d12_cmd_list(const WinComPtr<ID3D12GraphicsCommandList>& list)
-	: m_list(list)
+gapi_d3d12_cmd_list::gapi_d3d12_cmd_list(const WinComPtr<ID3D12GraphicsCommandList>& list, const std::shared_ptr<gapi_d3d12_device>& device)
+	: super(device)
+	, m_list(list)
 {}
 
 gapi_d3d12_cmd_list::~gapi_d3d12_cmd_list()
@@ -22,8 +23,11 @@ void gapi_d3d12_cmd_list::close()
 
 void gapi_d3d12_cmd_list::reset(const std::shared_ptr<i::gapi_cmd_allocator>& allocator, const std::shared_ptr<i::gapi_pipeline_state>& pipeline_state)
 {
+	//
 	const auto d3d_allocator = gapi_d3d12_cmd_allocator::cast(allocator);
 	m_list->Reset(d3d_allocator->get_d3d_allocator(), pipeline_state ? t::gapi_pin<gapi_d3d12_pipeline_state>(pipeline_state).get_d3d_pipeline_state() : nullptr);
+	//
+	super::reset(allocator, pipeline_state);
 }
 
 void gapi_d3d12_cmd_list::clear_state(const std::shared_ptr<i::gapi_pipeline_state>& pipeline_state)
@@ -73,17 +77,17 @@ void gapi_d3d12_cmd_list::copy_resource(const std::shared_ptr<i::gapi_resource>&
 	m_list->CopyResource(d3d_dst->get_d3d_resource(), d3d_src->get_d3d_resource());
 }
 
-void gapi_d3d12_cmd_list::copy_resource_region(const std::shared_ptr<i::gapi_resource>& dst, const uint64& dst_offset, const std::shared_ptr<i::gapi_resource>& src, const uint64& src_offset, const uint64& num_bytes)
+void gapi_d3d12_cmd_list::copy_resource_region(const std::shared_ptr<i::gapi_resource>& dst, const uint32& dst_offset, const std::shared_ptr<i::gapi_resource>& src, const uint32& src_offset, const uint32& num_bytes)
 {
 	CHECK(dst->get_resource_desc().m_type == dst->get_resource_desc().m_type);
 	const auto& d3d_dst = t::gapi_cast<gapi_d3d12_resource>(dst);
 	const auto& d3d_src = t::gapi_cast<gapi_d3d12_resource>(src);
 	
-	if (gapi_resource_desc::is_buffer_desc(dst->get_resource_desc()))
+	if (dst->get_resource_desc().is_buffer())
 	{
 		m_list->CopyBufferRegion(d3d_dst->get_d3d_resource(), dst_offset, d3d_src->get_d3d_resource(), src_offset, num_bytes);
 	}
-	else if (gapi_resource_desc::is_texture_desc(dst->get_resource_desc()))
+	else if (dst->get_resource_desc().is_texture())
 	{
 		NOT_IMPLEMENTED();
 	}
@@ -212,6 +216,7 @@ void gapi_d3d12_cmd_list::set_stencil_ref(const uint32& stencil_ref)
 
 void gapi_d3d12_cmd_list::transition_resource(const std::shared_ptr<i::gapi_resource>& resource, const gapi_resource_state& to_state)
 {
+	// TODO: batch independent barriers
 	if (auto barrier = t::gapi_pin<gapi_d3d12_resource>(resource).d3d_transition(to_state); barrier.has_value())
 	{
 		m_list->ResourceBarrier(1, std::addressof(barrier.value()));		

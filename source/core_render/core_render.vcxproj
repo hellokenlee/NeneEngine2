@@ -69,7 +69,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>core.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>core.lib;gapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/ignore:4099 /ignore:4075</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
@@ -90,7 +90,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>core.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>core.lib;gapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/ignore:4099 /ignore:4075</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
@@ -104,6 +104,7 @@
     <ClInclude Include="render_threads.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="global_render_resource.cpp" />
     <ClCompile Include="render_thread.cpp" />
   </ItemGroup>
   <ItemGroup>

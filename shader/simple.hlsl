@@ -1,13 +1,13 @@
 struct VSInput
 {
-    float4 position : POSITION;
-    float4 color : COLOR;
+    float4 Position : POSITION;
+    float4 Color : COLOR;
 };
 
 struct PSInput
 {
-    float4 position : SV_POSITION;
-    float4 color : COLOR;
+    float4 Position : SV_POSITION;
+    float4 Color : COLOR;
 };
 
 PSInput MainVS(VSInput input)

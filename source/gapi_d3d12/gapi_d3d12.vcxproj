@@ -95,18 +95,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="d3d12_root_signature_manager.h" />
     <ClInclude Include="d3d12_shader_compiler.h" />
     <ClInclude Include="d3d12_type_cast.h" />
     <ClInclude Include="d3d12_utils.h" />
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="gapi_d3d12_adapter.h" />
+    <ClInclude Include="gapi_d3d12_bound_shader_signature.h" />
     <ClInclude Include="gapi_d3d12_cmd_allocator.h" />
     <ClInclude Include="gapi_d3d12_cmd_list.h" />
     <ClInclude Include="gapi_d3d12_cmd_queue.h" />
     <ClInclude Include="gapi_d3d12_device.h" />
     <ClInclude Include="gapi_d3d12_factory.h" />
     <ClInclude Include="gapi_d3d12_gpu.h" />
-    <ClInclude Include="gapi_d3d12_pipeline_layout.h" />
     <ClInclude Include="gapi_d3d12_pipeline_state.h" />
     <ClInclude Include="gapi_d3d12_resource.h" />
     <ClInclude Include="gapi_d3d12_resource_heap.h" />
@@ -116,16 +117,17 @@
     <ClInclude Include="gapi_d3d12_swap_chain.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="d3d12_root_signature_manager.cpp" />
     <ClCompile Include="d3d12_shader_compiler.cpp" />
     <ClCompile Include="d3d12_utils.cpp" />
     <ClCompile Include="gapi_d3d12_adapter.cpp" />
+    <ClCompile Include="gapi_d3d12_bound_shader_signature.cpp" />
     <ClCompile Include="gapi_d3d12_cmd_allocator.cpp" />
     <ClCompile Include="gapi_d3d12_cmd_list.cpp" />
     <ClCompile Include="gapi_d3d12_cmd_queue.cpp" />
     <ClCompile Include="gapi_d3d12_device.cpp" />
     <ClCompile Include="gapi_d3d12_factory.cpp" />
     <ClCompile Include="gapi_d3d12_gpu.cpp" />
-    <ClCompile Include="gapi_d3d12_pipeline_layout.cpp" />
     <ClCompile Include="gapi_d3d12_pipeline_state.cpp" />
     <ClCompile Include="gapi_d3d12_resource.cpp" />
     <ClCompile Include="gapi_d3d12_resource_heap.cpp" />

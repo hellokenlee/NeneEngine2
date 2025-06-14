@@ -59,7 +59,7 @@ inline void d3d_set_debug_name(IDXGIObject& object, const std::string& debug_nam
 	object.SetPrivateData(WKPDID_D3DDebugObjectName, static_cast<uint32>(debug_name.size()), debug_name.c_str());
 }
 	
-inline void d3d_set_debug_name(ID3D12Resource& object, const std::wstring& debug_name)
+inline void d3d_set_debug_name(ID3D12Object& object, const std::wstring& debug_name)
 {
 	object.SetName(debug_name.c_str());
 }

@@ -11,7 +11,9 @@
 class gapi_d3d12_cmd_list : public i::gapi_cmd_list
 {
 public:
-	gapi_d3d12_cmd_list(const WinComPtr<ID3D12GraphicsCommandList>& list);
+	using super = i::gapi_cmd_list;
+	
+	gapi_d3d12_cmd_list(const WinComPtr<ID3D12GraphicsCommandList>& list, const std::shared_ptr<gapi_d3d12_device>& device);
 	~gapi_d3d12_cmd_list() override;
 
 	void close() override;
@@ -23,7 +25,7 @@ public:
 	void clear_unordered_access_view(const std::shared_ptr<i::gapi_unorder_access_view>& unorder_access_view, const std::shared_ptr<i::gapi_resource>& resource, const linear_color& clear_color) override;
 
 	void copy_resource(const std::shared_ptr<i::gapi_resource>& dst, const std::shared_ptr<i::gapi_resource>& src) override;
-	void copy_resource_region(const std::shared_ptr<i::gapi_resource>& dst, const uint64& dst_offset, const std::shared_ptr<i::gapi_resource>& src, const uint64& src_offset, const uint64& num_bytes) override;
+	void copy_resource_region(const std::shared_ptr<i::gapi_resource>& dst, const uint32& dst_offset, const std::shared_ptr<i::gapi_resource>& src, const uint32& src_offset, const uint32& num_bytes) override;
 	void discard_resource(const std::shared_ptr<i::gapi_resource>& resource) override;
 	
 	void dispatch(const uvector3& thread_group_size) override;
@@ -53,6 +55,8 @@ public:
 	void begin_query() override;
 	void end_query() override;
 	void resolve_query() override;
+
+	void set_debug_name(const std::wstring& debug_name) override { d3d_set_debug_name(*get_d3d_cmd_list(), debug_name); }
 
 public:
 	ID3D12CommandList* get_d3d_cmd_list() const { return m_list.Get(); }

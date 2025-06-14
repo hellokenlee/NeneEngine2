@@ -1,3 +1,9 @@
+struct VSInput
+{
+    float4 position : POSITION;
+    float4 color : COLOR;
+};
+
 struct PSInput
 {
     float4 SvPosition : SV_POSITION;
@@ -14,13 +20,13 @@ float2 ScreenNdcToUv(float2 Ndc)
     return ScreenUV;
 }
 
-PSInput MainVS(float4 Position : POSITION, float4 Color : COLOR)
+PSInput MainVS(VSInput input)
 {
     PSInput Result;
-    Result.SvPosition = Position;
+    Result.SvPosition = input.position;
     Result.SvPosition.z = 0.5;
     Result.SvPosition.w = 1.0;
-    Result.ScreenUV = ScreenNdcToUv(Position.xy);
+    Result.ScreenUV = ScreenNdcToUv(input.position.xy);
     return Result;
 }
 

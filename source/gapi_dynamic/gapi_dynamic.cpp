@@ -40,9 +40,9 @@ gapi_dynamic::gapi_dynamic(const gapi_platform& platform, void* window, const up
 	m_device = m_gpu->create_device();
 	m_swap_chain = m_factory->create_swap_chain(window, m_device->get_cmd_queue(gapi_cmd_type::graphics), window_size, num_multi_buffer);
 	//
-	for (uint32 i = 0; i < cvar_gapi_num_context_thread.get_value_thread_unsafe(); ++i)
+	for (uint32 context_id = 0; context_id < cvar_gapi_num_context_thread.get_value_thread_unsafe(); ++context_id)
 	{
-		m_cmd_contexts.push_back(std::make_unique<gapi_cmd_context>(m_device, num_multi_buffer));
+		m_cmd_contexts.push_back(std::make_unique<gapi_cmd_context>(m_device, num_multi_buffer, context_id));
 	}
 	//
 	for (auto& fence_values : m_cmd_queue_fence_values)
@@ -71,14 +71,14 @@ std::shared_ptr<i::gapi_pipeline_state> gapi_dynamic::create_graphics_pipeline_s
 
 std::shared_ptr<i::gapi_buffer> gapi_dynamic::create_buffer(const gapi_resource_desc& desc) const
 {
-	CHECK(gapi_resource_desc::is_buffer_desc(desc))
+	CHECK(desc.is_buffer())
 	const auto resource = m_device->create_resource(desc);
 	return std::dynamic_pointer_cast<i::gapi_buffer>(resource);
 }
 
 std::shared_ptr<i::gapi_texture> gapi_dynamic::create_texture(const gapi_resource_desc& desc) const
 {
-	CHECK(gapi_resource_desc::is_texture_desc(desc));
+	CHECK(desc.is_texture());
 	const auto resource = m_device->create_resource(desc);
 	return std::dynamic_pointer_cast<i::gapi_texture>(resource);
 }

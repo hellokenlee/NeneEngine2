@@ -6,8 +6,7 @@
 #include "gapi_cmd_allocator.h"
 #include "gapi_cmd_list.h"
 #include "gapi_cmd_queue.h"
-#include "gapi_pipeline_layout.h"
-#include "gapi_pipeline_layout_desc.h"
+#include "gapi_bound_shader_signature.h"
 #include "gapi_pipeline_state.h"
 #include "gapi_pipeline_state_desc.h"
 #include "gapi_resource.h"
@@ -47,12 +46,11 @@ namespace i
 		virtual std::shared_ptr<gapi_cmd_queue> get_cmd_queue(gapi_cmd_type type) = 0;
 
 		// Pipeline
-		virtual std::shared_ptr<gapi_pipeline_layout> create_pipeline_layout(const gapi_pipeline_layout_desc& desc) = 0;
 		virtual std::shared_ptr<gapi_pipeline_state> create_compute_pipeline_state(const gapi_compute_pipeline_state_desc& desc) = 0;
 		virtual std::shared_ptr<gapi_pipeline_state> create_graphics_pipeline_state(const gapi_graphics_pipeline_state_desc& desc) = 0;
 
 		// Resource
-		virtual std::shared_ptr<gapi_resource_allocator> create_resource_heap() = 0;
+		virtual std::shared_ptr<gapi_resource_allocator> create_resource_allocator() = 0;
 		virtual std::shared_ptr<gapi_resource> create_resource(const gapi_resource_desc& desc) = 0;
 		virtual std::shared_ptr<gapi_resource> create_placed_resource(const gapi_resource_desc& desc) = 0;
 		virtual std::shared_ptr<gapi_resource> create_reserved_resource(const gapi_resource_desc& desc) = 0;

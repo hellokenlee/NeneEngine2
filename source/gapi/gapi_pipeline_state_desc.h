@@ -3,8 +3,7 @@
 #pragma once
 
 #include "core/core.h"
-#include "gapi_pipeline_layout.h"
-#include "gapi_pipeline_layout_desc.h"
+#include "gapi_bound_shader_signature.h"
 #include "gapi_shader.h"
 #include "gapi_resource_desc.h"
 
@@ -33,11 +32,12 @@ enum class gapi_vertex_element_type : uint8
 struct gapi_vertex_element_desc
 {
 	std::string semantic_name;
-	uint8 attrib_index;
-	gapi_vertex_element_type type;
+	uint8 attribute_index;
+	gapi_vertex_element_type element_type;
 	uint8 stream_index;
 	uint8 offset;
-	uint8 use_instance_index;
+	// 
+	bool b_use_instance_index : 1;
 	uint16 stride;
 };
 typedef std::vector<gapi_vertex_element_desc> gapi_vertex_declaration;
@@ -52,43 +52,29 @@ enum class gapi_primitive_type : uint8
 
 struct NENE_API gapi_bound_shader_state_desc
 {
-	//
+	// 
 	std::shared_ptr<gapi_vertex_declaration> m_vertex_declaration;
 	//
-	std::shared_ptr<i::gapi_shader> m_vertex_shader;
-	std::shared_ptr<i::gapi_shader> m_pixel_shader;
-	std::shared_ptr<i::gapi_shader> m_domain_shader;
-	std::shared_ptr<i::gapi_shader> m_hull_shader;
-	std::shared_ptr<i::gapi_shader> m_geometry_shader;
+	std::array<std::shared_ptr<i::gapi_shader>, magic_enum::enum_count<gapi_shader_type>()> m_stage_shaders;
+
 	//
-	std::shared_ptr<i::gapi_shader> m_compute_shader;
-	//
-	std::shared_ptr<i::gapi_shader> m_mesh_shader;
-	std::shared_ptr<i::gapi_shader> m_amplification_shader;
-	//
-	std::shared_ptr<i::gapi_shader> m_ray_gen_shader;
-	std::shared_ptr<i::gapi_shader> m_ray_tracing_shader;
+	template<gapi_shader_type stage>
+	const std::shared_ptr<i::gapi_shader>& get_stage_shader() const
+	{
+		return m_stage_shaders[magic_enum::enum_underlying(stage)];
+	}
 
 	// Graphic Shader Stages
-	gapi_bound_shader_state_desc(
-		const std::shared_ptr<gapi_vertex_declaration>& vertex_declaration,
-		const std::shared_ptr<i::gapi_shader>& vertex_shader,
-		const std::shared_ptr<i::gapi_shader>& pixel_shader = {},
-		const std::shared_ptr<i::gapi_shader>& domain_shader = {},
-		const std::shared_ptr<i::gapi_shader>& hull_shader = {},
-		const std::shared_ptr<i::gapi_shader>& geometry_shader = {}
-	);
+	gapi_bound_shader_state_desc(const std::shared_ptr<gapi_vertex_declaration>& vertex_declaration, const std::shared_ptr<i::gapi_shader>& vertex_shader);
 
 	// Compute Shader Stages
-	gapi_bound_shader_state_desc(
-		const std::shared_ptr<i::gapi_shader>& compute_shader
-	);
-
-	//
-	void sanity_check() const;
-
+	gapi_bound_shader_state_desc(const std::shared_ptr<i::gapi_shader>& compute_shader);
+	
 	// No default constructor
 	gapi_bound_shader_state_desc() = delete;
+
+private:
+	void sanity_check() const;
 };
 
 
@@ -184,21 +170,25 @@ struct gapi_blend_state_desc
  */
 enum class gapi_rasterizer_fill_mode: uint8
 {
-	point,
 	wireframe,
 	solid,
 };
 
 enum class gapi_rasterizer_cull_mode : uint8
 {
+	// dont cull anything
 	none,
+	// cull clock wise, back face
 	cw,
+	// cull counter clock wise, front face
 	ccw,
 };
 
 enum class gapi_rasterizer_depth_clip_mode : uint8
 {
+	// discard the pixel if its depth is out of range
 	clip,
+	// change the pixel's depth to extremum if its depth is out of range
 	clamp,
 };
 
@@ -212,23 +202,8 @@ struct gapi_rasterizer_state_desc
 	bool m_use_msaa;
 	bool m_use_line_aa;
 
-	gapi_rasterizer_state_desc(
-		const gapi_rasterizer_fill_mode& in_fill_mode = gapi_rasterizer_fill_mode::point,
-		const gapi_rasterizer_cull_mode& in_cull_mode = gapi_rasterizer_cull_mode::none,
-		const gapi_rasterizer_depth_clip_mode& in_depth_clip_mode =gapi_rasterizer_depth_clip_mode::clip,
-		const float& in_depth_bias = 0.0f,
-		const float& in_slope_scale_depth_bias = 0.0f,
-		const bool& in_use_msaa = false,
-		const bool& in_use_line_aa = false
-	)
-		: m_fill_mode(in_fill_mode)
-		, m_cull_mode(in_cull_mode)
-		, m_depth_clip_mode(in_depth_clip_mode)
-		, m_depth_bias(in_depth_bias)
-		, m_slope_scale_depth_bias(in_slope_scale_depth_bias)
-		, m_use_msaa(in_use_msaa)
-		, m_use_line_aa(in_use_line_aa)
-	{}
+	// Default Constructor
+	gapi_rasterizer_state_desc();
 };
 
 
@@ -274,8 +249,8 @@ struct gapi_depth_stencil_state_desc
 		gapi_stencil_op m_depth_fail_op;		// Stencil: v; Depth: x;
 		gapi_stencil_op m_pass_op;				// Stencil: v; Depth: v;
 	};
-	gapi_stencil_state_desc m_front_face_stencil_test;
-	gapi_stencil_state_desc m_back_face_stencil_test;
+	gapi_stencil_state_desc m_ccw_stencil_test;
+	gapi_stencil_state_desc m_cw_stencil_test;
 	uint8 m_stencil_read_mask;
 	uint8 m_stencil_write_mask;
 
@@ -295,17 +270,17 @@ struct NENE_API gapi_compute_pipeline_state_desc
 
 struct NENE_API gapi_graphics_pipeline_state_desc
 {
+	// shaders
 	gapi_bound_shader_state_desc m_bound_shader_state;
-	gapi_blend_state_desc m_blend_state;
+	// RS
 	gapi_rasterizer_state_desc m_rasterizer_state;
-	gapi_depth_stencil_state_desc m_depth_stencil_state;
 	gapi_primitive_type m_primitive_type = gapi_primitive_type::triangle;
+	// OM
 	uint16 m_num_samples = 1;
+	gapi_blend_state_desc m_blend_state;
+	gapi_depth_stencil_state_desc m_depth_stencil_state;
 	gapi_pixel_format m_depth_stencil_format = gapi_pixel_format::unknown;
 	std::vector<gapi_pixel_format> m_render_target_formats;
-
-	gapi_pipeline_layout_desc m_pipeline_layout_desc;
-	std::shared_ptr<i::gapi_pipeline_layout> m_pipeline_layout; 
 
 	// Minimal Constructor
 	gapi_graphics_pipeline_state_desc(const gapi_bound_shader_state_desc& bound_shader_state);

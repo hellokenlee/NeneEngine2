@@ -4,14 +4,17 @@
 
 extern t::console_var<uint32> cvar_gapi_num_multi_buffer;
 
-gapi_cmd_context::gapi_cmd_context(const std::shared_ptr<i::gapi_device>& device, uint32 num_cmd_list)
-	: m_current_index(0)
+gapi_cmd_context::gapi_cmd_context(const std::shared_ptr<i::gapi_device>& device, uint32 num_cmd_list, uint32 debug_context_id)
+	: m_debug_id(debug_context_id)
+	, m_current_index(0)
 	, m_previous_index(num_cmd_list - 1)
 {
 	for (uint32 i = 0; i < num_cmd_list; i++)
 	{
 		m_cmd_allocators.emplace_back(device->create_cmd_allocator(gapi_cmd_type::graphics));
 		m_cmd_lists.emplace_back(device->create_cmd_list(gapi_cmd_type::graphics, m_cmd_allocators.back()));
+
+		m_cmd_lists.back()->set_debug_name(std::format(L"Context#{}::CommandList#{}", m_debug_id, i));
 	}
 }
 
@@ -19,7 +22,7 @@ void gapi_cmd_context::begin_render_pass(const std::vector<std::shared_ptr<i::ga
 {
 	for (auto& render_target: render_targets)
 	{
-		get_current_cmd_list()->transition_resource(render_target, gapi_resource_state::render_target);
+		get_current_cmd_list()->transition_resource(render_target, gapi_resource_state::render_target); 
 	}
 }
 

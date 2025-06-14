@@ -65,7 +65,7 @@ gapi_d3d12_buffer::gapi_d3d12_buffer(const WinComPtr<ID3D12Resource>& resource, 
 	: gapi_d3d12_resource(resource, desc)
 {
 	//
-	CHECK(gapi_resource_desc::is_buffer_desc(desc));
+	CHECK(desc.is_buffer());
 	//
 	m_optional_index_buffer_view = {};
 	m_optional_vertex_buffer_view = {};
@@ -81,6 +81,6 @@ gapi_d3d12_buffer::gapi_d3d12_buffer(const WinComPtr<ID3D12Resource>& resource, 
 		CHECK(!t::has_flag(desc.m_buffer_usage_flag, gapi_buffer_usage_flag::usage_index_buffer))
 		m_optional_vertex_buffer_view.BufferLocation = resource->GetGPUVirtualAddress();
 		m_optional_vertex_buffer_view.SizeInBytes = desc.m_width;
-		m_optional_vertex_buffer_view.StrideInBytes = desc.m_buffer_alignment;
+		m_optional_vertex_buffer_view.StrideInBytes = desc.m_vertex_buffer_stride;
 	}
 }

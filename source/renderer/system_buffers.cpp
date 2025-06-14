@@ -4,7 +4,17 @@
 #include "gapi/gapi_factory.h"
 #include "gapi_dynamic/gapi_dynamic.h"
 
-system_vertex_buffers::system_vertex_buffers()
+[[maybe_unused]] static auto& g_system_vertex_buffers_auto_register = system_vertex_buffers::get();
+
+system_vertex_buffers::system_vertex_buffers() = default;
+
+system_vertex_buffers& system_vertex_buffers::get()
+{
+    static system_vertex_buffers instance;
+    return instance;
+}
+
+void system_vertex_buffers::initialize(gapi_cmd_context& cmd_context)
 {
     struct vertex
     {
@@ -13,26 +23,15 @@ system_vertex_buffers::system_vertex_buffers()
     };
     
     // All in CCW direction
-    static constexpr auto create_and_upload_vertex_buffer = [](const std::vector<vertex>& vertices) -> std::shared_ptr<i::gapi_buffer>
-    {
-        auto desc = gapi_buffer_desc::create(static_cast<uint32>(sizeof(vertex) * vertices.size()), gapi_buffer_usage_flag::dynamic_buffer | gapi_buffer_usage_flag::usage_vertex_buffer, sizeof(vertex));
-        std::shared_ptr<i::gapi_buffer> result = gapi_dynamic::get().create_buffer(desc);
-        result->map(
-            [&vertices](void* mapped)
-            {
-                memcpy(mapped, vertices.data(), sizeof(vertex) * vertices.size());
-            }
-        );
-        return result;
-    };
-    
     {
         const std::vector<vertex> vertices = {
-            { { 0.0f, 0.25f, 0.0f, 0.0f}, { 1.0f, 0.0f, 0.0f, 1.0f } },
-            { { 0.25f, -0.25f, 0.0f, 0.0f}, { 0.0f, 1.0f, 0.0f, 1.0f } },
+            { {  0.00f,  0.25f, 0.0f, 0.0f}, { 1.0f, 0.0f, 0.0f, 1.0f } },
+            { {  0.25f, -0.25f, 0.0f, 0.0f}, { 0.0f, 1.0f, 0.0f, 1.0f } },
             { { -0.25f, -0.25f, 0.0f, 0.0f}, { 0.0f, 0.0f, 1.0f, 1.0f } }
         };
-        m_triangle = create_and_upload_vertex_buffer(vertices);
+        auto desc = gapi_buffer_desc::create(static_cast<uint32>(sizeof(vertex) * vertices.size()), gapi_buffer_usage_flag::usage_vertex_buffer, sizeof(vertex), L"SystemVertexBuffer::Triangle");
+        auto resource = cmd_context.get_current_cmd_list()->create_and_upload_resource(desc, vertices.data());
+        m_triangle = std::dynamic_pointer_cast<i::gapi_buffer>(resource);
     }
 
     {
@@ -45,19 +44,15 @@ system_vertex_buffers::system_vertex_buffers()
             { { -1.0f,  1.0f, 0.0f, 0.0f}, { 1.0f, 1.0f, 1.0f, 1.0f } },
             { {  1.0f,  1.0f, 0.0f, 0.0f}, { 1.0f, 1.0f, 1.0f, 1.0f } },
         };
-        m_quad = create_and_upload_vertex_buffer(vertices);
+        auto desc = gapi_buffer_desc::create(static_cast<uint32>(sizeof(vertex) * vertices.size()), gapi_buffer_usage_flag::usage_vertex_buffer, sizeof(vertex), L"SystemVertexBuffer::Quad");
+        auto resource = cmd_context.get_current_cmd_list()->create_and_upload_resource(desc, vertices.data());
+        m_quad = std::dynamic_pointer_cast<i::gapi_buffer>(resource);
     }
-   
-}
-
-system_vertex_buffers& system_vertex_buffers::get()
-{
-    static system_vertex_buffers instance;
-    return instance;
 }
 
 system_vertex_declarations::system_vertex_declarations()
 {
+    //
     {
         m_position4_color4 = std::make_shared<gapi_vertex_declaration>();
         m_position4_color4->emplace_back(

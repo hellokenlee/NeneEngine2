@@ -18,7 +18,7 @@ class NENE_API gapi_cmd_context : noncopyable
 {
 public:
 	//
-	gapi_cmd_context(const std::shared_ptr<i::gapi_device>& device, uint32 num_cmd_list);
+	gapi_cmd_context(const std::shared_ptr<i::gapi_device>& device, uint32 num_cmd_list, uint32 debug_context_id);
 	~gapi_cmd_context() override = default;
 	
 	// A render pass is a set of drawcalls shared same render targets.
@@ -56,6 +56,7 @@ public:
 	const std::shared_ptr<i::gapi_cmd_allocator>& get_previous_cmd_allocator() const { return m_cmd_allocators[m_previous_index]; }
 
 protected:
+	uint32 m_debug_id;
 	uint32 m_current_index;
 	uint32 m_previous_index;
 	std::vector<std::shared_ptr<i::gapi_cmd_list>> m_cmd_lists;

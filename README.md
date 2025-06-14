@@ -99,8 +99,10 @@ graph TD
   Gapi --> CoreEngine
   Core --> CoreObject
   Core --> CoreRender
+  Gapi --> CoreRender
   Core --> Editor
   CoreObject --> Editor
+  Engine --> Editor
   Core --> Engine
   CoreObject --> Engine
   CoreRender --> Engine
@@ -119,6 +121,7 @@ graph TD
   Core --> Renderer
   Gapi --> Renderer
   CoreEngine --> Renderer
+  CoreRender --> Renderer
   GapiDynamic --> Renderer
 ```
 

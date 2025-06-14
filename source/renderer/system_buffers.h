@@ -14,6 +14,8 @@ class NENE_API system_vertex_buffers : public i::global_render_resource
 public:
     static system_vertex_buffers& get();
 
+    void initialize(gapi_cmd_context& cmd_context) override;
+
     ~system_vertex_buffers() override = default;
 
     const std::shared_ptr<i::gapi_buffer>& quad() { return m_quad; }
@@ -27,12 +29,12 @@ protected:
 };
 
 
-class NENE_API system_vertex_declarations : public i::global_render_resource
+class NENE_API system_vertex_declarations
 {
 public:
     static system_vertex_declarations& get();
 
-    ~system_vertex_declarations() override = default;
+    ~system_vertex_declarations() = default;
 
     const std::shared_ptr<gapi_vertex_declaration>& position4_color4() { return m_position4_color4; }
 

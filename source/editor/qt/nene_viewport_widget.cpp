@@ -15,7 +15,8 @@ void QNeneViewportWidget::showEvent(QShowEvent* event)
 {
 	if (!engine_loop::is_initialized())
 	{
-		engine_loop::initialize(reinterpret_cast<void*>(winId()));
+		// engine_loop::initialize(reinterpret_cast<void*>(winId()));
+		NOT_IMPLEMENTED();
 	}
 	
 	QWidget::showEvent(event);
