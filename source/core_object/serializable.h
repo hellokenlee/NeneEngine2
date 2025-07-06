@@ -5,11 +5,12 @@
 #include "archive.h"
 
 
-namespace n
+namespace i
 {
 	class serializable
 	{
 	public:
-		void serialize(i::archive& ar) const;
+		virtual ~serializable();
+		virtual void serialize(archive& ar) = 0;
 	};
 }

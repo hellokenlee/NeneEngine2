@@ -9,14 +9,16 @@
 
 namespace n
 {
-	class NENE_API object: public serializable
+	class NENE_API object: public i::serializable
 	{
 	public:
 		object(int data)
 			: m_data0(data)
 			, m_data1(234)
 		{}
-		virtual ~object() = default;
+		~object() override = default;
+
+		void serialize(i::archive& ar) override;
 
 		void func0() const;
 

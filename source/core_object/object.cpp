@@ -11,7 +11,11 @@ namespace n
 {
 	int object::s_data2 = 900;
 	int object::s_data3 = 888;
-	
+
+	void object::serialize(i::archive& ar)
+	{
+	}
+
 	void object::func0() const
 	{
 		LOG(object, info, "object::func0()");
