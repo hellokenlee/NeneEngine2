@@ -6,8 +6,6 @@
 #include "d3d12_utils.h"
 #include <d3d12shader.h>
 
-DECLARE_LOG_CATEGORY(shader);
-
 
 class gapi_d3d12_shader : public i::gapi_shader
 {

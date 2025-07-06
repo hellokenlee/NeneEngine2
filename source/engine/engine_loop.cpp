@@ -9,21 +9,20 @@
 #include "core_render/render_thread.h"
 
 
-DECLARE_LOG_CATEGORY(engine)
-DEFINE_LOG_CATEGORY(engine)
+static logger engine_("engine");
 
-std::shared_ptr<engine> engine_loop::m_engine = nullptr;
+std::shared_ptr<n::engine> engine_loop::m_engine = nullptr;
 std::shared_ptr<i::renderer> engine_loop::m_renderer = nullptr;
 
 
 void engine_loop::initialize(void* window, const upoint32& window_size)
 {
 	//
-	LOG(engine, info, "Engine Init!");
+	log(engine_, info, "Engine Init!");
 	//
 	gapi_dynamic::create(window, window_size);
 	//
-	m_engine = std::make_shared<engine>();
+	m_engine = std::make_shared<n::engine>();
 	m_renderer = std::make_shared<simple_renderer>();
 	//
 	//
@@ -88,7 +87,7 @@ void engine_loop::shutdown()
 	m_renderer.reset();
 	
 	//
-	LOG(engine, info, "Engine Shutdown!");
+	log(engine_, info, "Engine Shutdown!");
 }
 
 bool engine_loop::is_initialized()

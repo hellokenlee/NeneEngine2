@@ -6,12 +6,14 @@
 #include "gapi_d3d12_gpu.h"
 #include "gapi_d3d12_cmd_queue.h"
 #include "gapi_d3d12_swap_chain.h"
-#include "gapi_d3d12_swap_chain.h"
+#include "core/file_helper.h"
 
 
 t::console_var<bool> cvar_gapi_d3d_debug("gapi.d3d.debug", true, "");
 t::console_var<int> cvar_gapi_d3d_version("gapi.d3d.version", 0, "Feature level of d3d12. Default is 0 for D3D_FEATURE_LEVEL_12_0.");
 extern t::console_var<bool> cvar_gapi_d3d_vsync;
+
+static logger d3d12_("d3d12");
 
 namespace
 {
@@ -26,8 +28,8 @@ namespace
 		WORD build_version = LOWORD(driver_version.LowPart);
 		return std::format("{}.{}.{}.{}", product_version, major_version, minor_version, build_version);
 	}
-	
-	std::string get_vendor_specific_gpu_driver_version()
+
+	[[maybe_unused]] std::string get_vendor_specific_gpu_driver_version()
 	{
 		// TODO: NVIDIA NvApi and AMD AGS supports 
 		NOT_IMPLEMENTED();
@@ -77,7 +79,7 @@ gapi_d3d12_factory::gapi_d3d12_factory()
 std::shared_ptr<i::gapi_gpu> gapi_d3d12_factory::create_gpu()
 {
 	//
-	LOG(d3d12, info, "Listing all gpus:");
+	log(d3d12_, info, "Listing all gpus:");
 	//
 	uint32 gpu_index = 0;
 	auto target_version = static_cast<D3D_FEATURE_LEVEL>(get_d3d12_version());
@@ -90,7 +92,7 @@ std::shared_ptr<i::gapi_gpu> gapi_d3d12_factory::create_gpu()
 		DXGI_ADAPTER_DESC1 desc;
 		adapter->GetDesc1(&desc);
 		//
-		LOG(d3d12, info, "    %d: %ls.", ++gpu_index, desc.Description);
+		log(d3d12_, info, "    %d: %ls.", ++gpu_index, file_helper::wstring_to_string(desc.Description));
 
 		// Already selected
 		if (selected_adapter != nullptr)
@@ -144,7 +146,7 @@ std::shared_ptr<i::gapi_gpu> gapi_d3d12_factory::create_gpu()
 	// 
 	DXGI_ADAPTER_DESC1 desc;
 	selected_adapter->GetDesc1(&desc);
-	LOG(d3d12, info, "Selected gpu %d: %ls, VRAM: %llu MB, Driver: %s", selected_gpu_index, desc.Description, desc.DedicatedVideoMemory / 1024u / 1024u, gpu_driver_version.c_str());
+	log(d3d12_, info, "Selected gpu {}: {}, VRAM: {} MB, Driver: {}", selected_gpu_index, file_helper::wstring_to_string(desc.Description), desc.DedicatedVideoMemory / 1024u / 1024u, gpu_driver_version);
 
 	//
 	return std::make_shared<gapi_d3d12_gpu>(selected_adapter);

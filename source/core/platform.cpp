@@ -4,7 +4,6 @@
 #include "core.h"
 #include <ctime>
 
-DECLARE_LOG_CATEGORY(platform)
 
 void platform::local_time(std::tm* const tm, std::time_t const* const time)
 {

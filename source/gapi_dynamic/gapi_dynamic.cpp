@@ -8,9 +8,6 @@
 #include "gapi_d3d12/gapi_d3d12_factory.h"
 #include "gapi_d3d12/gapi_d3d12_shader.h"
 
-DECLARE_LOG_CATEGORY(gapi);
-DEFINE_LOG_CATEGORY(gapi);
-
 t::console_var<uint32> cvar_gapi_platform("gapi.platform", 0u, "The graphics api that engine use: 0: d3d12; 1: vulkan; 2:metal;");
 t::console_var<uint32> cvar_gapi_num_context_thread("gapi.num_context_thread", 1u, "How many cmd contexts to create;", console_var_flag::read_only);
 t::console_var<uint32> cvar_gapi_shader_feature_level("gapi.shader.feature_level", 0u, "Select the platform that engine use: 0: shading model 5.0;1: shading model 6.0;");

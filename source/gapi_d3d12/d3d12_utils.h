@@ -12,13 +12,10 @@
 #include "d3dx12.h"
 
 
-
 #define VERIFY(x) { HRESULT hres = x; if (FAILED(hres)) { verify_impl(hres, TXT(#x), TXT(__FILE__), __LINE__); }}
 
 template<class T>
 using WinComPtr = Microsoft::WRL::ComPtr<T>;
-
-DECLARE_LOG_CATEGORY(d3d12);
 
 static std::string get_error_string(const HRESULT code)
 {
@@ -45,14 +42,7 @@ static std::string get_error_string(const HRESULT code)
 	return res;
 }
 
-EXTERN_LOG_CATEGORY(d3d12)
-
-void inline verify_impl(const HRESULT hres, const wchar_t* code, const wchar_t* filename, uint32 line)
-{
-	const std::string error = get_error_string(hres);
-	LOG(d3d12, fatal, "Function call failed!\n    Code at %ls:%u:\n        `%ls`\n    Error:\n        `%s`", filename, line, code, error.c_str());
-	DEBUG_BREAK();
-}
+void verify_impl(HRESULT hres, const wchar_t* code, const wchar_t* filename, uint32 line);
 
 inline void d3d_set_debug_name(IDXGIObject& object, const std::string& debug_name)
 {

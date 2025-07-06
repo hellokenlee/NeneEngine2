@@ -6,12 +6,14 @@
 
 #include <chrono>
 
-
-class NENE_API engine
+namespace n
 {
-public:
-	engine() = default;
-	virtual ~engine() = default;
+	class NENE_API engine
+	{
+	public:
+		engine() = default;
+		virtual ~engine() = default;
 
-	virtual void update(std::chrono::milliseconds delta) {}
-};
+		virtual void update(std::chrono::milliseconds delta) {}
+	};
+}

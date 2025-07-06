@@ -10,7 +10,7 @@ namespace i
 	class serializable
 	{
 	public:
-		virtual ~serializable();
+		virtual ~serializable() = default;
 		virtual void serialize(archive& ar) = 0;
 	};
 }

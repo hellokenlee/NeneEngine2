@@ -24,6 +24,6 @@ public:
 	static bool is_initialized();
 
 protected:
-	static std::shared_ptr<engine> m_engine;
+	static std::shared_ptr<n::engine> m_engine;
 	static std::shared_ptr<i::renderer> m_renderer;
 };

@@ -9,8 +9,7 @@
 #include <locale>
 #include <codecvt>
 
-
-DEFINE_LOG_CATEGORY(filehelper)
+static logger filehelper_("filehelper");
 
 
 namespace file_helper
@@ -43,7 +42,7 @@ namespace file_helper
 		}
 		catch (const std::ifstream::failure& err) 
 		{
-			LOG(filehelper, error, "Failed to read file: %s, reason: %s", filepath.c_str(), string_to_wstring(err.what()).c_str());
+			log(filehelper_, error, "Failed to read file: {}, reason: {}", filepath, err.what());
 			CHECK(false);
 		}
 		//
@@ -67,7 +66,7 @@ namespace file_helper
 		catch (const std::ifstream::failure& err) 
 		{
 			
-			LOG(filehelper, error, "Failed to read file: %s, reason: %s", filepath.c_str(), string_to_wstring(err.what()).c_str());
+			log(filehelper_, error, "Failed to read file: {}, reason: {}", filepath, err.what());
 			CHECK(false);
 		}
 		//

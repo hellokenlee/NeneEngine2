@@ -4,8 +4,7 @@
 #include "meta.h"
 #include "core/core.h"
 
-DECLARE_LOG_CATEGORY(object)
-DEFINE_LOG_CATEGORY(object)
+static logger object_("object");
 
 namespace n
 {
@@ -18,24 +17,24 @@ namespace n
 
 	void object::func0() const
 	{
-		LOG(object, info, "object::func0()");
+		log(object_, info, "object::func0()");
 	}
 
 	void object::func1(int a) const
 	{
-		LOG(object, info, "object::func1(%d)", a);
+		log(object_, info, "object::func1(%d)", a);
 	}
 
 	void object::test()
 	{
 		//
-		LOG(object, info, "object::test()::call method by string");
+		log(object_, info, "object::test()::call method by string");
 		n::reflection::type nobject_t = n::reflection::type::get_by_name("object");
 		n::reflection::variant obj = nobject_t.create({12});
 		nobject_t.invoke("func0", obj, {});
 		nobject_t.invoke("func1", obj, { 233 });
 		//
-		LOG(object, info, "object::test()::call method by get object");
+		log(object_, info, "object::test()::call method by get object");
 		auto& obj2 = obj.get_value<n::object>();
 		obj2.func0();
 		obj2.func1(12345);

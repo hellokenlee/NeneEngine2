@@ -3,9 +3,10 @@
 #include "gapi_d3d12_shader.h"
 #include "d3d12_shader_compiler.h"
 
-DEFINE_LOG_CATEGORY(shader);
+static logger shader_("shader");
 
-t::console_var<bool> gapi_shader_keep_sources("gapi.d3d.shader.keep_sources", true, "", console_var_flag::read_only);
+static t::console_var<bool> gapi_shader_keep_sources("gapi.d3d.shader.keep_sources", true, "", console_var_flag::read_only);
+
 
 bool gapi_d3d12_shader::compile()
 {
@@ -15,11 +16,7 @@ bool gapi_d3d12_shader::compile()
 
 	if (!m_is_compiled)
 	{
-		SLOG(
-			shader, error,
-			"Failed to compile shader ( %s::%s(...) ) with compiler errors:\n\t%s",
-			m_name.c_str(), m_function_entry.c_str(), m_compiler_message ?  m_compiler_message->GetBufferPointer() : ""
-		);
+		log(shader_, error, "Failed to compile shader ( %s::%s(...) ) with compiler errors:\n\t%s", m_name.c_str(), m_function_entry.c_str(), m_compiler_message ?  m_compiler_message->GetBufferPointer() : "");
 	}
 	else
 	{
@@ -27,7 +24,7 @@ bool gapi_d3d12_shader::compile()
 
 		if (!m_is_compiled)
 		{
-			SLOG(shader, warning, "Failed to get reflection data from shader ( %s::%s(...) )", m_name.c_str(), m_function_entry.c_str());
+			log(shader_, warning, "Failed to get reflection data from shader ( %s::%s(...) )", m_name.c_str(), m_function_entry.c_str());
 		}
 	}
 

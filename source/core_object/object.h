@@ -3,7 +3,6 @@
 #pragma once
 
 #include "meta.h"
-#include "core/core.h"
 #include "serializable.h"
 
 
