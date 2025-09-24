@@ -34,6 +34,24 @@ public:
 
 	//
 	void clear_render_target(const std::shared_ptr<i::gapi_texture>& render_target, const color::rgba<float>& clear_color) const;
+
+
+	// void dispatch(const uvector3& thread_group_size) const;
+	void draw(const uint32& num_vertices, const uint32& num_instances, const uint32& vertex_offset = 0, const uint32& instance_offset = 0) const;
+	// void draw_indexed(const uint32& num_indices, const uint32& num_instances, const uint32& index_offset = 0, const uint32& vertex_offset = 0, const uint32& instance_offset = 0) const;
+
+
+	
+	//
+	void set_pipeline_state(const std::shared_ptr<i::gapi_pipeline_state>& pipeline_state) const;
+	// void set_index_buffer(const std::shared_ptr<i::gapi_buffer>& index_buffer) const;
+	void set_vertex_buffer(const std::shared_ptr<i::gapi_buffer>& vertex_buffer) const;
+	// void set_primitive_topology(const gapi_primitive_type& ptype) const;
+	// void set_viewports(const std::vector<gapi_viewport_desc>& viewports) const;
+	// void set_scissor_rects(const std::vector<rect>& scissors) const;
+
+	void bind_shader_resource(const gapi_shader_type& stage, const std::shared_ptr<i::gapi_resource>& resource) const;
+	
 	//
 	std::shared_ptr<i::gapi_resource> create_and_upload_resource(const gapi_resource_desc& desc, const void* initial_data);
 	

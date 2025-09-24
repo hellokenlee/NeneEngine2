@@ -13,11 +13,21 @@ simple_renderer::simple_renderer()
 	, m_screen_pass_pipeline_state(nullptr)
 {
 
-	//
-	const auto desc = gapi_texture_desc::create_2d(
-		{800, 600}, gapi_pixel_format::r8g8b8a8_unorm, gapi_texture_create_flag::as_shader_resource | gapi_texture_create_flag::as_render_target
-	);
-	m_screen_texture = gapi_dynamic::get().create_texture(desc);
+	// FIXME: dynamic change the scene textures
+	{
+		const auto desc = gapi_texture_desc::create_2d(
+			{800, 600}, gapi_pixel_format::r8g8b8a8_unorm, gapi_texture_create_flag::as_shader_resource | gapi_texture_create_flag::as_render_target
+		);
+		m_scene_color = gapi_dynamic::get().create_texture(desc);
+	}
+	{
+		const auto desc = gapi_texture_desc::create_2d(
+			{800, 600}, gapi_pixel_format::d24_s8, gapi_texture_create_flag::as_shader_resource
+		);
+		m_scene_depth = gapi_dynamic::get().create_texture(desc);
+	}
+
+	
 	//
 	gapi_graphics_pipeline_state_desc mesh_pso_desc(
 		gapi_bound_shader_state_desc(
@@ -45,30 +55,28 @@ simple_renderer::simple_renderer()
 
 void simple_renderer::render_view_family(const std::shared_ptr<i::gapi_texture>& view_family_texture)
 {
-	auto& context = gapi_dynamic::get().get_cmd_context();
-	context.clear_render_target(view_family_texture, color::rgba<float>({1.0f, 1.0f, 1.0f, 1.0f}));
-	/*
 	//
 	auto& context = gapi_dynamic::get().get_cmd_context();
+	context.clear_render_target(view_family_texture, color::rgba<float>({1.0f, 1.0f, 1.0f, 1.0f}));
+	//
 	auto& vertex_buffers = system_vertex_buffers::get();
 
 	// 1st pass: render mesh to a screen texture
 	{
-		auto _ = context.render_pass({m_screen_texture});
+		auto _ = context.render_pass({view_family_texture});
 		
 		context.set_pipeline_state(m_mesh_pass_pipeline_state);
 		context.set_vertex_buffer(vertex_buffers.triangle());
 		context.draw(3, 1, 0, 0);
 	}
 
-	// 2nd pass: render screen texture to back buffer
-	{
-		auto _ = context.render_pass({view_family_texture});
-		
-		context.set_pipeline_state(m_screen_pass_pipeline_state);
-		context.bind_shader_resource(gapi_shader_type::pixel_shader, m_screen_texture);
-		context.set_vertex_buffer(vertex_buffers.quad());
-		context.draw(6, 1, 0, 0);
-	}
-	*/
+	// // 2nd pass: render screen texture to back buffer
+	// {
+	// 	auto _ = context.render_pass({view_family_texture});
+	// 	
+	// 	context.set_pipeline_state(m_screen_pass_pipeline_state);
+	// 	context.bind_shader_resource(gapi_shader_type::pixel_shader, m_screen_texture);
+	// 	context.set_vertex_buffer(vertex_buffers.quad());
+	// 	context.draw(6, 1, 0, 0);
+	// }
 }

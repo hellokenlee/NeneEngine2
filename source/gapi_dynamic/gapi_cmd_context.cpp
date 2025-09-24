@@ -65,28 +65,49 @@ void gapi_cmd_context::clear_render_target(const std::shared_ptr<i::gapi_texture
 	get_current_cmd_list()->clear_render_target_view(render_target->get_render_target_view(), clear_color);
 }
 
+void gapi_cmd_context::draw(const uint32& num_vertices, const uint32& num_instances, const uint32& vertex_offset, const uint32& instance_offset) const
+{
+	get_current_cmd_list()->draw(num_vertices, num_instances, vertex_offset, instance_offset);
+}
+
+void gapi_cmd_context::set_pipeline_state(const std::shared_ptr<i::gapi_pipeline_state>& pipeline_state) const
+{
+	get_current_cmd_list()->set_pipeline_state(pipeline_state);
+}
+
+void gapi_cmd_context::set_vertex_buffer(const std::shared_ptr<i::gapi_buffer>& vertex_buffer) const
+{
+	get_current_cmd_list()->set_vertex_buffer(vertex_buffer);
+}
+
+void gapi_cmd_context::bind_shader_resource(const gapi_shader_type& stage, const std::shared_ptr<i::gapi_resource>& resource) const
+{
+	
+}
+
 std::shared_ptr<i::gapi_resource> gapi_cmd_context::create_and_upload_resource(const gapi_resource_desc& desc, const void* initial_data)
 {
-	//
+	// 先创建目标的资源, 该资源不一定要 CPU 可见
 	auto target_resource = m_device->create_resource(desc);
 	if (desc.is_buffer())
 	{
-		//
+		// 创建中介资源, 该资源需要对 CPU 可见
 		auto intermediate_buffer_desc = gapi_buffer_desc::create(desc.m_width, gapi_buffer_usage_flag::dynamic_buffer);
 		auto intermediate_resource = m_device->create_resource(intermediate_buffer_desc);
-		//
+		// 标记状态处理
 		transition_resource(intermediate_resource, gapi_resource_state::copy_source);
 		transition_resource(target_resource, gapi_resource_state::copy_destination);
 		auto initial_data_size = desc.buffer_size();
-		//
+		// 把数据从 RAM 拷贝到中介资源 VRAM 中
 		intermediate_resource->map(
 			[&initial_data, &initial_data_size](void* mapped)
 			{
 				memcpy(mapped, initial_data, initial_data_size);
 			}
 		);
+		// 插入一个从 VRAM -> VRAM 的拷贝指令
 		get_current_cmd_list()->copy_resource_region(target_resource, 0, intermediate_resource, 0, initial_data_size);
-		//
+		// 延迟删除 ( 帧末删除 )
 		track_resource(intermediate_resource);
 	}
 	else if (desc.is_texture())

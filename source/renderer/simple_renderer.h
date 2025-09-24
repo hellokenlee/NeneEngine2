@@ -17,5 +17,6 @@ public:
 protected:
 	std::shared_ptr<i::gapi_pipeline_state> m_mesh_pass_pipeline_state;
 	std::shared_ptr<i::gapi_pipeline_state> m_screen_pass_pipeline_state;
-	std::shared_ptr<i::gapi_texture> m_screen_texture;
+	std::shared_ptr<i::gapi_texture> m_scene_color;
+	std::shared_ptr<i::gapi_texture> m_scene_depth;
 };
