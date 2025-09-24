@@ -1,7 +1,5 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
-#include <pybind11/embed.h>
-
 #include "meta.h"
 #include "object.h"
 #include "pybind11/pybind11.h"
@@ -9,7 +7,7 @@
 
 NMETA(m)
 {
-	t::n::class_<n::object>("object", m)
+	t::n::class_<n::object>("Object", m)
 		.constructor<int>()
 		.method("func0", &n::object::func0)
 		.method("func1", &n::object::func1)

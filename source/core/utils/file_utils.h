@@ -2,16 +2,11 @@
 
 #pragma once
 
-#include "types.h"
+#include "core/types.h"
 
-
-namespace file_helper
+namespace utils
 {
 	NENE_API std::string load_file_to_string(const std::string& filepath);
 	
 	NENE_API std::wstring load_file_to_wstring(const std::string& filepath);
-	
-	NENE_API std::wstring string_to_wstring(const std::string& in_string);
-
-	NENE_API std::string wstring_to_string(const std::wstring& in_string);
 }

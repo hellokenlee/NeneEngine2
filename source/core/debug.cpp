@@ -6,11 +6,11 @@ static logger debug_("debug");
 
 void check_failed(const std::string& filename, const uint32& line, const std::string& expression)
 {
-    log(debug_, fatal, "Assertion failed!\n    Code at %s:%u\n        `CHECK(%s);`\n", filename.c_str(), line, expression.c_str());
+    log(debug_, fatal, "Assertion failed!\n    Code at {}:{}\n        `CHECK({});`\n", filename, line, expression);
 }
 
-void checkf_failed(const std::string& filename, const uint32& line, const std::string& expression, const std::string& hints)
+void check_failed(const std::string& filename, const uint32& line, const std::string& expression, const std::string& hints)
 {
-    log(debug_, fatal, "Assertion failed!\n    Code at %s:%u\n        `CHECK(%s):`\n", filename.c_str(), line, expression.c_str());
-    log(debug_, fatal, "%s", hints.c_str());
+    log(debug_, fatal, "Assertion failed!\n    Code at {}:{}\n        `CHECK({}):`\n", filename, line, expression);
+    log(debug_, fatal, "{}", hints.c_str());
 }

@@ -12,16 +12,20 @@
 #include <format>
 #include <source_location>
 
+namespace i
+{
+	class log_handler;	
+}
 
 /**
  * Level of each log
  */
 enum log_level : uint8
 {
-	info,
-	warning,
+	fatal = 0, 
+	warning, 
 	error,
-	fatal,
+	info,
 };
 
 /**
@@ -42,23 +46,16 @@ public:
 	void set_level(const log_level& level) { m_enabled_level = level; }
 	bool should_log(const log_level& level) const { return m_enabled_level >= level; }
 
-	/** Preserves log that can be deferred conusming */
-	static void set_preserve_logs(const bool& sw);
-
-	/** Consumer methods from outside */
-	static std::vector<std::string> consume_preserved_logs();
+	/** Handler operations */
+	static void add_handler(const std::shared_ptr<i::log_handler>& handler);
+	static void remove_handler(const std::shared_ptr<i::log_handler>& handler);
 	
 protected:
 	//
 	std::string m_name;
 	log_level m_enabled_level = info;
-
-	// 
-	static bool s_b_preserve_logs;
-	static std::queue<log_level> s_preserved_log_levels;
-	static std::queue<std::string> s_preserved_log_messages;
-	static std::queue<std::string_view> s_preserved_log_names;
-	static std::queue<std::chrono::time_point<std::chrono::system_clock>> s_preserved_log_timestamps;
+	//
+	static std::set<std::shared_ptr<i::log_handler>> s_handlers;
 };
 
 /**
@@ -69,7 +66,7 @@ protected:
  *		[yyyy-mm-dd hh:mm:ss] [engine] [info] something wrong: xxxx
  */
 template <typename ...format_arg_ts>
-void log(const logger& logger_instance, const log_level& level, std::_Fmt_string<format_arg_ts...> fmt, format_arg_ts&&... format_args)
+void log(const logger& logger_instance, const log_level& level, std::format_string<format_arg_ts...> fmt, format_arg_ts&&... format_args)
 {
 	if (logger_instance.should_log(level))
 	{

@@ -22,7 +22,7 @@ namespace n
 
 	void object::func1(int a) const
 	{
-		log(object_, info, "object::func1(%d)", a);
+		log(object_, info, "object::func1({})", a);
 	}
 
 	void object::test()

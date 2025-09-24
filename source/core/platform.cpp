@@ -10,15 +10,9 @@ void platform::local_time(std::tm* const tm, std::time_t const* const time)
 #ifdef _MSVC_LANG
 	localtime_s(tm, time);
 #else
-
+	NOT_IMPLEMENTED();
 #endif
 }
-
-void platform::strftime(char* buffer, size_t buffer_size, const char* fmt, const std::tm* tm)
-{
-	std::strftime(buffer, buffer_size, "[%y-%m-%d %H:%M:%S]", tm);
-}
-
 
 std::vector<void*> platform::get_windows(int32 pid)
 {

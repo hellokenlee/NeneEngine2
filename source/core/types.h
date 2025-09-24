@@ -15,3 +15,5 @@
 #include "template/fundamental.h"
 #include "template/utility.h"
 #include "template/trait.h"
+#include "math.h"
+#include "color.h"

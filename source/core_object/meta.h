@@ -2,18 +2,13 @@
 
 #pragma once
 
-#ifdef max
-	#undef max
-#endif
-
-#ifdef min
-	#undef min
-#endif
-
-#include "rttr/registration"
 #include "core/core.h"
-#include "pybind11/pybind11.h"
-#include "pybind11/embed.h"
+#include <rttr/registration>
+#include <pybind11/pybind11.h>
+#include <pybind11/embed.h>
+#include <pybind11/stl.h>
+#include <pybind11/functional.h>
+#include <pybind11/complex.h>
 
 namespace n
 {
@@ -47,37 +42,125 @@ namespace n
 
 namespace t::n
 {
-	template<typename t_cxx_class>
+	template<typename t_cxx_class, typename... pyoptions>
 	class class_
 	{
 	public:
-		class_(const char* name, pybind11::module_* py_module);
+		static constexpr bool b_is_py_trampoline_class = (sizeof...(pyoptions) > 0);
+		class_(const char* name, pybind11::module_* py_module)
+		{
+			if (py_module != nullptr)
+			{
+				m_pybind11_class = std::make_unique<pybind11::class_<t_cxx_class, pyoptions...>>(*py_module, name);
+			}
+			else
+			{
+				m_rttr_class = std::make_unique<rttr::registration::class_<t_cxx_class>>(name);
+			}
+		}
 
 		template<typename... t_args>
-		class_& constructor();
+		class_& constructor()
+		{
+			if (m_pybind11_class != nullptr)
+			{
+				m_pybind11_class->def(pybind11::init<t_args...>());
+			}
+			else if (m_rttr_class != nullptr)
+			{
+				m_rttr_class->template constructor<t_args...>();
+			}
+			return *this;
+		}
 		
 		template<typename t_func>
-		class_& method(const char* name, t_func func);
+		class_& method(const char* name, t_func func)
+		{
+			if (m_pybind11_class != nullptr)
+			{
+				m_pybind11_class->template def<t_func>(name, std::forward<t_func>(func));
+			}
+			else if (m_rttr_class != nullptr)
+			{
+				m_rttr_class->template method<t_func>(name, std::forward<t_func>(func));
+			}
+			return *this;
+		}
 
 		template<typename t_func>
-		class_& static_method(const char* name, t_func func);
+		class_& static_method(const char* name, t_func func)
+		{
+			if (m_pybind11_class != nullptr)
+			{
+				m_pybind11_class->template def_static<t_func>(name, std::forward<t_func>(func));
+			}
+			else if (m_rttr_class != nullptr)
+			{
+				::rttr::registration::method<t_func>(std::format("{}::{}", m_class_name, name), func);
+			}
+			return *this;
+		}
 
 		template<typename t_accessor>
-		class_& property(const char* name, t_accessor accessor);
+		class_& property(const char* name, t_accessor accessor)
+		{
+			if (m_pybind11_class != nullptr)
+			{
+				m_pybind11_class->template def_readwrite<t_cxx_class, t::remove_member_pointer_t<t_accessor>>(name, std::forward<t_accessor>(accessor));
+			}
+			else if (m_rttr_class != nullptr)
+			{
+				m_rttr_class->template property<t_accessor>(name, std::forward<t_accessor>(accessor));
+			}
+			return *this;
+		}
 
 		template<typename t_accessor>
-		class_& property_readonly(const char* name, t_accessor accessor);
+		class_& property_readonly(const char* name, t_accessor accessor)
+		{
+			if (m_pybind11_class != nullptr)
+			{
+				m_pybind11_class->template def_readonly<t_cxx_class, t::remove_member_pointer_t<t_accessor>>(name, std::forward<t_accessor>(accessor));
+			}
+			else if (m_rttr_class != nullptr)
+			{
+				m_rttr_class->template property_readonly<t_accessor>(name, std::forward<t_accessor>(accessor));
+			}
+			return *this;
+		}
 
 		template<typename t_accessor>
-		class_& static_property(const char* name, t_accessor accessor);
+		class_& static_property(const char* name, t_accessor accessor)
+		{
+			if (m_pybind11_class != nullptr)
+			{
+				m_pybind11_class->template def_readwrite_static<std::remove_pointer_t<t_accessor>>(name, std::forward<t_accessor>(accessor));
+			}
+			else if (m_rttr_class != nullptr)
+			{
+				::rttr::registration::property<t_accessor>(std::format("{}::{}", m_class_name, name), accessor);
+			}
+			return *this;
+		}
 
 		template<typename t_accessor>
-		class_& static_property_readonly(const char* name, t_accessor accessor);
+		class_& static_property_readonly(const char* name, t_accessor accessor)
+		{
+			if (m_pybind11_class != nullptr)
+			{
+				m_pybind11_class->template def_readonly_static<std::remove_pointer_t<t_accessor>>(name, std::forward<t_accessor>(accessor));
+			}
+			else if (m_rttr_class != nullptr)
+			{
+				::rttr::registration::property_readonly<t_accessor>(std::format("{}::{}", m_class_name, name), accessor);
+			}
+			return *this;
+		}
 		
 	private:
 		std::string m_class_name; 
 		std::unique_ptr<rttr::registration::class_<t_cxx_class>> m_rttr_class = nullptr;
-		std::unique_ptr<pybind11::class_<t_cxx_class>> m_pybind11_class = nullptr; 
+		std::unique_ptr<pybind11::class_<t_cxx_class, pyoptions...>> m_pybind11_class = nullptr; 
 	};
 
 	template<typename t_func, typename t_class>
@@ -91,11 +174,7 @@ namespace t::n
 	{
 		return func;
 	}
-
-	
 }
-
-#include "meta.inl"
 
 /*	
  *	Usage:

@@ -6,7 +6,7 @@
  * Simple Proxy For DirectX Math Library
  */
 
-#include "dxmath/DirectXMath.h"
+#include "math/dxmath/DirectXMath.h"
 
 typedef DirectX::XMFLOAT2 vector2;
 
@@ -24,6 +24,5 @@ typedef DirectX::XMUINT4 uvector4;
  * Other Fundamental Math Types
  */
 
-#include "rect.inl"
-#include "point.inl"
-#include "color.inl"
+#include "math/rect.inl"
+#include "math/point.inl"

@@ -1,31 +1,14 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
-#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING  // NOLINT(clang-diagnostic-reserved-macro-identifier)
-
-#include "types.h"
-#include "debug.h"
-#include "file_helper.h"
-
-#include <locale>
-#include <codecvt>
+#include "file_utils.h"
+#include "string_utils.h"
+#include "core/debug.h"
 
 static logger filehelper_("filehelper");
 
 
-namespace file_helper
+namespace utils
 {
-	NENE_API std::wstring string_to_wstring(const std::string& in_string)
-	{
-		std::wstring result = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(in_string);
-		return result;
-	}
-
-	NENE_API std::string wstring_to_string(const std::wstring& in_string)
-	{
-		std::string result = std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(in_string);
-		return result;
-	}
-	
 	NENE_API std::string load_file_to_string(const std::string& filepath)
 	{
 		std::string content;
