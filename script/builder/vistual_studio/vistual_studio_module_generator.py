@@ -3,7 +3,6 @@
 # __email__ = "hellokenlee@163.com"
 
 import uuid
-from platform import architecture
 from xml.etree import ElementTree
 from script.builder.common import utils
 from script.builder.common.nene_module import *
@@ -242,18 +241,18 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 			ElementTree.SubElement(property_group, VcTag.OutDir).text = VisualStudioModuleGenerator.PROJ_OUTPUT_PATH
 			ElementTree.SubElement(property_group, VcTag.IntDir).text = VisualStudioModuleGenerator.PROJ_INTERMEDIATE_PATH
 			#
-			dependent_extern_library_classes = nene_module.recursively_find_extern_libraries()
-			#
 			include_paths = [
 				# MSVC
 				"$(ExternalIncludePath)",
 				# Engine
+				"$(SolutionDir)",
+				# Source
 				"$(SolutionDir)source\\",
 				# Module
 				"$(ProjectDir)",
 			]
 			# Add all dependent extern's include paths to avoid chain `#include <>`
-			for extern_library_class in dependent_extern_library_classes:
+			for extern_library_class in nene_module.recursively_find_extern_libraries():
 				include_paths.extend(extern_library_class().get_include_abs_paths())
 			include_paths.extend(nene_module.get_additional_include_folder_abs_paths())
 			include_paths.reverse()
@@ -265,7 +264,7 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 				# Build Output
 				self.PROJ_OUTPUT_PATH,
 			]
-			for extern_library_class in dependent_extern_library_classes:
+			for extern_library_class in nene_module.recursively_find_extern_libraries():
 				extern_static_library_directory_abs_pahs = extern_library_class().get_static_library_directory_abs_paths(nene_module_config.platform, nene_module_config.architecture, nene_module_config.configuration)
 				library_paths.extend(extern_static_library_directory_abs_pahs)
 			library_paths.reverse()
@@ -282,6 +281,8 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 			# Compiler Settings
 			compiler = nene_module_config.compiler
 			cl_compile = ElementTree.SubElement(item_definition_group, VcTag.ClCompile)
+			# 兼容第三方库的 Release 的 abi 接口
+			ElementTree.SubElement(cl_compile, "RuntimeLibrary").text = "MultiThreadedDLL"
 			ElementTree.SubElement(cl_compile, "WarningLevel").text = "Level" + str(compiler.warning_level)
 			if compiler.msvc_function_level_linking:
 				ElementTree.SubElement(cl_compile, "FunctionLevelLinking").text = "true"

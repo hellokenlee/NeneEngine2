@@ -5,6 +5,7 @@
 from pathlib import Path
 from extern.qt import Qt
 from script.builder.common.external_library import *
+from script.builder.common.build_configuration import BuildConfiguration
 from script.builder.pyside_config import PySideConfig
 
 

@@ -131,19 +131,30 @@ class NeneModule(object, metaclass=Singleton):
 		module_config.compiler.disabled_warnings.extend({4251, 4819})
 		if build_config.configuration == Configuration.Debug:
 			#
-			module_config.add_defines(['_DEBUG', "_CONSOLE"])
+			module_config.add_defines(["NENE_DEBUG", "_CONSOLE", "NOMINMAX", "_ITERATOR_DEBUG_LEVEL=0"])
 			module_config.compiler.msvc_conformance_mode = False
 			#
 			module_config.linker.msvc_com_dat_folding = False
 			module_config.linker.msvc_optimize_references = False
 		else:
-			module_config.add_defines(["NDEBUG", "_CONSOLE"])
+			module_config.add_defines(["NENE_RELEASE", "_CONSOLE", "NOMINMAX"])
 			module_config.compiler.msvc_conformance_mode = False
 			module_config.compiler.msvc_function_level_linking = True
 			module_config.compiler.msvc_intrinsic_functions = True
 			#
 			module_config.linker.msvc_com_dat_folding = True
 			module_config.linker.msvc_optimize_references = True
+		#
+		if build_config.platform == Platform.Windows:
+			module_config.add_defines(["NENE_PLATFORM_WINDOWS"])
+		elif build_config.platform == Platform.Mac:
+			module_config.add_defines(["NENE_PLATFORM_MAC"])
+		elif build_config.platform == Platform.Ios:
+			module_config.add_defines(["NENE_PLATFORM_IOS"])
+		elif build_config.platform == Platform.Android:
+			module_config.add_defines(["NENE_PLATFORM_ANDROID"])
+		elif build_config.platform == Platform.Linux:
+			module_config.add_defines(["NENE_PLATFORM_LINUX"])
 		#
 		module_config.linker.additional_linker_flags = ["/ignore:4099", "/ignore:4075"]
 		return module_config

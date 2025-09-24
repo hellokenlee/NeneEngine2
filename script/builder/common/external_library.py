@@ -5,9 +5,9 @@
 import os
 import inspect
 
+from script.builder.common.log import log, log_once
 from script.builder.common.singleton import Singleton
 from script.builder.common.build_common import Platform, Architecture, Configuration
-from script.builder.common.build_configuration import BuildConfiguration
 
 
 class ExternalLibrary(object, metaclass=Singleton):
@@ -70,10 +70,27 @@ class ExternalLibrary(object, metaclass=Singleton):
 
 	def get_static_library_directory_abs_paths(self, plat: Platform, arch: Architecture, con: Configuration) -> list[str]:
 		static_library_rel_path = self.__static_library_rel_path.format(Version=self._version, Platform=plat.value, Architecture=arch.name, Configuration=con.name)
-		return [os.path.join(self.root_abs_path(), static_library_rel_path)]
+		static_library_abs_path = os.path.join(self.root_abs_path(), static_library_rel_path)
+		if not os.path.exists(static_library_abs_path):
+			if con == Configuration.Debug:
+				static_library_rel_path = self.__static_library_rel_path.format(Version=self._version, Platform=plat.value, Architecture=arch.name, Configuration=Configuration.Release.name)
+				static_library_abs_path = os.path.join(self.root_abs_path(), static_library_rel_path)
+				if os.path.exists(static_library_abs_path):
+					log_once("[Warning] Failed to find debug library path for `%s`. Link with release instead." % self.__class__.__name__)
+					return [static_library_abs_path]
+			return []
+		return [static_library_abs_path]
 
 	def get_dynamic_library_directory_abs_paths(self, plat: Platform, arch: Architecture, con: Configuration) -> list[str]:
 		dynamic_library_rel_path = self.__dynamic_library_rel_path.format(Version=self._version, Platform=plat.value, Architecture=arch.name, Configuration=con.name)
+		if not os.path.exists(dynamic_library_rel_path):
+			if con == Configuration.Debug:
+				dynamic_library_rel_path = self.__dynamic_library_rel_path.format(Version=self._version, Platform=plat.value, Architecture=arch.name, Configuration=Configuration.Release.name)
+				dynamic_library_abs_path = os.path.join(self.root_abs_path(), dynamic_library_rel_path)
+				if os.path.exists(dynamic_library_abs_path):
+					log_once("[Warning] Failed to find debug library path for `%s`. Link with release instead." % self.__class__.__name__)
+					return [dynamic_library_abs_path]
+			return []
 		return [os.path.join(self.root_abs_path(), dynamic_library_rel_path)]
 
 	def get_static_library_filenames(self, plat: Platform, arch: Architecture, con: Configuration) -> list[str]:
@@ -86,10 +103,10 @@ class ExternalLibrary(object, metaclass=Singleton):
 		result = []
 		for lib in self.dependent_libraries:
 			file_name = lib + ext
-			debug_file_name = lib + "_d" + ext
-			if con == Configuration.Debug:
-				for search_bas_path in search_abs_paths:
-					if os.path.exists(os.path.join(search_bas_path, debug_file_name)):
-						file_name = debug_file_name
+			# debug_file_name = lib + "_d" + ext
+			# if con == Configuration.Debug:
+			# 	for search_bas_path in search_abs_paths:
+			# 		if os.path.exists(os.path.join(search_bas_path, debug_file_name)):
+			# 			file_name = debug_file_name
 			result.append(file_name)
 		return result

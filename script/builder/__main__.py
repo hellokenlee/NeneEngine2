@@ -108,7 +108,7 @@ def main():
 	ReadmeBuilder(engine_root_abs_path).generate(nene_project)
 
 	#
-	log("Finished Running Nene Build Tools!", "\n")
+	log("Finished Running Nene Build Tools! Have Fun! (･ ◡ ･) ", "\n")
 	pass
 
 
