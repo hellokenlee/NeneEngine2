@@ -18,7 +18,7 @@ class ExternalLibrary(object, metaclass=Singleton):
 
 	Available environment variables for path:
 		- {Version}:
-		- {Platform} : See enum class `Platform`.
+		- {Platform}: See enum class `Platform`.
 		- {Architecture}: See enum class `Architecture`.
 		- {Configuration}: See enum class `Configuration`.
 	"""

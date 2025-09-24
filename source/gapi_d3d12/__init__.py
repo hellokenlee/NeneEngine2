@@ -29,10 +29,6 @@ class GapiD3D12(NeneModule):
 				"d3d12.lib",
 				"dxguid.lib",
 				"d3dcompiler.lib",
-				# Link the `dxcompiler.lib` if you want to compile
-				"dxcompiler.lib",
-				# Link the `dxil.lib` if you don't want to compile. DON'T LINK BOTH.
-				# "dxil.lin"
 			]
 		)
 		pass

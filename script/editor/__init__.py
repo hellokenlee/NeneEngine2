@@ -5,10 +5,10 @@
 
 def main():
 	try:
-		from script.editor.stub_generator import StubGenerateor
+		from script.editor.stub_generator import StubGenerator
 		#
-		StubGenerateor.generate_pyside6_pyi()
-		StubGenerateor.generate_pybind11_pyi()
+		StubGenerator.generate_pyside6_pyi()
+		StubGenerator.generate_pybind11_pyi()
 		#
 		from script.editor.editor_app import EditorApp
 		EditorApp().run()
