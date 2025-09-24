@@ -1,5 +1,7 @@
 # Visual Studio Files
 .vs/*
+*.sln
+*.vcxproj
 *.vcxproj.user
 *.sln.DotSettings.user
 
