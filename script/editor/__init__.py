@@ -15,4 +15,5 @@ def main():
 		#
 	except Exception as e:
 		print(e)
-	pass
+		return 1
+	return 0

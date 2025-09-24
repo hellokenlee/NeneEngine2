@@ -21,6 +21,6 @@ int main()
 	pybind11::scoped_interpreter guard{&config};
 	//
 	auto content_module = pybind11::module::import("script.editor");
-	content_module.attr("main")();
-	return 0;
+	auto ret = content_module.attr("main")();
+	return ret.cast<int>();
 }
