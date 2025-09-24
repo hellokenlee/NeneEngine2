@@ -5,16 +5,18 @@
 extern t::console_var<uint32> cvar_gapi_num_multi_buffer;
 
 gapi_cmd_context::gapi_cmd_context(const std::shared_ptr<i::gapi_device>& device, uint32 num_cmd_list, uint32 debug_context_id)
-	: m_debug_id(debug_context_id)
+	: m_device(device)
+	, m_debug_id(debug_context_id)
 	, m_current_index(0)
 	, m_previous_index(num_cmd_list - 1)
 {
 	for (uint32 i = 0; i < num_cmd_list; i++)
 	{
-		m_cmd_allocators.emplace_back(device->create_cmd_allocator(gapi_cmd_type::graphics));
-		m_cmd_lists.emplace_back(device->create_cmd_list(gapi_cmd_type::graphics, m_cmd_allocators.back()));
-
-		m_cmd_lists.back()->set_debug_name(std::format(L"Context#{}::CommandList#{}", m_debug_id, i));
+		one_frame_context_data context_data;
+		context_data.m_cmd_allocator = m_device->create_cmd_allocator(gapi_cmd_type::graphics);
+		context_data.m_cmd_list = m_device->create_cmd_list(gapi_cmd_type::graphics, context_data.m_cmd_allocator);
+		context_data.m_cmd_list->set_debug_name(std::format(L"Context#{}::CommandList#{}", m_debug_id, i));
+		m_frame_contexts.emplace_back(std::move(context_data));
 	}
 }
 
@@ -37,20 +39,68 @@ scoped_render_pass gapi_cmd_context::render_pass(const std::vector<std::shared_p
 	return render_pass;
 }
 
-void gapi_cmd_context::reset() const
+void gapi_cmd_context::reset()
 {
+	//
 	get_current_cmd_allocator()->reset();
 	get_current_cmd_list()->reset(get_current_cmd_allocator(), nullptr);
+	//
+	release_tracked_resources();
 }
 
-void gapi_cmd_context::close()
+const std::shared_ptr<i::gapi_cmd_list>& gapi_cmd_context::close()
 {
 	//
 	get_current_cmd_list()->close();
 	//
 	m_previous_index = m_current_index;
-	m_current_index = (m_current_index + 1) % m_cmd_allocators.size();
+	m_current_index = (m_current_index + 1) % m_frame_contexts.size();
+	// return the closed command list
+	return get_previous_cmd_list();
 }
+
+void gapi_cmd_context::clear_render_target(const std::shared_ptr<i::gapi_texture>& render_target, const color::rgba<float>& clear_color) const
+{
+	CHECK(render_target->get_render_target_view() != nullptr);
+	get_current_cmd_list()->clear_render_target_view(render_target->get_render_target_view(), clear_color);
+}
+
+std::shared_ptr<i::gapi_resource> gapi_cmd_context::create_and_upload_resource(const gapi_resource_desc& desc, const void* initial_data)
+{
+	//
+	auto target_resource = m_device->create_resource(desc);
+	if (desc.is_buffer())
+	{
+		//
+		auto intermediate_buffer_desc = gapi_buffer_desc::create(desc.m_width, gapi_buffer_usage_flag::dynamic_buffer);
+		auto intermediate_resource = m_device->create_resource(intermediate_buffer_desc);
+		//
+		transition_resource(intermediate_resource, gapi_resource_state::copy_source);
+		transition_resource(target_resource, gapi_resource_state::copy_destination);
+		auto initial_data_size = desc.buffer_size();
+		//
+		intermediate_resource->map(
+			[&initial_data, &initial_data_size](void* mapped)
+			{
+				memcpy(mapped, initial_data, initial_data_size);
+			}
+		);
+		get_current_cmd_list()->copy_resource_region(target_resource, 0, intermediate_resource, 0, initial_data_size);
+		//
+		track_resource(intermediate_resource);
+	}
+	else if (desc.is_texture())
+	{
+		NOT_IMPLEMENTED();
+	}
+	else
+	{
+		CHECK(false);
+	}
+	//
+	return target_resource;
+}
+//
 
 void gapi_cmd_context::transition_resource(const std::shared_ptr<i::gapi_resource>& resource, const gapi_resource_state& to_state) const
 {
@@ -58,60 +108,14 @@ void gapi_cmd_context::transition_resource(const std::shared_ptr<i::gapi_resourc
 	get_current_cmd_list()->transition_resource(resource, to_state);
 }
 
-void gapi_cmd_context::dispatch(const uvector3& thread_group_size) const
+void gapi_cmd_context::track_resource(const std::shared_ptr<i::gapi_resource>& resource)
 {
-	get_current_cmd_list()->dispatch(thread_group_size);
+	m_frame_contexts[m_current_index].m_tracked_resources.emplace_back(resource);
 }
 
-void gapi_cmd_context::draw(const uint32& num_vertices, const uint32& num_instances, const uint32& vertex_offset, const uint32& instance_offset) const
+void gapi_cmd_context::release_tracked_resources()
 {
-	get_current_cmd_list()->draw(num_vertices, num_instances, vertex_offset, instance_offset);
-}
-
-void gapi_cmd_context::draw_indexed(const uint32& num_indices, const uint32& num_instances, const uint32& index_offset, const uint32& vertex_offset, const uint32& instance_offset) const
-{
-	get_current_cmd_list()->draw_indexed(num_indices, num_instances, index_offset, vertex_offset, instance_offset);
-}
-
-void gapi_cmd_context::set_pipeline_state(const std::shared_ptr<i::gapi_pipeline_state>& pipeline_state) const
-{
-	// TODO: Pipeline state cache
-	get_current_cmd_list()->set_pipeline_state(pipeline_state);
-}
-
-void gapi_cmd_context::set_index_buffer(const std::shared_ptr<i::gapi_buffer>& index_buffer) const
-{
-	// TODO: Input assembly cache
-	get_current_cmd_list()->set_index_buffer(index_buffer);
-}
-
-void gapi_cmd_context::set_vertex_buffer(const std::shared_ptr<i::gapi_buffer>& vertex_buffer) const
-{
-	// TODO: Input assembly cache
-	get_current_cmd_list()->set_vertex_buffer(vertex_buffer);
-}
-
-void gapi_cmd_context::set_primitive_topology(const gapi_primitive_type& ptype) const
-{
-	// TODO: Rasterizer state cache
-	get_current_cmd_list()->set_primitive_topology(ptype);
-}
-
-void gapi_cmd_context::set_viewports(const std::vector<gapi_viewport_desc>& viewports) const
-{
-	// TODO: Rasterizer state cache
-	get_current_cmd_list()->set_viewports(viewports);
-}
-
-void gapi_cmd_context::set_scissor_rects(const std::vector<rect>& scissors) const
-{
-	// TODO: Rasterizer state cache
-	get_current_cmd_list()->set_scissor_rects(scissors);
-}
-
-void gapi_cmd_context::bind_shader_resource(const gapi_shader_type& stage, const std::shared_ptr<i::gapi_resource>& resource) const
-{
-	NOT_IMPLEMENTED();
+	m_frame_contexts[m_current_index].m_tracked_resources.clear();
 }
 
 scoped_render_pass::scoped_render_pass(gapi_cmd_context* context, const std::vector<std::shared_ptr<i::gapi_texture>>& render_targets)

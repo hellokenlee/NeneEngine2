@@ -22,12 +22,12 @@ public:
 	std::shared_ptr<i::gapi_pipeline_state> create_graphics_pipeline_state(const gapi_graphics_pipeline_state_desc& desc) override;
 
 	std::shared_ptr<i::gapi_resource_view_allocator> create_resource_view_allocator(const gapi_resource_view_type& heap_type, const uint32& max_num_views) override;
-	std::shared_ptr<i::gapi_constant_buffer_view> create_constant_buffer_view(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const std::shared_ptr<i::gapi_buffer>& buffer) override;
-	std::shared_ptr<i::gapi_shader_resource_view> create_shader_resource_view(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const std::shared_ptr<i::gapi_resource>& resource) override;
-	std::shared_ptr<i::gapi_unorder_access_view> create_unordered_access_view(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const std::shared_ptr<i::gapi_resource>& resource) override;
-	std::shared_ptr<i::gapi_render_target_view> create_render_target_view(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const std::shared_ptr<i::gapi_texture>& texture) override;
-	std::shared_ptr<i::gapi_depth_stencil_view> create_depth_stencil_view(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const std::shared_ptr<i::gapi_texture>& texture) override;
-	std::shared_ptr<i::gapi_sampler> create_sampler(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const gapi_sampler_desc& desc) override;
+	void create_constant_buffer_view(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const std::shared_ptr<i::gapi_buffer>& buffer) override;
+	void create_shader_resource_view(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const std::shared_ptr<i::gapi_resource>& resource) override;
+	void create_unordered_access_view(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const std::shared_ptr<i::gapi_resource>& resource) override;
+	void create_render_target_view(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const std::shared_ptr<i::gapi_texture>& texture) override;
+	void create_depth_stencil_view(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const std::shared_ptr<i::gapi_texture>& texture) override;
+	void create_sampler(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const gapi_sampler_desc& desc) override;
 
 	std::shared_ptr<i::gapi_resource_allocator> create_resource_allocator() override;
 	std::shared_ptr<i::gapi_resource> create_resource(const gapi_resource_desc& desc) override;

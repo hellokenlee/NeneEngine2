@@ -20,13 +20,13 @@ void engine_loop::initialize(void* window, const upoint32& window_size)
 	//
 	log(engine_, info, "Engine Init!");
 	//
-	gapi_dynamic::create(window, window_size);
+	gapi_dynamic::initialize(window, window_size);
 	//
 	m_engine = std::make_shared<n::engine>();
 	m_renderer = std::make_shared<simple_renderer>();
 	//
 	//
-	enqueue_render_command<"Init">(
+	enqueue_render_command<"RenderThreadInit">(
 		[]()
 		{
 			auto& gai = gapi_dynamic::get();

@@ -6,7 +6,7 @@
 #include "d3d12_utils.h"
 
 
-class gapi_d3d12_cmd_allocator : public t::impl<gapi_d3d12_cmd_allocator, i::gapi_cmd_allocator> 
+class gapi_d3d12_cmd_allocator : public i::gapi_cmd_allocator
 {
 public:
 	~gapi_d3d12_cmd_allocator() override = default;

@@ -58,7 +58,10 @@ void gapi_d3d12_texture::recreate_resource_views()
 	{
 		
 	}
-	
+	else if (t::has_flag(m_desc.m_texture_create_flag, gapi_texture_create_flag::as_render_target))
+	{
+		
+	}
 }
 
 gapi_d3d12_buffer::gapi_d3d12_buffer(const WinComPtr<ID3D12Resource>& resource, const gapi_resource_desc& desc)

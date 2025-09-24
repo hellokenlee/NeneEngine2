@@ -6,68 +6,21 @@
 #include "d3d12_utils.h"
 
 
-class gapi_d3d12_resource_view : public t::impl<gapi_d3d12_resource_view, i::gapi_resource_view>
+/** This is always an offline descriptor */
+class gapi_d3d12_resource_view : public i::gapi_resource_view
 {
 public:
 	//
-	gapi_d3d12_resource_view(const uint32& index, const CD3DX12_CPU_DESCRIPTOR_HANDLE& handle, const bool& created=false);
-	~gapi_d3d12_resource_view() override = default;
+	gapi_d3d12_resource_view(const uint32& index, const CD3DX12_CPU_DESCRIPTOR_HANDLE& handle);
 	//
-	bool is_created() override { return m_created; }
-	//
-	void hollow(uint32& out_index, CD3DX12_CPU_DESCRIPTOR_HANDLE& out_handle);
-	//
+	uint32_t get_index_in_heap() const { return m_index_in_heap; }
 	const CD3DX12_CPU_DESCRIPTOR_HANDLE& get_d3d_cpu_handle() const { return m_handle; };
 	
 protected:
-	// If already submitted to GPU
-	bool m_created;
 	// The index in its descriptor heap
-	uint32 m_index;
+	uint32 m_index_in_heap;
 	// The cpu side address allocated by the heap 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE m_handle;
-};
 
-class gapi_d3d12_shader_resource_view : public t::poly_impl<gapi_d3d12_shader_resource_view, gapi_d3d12_resource_view, i::gapi_shader_resource_view>
-{
-public:
-	using super::super;
-	~gapi_d3d12_shader_resource_view() override = default;
-};
-
-class gapi_d3d12_unorder_access_view : public t::poly_impl<gapi_d3d12_unorder_access_view, gapi_d3d12_resource_view, i::gapi_unorder_access_view>
-{
-public:
-	using super::super;
-	~gapi_d3d12_unorder_access_view() override = default;
-};
-
-class gapi_d3d12_constant_buffer_view : public t::poly_impl<gapi_d3d12_constant_buffer_view, gapi_d3d12_resource_view, i::gapi_constant_buffer_view>
-{
-public:
-	using super::super;
-	~gapi_d3d12_constant_buffer_view() override = default;
-};
-
-class gapi_d3d12_render_target_view : public t::poly_impl<gapi_d3d12_render_target_view, gapi_d3d12_resource_view, i::gapi_render_target_view>
-{
-public:
-	using super::super;
-	~gapi_d3d12_render_target_view() override = default;
-};
-
-class gapi_d3d12_depth_stencil_view : public t::poly_impl<gapi_d3d12_depth_stencil_view, gapi_d3d12_resource_view, i::gapi_depth_stencil_view>
-{
-public:
-	using super::super;
-	~gapi_d3d12_depth_stencil_view() override = default;
-};
-
-class gapi_d3d12_sampler : public t::poly_impl<gapi_d3d12_sampler, gapi_d3d12_resource_view, i::gapi_sampler>
-{
-public:
-	using super::super;
-	~gapi_d3d12_sampler() override = default;
-	
-	bool is_created() override { return true; };
+	friend class gapi_d3d12_device;
 };

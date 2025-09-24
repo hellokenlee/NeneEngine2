@@ -24,11 +24,15 @@ namespace i
 		~gapi_swap_chain() override = default;
 
 		virtual void present() = 0;
+		
+		virtual size_t num_back_buffers() const = 0;
 
 		virtual upoint32 get_back_buffer_size() = 0;
 		
-		virtual const std::shared_ptr<gapi_texture>& get_back_buffer() = 0;
-
+		virtual const std::shared_ptr<gapi_texture>& get_back_buffer() const = 0;
+		
+		virtual const std::shared_ptr<gapi_texture>& get_back_buffer(size_t index) const = 0;
+		
 		virtual uint32 get_current_back_buffer_index() = 0;
 
 		virtual void resize_back_buffer(const upoint32& resolution) = 0;

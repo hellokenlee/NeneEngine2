@@ -76,11 +76,11 @@ enum class gapi_pixel_format : uint8
 	// 32 bits
 	r8g8b8a8,
 	r8g8b8a8_unorm,
+	d24_s8,
 
 	// 64 bits
 	r16g16b16a16,
 	r16g16b16a16_unorm,
-	
 };
 
 

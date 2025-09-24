@@ -27,24 +27,15 @@ namespace i
 	class NENE_API gapi_cmd_list : noncopyable
 	{
 	public:
-		gapi_cmd_list(const std::shared_ptr<gapi_device>& device);
-
-		~gapi_cmd_list() override = default;
-		
-		//
-		virtual void track_resource(const std::shared_ptr<gapi_resource>& resource);
-		virtual void release_tracked_resources();
-		virtual std::shared_ptr<gapi_resource> create_and_upload_resource(const gapi_resource_desc& desc, const void* initial_data);
-
 		// Command Operations
 		virtual void close() = 0;
-		virtual void reset(const std::shared_ptr<gapi_cmd_allocator>& allocator, const std::shared_ptr<gapi_pipeline_state>& pipeline_state);
+		virtual void reset(const std::shared_ptr<gapi_cmd_allocator>& allocator, const std::shared_ptr<gapi_pipeline_state>& pipeline_state) = 0;
 
 		// Resource View Operations
 		virtual void clear_state(const std::shared_ptr<gapi_pipeline_state>& pipeline_state) = 0;
-		virtual void clear_depth_stencil_view(const std::shared_ptr<gapi_depth_stencil_view>& depth_stencil, const float& depth, const uint8& stencil) = 0;
-		virtual void clear_render_target_view(const std::shared_ptr<gapi_render_target_view>& render_target, const linear_color& clear_color) = 0;
-		virtual void clear_unordered_access_view(const std::shared_ptr<gapi_unorder_access_view>& unorder_access_view, const std::shared_ptr<gapi_resource>& resource, const linear_color& clear_color) = 0;
+		virtual void clear_depth_stencil_view(const std::shared_ptr<gapi_resource_view>& depth_stencil, const float& depth, const uint8& stencil) = 0;
+		virtual void clear_render_target_view(const std::shared_ptr<gapi_resource_view>& render_target, const color::rgba<float>& clear_color) = 0;
+		virtual void clear_unordered_access_view(const std::shared_ptr<gapi_resource_view>& unorder_access_view, const std::shared_ptr<gapi_resource>& resource, const color::rgba<float>& clear_color) = 0;
 		
 		// Resource Copy & Discard
 		virtual void copy_resource(const std::shared_ptr<gapi_resource>& dst, const std::shared_ptr<gapi_resource>& src) = 0;
@@ -62,9 +53,9 @@ namespace i
 
 		// Pipeline State Setter
 		virtual void set_pipeline_state(const std::shared_ptr<gapi_pipeline_state>& pipeline_state) = 0;
-		virtual void set_root_constant_buffer_view(const std::shared_ptr<gapi_constant_buffer_view>& cbv) = 0;
-		virtual void set_root_shader_resource_view(const std::shared_ptr<gapi_shader_resource_view>& srv) = 0;
-		virtual void set_root_unordered_access_view(const std::shared_ptr<gapi_shader_resource_view>& srv) = 0;
+		virtual void set_root_constant_buffer_view(const std::shared_ptr<gapi_resource_view>& cbv) = 0;
+		virtual void set_root_shader_resource_view(const std::shared_ptr<gapi_resource_view>& srv) = 0;
+		virtual void set_root_unordered_access_view(const std::shared_ptr<gapi_resource_view>& srv) = 0;
 		virtual void set_root_descriptor_table() = 0;
 		virtual void set_descriptor_heaps(const std::vector<std::shared_ptr<gapi_resource_view_allocator>>& heaps) = 0;
 
@@ -79,7 +70,7 @@ namespace i
 		
 		// Output Merge Settings
 		virtual void set_blend_factor(const vector4& blend) = 0;
-		virtual void set_render_targets(const std::vector<std::shared_ptr<gapi_render_target_view>>& render_target_views, const std::shared_ptr<gapi_depth_stencil_view>& depth_stencil_view) = 0;
+		virtual void set_render_targets(const std::vector<std::shared_ptr<gapi_resource_view>>& render_target_views, const std::shared_ptr<gapi_resource_view>& depth_stencil_view) = 0;
 		virtual void set_stencil_ref(const uint32& stencil_ref) = 0;
 		
 		// Hardware Query Methods
@@ -87,12 +78,7 @@ namespace i
 		virtual void end_query() = 0;
 		virtual void resolve_query() = 0;
 
+		// Debug Methods
 		virtual void set_debug_name(const std::wstring& debug_name) {};
-		
-	protected:
-		//
-		std::shared_ptr<gapi_device> m_device;
-		// the resources that would release after this command list get executed
-		std::vector<std::shared_ptr<gapi_resource>> m_tracked_resources;
 	};
 }

@@ -6,21 +6,22 @@
 #include "d3d12_utils.h"
 
 
-class gapi_d3d12_resource_view_allocator : public t::impl<gapi_d3d12_resource_view_allocator, i::gapi_resource_view_allocator>
+class gapi_d3d12_resource_view_allocator : public i::gapi_resource_view_allocator
 {
 public:
 	std::shared_ptr<i::gapi_resource_view> allocate_resource_view() override;
-	void free_resource_view(std::shared_ptr<i::gapi_resource_view>& view) override;
 
 public:
-	gapi_d3d12_resource_view_allocator(const WinComPtr<ID3D12DescriptorHeap>& heap, const uint32& num_descriptors, const uint32& descriptor_size);
+	gapi_d3d12_resource_view_allocator(const WinComPtr<ID3D12DescriptorHeap>& heap, D3D12_DESCRIPTOR_HEAP_DESC desc, const uint32& num_descriptors, const uint32& descriptor_size);
 	
 private:
-	uint32 m_num_descriptors;
-	uint32 m_descriptor_size;
+	void free_resource_view(i::gapi_resource_view* view);
+	
+	uint32 m_num_descriptors = 0;
+	uint32 m_descriptor_size = 0;
 	std::queue<uint32> m_free_descriptor_indices;
 	
-	D3D12_CPU_DESCRIPTOR_HANDLE m_cpu_base;
-	D3D12_GPU_DESCRIPTOR_HANDLE m_gpu_base;
-	WinComPtr<ID3D12DescriptorHeap> m_heap;
+	D3D12_CPU_DESCRIPTOR_HANDLE m_cpu_base = {};
+	WinComPtr<ID3D12DescriptorHeap> m_heap = {};
+	D3D12_DESCRIPTOR_HEAP_DESC m_desc;
 };

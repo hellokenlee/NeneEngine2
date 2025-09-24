@@ -4,7 +4,7 @@
 
 #include "gapi_pipeline_state_manager.h"
 #include "core/core.h"
-#include "core/file_helper.h"
+#include "core/utils.h"
 #include "gapi_d3d12/gapi_d3d12_factory.h"
 #include "gapi_d3d12/gapi_d3d12_shader.h"
 
@@ -35,7 +35,17 @@ gapi_dynamic::gapi_dynamic(const gapi_platform& platform, void* window, const up
 	// TODO: multi gpu support
 	m_gpu = m_factory->create_gpu();
 	m_device = m_gpu->create_device();
+	// TODO: Expandable Allocator ( e.g. paged allocator )
+	m_rtv_allocator = m_device->create_resource_view_allocator(gapi_resource_view_type::render_target_view, 1024);
+	m_dsv_allocator = m_device->create_resource_view_allocator(gapi_resource_view_type::depth_stencil_view, 1024);
+	m_sampler_allocator = m_device->create_resource_view_allocator(gapi_resource_view_type::texture_sampler, 1024);
+	m_cbv_srv_uav_allocator = m_device->create_resource_view_allocator(gapi_resource_view_type::shader_resource_view, 1024);
+	//
 	m_swap_chain = m_factory->create_swap_chain(window, m_device->get_cmd_queue(gapi_cmd_type::graphics), window_size, num_multi_buffer);
+	for (size_t index = 0; index < m_swap_chain->num_back_buffers(); ++index)
+	{
+		create_texture_views(m_swap_chain->get_back_buffer(index));
+	}
 	//
 	for (uint32 context_id = 0; context_id < cvar_gapi_num_context_thread.get_value_thread_unsafe(); ++context_id)
 	{
@@ -45,6 +55,35 @@ gapi_dynamic::gapi_dynamic(const gapi_platform& platform, void* window, const up
 	for (auto& fence_values : m_cmd_queue_fence_values)
 	{
 		fence_values.resize(num_multi_buffer, 0);
+	}
+}
+
+void gapi_dynamic::create_texture_views(const std::shared_ptr<i::gapi_texture>& texture) const
+{
+	const auto& create_flag = texture->get_resource_desc().m_texture_create_flag;
+	if (t::has_flag(create_flag, gapi_texture_create_flag::as_render_target))
+	{
+		auto rtv = m_rtv_allocator->allocate_resource_view();
+		m_device->create_render_target_view(rtv, texture);
+		texture->set_render_target_view(rtv);
+	}
+	if (t::has_flag(create_flag, gapi_texture_create_flag::as_depth_stencil))
+	{
+		auto dsv = m_dsv_allocator->allocate_resource_view();
+		m_device->create_depth_stencil_view(dsv, texture);
+		texture->set_depth_stencil_view(dsv);
+	}
+	if (t::has_flag(create_flag, gapi_texture_create_flag::as_shader_resource))
+	{
+		auto srv = m_cbv_srv_uav_allocator->allocate_resource_view();
+		m_device->create_shader_resource_view(srv, texture);
+		texture->set_shader_resource_view(srv);
+	}
+	if (t::has_flag(create_flag, gapi_texture_create_flag::as_unordered_access))
+	{
+		auto uav = m_cbv_srv_uav_allocator->allocate_resource_view();
+		m_device->create_unordered_access_view(uav, texture);
+		texture->set_unordered_access_view(uav);
 	}
 }
 
@@ -69,15 +108,17 @@ std::shared_ptr<i::gapi_pipeline_state> gapi_dynamic::create_graphics_pipeline_s
 std::shared_ptr<i::gapi_buffer> gapi_dynamic::create_buffer(const gapi_resource_desc& desc) const
 {
 	CHECK(desc.is_buffer())
-	const auto resource = m_device->create_resource(desc);
-	return std::dynamic_pointer_cast<i::gapi_buffer>(resource);
+	auto buffer = m_device->create_resource(desc);
+	return std::dynamic_pointer_cast<i::gapi_buffer>(buffer);
 }
 
 std::shared_ptr<i::gapi_texture> gapi_dynamic::create_texture(const gapi_resource_desc& desc) const
 {
 	CHECK(desc.is_texture());
-	const auto resource = m_device->create_resource(desc);
-	return std::dynamic_pointer_cast<i::gapi_texture>(resource);
+	auto resource = m_device->create_resource(desc);
+	auto texture = std::dynamic_pointer_cast<i::gapi_texture>(resource);
+	create_texture_views(texture);
+	return texture;
 }
 
 void gapi_dynamic::flush() const
@@ -101,9 +142,8 @@ void gapi_dynamic::finish_frame() const
 	for (auto& context : m_cmd_contexts)
 	{
 		// TODO: multi command queue supports
-		context->close();
-		// the `gapi_cmd_context::close()` would make current to previous
-		m_device->get_cmd_queue(gapi_cmd_type::graphics)->execute_cmd_list(context->get_previous_cmd_list());
+		const auto& cmd_list_to_execute = context->close();
+		m_device->get_cmd_queue(gapi_cmd_type::graphics)->execute_cmd_list(cmd_list_to_execute);
 	}
 }
 
@@ -145,6 +185,10 @@ void gapi_dynamic::resize_swap_chain(const upoint32& new_size)
 		}
 		//
 		m_swap_chain->resize_back_buffer(new_size);
+		for (size_t index = 0; index < m_swap_chain->num_back_buffers(); ++index)
+		{
+			create_texture_views(m_swap_chain->get_back_buffer(index));
+		}
 	}
 }
 
@@ -155,7 +199,7 @@ const std::shared_ptr<i::gapi_device>& gapi_dynamic::get_device() const
 
 std::unique_ptr<gapi_dynamic> gapi_dynamic::s_instance = {};
 
-void gapi_dynamic::create(void* window, const upoint32& window_size)
+void gapi_dynamic::initialize(void* window, const upoint32& window_size)
 {
 	CHECK(window != nullptr);
 	CHECK(s_instance == nullptr);
@@ -166,6 +210,6 @@ void gapi_dynamic::create(void* window, const upoint32& window_size)
 
 gapi_dynamic& gapi_dynamic::get()
 {
-	CHECKF(s_instance != nullptr, "Call `gapi_dynamic::create(...)` first for initialization.");
+	CHECK_HINTS(s_instance != nullptr, "Call `gapi_dynamic::initialize(...)` first for initialization.");
 	return *s_instance;
 }

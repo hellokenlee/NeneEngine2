@@ -2,8 +2,11 @@
 
 #pragma once
 
+#pragma warning(disable : 4250) // multiple-inheritance's `... via dominance` warnings
+
 #include "gapi/gapi_resource.h"
 #include "d3d12_utils.h"
+#include "gapi_d3d12_resource_view_allocator.h"
 
 
 class gapi_d3d12_resource : virtual public i::gapi_resource
@@ -30,7 +33,7 @@ protected:
 };
 
 
-class gapi_d3d12_texture : public gapi_d3d12_resource, public i::gapi_texture
+class gapi_d3d12_texture final : public gapi_d3d12_resource, public i::gapi_texture
 {
 public:
 	using gapi_d3d12_resource::gapi_d3d12_resource;
@@ -42,7 +45,7 @@ public:
 };
 
 
-class gapi_d3d12_buffer : public gapi_d3d12_resource, public i::gapi_buffer
+class gapi_d3d12_buffer final : public gapi_d3d12_resource, public i::gapi_buffer
 {
 public:
 	using gapi_d3d12_resource::gapi_d3d12_resource;

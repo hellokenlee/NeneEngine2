@@ -3,16 +3,15 @@
 #pragma once
 
 #include "gapi_d3d12_shader.h"
+#include <dxcapi.h>
 
 
 class d3d12_shader_compiler
 {
 public:
-	virtual ~d3d12_shader_compiler();
+	virtual ~d3d12_shader_compiler() = default;
 	
-	virtual bool compile_shader(gapi_d3d12_shader& shader, ID3DBlob*& bytecode, ID3DBlob*& message) = 0;
-
-	virtual bool reflect_shader(const gapi_d3d12_shader& shader, D3D12_SHADER_DESC& out_shader_desc, std::vector<D3D12_SHADER_INPUT_BIND_DESC>& out_shader_input_descs) = 0;
+	virtual bool compile(gapi_d3d12_shader& shader, WinComPtr<ID3DBlob>& out_bytecode, WinComPtr<ID3D12ShaderReflection>& out_reflection) = 0;
 };
 
 
@@ -23,21 +22,23 @@ public:
 class d3d12_fxc_shader_compiler : public d3d12_shader_compiler
 {
 public:
-	~d3d12_fxc_shader_compiler() override;
-
-	bool compile_shader(gapi_d3d12_shader& shader, ID3DBlob*& bytecode, ID3DBlob*& message) override;
-	
-	bool reflect_shader(const gapi_d3d12_shader& shader, D3D12_SHADER_DESC& out_shader_desc, std::vector<D3D12_SHADER_INPUT_BIND_DESC>& out_shader_input_descs) override;
+	bool compile(gapi_d3d12_shader& shader, WinComPtr<ID3DBlob>& out_bytecode, WinComPtr<ID3D12ShaderReflection>& out_reflection) override;
 };
 
 
 /**
  *	The DXC compiler.
+ *	Require `dxcompiler.lib` and `dxil.lib`
  */
 class d3d12_dxc_shader_compiler : public d3d12_shader_compiler
 {
 public:
-	bool compile_shader(gapi_d3d12_shader& shader, ID3DBlob*& bytecode, ID3DBlob*& message) override;
+	d3d12_dxc_shader_compiler();
 	
-	bool reflect_shader(const gapi_d3d12_shader& shader, D3D12_SHADER_DESC& out_shader_desc, std::vector<D3D12_SHADER_INPUT_BIND_DESC>& out_shader_input_descs) override;
+	bool compile(gapi_d3d12_shader& shader, WinComPtr<ID3DBlob>& out_bytecode, WinComPtr<ID3D12ShaderReflection>& out_reflection) override;
+
+protected:
+	WinComPtr<IDxcCompiler3> m_compiler;
+	WinComPtr<IDxcUtils> m_utils;
+	WinComPtr<IDxcIncludeHandler> m_include_handler;
 };

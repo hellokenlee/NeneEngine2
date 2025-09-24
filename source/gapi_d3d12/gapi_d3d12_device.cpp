@@ -98,12 +98,10 @@ std::shared_ptr<i::gapi_cmd_allocator> gapi_d3d12_device::create_cmd_allocator(g
 
 std::shared_ptr<i::gapi_cmd_list> gapi_d3d12_device::create_cmd_list(gapi_cmd_type type, std::shared_ptr<i::gapi_cmd_allocator>& allocator)
 {
-	const auto d3d12_allocator = gapi_d3d12_cmd_allocator::cast(allocator);
-	
 	WinComPtr<ID3D12GraphicsCommandList> d3d_cmd_list;
-	VERIFY(m_d3d_device->CreateCommandList(0, d3d_cast(type), d3d12_allocator->get_d3d_allocator(), nullptr, IID_PPV_ARGS(&d3d_cmd_list)));
+	VERIFY(m_d3d_device->CreateCommandList(0, d3d_cast(type), t::gapi_pin<gapi_d3d12_cmd_allocator>(allocator).get_d3d_allocator(), nullptr, IID_PPV_ARGS(&d3d_cmd_list)));
 	d3d_cmd_list->Close();
-	return std::make_shared<gapi_d3d12_cmd_list>(d3d_cmd_list, shared_from_this());
+	return std::make_shared<gapi_d3d12_cmd_list>(d3d_cmd_list);
 }
 
 std::shared_ptr<i::gapi_pipeline_state> gapi_d3d12_device::create_compute_pipeline_state(const gapi_compute_pipeline_state_desc& desc)
@@ -125,7 +123,7 @@ std::shared_ptr<i::gapi_pipeline_state> gapi_d3d12_device::create_compute_pipeli
 std::shared_ptr<i::gapi_pipeline_state> gapi_d3d12_device::create_graphics_pipeline_state(const gapi_graphics_pipeline_state_desc& desc)
 {
 	//
-	const auto& d3d_root_signature = d3d12_root_signature_manager::get().find_or_create_root_signature(get_d3d_device(), desc.m_bound_shader_state);
+	auto d3d_root_signature = d3d12_root_signature_manager::get().find_or_create_root_signature(get_d3d_device(), desc.m_bound_shader_state);
 	std::vector<D3D12_INPUT_ELEMENT_DESC> input_element_descs;
 	//
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC d3d_desc = {};
@@ -134,30 +132,26 @@ std::shared_ptr<i::gapi_pipeline_state> gapi_d3d12_device::create_graphics_pipel
 	//
 	d3d_desc.VS = CD3DX12_SHADER_BYTECODE(t::gapi_pin<gapi_d3d12_shader>(desc.m_bound_shader_state.get_stage_shader<gapi_shader_type::vertex_shader>()).get_d3d_bytecode());
 	//
-	auto pixel_shader = t::gapi_cast<gapi_d3d12_shader>(desc.m_bound_shader_state.get_stage_shader<gapi_shader_type::pixel_shader>());
-	if (pixel_shader != nullptr)
+	if (auto pixel_shader = t::gapi_cast<gapi_d3d12_shader>(desc.m_bound_shader_state.get_stage_shader<gapi_shader_type::pixel_shader>()); pixel_shader != nullptr)
 	{
 		d3d_desc.PS = CD3DX12_SHADER_BYTECODE(pixel_shader->get_d3d_bytecode());
 	}
-	auto domain_shader = t::gapi_cast<gapi_d3d12_shader>(desc.m_bound_shader_state.get_stage_shader<gapi_shader_type::domain_shader>());
-	if (domain_shader != nullptr)
+	if (auto domain_shader = t::gapi_cast<gapi_d3d12_shader>(desc.m_bound_shader_state.get_stage_shader<gapi_shader_type::domain_shader>()); domain_shader != nullptr)
 	{
 		d3d_desc.DS = CD3DX12_SHADER_BYTECODE(domain_shader->get_d3d_bytecode());
 	}
-	auto hull_shader = t::gapi_cast<gapi_d3d12_shader>(desc.m_bound_shader_state.get_stage_shader<gapi_shader_type::hull_shader>());
-	if (domain_shader != nullptr)
+	if (auto hull_shader = t::gapi_cast<gapi_d3d12_shader>(desc.m_bound_shader_state.get_stage_shader<gapi_shader_type::hull_shader>()); hull_shader != nullptr)
 	{
 		d3d_desc.HS = CD3DX12_SHADER_BYTECODE(hull_shader->get_d3d_bytecode());
 	}
-	auto geometry_shader = t::gapi_cast<gapi_d3d12_shader>(desc.m_bound_shader_state.get_stage_shader<gapi_shader_type::geometry_shader>());
-	if (domain_shader != nullptr)
+	if (auto geometry_shader = t::gapi_cast<gapi_d3d12_shader>(desc.m_bound_shader_state.get_stage_shader<gapi_shader_type::geometry_shader>()); geometry_shader != nullptr)
 	{
 		d3d_desc.GS = CD3DX12_SHADER_BYTECODE(geometry_shader->get_d3d_bytecode());
 	}
 	// TODO: Vertex stream out support
 	d3d_desc.StreamOutput = {};
 	d3d_desc.BlendState = d3d_cast(desc.m_blend_state);
-	d3d_desc.SampleMask = 0;
+	d3d_desc.SampleMask = UINT_MAX;
 	d3d_desc.RasterizerState = d3d_cast(desc.m_rasterizer_state);
 	d3d_desc.DepthStencilState = d3d_cast(desc.m_depth_stencil_state);
 	d3d_desc.InputLayout = d3d_cast(*desc.m_bound_shader_state.m_vertex_declaration, input_element_descs);
@@ -173,6 +167,7 @@ std::shared_ptr<i::gapi_pipeline_state> gapi_d3d12_device::create_graphics_pipel
 	d3d_desc.SampleDesc.Quality = 0;
 	// TODO: LDA setup support
 	d3d_desc.NodeMask = 0;
+	// TODO: PSO caching
 	d3d_desc.CachedPSO = {};
 	d3d_desc.Flags = D3D12_PIPELINE_STATE_FLAG_NONE;
 	
@@ -183,54 +178,49 @@ std::shared_ptr<i::gapi_pipeline_state> gapi_d3d12_device::create_graphics_pipel
 
 std::shared_ptr<i::gapi_resource_view_allocator> gapi_d3d12_device::create_resource_view_allocator(const gapi_resource_view_type& heap_type, const uint32& max_num_views)
 {
+	// This method always create offline descriptor heap
 	D3D12_DESCRIPTOR_HEAP_DESC d3d_desc;
 	
 	d3d_desc.Type = d3d_cast(heap_type);
 	d3d_desc.NumDescriptors = max_num_views;
-	if (heap_type == gapi_resource_view_type::render_target_view || heap_type == gapi_resource_view_type::depth_stencil_view)
-	{
-		d3d_desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;	
-	}
-	else
-	{
-		d3d_desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-	}
+	d3d_desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	
 	d3d_desc.NodeMask = 0;
 	WinComPtr<ID3D12DescriptorHeap> heap;
 	VERIFY(m_d3d_device->CreateDescriptorHeap(&d3d_desc, IID_PPV_ARGS(&heap)));
 	// query the size of different descriptor because it's vendor specific
 	uint32 descriptor_size = m_d3d_device->GetDescriptorHandleIncrementSize(d3d_desc.Type);
-	return std::make_shared<gapi_d3d12_resource_view_allocator>(heap, max_num_views, descriptor_size);
+	return std::make_shared<gapi_d3d12_resource_view_allocator>(heap, d3d_desc, max_num_views, descriptor_size);
 }
 
-std::shared_ptr<i::gapi_constant_buffer_view> gapi_d3d12_device::create_constant_buffer_view(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const std::shared_ptr<i::gapi_buffer>& buffer)
+void gapi_d3d12_device::create_constant_buffer_view(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const std::shared_ptr<i::gapi_buffer>& buffer)
 {
 	//
-	const auto& d3d_buffer = t::gapi_cast<gapi_d3d12_buffer>(buffer);
-	const auto& d3d_view = gapi_d3d12_resource_view::cast(allocated_view);
+	CHECK(allocated_view->get_type() == gapi_resource_view_type::unknown);
 	//
-	CHECK(d3d_view->is_created() == false);
+	const auto& d3d_buffer = t::gapi_cast<gapi_d3d12_buffer>(buffer);
+	auto& d3d_view = t::gapi_pin<gapi_d3d12_resource_view>(allocated_view);
+	
 	//
 	D3D12_CONSTANT_BUFFER_VIEW_DESC desc;
 	desc.BufferLocation = d3d_buffer->get_d3d_resource()->GetGPUVirtualAddress();
 	desc.SizeInBytes = d3d_buffer->get_resource_desc().m_width;
 	//
-	uint32 index;
-	CD3DX12_CPU_DESCRIPTOR_HANDLE handle;
-	d3d_view->hollow(index, handle);
-	//
-	m_d3d_device->CreateConstantBufferView(&desc, handle);
-	return std::make_shared<gapi_d3d12_constant_buffer_view>(index, handle, true);
+	m_d3d_device->CreateConstantBufferView(&desc, d3d_view.get_d3d_cpu_handle());
+	d3d_view.m_type = gapi_resource_view_type::constant_buffer_view;
 }
 
-std::shared_ptr<i::gapi_shader_resource_view> gapi_d3d12_device::create_shader_resource_view(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const std::shared_ptr<i::gapi_resource>& resource)
+void gapi_d3d12_device::create_shader_resource_view(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const std::shared_ptr<i::gapi_resource>& resource)
 {
+	//
+	CHECK(allocated_view->get_type() == gapi_resource_view_type::unknown);
+	//
 	const auto& d3d_resource = t::gapi_cast<gapi_d3d12_resource>(resource);
-	const auto& d3d_view = gapi_d3d12_resource_view::cast(allocated_view);
-	CHECK(d3d_view->is_created() == false);
+	auto& d3d_view = t::gapi_pin<gapi_d3d12_resource_view>(allocated_view);
+	const gapi_resource_desc& resource_desc = d3d_resource->get_resource_desc();
 	//
 	D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
-	const gapi_resource_desc& resource_desc = d3d_resource->get_resource_desc();
+	desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	//
 	switch (resource_desc.m_type)
 	{
@@ -239,7 +229,6 @@ std::shared_ptr<i::gapi_shader_resource_view> gapi_d3d12_device::create_shader_r
 			CHECK(t::has_flag(resource_desc.m_buffer_usage_flag, gapi_buffer_usage_flag::shader_resource));
 			desc.Format = DXGI_FORMAT_UNKNOWN;
 			desc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
-			desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 			desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
 			// TODO: How to determine the structure layout?
 			desc.Buffer.FirstElement = 0;
@@ -252,7 +241,7 @@ std::shared_ptr<i::gapi_shader_resource_view> gapi_d3d12_device::create_shader_r
 			desc.Format = d3d_cast(resource_desc.m_format);
 			desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE1D;
 			desc.Texture1D.MipLevels = resource_desc.m_num_mips;
-			desc.Texture1D.MostDetailedMip = 1;
+			desc.Texture1D.MostDetailedMip = 0;
 			desc.Texture1D.ResourceMinLODClamp = 1;
 			break;	
 		}
@@ -261,7 +250,7 @@ std::shared_ptr<i::gapi_shader_resource_view> gapi_d3d12_device::create_shader_r
 			desc.Format = d3d_cast(resource_desc.m_format);
 			desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 			desc.Texture2D.MipLevels = resource_desc.m_num_mips;
-			desc.Texture2D.MostDetailedMip = 1;
+			desc.Texture2D.MostDetailedMip = 0;
 			desc.Texture2D.ResourceMinLODClamp = 1;
 			break;
 		}
@@ -270,7 +259,7 @@ std::shared_ptr<i::gapi_shader_resource_view> gapi_d3d12_device::create_shader_r
 			desc.Format = d3d_cast(resource_desc.m_format);
 			desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE3D;
 			desc.Texture3D.MipLevels = resource_desc.m_num_mips;
-			desc.Texture3D.MostDetailedMip = 1;
+			desc.Texture3D.MostDetailedMip = 0;
 			desc.Texture3D.ResourceMinLODClamp = 1;
 			break;	
 		}
@@ -278,21 +267,17 @@ std::shared_ptr<i::gapi_shader_resource_view> gapi_d3d12_device::create_shader_r
 		CHECK(false);
 	}
 	//
-	uint32 index;
-	CD3DX12_CPU_DESCRIPTOR_HANDLE handle;
-	d3d_view->hollow(index, handle);
-	//
-	m_d3d_device->CreateShaderResourceView(d3d_resource->get_d3d_resource(), &desc, handle);
-	return std::make_shared<gapi_d3d12_shader_resource_view>(index, handle, true);
+	m_d3d_device->CreateShaderResourceView(d3d_resource->get_d3d_resource(), &desc, d3d_view.get_d3d_cpu_handle());
+	d3d_view.m_type = gapi_resource_view_type::shader_resource_view;
 }
 
-std::shared_ptr<i::gapi_unorder_access_view> gapi_d3d12_device::create_unordered_access_view(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const std::shared_ptr<i::gapi_resource>& resource)
+void gapi_d3d12_device::create_unordered_access_view(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const std::shared_ptr<i::gapi_resource>& resource)
 {
 	//
-	const auto& d3d_resource = t::gapi_cast<gapi_d3d12_resource>(resource);
-	const auto& d3d_view = gapi_d3d12_resource_view::cast(allocated_view);
+	CHECK(allocated_view->get_type() == gapi_resource_view_type::unknown);
 	//
-	CHECK(d3d_view->is_created() == false);
+	const auto& d3d_resource = t::gapi_cast<gapi_d3d12_resource>(resource);
+	auto& d3d_view = t::gapi_pin<gapi_d3d12_resource_view>(allocated_view);
 	//
 	D3D12_UNORDERED_ACCESS_VIEW_DESC desc = {};
 	const gapi_resource_desc& resource_desc = d3d_resource->get_resource_desc();
@@ -337,21 +322,18 @@ std::shared_ptr<i::gapi_unorder_access_view> gapi_d3d12_device::create_unordered
 	default:
 			CHECK(false);
 	}
-	//
-	uint32 index;
-	CD3DX12_CPU_DESCRIPTOR_HANDLE handle;
-	d3d_view->hollow(index, handle);
 	// TODO: Support UAV counter
-	m_d3d_device->CreateUnorderedAccessView(d3d_resource->get_d3d_resource(), nullptr, &desc, handle);
-	return std::make_shared<gapi_d3d12_unorder_access_view>(index, handle, true);
+	m_d3d_device->CreateUnorderedAccessView(d3d_resource->get_d3d_resource(), nullptr, &desc, d3d_view.get_d3d_cpu_handle());
+	d3d_view.m_type = gapi_resource_view_type::unordered_access_view;
 }
 
-std::shared_ptr<i::gapi_render_target_view> gapi_d3d12_device::create_render_target_view(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const std::shared_ptr<i::gapi_texture>& texture)
+void gapi_d3d12_device::create_render_target_view(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const std::shared_ptr<i::gapi_texture>& texture)
 {
 	//
+	CHECK(allocated_view->get_type() == gapi_resource_view_type::unknown);
+	//
 	const auto& d3d_resource = t::gapi_cast<gapi_d3d12_texture>(texture);
-	const auto& d3d_view = gapi_d3d12_resource_view::cast(allocated_view);
-	CHECK(d3d_view->is_created() == false);
+	auto& d3d_view = t::gapi_pin<gapi_d3d12_resource_view>(allocated_view);
 	//
 	D3D12_RENDER_TARGET_VIEW_DESC desc = {};
 	const gapi_resource_desc& resource_desc = d3d_resource->get_resource_desc();
@@ -393,21 +375,17 @@ std::shared_ptr<i::gapi_render_target_view> gapi_d3d12_device::create_render_tar
 	default:
 		CHECK(false);
 	}
-	//
-	uint32 index;
-	CD3DX12_CPU_DESCRIPTOR_HANDLE handle;
-	d3d_view->hollow(index, handle);
-	m_d3d_device->CreateRenderTargetView(d3d_resource->get_d3d_resource(), &desc, handle);
-	//
-	return std::make_shared<gapi_d3d12_render_target_view>(index, handle, true);
+	m_d3d_device->CreateRenderTargetView(d3d_resource->get_d3d_resource(), &desc, d3d_view.get_d3d_cpu_handle());
+	d3d_view.m_type = gapi_resource_view_type::render_target_view;
 }
 
-std::shared_ptr<i::gapi_depth_stencil_view> gapi_d3d12_device::create_depth_stencil_view(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const std::shared_ptr<i::gapi_texture>& texture)
+void gapi_d3d12_device::create_depth_stencil_view(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const std::shared_ptr<i::gapi_texture>& texture)
 {
 	//
+	CHECK(allocated_view->get_type() == gapi_resource_view_type::unknown);
+	//
 	const auto& d3d_resource = t::gapi_cast<gapi_d3d12_texture>(texture);
-	const auto& d3d_view = gapi_d3d12_resource_view::cast(allocated_view);
-	CHECK(d3d_view->is_created() == false);
+	auto& d3d_view = t::gapi_pin<gapi_d3d12_resource_view>(allocated_view);
 	//
 	D3D12_DEPTH_STENCIL_VIEW_DESC desc = {};
 	const gapi_resource_desc& resource_desc = d3d_resource->get_resource_desc();
@@ -434,25 +412,18 @@ std::shared_ptr<i::gapi_depth_stencil_view> gapi_d3d12_device::create_depth_sten
 		CHECK(false);
 	}
 	//
-	uint32 index;
-	CD3DX12_CPU_DESCRIPTOR_HANDLE handle;
-	d3d_view->hollow(index, handle);
-	m_d3d_device->CreateDepthStencilView(d3d_resource->get_d3d_resource(), &desc, handle);
-	//
-	return std::make_shared<gapi_d3d12_depth_stencil_view>(index, handle, true);
+	m_d3d_device->CreateDepthStencilView(d3d_resource->get_d3d_resource(), &desc, d3d_view.get_d3d_cpu_handle());
+	d3d_view.m_type = gapi_resource_view_type::depth_stencil_view;
 }
 
-std::shared_ptr<i::gapi_sampler> gapi_d3d12_device::create_sampler(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const gapi_sampler_desc& desc)
+void gapi_d3d12_device::create_sampler(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const gapi_sampler_desc& desc)
 {
 	//
 	const auto d3d_desc = d3d_cast(desc);
-	const auto& d3d_view = gapi_d3d12_resource_view::cast(allocated_view);
+	auto& d3d_view = t::gapi_pin<gapi_d3d12_resource_view>(allocated_view);
 	//
-	uint32 index;
-	CD3DX12_CPU_DESCRIPTOR_HANDLE handle;
-	d3d_view->hollow(index, handle);
-	m_d3d_device->CreateSampler(&d3d_desc, handle);
-	return std::make_shared<gapi_d3d12_sampler>(index, handle, true);
+	m_d3d_device->CreateSampler(&d3d_desc, d3d_view.get_d3d_cpu_handle());
+	d3d_view.m_type = gapi_resource_view_type::texture_sampler;
 }
 
 std::shared_ptr<i::gapi_resource_allocator> gapi_d3d12_device::create_resource_allocator()

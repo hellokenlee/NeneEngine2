@@ -37,7 +37,7 @@ class d3d12_root_signature_manager
 public:
 	static d3d12_root_signature_manager& get();
 
-	const WinComPtr<ID3D12RootSignature>& find_or_create_root_signature(ID3D12Device* d3d_device, const gapi_bound_shader_state_desc& bound_shader_state_desc);
+	WinComPtr<ID3D12RootSignature> find_or_create_root_signature(ID3D12Device* d3d_device, const gapi_bound_shader_state_desc& bound_shader_state_desc);
 
 	D3D12_VERSIONED_ROOT_SIGNATURE_DESC make_root_signature_desc(const gapi_d3d12_quantized_bound_shader_state& quantized_bound_shader_state) const;
 	

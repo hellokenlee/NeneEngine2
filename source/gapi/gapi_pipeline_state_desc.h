@@ -66,6 +66,7 @@ struct NENE_API gapi_bound_shader_state_desc
 
 	// Graphic Shader Stages
 	gapi_bound_shader_state_desc(const std::shared_ptr<gapi_vertex_declaration>& vertex_declaration, const std::shared_ptr<i::gapi_shader>& vertex_shader);
+	gapi_bound_shader_state_desc(const std::shared_ptr<gapi_vertex_declaration>& vertex_declaration, const std::shared_ptr<i::gapi_shader>& vertex_shader, const std::shared_ptr<i::gapi_shader>& pixel_shader);
 
 	// Compute Shader Stages
 	gapi_bound_shader_state_desc(const std::shared_ptr<i::gapi_shader>& compute_shader);

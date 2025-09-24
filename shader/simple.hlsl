@@ -14,15 +14,15 @@ PSInput MainVS(VSInput input)
 {
     PSInput result;
 
-    result.position = input.position;
-    result.color = input.color;
-    result.position.z = 0.5;
-    result.position.w = 1.0;
+    result.Position = input.Position;
+    result.Color = input.Color;
+    result.Position.z = 0.5;
+    result.Position.w = 1.0;
 
     return result;
 }
 
 float4 MainPS(PSInput input) : SV_TARGET
 {
-    return input.color;
+    return input.Color;
 }

@@ -23,7 +23,7 @@ public:
 	~gapi_dynamic() override;
 
 	/** Create adapter and device from a window handler. */
-	static void create(void* window, const upoint32& window_size);
+	static void initialize(void* window, const upoint32& window_size);
 	
 	/** Fetch the current gapi that is using. */
 	static gapi_dynamic& get();
@@ -62,10 +62,18 @@ protected:
 	/** Internal constructor. */
 	gapi_dynamic(const gapi_platform& platform, void* window, const upoint32& window_size);
 	//
+	void create_texture_views(const std::shared_ptr<i::gapi_texture>& texture) const;
+	//
 	std::unique_ptr<i::gapi_factory> m_factory;
 	std::shared_ptr<i::gapi_gpu> m_gpu;
 	std::shared_ptr<i::gapi_device> m_device;
 	std::shared_ptr<i::gapi_swap_chain> m_swap_chain;
+	// offline allocators
+	// TODO: Expandable Allocator ( e.g. paged allocator )
+	std::shared_ptr<i::gapi_resource_view_allocator> m_rtv_allocator;
+	std::shared_ptr<i::gapi_resource_view_allocator> m_dsv_allocator;
+	std::shared_ptr<i::gapi_resource_view_allocator> m_sampler_allocator;
+	std::shared_ptr<i::gapi_resource_view_allocator> m_cbv_srv_uav_allocator;
 	//
 	std::vector<std::unique_ptr<gapi_cmd_context>> m_cmd_contexts;
 	//

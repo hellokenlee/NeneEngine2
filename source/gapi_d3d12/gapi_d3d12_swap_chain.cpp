@@ -4,15 +4,16 @@
 
 t::console_var<bool> cvar_gapi_d3d_vsync("gapi.d3d.vsync", true, "enable vsync or not");
 
+extern logger d3d12_;
 
 gapi_d3d12_swap_chain::gapi_d3d12_swap_chain(const WinComPtr<IDXGISwapChain3>& swap_chain, const DXGI_SWAP_CHAIN_DESC& desc)
 	: m_desc(desc)
 	, m_d3d_swap_chain(swap_chain)
 {
-	recreate_back_buffer_textures();
+	create_back_buffer_textures();
 }
 
-void gapi_d3d12_swap_chain::recreate_back_buffer_textures()
+void gapi_d3d12_swap_chain::create_back_buffer_textures()
 {
 	//
 	auto back_buffer_texture_desc = gapi_texture_desc::create_2d(
@@ -48,7 +49,7 @@ upoint32 gapi_d3d12_swap_chain::get_back_buffer_size()
 	return upoint32{.w = m_desc.BufferDesc.Width, .h = m_desc.BufferDesc.Height}; 
 }
 
-const std::shared_ptr<i::gapi_texture>& gapi_d3d12_swap_chain::get_back_buffer()
+const std::shared_ptr<i::gapi_texture>& gapi_d3d12_swap_chain::get_back_buffer() const
 {
 	auto index = m_d3d_swap_chain->GetCurrentBackBufferIndex();
 	CHECK(index < m_back_buffer_textures.size());
@@ -68,9 +69,10 @@ void gapi_d3d12_swap_chain::resize_back_buffer(const upoint32& resolution)
 		m_desc.BufferDesc.Width = resolution.w;
 		m_desc.BufferDesc.Height = resolution.h;
 		VERIFY(m_d3d_swap_chain->ResizeBuffers(m_desc.BufferCount, m_desc.BufferDesc.Width, m_desc.BufferDesc.Height, m_desc.BufferDesc.Format, m_desc.Flags));
+		log(d3d12_, info, "swap chain resize to {}x{}", m_desc.BufferDesc.Width, m_desc.BufferDesc.Height);
 	}
 	//
-	recreate_back_buffer_textures();
+	create_back_buffer_textures();
 }
 
 void gapi_d3d12_swap_chain::set_debug_name(const std::string& debug_name)

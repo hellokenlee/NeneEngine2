@@ -23,6 +23,8 @@ inline DXGI_FORMAT d3d_cast(const gapi_pixel_format& source)
 		return DXGI_FORMAT_R16G16B16A16_TYPELESS;
 	case gapi_pixel_format::r16g16b16a16_unorm:
 		return DXGI_FORMAT_R16G16B16A16_UNORM;
+	case gapi_pixel_format::d24_s8:
+		return DXGI_FORMAT_D24_UNORM_S8_UINT;
 	default:
 		CHECK(false);
 	}
@@ -86,10 +88,10 @@ inline D3D12_BLEND_OP d3d_cast(const gapi_blend_op& op)
 inline UINT8 d3d_cast(const gapi_color_write_mask& mask)
 {
 	UINT8 val = 0;
-	val |= t::has_flag(mask, gapi_color_write_mask::r) ? 0b11000000 : 0;
-	val |= t::has_flag(mask, gapi_color_write_mask::g) ? 0b00110000 : 0;
-	val |= t::has_flag(mask, gapi_color_write_mask::b) ? 0b00001100 : 0;
-	val |= t::has_flag(mask, gapi_color_write_mask::a) ? 0b00000011 : 0;
+	val |= t::has_flag(mask, gapi_color_write_mask::r) ? 0b00001000 : 0;
+	val |= t::has_flag(mask, gapi_color_write_mask::g) ? 0b00000100 : 0;
+	val |= t::has_flag(mask, gapi_color_write_mask::b) ? 0b00000010 : 0;
+	val |= t::has_flag(mask, gapi_color_write_mask::a) ? 0b00000001 : 0;
 	return val;
 }
 

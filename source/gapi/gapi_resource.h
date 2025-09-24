@@ -4,6 +4,7 @@
 
 #include "core/core.h"
 #include "gapi_resource_desc.h"
+#include "gapi_resource_view.h"
 
 
 /** The transition state of a resource */
@@ -58,6 +59,21 @@ namespace i
 	public:
 		using gapi_resource::gapi_resource;
 		~gapi_texture() override = default;
+
+		const auto& get_render_target_view() const { return m_render_target_view; }
+		void set_render_target_view(const std::shared_ptr<gapi_resource_view>& render_target_view) { m_render_target_view = render_target_view; }
+		const auto& get_depth_stencil_view() const { return m_depth_stencil_view; }
+		void set_depth_stencil_view(const std::shared_ptr<gapi_resource_view>& depth_stencil_view) { m_depth_stencil_view = depth_stencil_view; }
+		const auto& get_unordered_access_view() const { return m_unordered_access_view; }
+		void set_unordered_access_view(const std::shared_ptr<gapi_resource_view>& unordered_access_view) { m_unordered_access_view = unordered_access_view; }
+		const auto& get_shader_resource_view() const { return m_shader_resource_view; }
+		void set_shader_resource_view(const std::shared_ptr<gapi_resource_view>& shader_resource_view) { m_shader_resource_view = shader_resource_view; }
+		
+	protected:
+		std::shared_ptr<gapi_resource_view> m_render_target_view;
+		std::shared_ptr<gapi_resource_view> m_depth_stencil_view;
+		std::shared_ptr<gapi_resource_view> m_shader_resource_view;
+		std::shared_ptr<gapi_resource_view> m_unordered_access_view;
 	};
 
 	class NENE_API gapi_buffer : virtual public gapi_resource
@@ -66,8 +82,8 @@ namespace i
 		using gapi_resource::gapi_resource;
 		~gapi_buffer() override = default;
 
-		bool is_index_buffer() const;
-		bool is_vertex_buffer() const;
+		bool is_index_buffer() const { return t::has_flag(get_resource_desc().m_buffer_usage_flag, gapi_buffer_usage_flag::usage_index_buffer); }
+		bool is_vertex_buffer() const { return t::has_flag(get_resource_desc().m_buffer_usage_flag, gapi_buffer_usage_flag::usage_vertex_buffer); }
 	};
 }
 	

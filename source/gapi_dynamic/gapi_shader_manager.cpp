@@ -5,7 +5,7 @@
 #include <boost/intrusive/detail/hash_combine.hpp>
 
 #include "gapi_dynamic.h"
-#include "core/file_helper.h"
+#include "core/utils.h"
 
 gapi_shader_manager& gapi_shader_manager::get()
 {
@@ -22,8 +22,8 @@ const std::shared_ptr<i::gapi_shader>& gapi_shader_manager::find_or_create_shade
 	// TODO: async shader compile
 	if (!m_shader_map.contains(runtime_shader_hash))
 	{
-		std::string source = file_helper::load_file_to_string(source_filepath);
-		auto compiled_shader = gapi_dynamic::get().get_device()->create_and_compile_shader(stage, source, entry_name, gapi_shader_feature_level::sm_5_1, source_filepath);
+		std::string source = utils::load_file_to_string(source_filepath);
+		auto compiled_shader = gapi_dynamic::get().get_device()->create_and_compile_shader(stage, source, entry_name, gapi_shader_feature_level::sm_6_0, source_filepath);
 		m_shader_map.emplace(runtime_shader_hash, std::move(compiled_shader));
 	}
 
