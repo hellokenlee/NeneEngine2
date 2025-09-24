@@ -3,14 +3,15 @@
 #pragma once
 
 #include <QWidget>
+#include <QtCore/QTimer>
 
-class QNeneViewportWidget : public QWidget
+class NeneViewportWidget : public QWidget
 {
 	Q_OBJECT
 	
 public:
-	QNeneViewportWidget(QWidget *parent);
-	~QNeneViewportWidget() override;
+	NeneViewportWidget(QWidget *parent);
+	~NeneViewportWidget() override;
 
 protected:
 	bool event(QEvent *e) override;
@@ -20,4 +21,7 @@ protected:
 	bool nativeEvent(const QByteArray& eventType, void* message, qintptr* result) override;
 
 	QPaintEngine* paintEngine() const override;
+	
+private:
+	QTimer m_engine_tick_timer;
 };

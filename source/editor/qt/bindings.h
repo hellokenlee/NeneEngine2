@@ -4,4 +4,5 @@
 #ifndef BINDINGS_H
 #define BINDINGS_H
 #include "wigglywidget.h"
+#include "nene_viewport_widget.h"
 #endif // BINDINGS_H

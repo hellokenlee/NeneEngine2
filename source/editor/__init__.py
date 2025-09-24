@@ -6,6 +6,7 @@ import sys
 import shutil
 import tempfile
 import subprocess
+from pathlib import Path
 from xml.etree import ElementTree
 
 from extern.qt import Qt
@@ -17,6 +18,7 @@ from source.engine import Engine
 
 from script.builder.common.nene_module import *
 from script.builder.common import utils
+from script.builder.python_confg import PythonConfig
 from script.builder.pyside_config import PySideConfig
 from script.builder.vistual_studio.visual_studio_config import VisualStudioConfig
 
@@ -40,17 +42,20 @@ class Editor(NeneModule):
 		self.external_dependencies.extend(
 			[Qt, Python, PySide]
 		)
+
 		pass
 
 	def configure(self, build_config: BuildConfig) -> NeneModuleConfig:
 		module_config = super().configure(build_config)
 		# Same as "/permissive-"
 		module_config.compiler.msvc_conformance_mode = True
+		# Some qt auto-gen codes got warnings
+		module_config.compiler.disabled_warnings.extend({4099})
 		module_config.compiler.additional_compiler_flags.extend(
 			["/Zc:__cplusplus"]
 		)
 		module_config.compiler.preprocessor_definitions.extend(
-			["_WINDLL", "NENE_EDITOR_MODULE_NAME=%s" % self._read_binding_module_name()]
+			["_WINDLL", "NENE_PYTHON_HOME=\"%s\"" % Path(PythonConfig().install_path()).as_posix(), "NENE_EDITOR_MODULE_NAME=%s" % self._read_binding_module_name()]
 		)
 		# Deactivated "#pragma comment(lib)" in "$(PYTHON_HOME)/include/pyconfig.h"
 		module_config.linker.additional_linker_flags.extend(
@@ -95,7 +100,7 @@ class Editor(NeneModule):
 				if filename.endswith(".h"):
 					mocable_file_abs_paths.append(os.path.join(root, filename))
 		#
-		moc_exec_abs_path = os.path.join(Qt().get_binary_abs_path(), "moc.exe")
+		moc_exec_abs_path = os.path.join(Qt().get_binary_abs_path(), "windows", "moc.exe")
 		#
 		for mocable_file_asb_path in mocable_file_abs_paths:
 			moc_target_file_name = "moc_%s.cpp" % os.path.basename(mocable_file_asb_path).split(".")[0]
