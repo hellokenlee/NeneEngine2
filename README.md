@@ -2,6 +2,7 @@
 
 Nene Engine is an in-house game engine named after Sakura Nene's game engine in anime series [<<New Game!!>>](http://newgame-anime.com/).
 
+![](/doc/neneengine.png)
 
 
 
@@ -31,7 +32,7 @@ Apple's MacOS, iPadOS, iOS with Metal 2; Linux, Android with Vulkan will be supp
 
 #### Build
 
-Currently Nene Engine is build with Visual Studio. To build Nene Engine, simply  press ▶ in the IDE.
+Currently Nene Engine is built with Visual Studio. To build Nene Engine, simply  press ▶ in the IDE.
 
 
 
@@ -44,10 +45,8 @@ All source of the NBT is located in `script/builder` folder, which is also the m
 After adding, removing or modifying a module, the best way to ensure that IDE can successfully build is to run NBT once:
 
 ```bash
-$ NeneEngine>: py -3 script/builder
+$ NeneEngine>: Generate.bat
 ```
-
-The `--help` parameter is also supported by NBT.
 
 
 
@@ -65,22 +64,8 @@ You can add, remove module directly in Visual Studio. Just don't forget to run N
 
 ### Usage
 
-The Nene Engine has two mode: editor mode and game mode. Both mode are built to a python library ( `nene.pyd` in windows for example ).
-
-Hence, you need to start the engine in python.
-
-For editor:
-
 ```bash
-$ NeneEngine>: py -3 script/editor
-```
-
-
-
-For game:
-
-```bash
-$ NeneEngine>: py -3 $(path_to_your_project)/main.py
+$ NeneEngine>: Editor.bat
 ```
 
 
@@ -211,3 +196,5 @@ Nene Engine cannot live without the forces of open sources. Especially the follo
 
 
 Huge shout out to the developers of these open source library and the brilliant brains who helped or inspired Nene Engine's development.
+
+![](/doc/sakuranene.png)
