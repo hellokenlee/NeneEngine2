@@ -22,10 +22,15 @@ gapi_cmd_context::gapi_cmd_context(const std::shared_ptr<i::gapi_device>& device
 
 void gapi_cmd_context::begin_render_pass(const std::vector<std::shared_ptr<i::gapi_texture>>& render_targets) const
 {
+	std::vector<std::shared_ptr<i::gapi_resource_view>> rtvs;
 	for (auto& render_target: render_targets)
 	{
-		get_current_cmd_list()->transition_resource(render_target, gapi_resource_state::render_target); 
+		get_current_cmd_list()->transition_resource(render_target, gapi_resource_state::render_target);
+		rtvs.emplace_back(render_target->get_render_target_view());
 	}
+	get_current_cmd_list()->set_viewports(m_viewports);
+	get_current_cmd_list()->set_scissor_rects(m_scissors);
+	get_current_cmd_list()->set_render_targets(rtvs, {});
 }
 
 void gapi_cmd_context::end_render_pass() const
@@ -59,6 +64,25 @@ const std::shared_ptr<i::gapi_cmd_list>& gapi_cmd_context::close()
 	return get_previous_cmd_list();
 }
 
+void gapi_cmd_context::set_resolution(const upoint32& resolution)
+{
+	m_viewports.clear();
+
+	m_viewports.emplace_back(
+		gapi_viewport_desc{
+			.top_left = vector2(0.0f, 0.0f),
+			.resolution = vector2(static_cast<float>(resolution.w), static_cast<float>(resolution.h)),
+			.depth_range = vector2(0.0f, 1.0f),
+		}
+	);
+
+	m_scissors.clear();
+
+	m_scissors.emplace_back(
+		rect{.left = 0, .top = 0, .right = resolution.w, .bottom = resolution.h}
+	);
+}
+
 void gapi_cmd_context::clear_render_target(const std::shared_ptr<i::gapi_texture>& render_target, const color::rgba<float>& clear_color) const
 {
 	CHECK(render_target->get_render_target_view() != nullptr);
@@ -78,6 +102,11 @@ void gapi_cmd_context::set_pipeline_state(const std::shared_ptr<i::gapi_pipeline
 void gapi_cmd_context::set_vertex_buffer(const std::shared_ptr<i::gapi_buffer>& vertex_buffer) const
 {
 	get_current_cmd_list()->set_vertex_buffer(vertex_buffer);
+}
+
+void gapi_cmd_context::set_primitive_type(const gapi_primitive_type& ptype) const
+{
+	get_current_cmd_list()->set_primitive_topology(ptype);
 }
 
 void gapi_cmd_context::bind_shader_resource(const gapi_shader_type& stage, const std::shared_ptr<i::gapi_resource>& resource) const

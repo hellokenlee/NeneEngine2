@@ -141,11 +141,11 @@ inline D3D12_CULL_MODE d3d_cast(const gapi_rasterizer_cull_mode& desc)
 {
 	switch (desc)
 	{
-	case gapi_rasterizer_cull_mode::none:
+	case gapi_rasterizer_cull_mode::cull_none:
 		return D3D12_CULL_MODE_NONE;
-	case gapi_rasterizer_cull_mode::cw:
+	case gapi_rasterizer_cull_mode::cull_back:
 		return D3D12_CULL_MODE_BACK;
-	case gapi_rasterizer_cull_mode::ccw:
+	case gapi_rasterizer_cull_mode::cull_front:
 		return D3D12_CULL_MODE_FRONT;
 	default:
 		CHECK(false);
@@ -158,7 +158,7 @@ inline D3D12_RASTERIZER_DESC d3d_cast(const gapi_rasterizer_state_desc& desc)
 	D3D12_RASTERIZER_DESC d3d_desc = {
 		.FillMode = d3d_cast(desc.m_fill_mode),
 		.CullMode = d3d_cast(desc.m_cull_mode),
-		// nene engine always use ccw as front face
+		// nene engine always use CCW as front face
 		.FrontCounterClockwise = true,
 		// since the maximum depth precision we support is 24 bits, normalize it within this scope
 		.DepthBias = static_cast<int>(std::floor(desc.m_depth_bias * static_cast<float>(1 << 24))),
@@ -243,12 +243,11 @@ inline D3D12_DEPTH_STENCIL_DESC d3d_cast(const gapi_depth_stencil_state_desc& de
 		.DepthEnable = desc.m_depth_func != gapi_cmp_func::always || desc.m_use_depth_write,
 		.DepthWriteMask = desc.m_use_depth_write ? D3D12_DEPTH_WRITE_MASK_ALL : D3D12_DEPTH_WRITE_MASK_ZERO,
 		.DepthFunc =  d3d_cast(desc.m_depth_func),
-		.StencilEnable = desc.m_ccw_stencil_test.m_use_stencil || desc.m_cw_stencil_test.m_use_stencil,
+		.StencilEnable = desc.m_front_stencil_test.m_use_stencil || desc.m_back_stencil_test.m_use_stencil,
 		.StencilReadMask = desc.m_stencil_read_mask,
 		.StencilWriteMask = desc.m_stencil_write_mask,
-		// nene engine always use ccw as front face
-		.FrontFace = d3d_cast(desc.m_ccw_stencil_test),
-		.BackFace = d3d_cast(desc.m_cw_stencil_test),
+		.FrontFace = d3d_cast(desc.m_front_stencil_test),
+		.BackFace = d3d_cast(desc.m_back_stencil_test),
 	};
 	return d3d_desc;
 }

@@ -22,7 +22,7 @@ simple_renderer::simple_renderer()
 	}
 	{
 		const auto desc = gapi_texture_desc::create_2d(
-			{800, 600}, gapi_pixel_format::d24_s8, gapi_texture_create_flag::as_shader_resource
+			{800, 600}, gapi_pixel_format::d24_s8, gapi_texture_create_flag::as_depth_stencil
 		);
 		m_scene_depth = gapi_dynamic::get().create_texture(desc);
 	}
@@ -37,7 +37,7 @@ simple_renderer::simple_renderer()
 		)
 	);
 	mesh_pso_desc.m_render_target_formats.emplace_back(gapi_pixel_format::r8g8b8a8_unorm);
-	mesh_pso_desc.m_depth_stencil_format = gapi_pixel_format::d24_s8;
+	mesh_pso_desc.m_depth_stencil_format = gapi_pixel_format::unknown;
 	m_mesh_pass_pipeline_state = gapi_pipeline_state_manager::get().find_or_create_pipeline_state(mesh_pso_desc);
 	
 	//
@@ -67,6 +67,7 @@ void simple_renderer::render_view_family(const std::shared_ptr<i::gapi_texture>&
 		
 		context.set_pipeline_state(m_mesh_pass_pipeline_state);
 		context.set_vertex_buffer(vertex_buffers.triangle());
+		context.set_primitive_type(gapi_primitive_type::triangle);
 		context.draw(3, 1, 0, 0);
 	}
 

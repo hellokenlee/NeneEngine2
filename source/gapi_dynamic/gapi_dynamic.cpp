@@ -47,6 +47,11 @@ gapi_dynamic::gapi_dynamic(const gapi_platform& platform, void* window, const up
 		create_texture_views(m_swap_chain->get_back_buffer(index));
 	}
 	//
+	for (auto& context : m_cmd_contexts)
+	{
+		context->set_resolution(window_size);
+	}
+	//
 	for (uint32 context_id = 0; context_id < cvar_gapi_num_context_thread.get_value_thread_unsafe(); ++context_id)
 	{
 		m_cmd_contexts.push_back(std::make_unique<gapi_cmd_context>(m_device, num_multi_buffer, context_id));
@@ -188,6 +193,12 @@ void gapi_dynamic::resize_swap_chain(const upoint32& new_size)
 		for (size_t index = 0; index < m_swap_chain->num_back_buffers(); ++index)
 		{
 			create_texture_views(m_swap_chain->get_back_buffer(index));
+		}
+
+		//
+		for (auto& context : m_cmd_contexts)
+		{
+			context->set_resolution(new_size);
 		}
 	}
 }

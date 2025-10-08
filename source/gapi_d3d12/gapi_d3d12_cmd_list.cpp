@@ -122,7 +122,21 @@ void gapi_d3d12_cmd_list::execute_indirect(const std::shared_ptr<i::gapi_cmd_lay
 
 void gapi_d3d12_cmd_list::set_pipeline_state(const std::shared_ptr<i::gapi_pipeline_state>& pipeline_state)
 {
-	m_list->SetPipelineState(t::gapi_cast<gapi_d3d12_pipeline_state>(pipeline_state)->get_d3d_pipeline_state());
+	auto& d3d_pipeline_state = t::gapi_pin<gapi_d3d12_pipeline_state>(pipeline_state);
+
+	// TODO: Share root signature across pipeline states
+	// refs: https://stackoverflow.com/questions/38535725/what-is-the-point-of-d3d12s-setgraphicsrootsignature
+	// 单独设计一个接口来绑定 RootSignature 而不是直接绑定创建 PipelineStateObject的 RootSignature 是为了能够在多个不同的 PipelineState 复用
+	// 比如说同一组 Shader 可能会创建多个 PSO 这时候就可以在这些 PSO 中共享这个 Shader 编译出来的 RootSignature 来节省内存以及 CPU 调用的开销
+	if (d3d_pipeline_state.is_graphics())
+	{
+		m_list->SetGraphicsRootSignature(d3d_pipeline_state.get_d3d_root_signature());	
+	}
+	else
+	{
+		NOT_IMPLEMENTED();
+	}
+	m_list->SetPipelineState(d3d_pipeline_state.get_d3d_pipeline_state());
 }
 
 void gapi_d3d12_cmd_list::set_root_constant_buffer_view(const std::shared_ptr<i::gapi_resource_view>& cbv)
@@ -163,7 +177,6 @@ void gapi_d3d12_cmd_list::set_vertex_buffer(const std::shared_ptr<i::gapi_buffer
 
 void gapi_d3d12_cmd_list::set_primitive_topology(const gapi_primitive_type& ptype)
 {
-	CHECK(false);
 	D3D12_PRIMITIVE_TOPOLOGY topology = D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
 	switch (ptype)
 	{

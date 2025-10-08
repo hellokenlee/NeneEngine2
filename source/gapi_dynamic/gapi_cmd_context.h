@@ -32,6 +32,8 @@ public:
 	/** Close current command list. Do ping-pong swap with previous one. */
 	const std::shared_ptr<i::gapi_cmd_list>& close();
 
+	void set_resolution(const upoint32& resolution);
+
 	//
 	void clear_render_target(const std::shared_ptr<i::gapi_texture>& render_target, const color::rgba<float>& clear_color) const;
 
@@ -46,7 +48,7 @@ public:
 	void set_pipeline_state(const std::shared_ptr<i::gapi_pipeline_state>& pipeline_state) const;
 	// void set_index_buffer(const std::shared_ptr<i::gapi_buffer>& index_buffer) const;
 	void set_vertex_buffer(const std::shared_ptr<i::gapi_buffer>& vertex_buffer) const;
-	// void set_primitive_topology(const gapi_primitive_type& ptype) const;
+	void set_primitive_type(const gapi_primitive_type& ptype) const;
 	// void set_viewports(const std::vector<gapi_viewport_desc>& viewports) const;
 	// void set_scissor_rects(const std::vector<rect>& scissors) const;
 
@@ -86,6 +88,10 @@ protected:
 	uint32 m_previous_index;
 
 	std::vector<one_frame_context_data> m_frame_contexts;
+
+	//
+	std::vector<rect> m_scissors;
+	std::vector<gapi_viewport_desc> m_viewports;
 };
 
 class NENE_API scoped_render_pass

@@ -48,7 +48,7 @@ gapi_blend_state_desc::gapi_render_target_blend_desc::gapi_render_target_blend_d
 
 gapi_rasterizer_state_desc::gapi_rasterizer_state_desc()
 	: m_fill_mode(gapi_rasterizer_fill_mode::solid)
-	, m_cull_mode(gapi_rasterizer_cull_mode::cw)
+	, m_cull_mode(gapi_rasterizer_cull_mode::cull_back)
 	, m_depth_clip_mode(gapi_rasterizer_depth_clip_mode::clip)
 	, m_depth_bias(0.0f)
 	, m_slope_scale_depth_bias(0.0f)
@@ -57,10 +57,10 @@ gapi_rasterizer_state_desc::gapi_rasterizer_state_desc()
 {}
 
 gapi_depth_stencil_state_desc::gapi_depth_stencil_state_desc()
-	: m_use_depth_write(true)
-	, m_depth_func(gapi_cmp_func::less_equal)
-	, m_ccw_stencil_test{.m_use_stencil = false, .m_stencil_func = gapi_cmp_func::never, .m_stencil_fail_op = gapi_stencil_op::keep, .m_depth_fail_op = gapi_stencil_op::keep, .m_pass_op = gapi_stencil_op::keep}
-	, m_cw_stencil_test{.m_use_stencil = false, .m_stencil_func = gapi_cmp_func::never, .m_stencil_fail_op = gapi_stencil_op::keep, .m_depth_fail_op = gapi_stencil_op::keep, .m_pass_op = gapi_stencil_op::keep}
+	: m_use_depth_write(false)
+	, m_depth_func(gapi_cmp_func::always)
+	, m_front_stencil_test{.m_use_stencil = false, .m_stencil_func = gapi_cmp_func::never, .m_stencil_fail_op = gapi_stencil_op::keep, .m_depth_fail_op = gapi_stencil_op::keep, .m_pass_op = gapi_stencil_op::keep}
+	, m_back_stencil_test{.m_use_stencil = false, .m_stencil_func = gapi_cmp_func::never, .m_stencil_fail_op = gapi_stencil_op::keep, .m_depth_fail_op = gapi_stencil_op::keep, .m_pass_op = gapi_stencil_op::keep}
 	, m_stencil_read_mask(0x00)
 	, m_stencil_write_mask(0x00)
 {}

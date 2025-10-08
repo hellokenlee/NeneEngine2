@@ -117,7 +117,7 @@ std::shared_ptr<i::gapi_pipeline_state> gapi_d3d12_device::create_compute_pipeli
 	
 	WinComPtr<ID3D12PipelineState> d3d_pipeline_state;
 	VERIFY(m_d3d_device->CreateComputePipelineState(&d3d_desc, IID_PPV_ARGS(&d3d_pipeline_state)));
-	return std::make_shared<gapi_d3d12_pipeline_state>(std::move(d3d_pipeline_state), gapi_pipeline_state_type::compute);
+	return std::make_shared<gapi_d3d12_pipeline_state>(std::move(d3d_pipeline_state), gapi_pipeline_state_type::compute, nullptr);
 }
 
 std::shared_ptr<i::gapi_pipeline_state> gapi_d3d12_device::create_graphics_pipeline_state(const gapi_graphics_pipeline_state_desc& desc)
@@ -173,7 +173,7 @@ std::shared_ptr<i::gapi_pipeline_state> gapi_d3d12_device::create_graphics_pipel
 	
 	WinComPtr<ID3D12PipelineState> d3d_pipeline_state;
 	VERIFY(m_d3d_device->CreateGraphicsPipelineState(&d3d_desc, IID_PPV_ARGS(&d3d_pipeline_state)));
-	return std::make_shared<gapi_d3d12_pipeline_state>(std::move(d3d_pipeline_state), gapi_pipeline_state_type::graphics);
+	return std::make_shared<gapi_d3d12_pipeline_state>(std::move(d3d_pipeline_state), gapi_pipeline_state_type::graphics, std::move(d3d_root_signature));
 }
 
 std::shared_ptr<i::gapi_resource_view_allocator> gapi_d3d12_device::create_resource_view_allocator(const gapi_resource_view_type& heap_type, const uint32& max_num_views)

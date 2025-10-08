@@ -26,8 +26,8 @@ void system_vertex_buffers::initialize(gapi_cmd_context& cmd_context)
     {
         const std::vector<vertex> vertices = {
             { {  0.00f,  0.25f, 0.0f, 0.0f}, { 1.0f, 0.0f, 0.0f, 1.0f } },
+            { { -0.25f, -0.25f, 0.0f, 0.0f}, { 0.0f, 0.0f, 1.0f, 1.0f } },
             { {  0.25f, -0.25f, 0.0f, 0.0f}, { 0.0f, 1.0f, 0.0f, 1.0f } },
-            { { -0.25f, -0.25f, 0.0f, 0.0f}, { 0.0f, 0.0f, 1.0f, 1.0f } }
         };
         auto desc = gapi_buffer_desc::create(static_cast<uint32>(sizeof(vertex) * vertices.size()), gapi_buffer_usage_flag::usage_vertex_buffer, sizeof(vertex), L"SystemVertexBuffer::Triangle");
         auto resource = cmd_context.create_and_upload_resource(desc, vertices.data());

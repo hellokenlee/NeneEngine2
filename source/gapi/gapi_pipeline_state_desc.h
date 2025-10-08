@@ -178,11 +178,11 @@ enum class gapi_rasterizer_fill_mode: uint8
 enum class gapi_rasterizer_cull_mode : uint8
 {
 	// dont cull anything
-	none,
-	// cull clock wise, back face
-	cw,
-	// cull counter clock wise, front face
-	ccw,
+	cull_none,
+	// cull back face ( clock wise )
+	cull_back,
+	// cull front face ( counter clock wise )
+	cull_front,
 };
 
 enum class gapi_rasterizer_depth_clip_mode : uint8
@@ -250,8 +250,8 @@ struct gapi_depth_stencil_state_desc
 		gapi_stencil_op m_depth_fail_op;		// Stencil: v; Depth: x;
 		gapi_stencil_op m_pass_op;				// Stencil: v; Depth: v;
 	};
-	gapi_stencil_state_desc m_ccw_stencil_test;
-	gapi_stencil_state_desc m_cw_stencil_test;
+	gapi_stencil_state_desc m_front_stencil_test;
+	gapi_stencil_state_desc m_back_stencil_test;
 	uint8 m_stencil_read_mask;
 	uint8 m_stencil_write_mask;
 

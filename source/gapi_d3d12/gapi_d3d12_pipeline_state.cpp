@@ -3,8 +3,9 @@
 #include "gapi_d3d12_pipeline_state.h"
 
 
-gapi_d3d12_pipeline_state::gapi_d3d12_pipeline_state(WinComPtr<ID3D12PipelineState>&& pipeline_state, const gapi_pipeline_state_type& ptype)
+gapi_d3d12_pipeline_state::gapi_d3d12_pipeline_state(WinComPtr<ID3D12PipelineState>&& pipeline_state, const gapi_pipeline_state_type& ptype, WinComPtr<ID3D12RootSignature>&& root_signature)
 	: m_pipeline_type(ptype)
 	, m_pipeline_state(std::move(pipeline_state))
+	, m_root_signature(std::move(root_signature))
 {
 }
