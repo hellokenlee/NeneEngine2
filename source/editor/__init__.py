@@ -190,9 +190,7 @@ class Editor(NeneModule):
 		target_exec_folder = cls.TARGET_EXEC_FOLDER.format(Architecture=arch.name, Configuration=con.name)
 		target_exec_folder_abs_path = os.path.join(cls.engine_root_abs_path(), target_exec_folder)
 		for extern_lib_class in cls().external_dependencies:
-			print(extern_lib_class().get_dynamic_library_directory_abs_paths(platform, arch, con))
 			for dynamic_library_directory_abs_path in extern_lib_class().get_dynamic_library_directory_abs_paths(platform, arch, con):
-
 				for dynamic_library_filename in extern_lib_class().get_dynamic_library_filenames(platform, arch, con):
 					dynamic_library_file_abs_path = os.path.join(dynamic_library_directory_abs_path, dynamic_library_filename)
 					if os.path.exists(dynamic_library_file_abs_path):
