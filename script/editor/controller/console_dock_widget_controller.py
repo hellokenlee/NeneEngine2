@@ -60,7 +60,7 @@ class ConsoleDockWidgetController(DockWidgetController):
 
 	def __init__(self):
 		super(ConsoleDockWidgetController, self).__init__()
-		self.log_text_browser = self.ui.findChild(QTextBrowser, "log_text_browser")
+		self.log_text_browser = self.ui.findChild(QTextBrowser, "logTextBrowser")
 		#
 		self.engine_log_handler = EngineLogHandler(self.log_text_browser)
 		self.python_log_handler = PythonLogHandler(self.log_text_browser)

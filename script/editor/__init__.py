@@ -4,6 +4,7 @@
 
 
 def main():
+	# noinspection PyBroadException
 	try:
 		from script.editor.stub_generator import StubGenerator
 		#
@@ -13,7 +14,8 @@ def main():
 		from script.editor.editor_app import EditorApp
 		EditorApp().run()
 		#
-	except Exception as e:
-		print(e)
+	except Exception:
+		import traceback
+		traceback.print_exc()
 		return 1
 	return 0
