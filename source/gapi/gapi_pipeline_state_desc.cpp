@@ -2,14 +2,14 @@
 
 #include "gapi_pipeline_state_desc.h"
 
-gapi_bound_shader_state_desc::gapi_bound_shader_state_desc(const std::shared_ptr<gapi_vertex_declaration>& vertex_declaration, const std::shared_ptr<i::gapi_shader>& vertex_shader)
+gapi_bound_shader_state_desc::gapi_bound_shader_state_desc(const std::shared_ptr<gapi_vertices_declaration>& vertex_declaration, const std::shared_ptr<i::gapi_shader>& vertex_shader)
 	: m_vertex_declaration(vertex_declaration)
 {
 	m_stage_shaders[magic_enum::enum_underlying(gapi_shader_type::vertex_shader)] = vertex_shader;
 	sanity_check();
 }
 
-gapi_bound_shader_state_desc::gapi_bound_shader_state_desc(const std::shared_ptr<gapi_vertex_declaration>& vertex_declaration, const std::shared_ptr<i::gapi_shader>& vertex_shader, const std::shared_ptr<i::gapi_shader>& pixel_shader)
+gapi_bound_shader_state_desc::gapi_bound_shader_state_desc(const std::shared_ptr<gapi_vertices_declaration>& vertex_declaration, const std::shared_ptr<i::gapi_shader>& vertex_shader, const std::shared_ptr<i::gapi_shader>& pixel_shader)
 	: m_vertex_declaration(vertex_declaration)
 {
 	m_stage_shaders[magic_enum::enum_underlying(gapi_shader_type::vertex_shader)] = vertex_shader;

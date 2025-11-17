@@ -11,7 +11,7 @@
 
 namespace r
 {
-    class NENE_API system_vertex_buffers : public r::global_render_resource
+    class NENE_API system_vertex_buffers : public global_render_resource
     {
     public:
         static const system_vertex_buffers& get();
@@ -20,6 +20,6 @@ namespace r
         std::shared_ptr<local_space_vertex_factory> m_cube;
 
     protected:
-        system_vertex_buffers();
+        system_vertex_buffers() = default;
     };
 }

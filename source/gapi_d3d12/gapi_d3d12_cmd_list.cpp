@@ -99,7 +99,7 @@ void gapi_d3d12_cmd_list::discard_resource(const std::shared_ptr<i::gapi_resourc
 	m_list->DiscardResource(d3d_resource->get_d3d_resource(), nullptr);
 }
 
-void gapi_d3d12_cmd_list::dispatch(const uvector3& thread_group_size)
+void gapi_d3d12_cmd_list::dispatch(const uint3& thread_group_size)
 {
 	m_list->Dispatch(thread_group_size.x, thread_group_size.y, thread_group_size.z);
 }
@@ -198,7 +198,7 @@ void gapi_d3d12_cmd_list::set_scissor_rects(const std::vector<rect>& scissors)
 	m_list->RSSetScissorRects(static_cast<uint32>(scissors.size()), reinterpret_cast<const RECT*>(scissors.data()));
 }
 
-void gapi_d3d12_cmd_list::set_blend_factor(const vector4& blend)
+void gapi_d3d12_cmd_list::set_blend_factor(const float4& blend)
 {
 	m_list->OMSetBlendFactor(&blend.x);
 }

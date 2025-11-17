@@ -42,19 +42,20 @@ gapi_dynamic::gapi_dynamic(const gapi_platform& platform, void* window, const up
 	m_cbv_srv_uav_allocator = m_device->create_resource_view_allocator(gapi_resource_view_type::shader_resource_view, 1024);
 	//
 	m_swap_chain = m_factory->create_swap_chain(window, m_device->get_cmd_queue(gapi_cmd_type::graphics), window_size, num_multi_buffer);
-	for (size_t index = 0; index < m_swap_chain->num_back_buffers(); ++index)
-	{
-		create_texture_views(m_swap_chain->get_back_buffer(index));
-	}
-	//
-	for (auto& context : m_cmd_contexts)
-	{
-		context->set_resolution(window_size);
-	}
 	//
 	for (uint32 context_id = 0; context_id < cvar_gapi_num_context_thread.get_value_thread_unsafe(); ++context_id)
 	{
 		m_cmd_contexts.push_back(std::make_unique<gapi_cmd_context>(m_device, num_multi_buffer, context_id));
+	}
+	
+	// 
+	for (size_t index = 0; index < m_swap_chain->num_back_buffers(); ++index)
+	{
+		create_texture_views(m_swap_chain->get_back_buffer(index));
+	}
+	for (auto& context : m_cmd_contexts)
+	{
+		context->set_resolution(window_size);
 	}
 	//
 	for (auto& fence_values : m_cmd_queue_fence_values)

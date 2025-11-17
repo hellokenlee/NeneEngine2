@@ -1,7 +1,7 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #include "simple_renderer.h"
-#include "system_buffers.h"
+#include "system_render_resource.h"
 #include "gapi_dynamic/gapi_pipeline_state_manager.h"
 #include "gapi_dynamic/gapi_shader_manager.h"
 #include "gapi_dynamic/gapi_dynamic.h"

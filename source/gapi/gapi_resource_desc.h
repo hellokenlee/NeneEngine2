@@ -105,7 +105,7 @@ struct NENE_API gapi_resource_desc
 	gapi_pixel_format m_format;
 	gapi_buffer_usage_flag m_buffer_usage_flag;
 	gapi_texture_create_flag m_texture_create_flag;
-	std::wstring m_debug_name;
+	std::string m_debug_name;
 
 	uint32 buffer_size() const
 	{
@@ -128,7 +128,7 @@ struct NENE_API gapi_resource_desc
  */
 namespace gapi_texture_desc
 {
-	inline gapi_resource_desc create_2d(const upoint32& extent, gapi_pixel_format pformat, gapi_texture_create_flag flags, uint8 num_mips = 1, uint8 num_samples = 1, const std::wstring& debug_name = L"UnnamedTexture2D")
+	inline gapi_resource_desc create_2d(const upoint32& extent, gapi_pixel_format pformat, gapi_texture_create_flag flags, uint8 num_mips = 1, uint8 num_samples = 1, const std::string& debug_name = "UnnamedTexture2D")
 	{
 		return gapi_resource_desc{
 			.m_type = gapi_resource_type::texture2d,
@@ -165,7 +165,7 @@ namespace gapi_texture_desc
 
 namespace gapi_buffer_desc
 {
-	inline gapi_resource_desc create(const uint32& size, const gapi_buffer_usage_flag& flags, uint16 stride = 0, const std::wstring& debug_name= L"UnnamedBuffer")
+	inline gapi_resource_desc create(const uint32& size, const gapi_buffer_usage_flag& flags, uint16 stride = 0, const std::string& debug_name= "UnnamedBuffer")
 	{
 		return gapi_resource_desc{
 			.m_type = gapi_resource_type::buffer,
@@ -187,7 +187,7 @@ namespace gapi_buffer_desc
 
 struct gapi_viewport_desc
 {
-	vector2 top_left;
-	vector2 resolution;
-	vector2 depth_range;
+	float2 top_left;
+	float2 resolution;
+	float2 depth_range;
 };

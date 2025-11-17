@@ -70,9 +70,9 @@ void gapi_cmd_context::set_resolution(const upoint32& resolution)
 
 	m_viewports.emplace_back(
 		gapi_viewport_desc{
-			.top_left = vector2(0.0f, 0.0f),
-			.resolution = vector2(static_cast<float>(resolution.w), static_cast<float>(resolution.h)),
-			.depth_range = vector2(0.0f, 1.0f),
+			.top_left = float2(0.0f, 0.0f),
+			.resolution = float2(static_cast<float>(resolution.w), static_cast<float>(resolution.h)),
+			.depth_range = float2(0.0f, 1.0f),
 		}
 	);
 

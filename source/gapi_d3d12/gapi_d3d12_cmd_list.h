@@ -28,7 +28,7 @@ public:
 	void copy_resource_region(const std::shared_ptr<i::gapi_resource>& dst, const uint32& dst_offset, const std::shared_ptr<i::gapi_resource>& src, const uint32& src_offset, const uint32& num_bytes) override;
 	void discard_resource(const std::shared_ptr<i::gapi_resource>& resource) override;
 	
-	void dispatch(const uvector3& thread_group_size) override;
+	void dispatch(const uint3& thread_group_size) override;
 	void draw(const uint32& num_vertices, const uint32& num_instances, const uint32& vertex_offset, const uint32& instance_offset) override;
 	void draw_indexed(const uint32& num_indices, const uint32& num_instances, const uint32& index_offset, const uint32& vertex_offset, const uint32& instance_offset) override;
 	void execute_indirect(const std::shared_ptr<i::gapi_cmd_layout>& layout, const uint32& max_num_cmd, const std::shared_ptr<i::gapi_buffer>& arg_buffer, const uint32& arg_buffer_offset, const std::shared_ptr<i::gapi_buffer>& count_buffer, const uint32& count_buffer_offset) override;
@@ -47,7 +47,7 @@ public:
 	void set_viewports(const std::vector<gapi_viewport_desc>& viewports) override;
 	void set_scissor_rects(const std::vector<rect>& scissors) override;
 	
-	void set_blend_factor(const vector4& blend) override;
+	void set_blend_factor(const float4& blend) override;
 	void set_render_targets(const std::vector<std::shared_ptr<i::gapi_resource_view>>& render_target_views, const std::shared_ptr<i::gapi_resource_view>& depth_stencil_view) override;
 	void set_stencil_ref(const uint32& stencil_ref) override;
 	void transition_resource(const std::shared_ptr<i::gapi_resource>& resource, const gapi_resource_state& to_state) override;

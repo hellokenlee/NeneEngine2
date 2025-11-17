@@ -46,7 +46,7 @@ namespace i
 		virtual void transition_resource(const std::shared_ptr<gapi_resource>& resource, const gapi_resource_state& to_state) = 0;
 
 		// The Execution Command
-		virtual void dispatch(const uvector3& thread_group_size) = 0;
+		virtual void dispatch(const uint3& thread_group_size) = 0;
 		virtual void draw(const uint32& num_vertices, const uint32& num_instances, const uint32& vertex_offset = 0, const uint32& instance_offset = 0) = 0;
 		virtual void draw_indexed(const uint32& num_indices, const uint32& num_instances, const uint32& index_offset = 0, const uint32& vertex_offset = 0, const uint32& instance_offset = 0) = 0;
 		virtual void execute_indirect(const std::shared_ptr<gapi_cmd_layout>& layout, const uint32& max_num_cmd, const std::shared_ptr<gapi_buffer>& arg_buffer, const uint32& arg_buffer_offset, const std::shared_ptr<gapi_buffer>& count_buffer, const uint32& count_buffer_offset) = 0;
@@ -69,7 +69,7 @@ namespace i
 		virtual void set_scissor_rects(const std::vector<rect>& scissors) = 0;
 		
 		// Output Merge Settings
-		virtual void set_blend_factor(const vector4& blend) = 0;
+		virtual void set_blend_factor(const float4& blend) = 0;
 		virtual void set_render_targets(const std::vector<std::shared_ptr<gapi_resource_view>>& render_target_views, const std::shared_ptr<gapi_resource_view>& depth_stencil_view) = 0;
 		virtual void set_stencil_ref(const uint32& stencil_ref) = 0;
 		

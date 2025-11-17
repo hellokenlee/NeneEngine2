@@ -279,19 +279,19 @@ inline DXGI_FORMAT d3d_cast(const gapi_vertex_element_type& vtype)
 	}
 }
 
-inline D3D12_INPUT_LAYOUT_DESC d3d_cast(const gapi_vertex_declaration& desc, std::vector<D3D12_INPUT_ELEMENT_DESC>& out_d3d_input_element_descs)
+inline D3D12_INPUT_LAYOUT_DESC d3d_cast(const gapi_vertices_declaration& desc, std::vector<D3D12_INPUT_ELEMENT_DESC>& out_d3d_input_element_descs)
 {
 	for (const auto& vertex_declaration : desc)
 	{
 		out_d3d_input_element_descs.emplace_back(
 			D3D12_INPUT_ELEMENT_DESC{
-				.SemanticName = vertex_declaration.semantic_name.c_str(),
-				.SemanticIndex = vertex_declaration.attribute_index,
-				.Format = d3d_cast(vertex_declaration.element_type),
-				.InputSlot = vertex_declaration.stream_index,
-				.AlignedByteOffset = vertex_declaration.offset,
-				.InputSlotClass = vertex_declaration.b_use_instance_index ? D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA : D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
-				.InstanceDataStepRate = vertex_declaration.b_use_instance_index ? 1u : 0u
+				.SemanticName = vertex_declaration.m_semantic_name.c_str(),
+				.SemanticIndex = vertex_declaration.m_semantic_index,
+				.Format = d3d_cast(vertex_declaration.m_element_type),
+				.InputSlot = vertex_declaration.m_stream_index,
+				.AlignedByteOffset = vertex_declaration.m_offset,
+				.InputSlotClass = vertex_declaration.m_use_instance_index ? D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA : D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+				.InstanceDataStepRate = vertex_declaration.m_use_instance_index ? 1u : 0u
 			}
 		);
 	}

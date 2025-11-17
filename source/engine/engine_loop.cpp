@@ -2,7 +2,7 @@
 
 #include "engine_loop.h"
 #include "core/core.h"
-#include "core_render/global_render_resource.h"
+#include "core_render/render_resource.h"
 #include "gapi_dynamic/gapi_dynamic.h"
 #include "renderer/renderer.h"
 #include "renderer/simple_renderer.h"
@@ -31,7 +31,7 @@ void engine_loop::initialize(void* window, const upoint32& window_size)
 		{
 			auto& gai = gapi_dynamic::get();
 			gai.start_frame();
-			i::global_render_resource::initialize_global_render_resources(gai.get_cmd_context());
+			r::global_render_resource::initialize_global_render_resources(gai.get_cmd_context());
 			gai.finish_frame();
 		}
 	);

@@ -3,7 +3,7 @@
 #include "d3d12_root_signature_manager.h"
 
 #include "d3dx12.h"
-#include "shader/share/d3d12.h"
+#include "shader/cppshared/d3d12.h"
 
 constexpr uint32 NUM_D3D_MAX_ROOT_PARAMETERS = 32;
 constexpr uint32 NUM_D3D_MAX_SHADER_RESOURCES = 64;

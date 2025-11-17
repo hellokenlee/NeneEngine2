@@ -11,36 +11,36 @@
 constexpr uint32 MAX_RENDER_TARGET_COUNT = 8;
 
 /**
- *	Bound Shader State
+ *	Bound Shader State ( name = stride )
  */
 enum class gapi_vertex_element_type : uint8
 {
-	float1,
-	float2,
-	float3,
-	float4,
+	float1 = 1 * sizeof(float),
+	float2 = 2 * sizeof(float),
+	float3 = 3 * sizeof(float),
+	float4 = 4 * sizeof(float),
 
-	half2,
-	half4,
+	half2 = 2 * (sizeof(float) / 2),
+	half4 = 4 * (sizeof(float) / 2),
+	
+	packed_normal = 4 * sizeof(uint8),  // RGB10A2
 
-	packed_normal,
-
-	unsigned_int,
-	unsigned_byte4,
+	unsigned_int = sizeof(uint32),
+	unsigned_byte4 = 4 * sizeof(uint8),
 };
 
 struct gapi_vertex_element_desc
 {
-	std::string semantic_name;
-	uint8 attribute_index;
-	gapi_vertex_element_type element_type;
-	uint8 stream_index;
-	uint8 offset;
+	std::string m_semantic_name;
+	uint8 m_semantic_index;
+	gapi_vertex_element_type m_element_type;
+	uint8 m_stream_index;
+	uint8 m_offset;
 	// 
-	bool b_use_instance_index : 1;
-	uint16 stride;
+	bool m_use_instance_index : 1;
+	uint16 m_stride;
 };
-typedef std::vector<gapi_vertex_element_desc> gapi_vertex_declaration;
+typedef std::vector<gapi_vertex_element_desc> gapi_vertices_declaration;
 
 enum class gapi_primitive_type : uint8
 {
@@ -53,7 +53,7 @@ enum class gapi_primitive_type : uint8
 struct NENE_API gapi_bound_shader_state_desc
 {
 	// 
-	std::shared_ptr<gapi_vertex_declaration> m_vertex_declaration;
+	std::shared_ptr<gapi_vertices_declaration> m_vertex_declaration;
 	//
 	std::array<std::shared_ptr<i::gapi_shader>, magic_enum::enum_count<gapi_shader_type>()> m_stage_shaders;
 
@@ -65,8 +65,8 @@ struct NENE_API gapi_bound_shader_state_desc
 	}
 
 	// Graphic Shader Stages
-	gapi_bound_shader_state_desc(const std::shared_ptr<gapi_vertex_declaration>& vertex_declaration, const std::shared_ptr<i::gapi_shader>& vertex_shader);
-	gapi_bound_shader_state_desc(const std::shared_ptr<gapi_vertex_declaration>& vertex_declaration, const std::shared_ptr<i::gapi_shader>& vertex_shader, const std::shared_ptr<i::gapi_shader>& pixel_shader);
+	gapi_bound_shader_state_desc(const std::shared_ptr<gapi_vertices_declaration>& vertex_declaration, const std::shared_ptr<i::gapi_shader>& vertex_shader);
+	gapi_bound_shader_state_desc(const std::shared_ptr<gapi_vertices_declaration>& vertex_declaration, const std::shared_ptr<i::gapi_shader>& vertex_shader, const std::shared_ptr<i::gapi_shader>& pixel_shader);
 
 	// Compute Shader Stages
 	gapi_bound_shader_state_desc(const std::shared_ptr<i::gapi_shader>& compute_shader);
