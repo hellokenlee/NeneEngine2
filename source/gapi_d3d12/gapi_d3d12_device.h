@@ -34,7 +34,7 @@ public:
 	std::shared_ptr<i::gapi_resource> create_placed_resource(const gapi_resource_desc& desc) override;
 	std::shared_ptr<i::gapi_resource> create_reserved_resource(const gapi_resource_desc& desc) override;
 
-	std::shared_ptr<i::gapi_shader> create_and_compile_shader(const gapi_shader_type& stype, const std::string& source, const std::string& entry, const gapi_shader_feature_level& level, const std::string& debug_name) override;
+	std::shared_ptr<i::gapi_shader> create_and_compile_shader(const gapi_shader_stage& stype, const std::string& source, const std::string& entry, const gapi_shader_feature_level& level, const std::string& debug_name) override;
 
 public:
 	ID3D12Device* get_d3d_device() const { return m_d3d_device.Get(); }

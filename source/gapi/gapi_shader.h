@@ -5,7 +5,7 @@
 #include "core/core.h"
 
 
-enum class gapi_shader_type : uint8
+enum class gapi_shader_stage : uint8
 {
 	vertex_shader			= 0,
 	hull_shader				= 1,
@@ -55,11 +55,11 @@ namespace i
 	class NENE_API gapi_shader : noncopyable
 	{
 	public:
-		gapi_shader(gapi_shader_type stype, gapi_shader_feature_level feature_level)
+		gapi_shader(gapi_shader_stage stype, gapi_shader_feature_level feature_level)
 			: gapi_shader(stype, feature_level, "", "", "")
 		{}
 		
-		gapi_shader(gapi_shader_type stype, gapi_shader_feature_level feature_level, std::string source, std::string entry, std::string name)
+		gapi_shader(gapi_shader_stage stype, gapi_shader_feature_level feature_level, std::string source, std::string entry, std::string name)
 			: m_is_compiled(false)
 			, m_shader_type(stype)
 			, m_name(std::move(name))
@@ -73,14 +73,14 @@ namespace i
 		virtual bool compile() = 0;
 
 		bool is_compiled() const { return m_is_compiled; }
-		const gapi_shader_type& get_shader_type() const { return m_shader_type; }
+		const gapi_shader_stage& get_shader_type() const { return m_shader_type; }
 		const std::string& get_name() const { return m_name; }
 		const std::string& get_shader_source() const { return m_shader_source; }
 		const std::string& get_function_entry() const { return m_function_entry; }
 		const gapi_shader_feature_level& get_feature_level() const { return m_feature_level; }
 		const gapi_shader_register_count& get_register_count() const { return m_register_count; }
 
-		template<gapi_shader_type stype>
+		template<gapi_shader_stage stype>
 		static bool is_a(const std::shared_ptr<gapi_shader>& shader)
 		{
 			if (shader != nullptr)
@@ -92,7 +92,7 @@ namespace i
 		
 	protected:
 		bool m_is_compiled;
-		gapi_shader_type m_shader_type;
+		gapi_shader_stage m_shader_type;
 		std::string m_name;
 		std::string m_shader_source;
 		std::string m_function_entry;

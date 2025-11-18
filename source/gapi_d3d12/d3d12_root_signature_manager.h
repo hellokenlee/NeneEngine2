@@ -19,7 +19,7 @@ struct gapi_d3d12_quantized_bound_shader_state
 		return false;
 	}
 	//
-	std::array<gapi_shader_register_count, magic_enum::enum_count<gapi_shader_type>()> m_shader_register_counts;
+	std::array<gapi_shader_register_count, magic_enum::enum_count<gapi_shader_stage>()> m_shader_register_counts;
 };
 
 template<>

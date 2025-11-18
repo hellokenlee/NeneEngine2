@@ -15,19 +15,18 @@ constexpr uint32 MAX_RENDER_TARGET_COUNT = 8;
  */
 enum class gapi_vertex_element_type : uint8
 {
-	float1 = 1 * sizeof(float),
-	float2 = 2 * sizeof(float),
-	float3 = 3 * sizeof(float),
-	float4 = 4 * sizeof(float),
+	float1 = 0,
+	float2,
+	float3,
+	float4,
 
-	half2 = 2 * (sizeof(float) / 2),
-	half4 = 4 * (sizeof(float) / 2),
-	
-	packed_normal = 4 * sizeof(uint8),  // RGB10A2
+	half2,
+	half4,
 
-	unsigned_int = sizeof(uint32),
-	unsigned_byte4 = 4 * sizeof(uint8),
+	unsigned_int,
+	unsigned_byte4,
 };
+NENE_API uint16 size_of_gapi_vertex_element_type(const gapi_vertex_element_type& element_type);
 
 struct gapi_vertex_element_desc
 {
@@ -53,20 +52,20 @@ enum class gapi_primitive_type : uint8
 struct NENE_API gapi_bound_shader_state_desc
 {
 	// 
-	std::shared_ptr<gapi_vertices_declaration> m_vertex_declaration;
+	gapi_vertices_declaration m_vertex_declaration;
 	//
-	std::array<std::shared_ptr<i::gapi_shader>, magic_enum::enum_count<gapi_shader_type>()> m_stage_shaders;
+	std::array<std::shared_ptr<i::gapi_shader>, magic_enum::enum_count<gapi_shader_stage>()> m_stage_shaders;
 
 	//
-	template<gapi_shader_type stage>
+	template<gapi_shader_stage stage>
 	const std::shared_ptr<i::gapi_shader>& get_stage_shader() const
 	{
 		return m_stage_shaders[magic_enum::enum_underlying(stage)];
 	}
 
 	// Graphic Shader Stages
-	gapi_bound_shader_state_desc(const std::shared_ptr<gapi_vertices_declaration>& vertex_declaration, const std::shared_ptr<i::gapi_shader>& vertex_shader);
-	gapi_bound_shader_state_desc(const std::shared_ptr<gapi_vertices_declaration>& vertex_declaration, const std::shared_ptr<i::gapi_shader>& vertex_shader, const std::shared_ptr<i::gapi_shader>& pixel_shader);
+	gapi_bound_shader_state_desc(const gapi_vertices_declaration& vertex_declaration, const std::shared_ptr<i::gapi_shader>& vertex_shader);
+	gapi_bound_shader_state_desc(const gapi_vertices_declaration& vertex_declaration, const std::shared_ptr<i::gapi_shader>& vertex_shader, const std::shared_ptr<i::gapi_shader>& pixel_shader);
 
 	// Compute Shader Stages
 	gapi_bound_shader_state_desc(const std::shared_ptr<i::gapi_shader>& compute_shader);

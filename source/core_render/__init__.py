@@ -5,6 +5,7 @@
 from source import *
 from source.core import Core
 from source.gapi import Gapi
+from source.gapi_dynamic import GapiDynamic
 
 
 class CoreRender(NeneModule):
@@ -12,6 +13,6 @@ class CoreRender(NeneModule):
     def __init__(self):
         super().__init__()
         self.module_dependencies.extend(
-            [Core, Gapi]
+            [Core, Gapi, GapiDynamic]
         )
         pass

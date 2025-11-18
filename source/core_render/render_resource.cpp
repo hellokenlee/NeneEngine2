@@ -3,16 +3,19 @@
 #include "render_resource.h"
 
 
-namespace i
+namespace r
 {
-	std::vector<render_resource*> render_resource::s_global_render_resources;
+	std::vector<global_render_resource*> global_render_resource::s_global_render_resources;
 
 	render_resource::render_resource()
+	{}
+
+	global_render_resource::global_render_resource()
 	{
 		s_global_render_resources.emplace_back(this);
 	}
 
-	void render_resource::initialize_global_render_resources(gapi_cmd_context& context)
+	void global_render_resource::initialize_global_render_resources(gapi_cmd_context& context)
 	{
 		for (auto & resource : s_global_render_resources)
 		{

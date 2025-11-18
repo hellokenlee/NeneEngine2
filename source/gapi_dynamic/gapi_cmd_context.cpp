@@ -51,6 +51,8 @@ void gapi_cmd_context::reset()
 	get_current_cmd_list()->reset(get_current_cmd_allocator(), nullptr);
 	//
 	release_tracked_resources();
+	// Default to triangle
+	set_primitive_type(gapi_primitive_type::triangle);
 }
 
 const std::shared_ptr<i::gapi_cmd_list>& gapi_cmd_context::close()
@@ -94,9 +96,19 @@ void gapi_cmd_context::draw(const uint32& num_vertices, const uint32& num_instan
 	get_current_cmd_list()->draw(num_vertices, num_instances, vertex_offset, instance_offset);
 }
 
+void gapi_cmd_context::draw_indexed(const uint32& num_indices, const uint32& num_instances, const uint32& index_offset, const uint32& vertex_offset, const uint32& instance_offset) const
+{
+	get_current_cmd_list()->draw_indexed(num_indices, num_instances, index_offset, vertex_offset, instance_offset);
+}
+
 void gapi_cmd_context::set_pipeline_state(const std::shared_ptr<i::gapi_pipeline_state>& pipeline_state) const
 {
 	get_current_cmd_list()->set_pipeline_state(pipeline_state);
+}
+
+void gapi_cmd_context::set_index_buffer(const std::shared_ptr<i::gapi_buffer>& index_buffer) const
+{
+	get_current_cmd_list()->set_index_buffer(index_buffer);
 }
 
 void gapi_cmd_context::set_vertex_buffer(const std::shared_ptr<i::gapi_buffer>& vertex_buffer) const
@@ -109,7 +121,7 @@ void gapi_cmd_context::set_primitive_type(const gapi_primitive_type& ptype) cons
 	get_current_cmd_list()->set_primitive_topology(ptype);
 }
 
-void gapi_cmd_context::bind_shader_resource(const gapi_shader_type& stage, const std::shared_ptr<i::gapi_resource>& resource) const
+void gapi_cmd_context::bind_shader_resource(const gapi_shader_stage& stage, const std::shared_ptr<i::gapi_resource>& resource) const
 {
 	
 }

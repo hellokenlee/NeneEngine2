@@ -25,16 +25,16 @@ t::console_var<bool> cvar_gapi_d3d_shader_optimize(
 );
 
 
-static std::string d3d_cast(const gapi_shader_type& type, const gapi_shader_feature_level& level)
+static std::string d3d_cast(const gapi_shader_stage& type, const gapi_shader_feature_level& level)
 {
 	std::string shader_target;
 
 	switch (type)
 	{
-	case gapi_shader_type::vertex_shader:
+	case gapi_shader_stage::vertex_shader:
 		shader_target += "vs";
 		break;
-	case gapi_shader_type::pixel_shader:
+	case gapi_shader_stage::pixel_shader:
 		shader_target += "ps";
 		break;
 	default:

@@ -109,7 +109,7 @@ std::shared_ptr<i::gapi_pipeline_state> gapi_d3d12_device::create_compute_pipeli
 	//
 	D3D12_COMPUTE_PIPELINE_STATE_DESC d3d_desc;
 	d3d_desc.pRootSignature = nullptr;
-	d3d_desc.CS = CD3DX12_SHADER_BYTECODE(t::gapi_pin<gapi_d3d12_shader>(desc.m_bound_shader_state.get_stage_shader<gapi_shader_type::compute_shader>()).get_d3d_bytecode());
+	d3d_desc.CS = CD3DX12_SHADER_BYTECODE(t::gapi_pin<gapi_d3d12_shader>(desc.m_bound_shader_state.get_stage_shader<gapi_shader_stage::compute_shader>()).get_d3d_bytecode());
 	// TODO: LDA setup support
 	d3d_desc.NodeMask = 0;
 	d3d_desc.CachedPSO = {};
@@ -130,21 +130,21 @@ std::shared_ptr<i::gapi_pipeline_state> gapi_d3d12_device::create_graphics_pipel
 	//
 	d3d_desc.pRootSignature = d3d_root_signature.Get();
 	//
-	d3d_desc.VS = CD3DX12_SHADER_BYTECODE(t::gapi_pin<gapi_d3d12_shader>(desc.m_bound_shader_state.get_stage_shader<gapi_shader_type::vertex_shader>()).get_d3d_bytecode());
+	d3d_desc.VS = CD3DX12_SHADER_BYTECODE(t::gapi_pin<gapi_d3d12_shader>(desc.m_bound_shader_state.get_stage_shader<gapi_shader_stage::vertex_shader>()).get_d3d_bytecode());
 	//
-	if (auto pixel_shader = t::gapi_cast<gapi_d3d12_shader>(desc.m_bound_shader_state.get_stage_shader<gapi_shader_type::pixel_shader>()); pixel_shader != nullptr)
+	if (auto pixel_shader = t::gapi_cast<gapi_d3d12_shader>(desc.m_bound_shader_state.get_stage_shader<gapi_shader_stage::pixel_shader>()); pixel_shader != nullptr)
 	{
 		d3d_desc.PS = CD3DX12_SHADER_BYTECODE(pixel_shader->get_d3d_bytecode());
 	}
-	if (auto domain_shader = t::gapi_cast<gapi_d3d12_shader>(desc.m_bound_shader_state.get_stage_shader<gapi_shader_type::domain_shader>()); domain_shader != nullptr)
+	if (auto domain_shader = t::gapi_cast<gapi_d3d12_shader>(desc.m_bound_shader_state.get_stage_shader<gapi_shader_stage::domain_shader>()); domain_shader != nullptr)
 	{
 		d3d_desc.DS = CD3DX12_SHADER_BYTECODE(domain_shader->get_d3d_bytecode());
 	}
-	if (auto hull_shader = t::gapi_cast<gapi_d3d12_shader>(desc.m_bound_shader_state.get_stage_shader<gapi_shader_type::hull_shader>()); hull_shader != nullptr)
+	if (auto hull_shader = t::gapi_cast<gapi_d3d12_shader>(desc.m_bound_shader_state.get_stage_shader<gapi_shader_stage::hull_shader>()); hull_shader != nullptr)
 	{
 		d3d_desc.HS = CD3DX12_SHADER_BYTECODE(hull_shader->get_d3d_bytecode());
 	}
-	if (auto geometry_shader = t::gapi_cast<gapi_d3d12_shader>(desc.m_bound_shader_state.get_stage_shader<gapi_shader_type::geometry_shader>()); geometry_shader != nullptr)
+	if (auto geometry_shader = t::gapi_cast<gapi_d3d12_shader>(desc.m_bound_shader_state.get_stage_shader<gapi_shader_stage::geometry_shader>()); geometry_shader != nullptr)
 	{
 		d3d_desc.GS = CD3DX12_SHADER_BYTECODE(geometry_shader->get_d3d_bytecode());
 	}
@@ -483,7 +483,7 @@ std::shared_ptr<i::gapi_resource> gapi_d3d12_device::create_reserved_resource(co
 	return nullptr;
 }
 
-std::shared_ptr<i::gapi_shader> gapi_d3d12_device::create_and_compile_shader(const gapi_shader_type& stype, const std::string& source, const std::string& entry, const gapi_shader_feature_level& level, const std::string& debug_name)
+std::shared_ptr<i::gapi_shader> gapi_d3d12_device::create_and_compile_shader(const gapi_shader_stage& stype, const std::string& source, const std::string& entry, const gapi_shader_feature_level& level, const std::string& debug_name)
 {
 	auto result = std::make_shared<gapi_d3d12_shader>(stype, level, source, entry, debug_name);
 	if (result->compile())

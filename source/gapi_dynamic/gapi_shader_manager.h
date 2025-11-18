@@ -12,7 +12,7 @@ class NENE_API gapi_shader_manager
 public:
 	static gapi_shader_manager& get();
 	
-	const std::shared_ptr<i::gapi_shader>& find_or_create_shader(const gapi_shader_type& stage, const std::string& source_filepath, const std::string& entry_name);
+	const std::shared_ptr<i::gapi_shader>& find_or_create_shader(const gapi_shader_stage& stage, const std::string& source_filepath, const std::string& entry_name);
 
 private:
 	gapi_shader_manager() = default;

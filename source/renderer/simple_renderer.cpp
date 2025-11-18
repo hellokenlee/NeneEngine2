@@ -2,6 +2,7 @@
 
 #include "simple_renderer.h"
 #include "system_render_resource.h"
+#include "core_render/material_shader_map.h"
 #include "gapi_dynamic/gapi_pipeline_state_manager.h"
 #include "gapi_dynamic/gapi_shader_manager.h"
 #include "gapi_dynamic/gapi_dynamic.h"
@@ -9,49 +10,8 @@
 
 simple_renderer::simple_renderer()
 	: renderer()
-	, m_mesh_pass_pipeline_state(nullptr)
-	, m_screen_pass_pipeline_state(nullptr)
-{
-
-	// FIXME: dynamic change the scene textures
-	{
-		const auto desc = gapi_texture_desc::create_2d(
-			{800, 600}, gapi_pixel_format::r8g8b8a8_unorm, gapi_texture_create_flag::as_shader_resource | gapi_texture_create_flag::as_render_target
-		);
-		m_scene_color = gapi_dynamic::get().create_texture(desc);
-	}
-	{
-		const auto desc = gapi_texture_desc::create_2d(
-			{800, 600}, gapi_pixel_format::d24_s8, gapi_texture_create_flag::as_depth_stencil
-		);
-		m_scene_depth = gapi_dynamic::get().create_texture(desc);
-	}
-
-	
-	//
-	gapi_graphics_pipeline_state_desc mesh_pso_desc(
-		gapi_bound_shader_state_desc(
-			system_vertex_declarations::get().position4_color4(),
-			gapi_shader_manager::get().find_or_create_shader(gapi_shader_type::vertex_shader, "shader/simple.hlsl", "MainVS"),
-			gapi_shader_manager::get().find_or_create_shader(gapi_shader_type::pixel_shader, "shader/simple.hlsl", "MainPS")
-		)
-	);
-	mesh_pso_desc.m_render_target_formats.emplace_back(gapi_pixel_format::r8g8b8a8_unorm);
-	mesh_pso_desc.m_depth_stencil_format = gapi_pixel_format::unknown;
-	m_mesh_pass_pipeline_state = gapi_pipeline_state_manager::get().find_or_create_pipeline_state(mesh_pso_desc);
-	
-	//
-	gapi_graphics_pipeline_state_desc screen_pso_desc(
-		gapi_bound_shader_state_desc(
-			system_vertex_declarations::get().position4_color4(),
-			gapi_shader_manager::get().find_or_create_shader(gapi_shader_type::vertex_shader, "shader/screen.hlsl", "MainVS"),
-			gapi_shader_manager::get().find_or_create_shader(gapi_shader_type::pixel_shader, "shader/screen.hlsl", "MainPS")
-		)
-	);
-	screen_pso_desc.m_render_target_formats.emplace_back(gapi_pixel_format::r8g8b8a8_unorm);
-	screen_pso_desc.m_depth_stencil_format = gapi_pixel_format::d24_s8;
-	m_screen_pass_pipeline_state = gapi_pipeline_state_manager::get().find_or_create_pipeline_state(screen_pso_desc);
-}
+	, m_base_pass_pipeline_state(nullptr)
+{}
 
 void simple_renderer::render_view_family(const std::shared_ptr<i::gapi_texture>& view_family_texture)
 {
@@ -59,25 +19,38 @@ void simple_renderer::render_view_family(const std::shared_ptr<i::gapi_texture>&
 	auto& context = gapi_dynamic::get().get_cmd_context();
 	context.clear_render_target(view_family_texture, color::rgba<float>({1.0f, 1.0f, 1.0f, 1.0f}));
 	//
-	auto& vertex_buffers = system_vertex_buffers::get();
-
-	// 1st pass: render mesh to a screen texture
+	const auto& cube = r::system_static_meshes::get().m_cube;
+	
+	// TODO: Dynamic creation of PSO
+	if (m_base_pass_pipeline_state == nullptr)
+	{
+		// 
+		r::material_shader_map base_pass_shader_map("shader/base_pass_vertex_shader.hlsl", cube->get_vertex_factory());
+		base_pass_shader_map.add_shader(gapi_shader_stage::pixel_shader, "shader/base_pass_pixel_shader.hlsl", {});
+		
+		gapi_graphics_pipeline_state_desc mesh_pso_desc(
+			gapi_bound_shader_state_desc(
+				cube->get_vertex_factory().get_vertices_declaration(),
+				base_pass_shader_map.get_shader(gapi_shader_stage::vertex_shader),
+				base_pass_shader_map.get_shader(gapi_shader_stage::pixel_shader)
+			)
+		);
+		mesh_pso_desc.m_render_target_formats.emplace_back(gapi_pixel_format::r8g8b8a8_unorm);
+		mesh_pso_desc.m_depth_stencil_format = gapi_pixel_format::unknown;
+		m_base_pass_pipeline_state = gapi_pipeline_state_manager::get().find_or_create_pipeline_state(mesh_pso_desc);
+	}
+	
 	{
 		auto _ = context.render_pass({view_family_texture});
 		
-		context.set_pipeline_state(m_mesh_pass_pipeline_state);
-		context.set_vertex_buffer(vertex_buffers.triangle());
-		context.set_primitive_type(gapi_primitive_type::triangle);
-		context.draw(3, 1, 0, 0);
+		context.set_pipeline_state(m_base_pass_pipeline_state);
+		
+		// TODO: Dynamic creation of mesh draw commands
+		context.set_index_buffer(cube->get_index_buffer());
+		for (auto i = 0; i < cube->num_vertex_buffers(); ++i)
+		{
+			context.set_vertex_buffer(cube->get_vertex_buffer(i));
+		}
+		context.draw_indexed(cube->num_index(), 1);
 	}
-
-	// // 2nd pass: render screen texture to back buffer
-	// {
-	// 	auto _ = context.render_pass({view_family_texture});
-	// 	
-	// 	context.set_pipeline_state(m_screen_pass_pipeline_state);
-	// 	context.bind_shader_resource(gapi_shader_type::pixel_shader, m_screen_texture);
-	// 	context.set_vertex_buffer(vertex_buffers.quad());
-	// 	context.draw(6, 1, 0, 0);
-	// }
 }

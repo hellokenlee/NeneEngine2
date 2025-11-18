@@ -268,7 +268,6 @@ inline DXGI_FORMAT d3d_cast(const gapi_vertex_element_type& vtype)
 		return DXGI_FORMAT_R16_FLOAT;
 	case gapi_vertex_element_type::half4:
 		return DXGI_FORMAT_R16G16_FLOAT;
-	case gapi_vertex_element_type::packed_normal:
 	case gapi_vertex_element_type::unsigned_int:
 	case gapi_vertex_element_type::unsigned_byte4:
 		NOT_IMPLEMENTED();

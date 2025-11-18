@@ -36,4 +36,15 @@ namespace utils
 		// ReSharper restore CppDeprecatedEntity
 #endif // NENE_PLATFORM_WINDOWS
 	}
+
+	void string_replace(std::string& s, std::string_view from, std::string_view to)
+	{
+		if (from.empty()) return; // 避免死循环
+		size_t pos = 0;
+		while ((pos = s.find(from, pos)) != std::string::npos)
+		{
+			s.replace(pos, from.size(), to);
+			pos += to.size(); // 移动到替换后的位置
+		}
+	}
 }

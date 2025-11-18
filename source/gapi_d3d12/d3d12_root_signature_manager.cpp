@@ -92,29 +92,29 @@ WinComPtr<ID3D12RootSignature> d3d12_root_signature_manager::find_or_create_root
 	return new_root_signature;
 }
 
-gapi_shader_type d3d_back_cast(D3D12_SHADER_VISIBILITY shader_visibility)
+gapi_shader_stage d3d_back_cast(D3D12_SHADER_VISIBILITY shader_visibility)
 {
 	switch (shader_visibility)
 	{
 	case D3D12_SHADER_VISIBILITY_ALL:
-		return gapi_shader_type::compute_shader;
+		return gapi_shader_stage::compute_shader;
 	case D3D12_SHADER_VISIBILITY_VERTEX:
-		return gapi_shader_type::vertex_shader;
+		return gapi_shader_stage::vertex_shader;
 	case D3D12_SHADER_VISIBILITY_HULL:
-		return gapi_shader_type::hull_shader;
+		return gapi_shader_stage::hull_shader;
 	case D3D12_SHADER_VISIBILITY_DOMAIN:
-		return gapi_shader_type::domain_shader;
+		return gapi_shader_stage::domain_shader;
 	case D3D12_SHADER_VISIBILITY_GEOMETRY:
-		return gapi_shader_type::geometry_shader;
+		return gapi_shader_stage::geometry_shader;
 	case D3D12_SHADER_VISIBILITY_PIXEL:
-		return gapi_shader_type::pixel_shader;
+		return gapi_shader_stage::pixel_shader;
 	case D3D12_SHADER_VISIBILITY_AMPLIFICATION:
-		return gapi_shader_type::amplification_shader;
+		return gapi_shader_stage::amplification_shader;
 	case D3D12_SHADER_VISIBILITY_MESH:
-		return gapi_shader_type::mesh_shader;
+		return gapi_shader_stage::mesh_shader;
 	default:
 		CHECK(false);
-		return gapi_shader_type::compute_shader;
+		return gapi_shader_stage::compute_shader;
 	}
 }
 
@@ -155,7 +155,7 @@ D3D12_VERSIONED_ROOT_SIGNATURE_DESC d3d12_root_signature_manager::make_root_sign
 		// TODO: per-stage shader binding
 		for (auto shader_visibility : magic_enum::enum_values<D3D12_SHADER_VISIBILITY>())
 		{
-			gapi_shader_type stage = d3d_back_cast(shader_visibility);
+			gapi_shader_stage stage = d3d_back_cast(shader_visibility);
 			const auto& shader_register_count = quantized_bound_shader_state.m_shader_register_counts[magic_enum::enum_underlying(stage)];
 			switch (root_parameter_type)
 			{
@@ -240,7 +240,7 @@ D3D12_VERSIONED_ROOT_SIGNATURE_DESC d3d12_root_signature_manager::make_root_sign
 	// optimization: remove unnecessary access for stages in root signature 
 	for (auto shader_visibility : magic_enum::enum_values<D3D12_SHADER_VISIBILITY>())
 	{
-		gapi_shader_type stage = d3d_back_cast(shader_visibility);
+		gapi_shader_stage stage = d3d_back_cast(shader_visibility);
 		const auto& shader_register_count = quantized_bound_shader_state.m_shader_register_counts[magic_enum::enum_underlying(stage)];
 		if (shader_register_count.empty())
 		{
