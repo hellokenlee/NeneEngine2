@@ -16,17 +16,6 @@ public:
 
 
 /**
- *	The FXC compiler.
- *	Require `dxguid.lib` and `d3dcompiler.lib`.
- */
-class d3d12_fxc_shader_compiler : public d3d12_shader_compiler
-{
-public:
-	bool compile(gapi_d3d12_shader& shader, WinComPtr<ID3DBlob>& out_bytecode, WinComPtr<ID3D12ShaderReflection>& out_reflection) override;
-};
-
-
-/**
  *	The DXC compiler.
  *	Require `dxcompiler.lib` and `dxil.lib`
  */

@@ -17,6 +17,41 @@
 #include "d3d12_root_signature_manager.h"
 
 extern t::console_var<bool> cvar_gapi_d3d_debug;
+extern logger d3d12_;
+static gapi_d3d12_device* g_gapi_d3d12_device = nullptr;
+
+// ReSharper disable once CppParameterMayBeConstPtrOrRef
+static LONG __stdcall d3d_vectored_exception_handler(EXCEPTION_POINTERS* info)
+{
+	if (info->ExceptionRecord->ExceptionCode == _FACDXGI)
+	{
+		if (g_gapi_d3d12_device != nullptr)
+		{
+			g_gapi_d3d12_device->print_d3d_debug_messages();
+		}
+	}
+	return EXCEPTION_CONTINUE_SEARCH;
+}
+
+void gapi_d3d12_device::print_d3d_debug_messages() const
+{
+	int num_message = m_d3d_debug_info_queue->GetNumStoredMessagesAllowedByRetrievalFilter();
+	for (int i = 0; i < num_message; i++)
+	{
+		size_t message_length = 0;
+		VERIFY(m_d3d_debug_info_queue->GetMessage(i, nullptr, &message_length));
+
+		D3D12_MESSAGE* d3d_message = nullptr;
+		d3d_message = static_cast<D3D12_MESSAGE*>(malloc(message_length));
+
+		if (d3d_message != nullptr)
+		{
+			VERIFY(m_d3d_debug_info_queue->GetMessage(i, d3d_message, &message_length));
+			log(d3d12_, error, "D3D12 DebugLayer: {}", std::string_view(d3d_message->pDescription, d3d_message->DescriptionByteLength));
+			free(d3d_message);
+		}
+	}
+}
 
 gapi_d3d12_device::gapi_d3d12_device(const WinComPtr<ID3D12Device>& device)
 	: m_d3d_device(device)
@@ -27,12 +62,11 @@ gapi_d3d12_device::gapi_d3d12_device(const WinComPtr<ID3D12Device>& device)
 	// filter debug message
 	if (cvar_gapi_d3d_debug.value())
 	{
-		WinComPtr<ID3D12InfoQueue> info_queue;
-		if (SUCCEEDED(m_d3d_device2.As(&info_queue)))
+		if (SUCCEEDED(m_d3d_device2.As(&m_d3d_debug_info_queue)))
 		{
-			info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
-			info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
-			info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
+			m_d3d_debug_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
+			m_d3d_debug_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
+			m_d3d_debug_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
 
 			// supress some warnings
 			D3D12_MESSAGE_CATEGORY categories_to_supress[] = {
@@ -54,8 +88,12 @@ gapi_d3d12_device::gapi_d3d12_device(const WinComPtr<ID3D12Device>& device)
 			info_queue_filter.DenyList.pSeverityList = severities_to_supress;
 			info_queue_filter.DenyList.NumIDs = _countof(message_to_supress);
 			info_queue_filter.DenyList.pIDList = message_to_supress;
-			VERIFY(info_queue->PushStorageFilter(&info_queue_filter));
+			VERIFY(m_d3d_debug_info_queue->PushStorageFilter(&info_queue_filter));
 		}
+		//
+		CHECK(g_gapi_d3d12_device == nullptr);
+		g_gapi_d3d12_device = this;
+		m_debug_exception_handler = AddVectoredExceptionHandler(0, d3d_vectored_exception_handler);
 	}
 	//
 	m_cmd_queues[static_cast<uint32>(gapi_cmd_type::graphics)] = gapi_d3d12_device::create_cmd_queue(gapi_cmd_type::graphics);
@@ -154,7 +192,7 @@ std::shared_ptr<i::gapi_pipeline_state> gapi_d3d12_device::create_graphics_pipel
 	d3d_desc.SampleMask = UINT_MAX;
 	d3d_desc.RasterizerState = d3d_cast(desc.m_rasterizer_state);
 	d3d_desc.DepthStencilState = d3d_cast(desc.m_depth_stencil_state);
-	d3d_desc.InputLayout = d3d_cast(*desc.m_bound_shader_state.m_vertex_declaration, input_element_descs);
+	d3d_desc.InputLayout = d3d_cast(desc.m_bound_shader_state.m_vertex_declaration, input_element_descs);
 	d3d_desc.IBStripCutValue = D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_DISABLED;
 	d3d_desc.PrimitiveTopologyType = d3d_cast(desc.m_primitive_type);
 	d3d_desc.NumRenderTargets = static_cast<uint32>(desc.m_render_target_formats.size());

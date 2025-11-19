@@ -76,7 +76,7 @@ gapi_d3d12_buffer::gapi_d3d12_buffer(const WinComPtr<ID3D12Resource>& resource, 
 	{
 		CHECK(!t::has_flag(desc.m_buffer_usage_flag, gapi_buffer_usage_flag::usage_vertex_buffer))
 		m_optional_index_buffer_view.BufferLocation = resource->GetGPUVirtualAddress();
-		m_optional_index_buffer_view.Format = d3d_cast(desc.m_format);
+		m_optional_index_buffer_view.Format = DXGI_FORMAT_R32_UINT;
 		m_optional_index_buffer_view.SizeInBytes = desc.m_width;
 	}
 	else if (is_vertex_buffer())

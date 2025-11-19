@@ -11,7 +11,7 @@ namespace r
 		, m_num_index(static_cast<uint32>(indices.size()))
 		, m_debug_name(debug_name)
 	{
-		auto desc = gapi_buffer_desc::create(static_cast<uint32>(indices.size() * sizeof(uint32)), gapi_buffer_usage_flag::usage_vertex_buffer, size_of_gapi_vertex_element_type(gapi_vertex_element_type::unsigned_int), m_debug_name);
+		auto desc = gapi_buffer_desc::create(static_cast<uint32>(indices.size() * sizeof(uint32)), gapi_buffer_usage_flag::usage_index_buffer, size_of_gapi_vertex_element_type(gapi_vertex_element_type::unsigned_int), m_debug_name);
 		m_index_buffer = std::dynamic_pointer_cast<i::gapi_buffer>(gapi_dynamic::get().get_cmd_context().create_and_upload_resource(desc, indices.data()));
 	}
 

@@ -5,7 +5,6 @@
 
 static logger shader_("shader");
 
-t::console_var<bool> gapi_shader_use_dxc("gapi.d3d.shader.use_dxc", true, "", console_var_flag::read_only);
 static t::console_var<bool> gapi_shader_keep_sources("gapi.d3d.shader.keep_sources", true, "", console_var_flag::read_only);
 
 
@@ -14,14 +13,7 @@ bool gapi_d3d12_shader::compile()
 	thread_local std::unique_ptr<d3d12_shader_compiler> compiler = nullptr;
 	if (compiler == nullptr)
 	{
-		if (gapi_shader_use_dxc.get_value_thread_unsafe())
-		{
-			compiler = std::make_unique<d3d12_dxc_shader_compiler>();
-		}
-		else
-		{
-			compiler = std::make_unique<d3d12_fxc_shader_compiler>();
-		}
+		compiler = std::make_unique<d3d12_dxc_shader_compiler>();
 	}
 
 	if (m_shader_source.empty() || m_function_entry.empty())

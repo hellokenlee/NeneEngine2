@@ -38,6 +38,7 @@ public:
 
 public:
 	ID3D12Device* get_d3d_device() const { return m_d3d_device.Get(); }
+	void print_d3d_debug_messages() const;
 	
 protected:
 	std::shared_ptr<i::gapi_cmd_queue> m_cmd_queues[t::enum_count<gapi_cmd_type>()];
@@ -48,4 +49,7 @@ private:
 
 	D3D12_RESOURCE_BINDING_TIER m_d3d_resource_binding_tier;
 	D3D12_RESOURCE_HEAP_TIER m_d3d_resource_heap_tier;
+
+	WinComPtr<ID3D12InfoQueue> m_d3d_debug_info_queue;
+	HANDLE m_debug_exception_handler = INVALID_HANDLE_VALUE;
 };

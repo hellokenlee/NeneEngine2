@@ -4,6 +4,10 @@
 #include "core.h"
 #include <ctime>
 
+#ifdef NENE_PLATFORM_WINDOWS
+#include "Windows.h"
+#endif // NENE_PLATFORM_WINDOWS
+
 
 void platform::local_time(std::tm* const tm, std::time_t const* const time)
 {

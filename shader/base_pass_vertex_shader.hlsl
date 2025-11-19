@@ -1,13 +1,17 @@
+/* Copyright reserved by KenLee@hellokenlee@163.com */
+
 #include "/engine/generated/vertex_factory.h"
+#include "/vertex_factory/vertex_factory_common.h"
+#include "/base_pass_common.h"
 
-struct SVertexShaderOutput
+
+void Main(in SVertexFactoryInput VertexFactoryInput, out SVertexShaderOutput VertexShaderOutput)
 {
-	float4 WorldPosition : SV_POSITION;
-}
+	//
+	SVertexShaderInput VertexShaderInput;
+	VertexFactoryGetVertexShaderInput(VertexFactoryInput, VertexShaderInput);
 
-
-void Main(SVertexFactoryInput VertexFactoryInput, out SVertexShaderOutput VertexShaderOutput)
-{
-	SVertexShaderInput VertexShaderInput = VertexFactoryInput.GetVertexShaderInput();
-	VertexShaderOutput.WorldPosition = VertexShaderInput.GetWorldPosition();
+	//
+	VertexShaderOutput.NdcPosition = VertexShaderInput.GetWorldPosition();
+	VertexShaderOutput.UV = float2(1, 0);
 }
