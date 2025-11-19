@@ -24,9 +24,5 @@ namespace i
 		~gapi_gpu() override = default;
 
 		virtual std::shared_ptr<gapi_device> create_device() = 0;
-
-		virtual uint32 get_device_num() = 0;
-	
-		virtual std::shared_ptr<gapi_device> get_device(const uint32& index) = 0;
 	};
 }
