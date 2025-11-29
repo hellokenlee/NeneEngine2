@@ -154,18 +154,19 @@ std::shared_ptr<i::gapi_pipeline_state> gapi_d3d12_device::create_compute_pipeli
 	
 	WinComPtr<ID3D12PipelineState> d3d_pipeline_state;
 	VERIFY(m_d3d_device->CreateComputePipelineState(&d3d_desc, IID_PPV_ARGS(&d3d_pipeline_state)));
-	return std::make_shared<gapi_d3d12_pipeline_state>(std::move(d3d_pipeline_state), gapi_pipeline_state_type::compute, nullptr);
+	gapi_shader_resource_tables resource_tables;
+	return std::make_shared<gapi_d3d12_pipeline_state>(resource_tables, std::move(d3d_pipeline_state), gapi_pipeline_state_type::compute, nullptr);
 }
 
 std::shared_ptr<i::gapi_pipeline_state> gapi_d3d12_device::create_graphics_pipeline_state(const gapi_graphics_pipeline_state_desc& desc)
 {
 	//
-	auto d3d_root_signature = d3d12_root_signature_manager::get().find_or_create_root_signature(get_d3d_device(), desc.m_bound_shader_state);
+	auto root_signature = d3d12_root_signature_manager::get().find_or_create_root_signature(get_d3d_device(), desc.m_bound_shader_state);
 	std::vector<D3D12_INPUT_ELEMENT_DESC> input_element_descs;
 	//
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC d3d_desc = {};
 	//
-	d3d_desc.pRootSignature = d3d_root_signature.Get();
+	d3d_desc.pRootSignature = root_signature.m_root_signature.Get();
 	//
 	d3d_desc.VS = CD3DX12_SHADER_BYTECODE(t::gapi_pin<gapi_d3d12_shader>(desc.m_bound_shader_state.get_shader(gapi_shader_stage::vertex_shader)).get_d3d_bytecode());
 	//
@@ -210,7 +211,7 @@ std::shared_ptr<i::gapi_pipeline_state> gapi_d3d12_device::create_graphics_pipel
 	
 	WinComPtr<ID3D12PipelineState> d3d_pipeline_state;
 	VERIFY(m_d3d_device->CreateGraphicsPipelineState(&d3d_desc, IID_PPV_ARGS(&d3d_pipeline_state)));
-	return std::make_shared<gapi_d3d12_pipeline_state>(std::move(d3d_pipeline_state), gapi_pipeline_state_type::graphics, std::move(d3d_root_signature));
+	return std::make_shared<gapi_d3d12_pipeline_state>(root_signature.m_shader_resource_tables, std::move(d3d_pipeline_state), gapi_pipeline_state_type::graphics, std::move(root_signature.m_root_signature));
 }
 
 std::shared_ptr<i::gapi_resource_view_allocator> gapi_d3d12_device::create_resource_view_allocator(gapi_resource_view_type view_type, gapi_resource_view_allocator_type allocator_type, const uint32& max_num_views)

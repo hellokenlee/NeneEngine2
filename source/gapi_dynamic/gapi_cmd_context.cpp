@@ -9,6 +9,7 @@ gapi_cmd_context::gapi_cmd_context(const std::shared_ptr<i::gapi_device>& device
 	, m_debug_id(debug_context_id)
 	, m_current_index(0)
 	, m_previous_index(num_cmd_list - 1)
+	, m_online_resource_view_cache(device)
 {
 	for (uint32 i = 0; i < num_cmd_list; i++)
 	{

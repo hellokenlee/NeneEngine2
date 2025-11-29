@@ -5,6 +5,12 @@
 namespace t
 {
 	template<typename T>
+	consteval size_t num_bits_of()
+	{
+		return sizeof(T) * 8;
+	}
+	
+	template<typename T>
 	consteval size_t num_bits_of(const T& data)
 	{
 		return sizeof(T) * 8;

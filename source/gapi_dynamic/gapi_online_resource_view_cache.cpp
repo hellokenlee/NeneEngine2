@@ -14,7 +14,7 @@ void gapi_online_resource_view_cache::reset()
 	// 
 }
 
-void gapi_online_resource_view_cache::initialize()
+void gapi_online_resource_view_cache::initialize(const gapi_shader_resource_table& shader_resource_table)
 {
 }
 

@@ -55,7 +55,7 @@ d3d12_root_signature_manager& d3d12_root_signature_manager::get()
 	return instance;
 }
 
-WinComPtr<ID3D12RootSignature> d3d12_root_signature_manager::find_or_create_root_signature(ID3D12Device* d3d_device, const gapi_bound_shader_state_desc& bound_shader_state_desc)
+d3d12_root_signature d3d12_root_signature_manager::find_or_create_root_signature(ID3D12Device* d3d_device, const gapi_bound_shader_state_desc& bound_shader_state_desc)
 {
 	//
 	const auto quantized_bound_shader_state = d3d12_quantized_bound_shader_state(bound_shader_state_desc);
@@ -70,7 +70,8 @@ WinComPtr<ID3D12RootSignature> d3d12_root_signature_manager::find_or_create_root
 	}
 	*/
 	//
-	auto root_signature_desc = make_root_signature_desc(quantized_bound_shader_state);
+	gapi_shader_resource_tables shader_resource_tables;
+	auto root_signature_desc = make_root_signature_desc(quantized_bound_shader_state, shader_resource_tables);
 	//
 	WinComPtr<ID3DBlob> root_signature_blob;
 	WinComPtr<ID3DBlob> serialization_error_blob;
@@ -84,7 +85,7 @@ WinComPtr<ID3D12RootSignature> d3d12_root_signature_manager::find_or_create_root
 	CHECK(cit.second);
 	return cit.first->second;
 	*/
-	return new_root_signature;
+	return {new_root_signature, shader_resource_tables};
 }
 
 gapi_shader_stage d3d_back_cast(D3D12_SHADER_VISIBILITY shader_visibility)
@@ -152,7 +153,7 @@ uint32 choose_register_space(gapi_shader_stage stage)
 }
 
 
-D3D12_VERSIONED_ROOT_SIGNATURE_DESC d3d12_root_signature_manager::make_root_signature_desc(const d3d12_quantized_bound_shader_state& quantized_bound_shader_state, std::array<gapi_shader_resource_table, num_gapi_shader_stage>& out_shader_resource_table) const
+D3D12_VERSIONED_ROOT_SIGNATURE_DESC d3d12_root_signature_manager::make_root_signature_desc(const d3d12_quantized_bound_shader_state& quantized_bound_shader_state, gapi_shader_resource_tables& out_shader_resource_table) const
 {
 	//
 	CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC desc;

@@ -43,7 +43,7 @@ bool set_register_bits(const D3D12_SHADER_INPUT_BIND_DESC& desc, T& bits)
 {
 	for (auto reg = desc.BindPoint; reg < desc.BindPoint + desc.BindCount; ++reg)
 	{
-		if (reg > t::num_bits_of(bits))
+		if (reg > t::num_bits_of<T>())
 		{
 			return false;
 		}
