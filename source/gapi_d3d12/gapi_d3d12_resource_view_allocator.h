@@ -9,10 +9,8 @@
 class gapi_d3d12_resource_view_allocator : public i::gapi_resource_view_allocator
 {
 public:
-	std::shared_ptr<i::gapi_resource_view> allocate_resource_view() override;
-
-public:
 	gapi_d3d12_resource_view_allocator(const WinComPtr<ID3D12DescriptorHeap>& heap, D3D12_DESCRIPTOR_HEAP_DESC desc, const uint32& num_descriptors, const uint32& descriptor_size);
+	std::shared_ptr<i::gapi_resource_view> allocate_resource_view() override;
 	
 private:
 	void free_resource_view(i::gapi_resource_view* view);

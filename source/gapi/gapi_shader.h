@@ -7,20 +7,21 @@
 
 enum class gapi_shader_stage : uint8
 {
-	vertex_shader			= 0,
-	hull_shader				= 1,
-	domain_shader			= 2,
-	pixel_shader			= 3,
-	geometry_shader			= 4,
+	vertex_shader,
+	hull_shader,
+	domain_shader,
+	geometry_shader,
+	pixel_shader,
 
-	compute_shader			= 5,
+	compute_shader,
 
-	mesh_shader				= 6,
-	amplification_shader	= 7,
+	mesh_shader,
+	amplification_shader,
 	
-	ray_gen_shader			= 8,
-	ray_tracing_shader		= 9,
+	ray_gen_shader,
+	ray_tracing_shader,
 };
+constexpr size_t num_gapi_shader_stage = magic_enum::enum_count<gapi_shader_stage>();
 
 
 enum class gapi_shader_feature_level : uint8
@@ -31,14 +32,18 @@ enum class gapi_shader_feature_level : uint8
 
 struct gapi_shader_register_count
 {
+	// num of `register(t#, ...)`
 	uint32 num_shader_resource = 0;
+	// num of `register(b#, ...)`
 	uint32 num_constant_buffer = 0;
-	uint32 num_texture_sampler = 0;
+	// num of `register(u#, ...)`
 	uint32 num_unordered_access = 0;
+	// num of `register(s#, ...)`
+	uint32 num_dynamic_sampler = 0;
 
 	bool empty() const
 	{
-		return num_shader_resource == 0 && num_constant_buffer == 0 && num_texture_sampler == 0 && num_unordered_access == 0;
+		return num_shader_resource == 0 && num_constant_buffer == 0 && num_dynamic_sampler == 0 && num_unordered_access == 0;
 	}
 };
 

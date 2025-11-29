@@ -25,6 +25,6 @@ private:
 	
 	WinComPtr<ID3D12PipelineState> m_pipeline_state;
 
-	// TODO: Share root sigature across different pipeline stats.
+	// TODO: Share root sigature across different pipeline states
 	WinComPtr<ID3D12RootSignature> m_root_signature;
 };

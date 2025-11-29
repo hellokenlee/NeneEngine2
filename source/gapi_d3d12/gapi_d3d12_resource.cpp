@@ -51,19 +51,6 @@ std::optional<CD3DX12_RESOURCE_BARRIER> gapi_d3d12_resource::d3d_transition(cons
 	return barrier;
 }
 
-void gapi_d3d12_texture::recreate_resource_views()
-{
-	// create shader resource view
-	if (t::has_flag(m_desc.m_texture_create_flag, gapi_texture_create_flag::as_shader_resource))
-	{
-		
-	}
-	else if (t::has_flag(m_desc.m_texture_create_flag, gapi_texture_create_flag::as_render_target))
-	{
-		
-	}
-}
-
 gapi_d3d12_buffer::gapi_d3d12_buffer(const WinComPtr<ID3D12Resource>& resource, const gapi_resource_desc& desc)
 	: gapi_d3d12_resource(resource, desc)
 {

@@ -20,7 +20,7 @@ namespace r
 		virtual const std::shared_ptr<i::gapi_shader>& get_shader(gapi_shader_stage stype) const;
 		
 	protected:
-		std::array<std::shared_ptr<i::gapi_shader>, magic_enum::enum_count<gapi_shader_stage>()> m_gpi_shaders;
-		std::array<shader_translate_environment, magic_enum::enum_count<gapi_shader_stage>()> m_shader_translate_environments;
+		std::array<std::shared_ptr<i::gapi_shader>, num_gapi_shader_stage> m_gpi_shaders;
+		std::array<shader_translate_environment, num_gapi_shader_stage> m_shader_translate_environments;
 	};
 }

@@ -36,10 +36,10 @@ gapi_dynamic::gapi_dynamic(const gapi_platform& platform, void* window, const up
 	m_gpu = m_factory->create_gpu();
 	m_device = m_gpu->create_device();
 	// TODO: Expandable Allocator ( e.g. paged allocator )
-	m_rtv_allocator = m_device->create_resource_view_allocator(gapi_resource_view_type::render_target_view, 1024);
-	m_dsv_allocator = m_device->create_resource_view_allocator(gapi_resource_view_type::depth_stencil_view, 1024);
-	m_sampler_allocator = m_device->create_resource_view_allocator(gapi_resource_view_type::texture_sampler, 1024);
-	m_cbv_srv_uav_allocator = m_device->create_resource_view_allocator(gapi_resource_view_type::shader_resource_view, 1024);
+	m_rtv_allocator = m_device->create_resource_view_allocator(gapi_resource_view_type::render_target_view, gapi_resource_view_allocator_type::offline, 1024);
+	m_dsv_allocator = m_device->create_resource_view_allocator(gapi_resource_view_type::depth_stencil_view, gapi_resource_view_allocator_type::offline, 1024);
+	m_sampler_allocator = m_device->create_resource_view_allocator(gapi_resource_view_type::texture_sampler, gapi_resource_view_allocator_type::offline, 1024);
+	m_cbv_srv_uav_allocator = m_device->create_resource_view_allocator(gapi_resource_view_type::shader_resource_view, gapi_resource_view_allocator_type::offline, 1024);
 	//
 	m_swap_chain = m_factory->create_swap_chain(window, m_device->get_cmd_queue(gapi_cmd_type::graphics), window_size, num_multi_buffer);
 	//
@@ -64,8 +64,27 @@ gapi_dynamic::gapi_dynamic(const gapi_platform& platform, void* window, const up
 	}
 }
 
+gapi_dynamic::~gapi_dynamic() = default;
+
+gapi_cmd_context& gapi_dynamic::get_cmd_context(const uint32& context_id) const
+{
+	CHECK(context_id < cvar_gapi_num_context_thread.get_value_thread_unsafe());
+	return *m_cmd_contexts[context_id];
+}
+
+std::shared_ptr<i::gapi_pipeline_state> gapi_dynamic::create_compute_pipeline_state(const gapi_compute_pipeline_state_desc& desc) const
+{
+	return m_device->create_compute_pipeline_state(desc);
+}
+
+std::shared_ptr<i::gapi_pipeline_state> gapi_dynamic::create_graphics_pipeline_state(const gapi_graphics_pipeline_state_desc& desc) const
+{
+	return m_device->create_graphics_pipeline_state(desc);
+}
+
 void gapi_dynamic::create_texture_views(const std::shared_ptr<i::gapi_texture>& texture) const
 {
+	// create offline resource views
 	const auto& create_flag = texture->get_resource_desc().m_texture_create_flag;
 	if (t::has_flag(create_flag, gapi_texture_create_flag::as_render_target))
 	{
@@ -91,24 +110,6 @@ void gapi_dynamic::create_texture_views(const std::shared_ptr<i::gapi_texture>& 
 		m_device->create_unordered_access_view(uav, texture);
 		texture->set_unordered_access_view(uav);
 	}
-}
-
-gapi_dynamic::~gapi_dynamic() = default;
-
-gapi_cmd_context& gapi_dynamic::get_cmd_context(const uint32& context_id) const
-{
-	CHECK(context_id < cvar_gapi_num_context_thread.get_value_thread_unsafe());
-	return *m_cmd_contexts[context_id];
-}
-
-std::shared_ptr<i::gapi_pipeline_state> gapi_dynamic::create_compute_pipeline_state(const gapi_compute_pipeline_state_desc& desc) const
-{
-	return m_device->create_compute_pipeline_state(desc);
-}
-
-std::shared_ptr<i::gapi_pipeline_state> gapi_dynamic::create_graphics_pipeline_state(const gapi_graphics_pipeline_state_desc& desc) const
-{
-	return m_device->create_graphics_pipeline_state(desc);
 }
 
 std::shared_ptr<i::gapi_buffer> gapi_dynamic::create_buffer(const gapi_resource_desc& desc) const

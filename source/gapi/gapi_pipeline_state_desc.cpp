@@ -29,14 +29,14 @@ uint16 size_of_gapi_vertex_element_type(const gapi_vertex_element_type& element_
 }
 
 gapi_bound_shader_state_desc::gapi_bound_shader_state_desc(const gapi_vertices_declaration& vertex_declaration, const std::shared_ptr<i::gapi_shader>& vertex_shader)
-	: m_vertex_declaration(vertex_declaration)
+	: m_vertices_declaration(vertex_declaration)
 {
 	m_stage_shaders[magic_enum::enum_underlying(gapi_shader_stage::vertex_shader)] = vertex_shader;
 	sanity_check();
 }
 
 gapi_bound_shader_state_desc::gapi_bound_shader_state_desc(const gapi_vertices_declaration& vertex_declaration, const std::shared_ptr<i::gapi_shader>& vertex_shader, const std::shared_ptr<i::gapi_shader>& pixel_shader)
-	: m_vertex_declaration(vertex_declaration)
+	: m_vertices_declaration(vertex_declaration)
 {
 	m_stage_shaders[magic_enum::enum_underlying(gapi_shader_stage::vertex_shader)] = vertex_shader;
 	m_stage_shaders[magic_enum::enum_underlying(gapi_shader_stage::pixel_shader)] = pixel_shader;

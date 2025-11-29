@@ -78,6 +78,7 @@ namespace i
 
 		//
 		gapi_resource_view_type get_type() const { return m_type; }
+		void set_type(gapi_resource_view_type type) { m_type = type; }
 	
 	protected:
 		gapi_resource_view_type m_type = gapi_resource_view_type::unknown;

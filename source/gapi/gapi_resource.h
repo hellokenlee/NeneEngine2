@@ -70,6 +70,7 @@ namespace i
 		void set_shader_resource_view(const std::shared_ptr<gapi_resource_view>& shader_resource_view) { m_shader_resource_view = shader_resource_view; }
 		
 	protected:
+		// optional offline resource views
 		std::shared_ptr<gapi_resource_view> m_render_target_view;
 		std::shared_ptr<gapi_resource_view> m_depth_stencil_view;
 		std::shared_ptr<gapi_resource_view> m_shader_resource_view;
@@ -84,6 +85,13 @@ namespace i
 
 		bool is_index_buffer() const { return t::has_flag(get_resource_desc().m_buffer_usage_flag, gapi_buffer_usage_flag::usage_index_buffer); }
 		bool is_vertex_buffer() const { return t::has_flag(get_resource_desc().m_buffer_usage_flag, gapi_buffer_usage_flag::usage_vertex_buffer); }
+
+		const auto& get_constant_buffer_view() const { return m_constant_buffer_view; }
+		void set_constant_buffer_view(const std::shared_ptr<gapi_resource_view>& view) { m_constant_buffer_view = view; }
+		
+	protected:
+		// optional offline resource views
+		std::shared_ptr<gapi_resource_view> m_constant_buffer_view;
 	};
 }
 	

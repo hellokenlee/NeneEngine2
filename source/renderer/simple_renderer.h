@@ -16,4 +16,5 @@ public:
 
 protected:
 	std::shared_ptr<i::gapi_pipeline_state> m_base_pass_pipeline_state;
+	std::shared_ptr<i::gapi_buffer> m_view_constant_buffer;
 };

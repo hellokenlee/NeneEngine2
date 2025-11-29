@@ -33,14 +33,14 @@ void gapi_d3d12_cmd_list::clear_state(const std::shared_ptr<i::gapi_pipeline_sta
 
 void gapi_d3d12_cmd_list::clear_depth_stencil_view(const std::shared_ptr<i::gapi_resource_view>& depth_stencil, const float& depth, const uint8& stencil)
 {
-	auto& d3d_view = t::gapi_pin<gapi_d3d12_resource_view>(depth_stencil);
+	auto& d3d_view = t::gapi_pin<gapi_d3d12_offline_resource_view>(depth_stencil);
 	CHECK(d3d_view.get_type() == gapi_resource_view_type::depth_stencil_view);
 	m_list->ClearDepthStencilView(d3d_view.get_d3d_cpu_handle(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, depth, stencil, 0, nullptr);
 }
 
 void gapi_d3d12_cmd_list::clear_render_target_view(const std::shared_ptr<i::gapi_resource_view>& render_target, const color::rgba<float>& clear_color)
 {
-	auto& d3d_view = t::gapi_pin<gapi_d3d12_resource_view>(render_target);
+	auto& d3d_view = t::gapi_pin<gapi_d3d12_offline_resource_view>(render_target);
 	CHECK(d3d_view.get_type() == gapi_resource_view_type::render_target_view);
 	m_list->ClearRenderTargetView(d3d_view.get_d3d_cpu_handle(), clear_color.container().data(), 0, nullptr);
 }
@@ -48,7 +48,7 @@ void gapi_d3d12_cmd_list::clear_render_target_view(const std::shared_ptr<i::gapi
 void gapi_d3d12_cmd_list::clear_unordered_access_view(const std::shared_ptr<i::gapi_resource_view>& unorder_access_view, const std::shared_ptr<i::gapi_resource>& resource, const color::rgba<float>& clear_color)
 {
 	// Floating point format
-	auto& d3d_view = t::gapi_pin<gapi_d3d12_resource_view>(unorder_access_view);
+	auto& d3d_view = t::gapi_pin<gapi_d3d12_offline_resource_view>(unorder_access_view);
 	auto& d3d_resource = t::gapi_pin<gapi_d3d12_resource>(resource);
 	CHECK(d3d_view.get_type() == gapi_resource_view_type::unordered_access_view);
 	if (resource->get_resource_desc().m_format == gapi_pixel_format::r8g8b8a8)
@@ -139,8 +139,12 @@ void gapi_d3d12_cmd_list::set_pipeline_state(const std::shared_ptr<i::gapi_pipel
 	m_list->SetPipelineState(d3d_pipeline_state.get_d3d_pipeline_state());
 }
 
-void gapi_d3d12_cmd_list::set_root_constant_buffer_view(const std::shared_ptr<i::gapi_resource_view>& cbv)
+void gapi_d3d12_cmd_list::bind_root_constant_buffer_view(const uint32& index, const std::shared_ptr<i::gapi_resource_view>& cbv)
 {
+	CHECK(cbv->get_type() == gapi_resource_view_type::constant_buffer_view);
+	const auto& d3d12_cbv = t::gapi_pin<gapi_d3d12_online_resource_view>(cbv);
+	
+	m_list->SetGraphicsRootConstantBufferView(index, d3d12_cbv.get_d3d_gpu_handle().ptr);
 	NOT_IMPLEMENTED();
 }
 
@@ -209,7 +213,7 @@ void gapi_d3d12_cmd_list::set_render_targets(const std::vector<std::shared_ptr<i
 	for (const auto& view : render_target_views)
 	{
 		CHECK(view->get_type() == gapi_resource_view_type::render_target_view);
-		auto& d3d_view = t::gapi_pin<gapi_d3d12_resource_view>(view);
+		auto& d3d_view = t::gapi_pin<gapi_d3d12_offline_resource_view>(view);
 		d3d_handles.push_back(d3d_view.get_d3d_cpu_handle());
 	}
 
@@ -217,7 +221,7 @@ void gapi_d3d12_cmd_list::set_render_targets(const std::vector<std::shared_ptr<i
 	if (depth_stencil_view != nullptr)
 	{
 		CHECK(depth_stencil_view->get_type() == gapi_resource_view_type::depth_stencil_view);
-		auto& d3d_depth_stencil_view = t::gapi_pin<gapi_d3d12_resource_view>(depth_stencil_view);
+		auto& d3d_depth_stencil_view = t::gapi_pin<gapi_d3d12_offline_resource_view>(depth_stencil_view);
 		depth_stencil_descriptor_handle = &(d3d_depth_stencil_view.get_d3d_cpu_handle());
 	}
 	

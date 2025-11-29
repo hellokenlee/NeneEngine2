@@ -34,7 +34,7 @@ public:
 	void execute_indirect(const std::shared_ptr<i::gapi_cmd_layout>& layout, const uint32& max_num_cmd, const std::shared_ptr<i::gapi_buffer>& arg_buffer, const uint32& arg_buffer_offset, const std::shared_ptr<i::gapi_buffer>& count_buffer, const uint32& count_buffer_offset) override;
 
 	void set_pipeline_state(const std::shared_ptr<i::gapi_pipeline_state>& pipeline_state) override;
-	void set_root_constant_buffer_view(const std::shared_ptr<i::gapi_resource_view>& cbv) override;
+	void bind_root_constant_buffer_view(const uint32& index, const std::shared_ptr<i::gapi_resource_view>& cbv) override;
 	void set_root_shader_resource_view(const std::shared_ptr<i::gapi_resource_view>& srv) override;
 	void set_root_unordered_access_view(const std::shared_ptr<i::gapi_resource_view>& srv) override;
 	void set_root_descriptor_table() override;

@@ -3,7 +3,6 @@
 #pragma once
 
 #include "core/core.h"
-#include "gapi_bound_shader_signature.h"
 #include "gapi_shader.h"
 #include "gapi_resource_desc.h"
 
@@ -49,32 +48,36 @@ enum class gapi_primitive_type : uint8
 	patch,
 };
 
-struct NENE_API gapi_bound_shader_state_desc
+class NENE_API gapi_bound_shader_state_desc
 {
-	// 
-	gapi_vertices_declaration m_vertex_declaration;
-	//
-	std::array<std::shared_ptr<i::gapi_shader>, magic_enum::enum_count<gapi_shader_stage>()> m_stage_shaders;
-
-	//
-	template<gapi_shader_stage stage>
-	const std::shared_ptr<i::gapi_shader>& get_stage_shader() const
-	{
-		return m_stage_shaders[magic_enum::enum_underlying(stage)];
-	}
-
+public:
+	// No default constructor
+	gapi_bound_shader_state_desc() = delete;
 	// Graphic Shader Stages
 	gapi_bound_shader_state_desc(const gapi_vertices_declaration& vertex_declaration, const std::shared_ptr<i::gapi_shader>& vertex_shader);
 	gapi_bound_shader_state_desc(const gapi_vertices_declaration& vertex_declaration, const std::shared_ptr<i::gapi_shader>& vertex_shader, const std::shared_ptr<i::gapi_shader>& pixel_shader);
-
 	// Compute Shader Stages
 	gapi_bound_shader_state_desc(const std::shared_ptr<i::gapi_shader>& compute_shader);
-	
-	// No default constructor
-	gapi_bound_shader_state_desc() = delete;
 
-private:
+	//
+	const std::shared_ptr<i::gapi_shader>& get_shader(gapi_shader_stage stage) const
+	{
+		return m_stage_shaders[magic_enum::enum_underlying(stage)];
+	}
+	void set_shader(gapi_shader_stage stage, const std::shared_ptr<i::gapi_shader>& shader)
+	{
+		m_stage_shaders[magic_enum::enum_underlying(stage)] = shader;
+	}
+	//
+	const auto& get_vertices_declaration() const { return m_vertices_declaration; }
+
+protected:
 	void sanity_check() const;
+	// 
+	gapi_vertices_declaration m_vertices_declaration;
+	//
+	std::array<std::shared_ptr<i::gapi_shader>, num_gapi_shader_stage> m_stage_shaders;
+	
 };
 
 

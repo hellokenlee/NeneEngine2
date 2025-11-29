@@ -9,23 +9,23 @@
 #include "gapi/gapi_pipeline_state_desc.h"
 
 
-struct gapi_d3d12_quantized_bound_shader_state
+struct d3d12_quantized_bound_shader_state
 {
-	gapi_d3d12_quantized_bound_shader_state(const gapi_bound_shader_state_desc& desc);
+	d3d12_quantized_bound_shader_state(const gapi_bound_shader_state_desc& desc);
 
-	bool operator==(const gapi_d3d12_quantized_bound_shader_state& rhs) const
+	bool operator==(const d3d12_quantized_bound_shader_state& rhs) const
 	{
 		NOT_IMPLEMENTED();
 		return false;
 	}
 	//
-	std::array<gapi_shader_register_count, magic_enum::enum_count<gapi_shader_stage>()> m_shader_register_counts;
+	std::array<gapi_shader_register_count, num_gapi_shader_stage> m_shader_register_counts;
 };
 
 template<>
-struct std::hash<gapi_d3d12_quantized_bound_shader_state>
+struct std::hash<d3d12_quantized_bound_shader_state>
 {
-	size_t operator()(const gapi_d3d12_quantized_bound_shader_state& desc) const noexcept
+	size_t operator()(const d3d12_quantized_bound_shader_state& desc) const noexcept
 	{
 		NOT_IMPLEMENTED();
 		return 0;
@@ -39,10 +39,10 @@ public:
 
 	WinComPtr<ID3D12RootSignature> find_or_create_root_signature(ID3D12Device* d3d_device, const gapi_bound_shader_state_desc& bound_shader_state_desc);
 
-	D3D12_VERSIONED_ROOT_SIGNATURE_DESC make_root_signature_desc(const gapi_d3d12_quantized_bound_shader_state& quantized_bound_shader_state) const;
+	D3D12_VERSIONED_ROOT_SIGNATURE_DESC make_root_signature_desc(const d3d12_quantized_bound_shader_state& quantized_bound_shader_state, std::array<gapi_shader_resource_table, num_gapi_shader_stage>& out_shader_resource_table) const;
 	
 private:
 	d3d12_root_signature_manager() = default;
 
-	std::unordered_map<gapi_d3d12_quantized_bound_shader_state, WinComPtr<ID3D12RootSignature>> m_root_signature_map;
+	std::unordered_map<d3d12_quantized_bound_shader_state, WinComPtr<ID3D12RootSignature>> m_root_signature_map;
 };

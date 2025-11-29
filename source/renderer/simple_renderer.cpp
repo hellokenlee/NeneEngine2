@@ -6,6 +6,7 @@
 #include "gapi_dynamic/gapi_pipeline_state_manager.h"
 #include "gapi_dynamic/gapi_shader_manager.h"
 #include "gapi_dynamic/gapi_dynamic.h"
+#include "shader/cppshared/view_uniform_buffer.h"
 
 
 simple_renderer::simple_renderer()
@@ -39,6 +40,13 @@ void simple_renderer::render_view_family(const std::shared_ptr<i::gapi_texture>&
 		mesh_pso_desc.m_depth_stencil_format = gapi_pixel_format::unknown;
 		m_base_pass_pipeline_state = gapi_pipeline_state_manager::get().find_or_create_pipeline_state(mesh_pso_desc);
 	}
+
+	// TODO: Structured unfiom buffer creation
+	if (m_view_constant_buffer == nullptr)
+	{
+		auto desc = gapi_buffer_desc::create(static_cast<uint32>(sizeof(SViewInfo)), gapi_buffer_usage_flag::dynamic_buffer);
+		m_view_constant_buffer = gapi_dynamic::get().create_buffer(desc);
+	}
 	
 	{
 		auto _ = context.render_pass({view_family_texture});
@@ -51,6 +59,7 @@ void simple_renderer::render_view_family(const std::shared_ptr<i::gapi_texture>&
 		{
 			context.set_vertex_buffer(cube->get_vertex_buffer(i));
 		}
+		context.bind_constant_buffer_view(gapi_shader_stage::vertex_shader, 0, m_view_constant_buffer->get_constant_buffer_view());
 		context.draw_indexed(cube->num_index(), 1);
 	}
 }

@@ -1,8 +1,11 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #include "/engine/generated/vertex_factory.h"
-#include "/vertex_factory/vertex_factory_common.h"
-#include "/base_pass_common.h"
+#include "vertex_factory/vertex_factory_common.h"
+#include "base_pass_common.h"
+#include "cppshared/view_uniform_buffer.h"
+
+cbuffer ViewInfoConstantBuffer : register(b0, SPACE_VS) { SViewInfo ViewInfo; };
 
 
 void Main(in SVertexFactoryInput VertexFactoryInput, out SVertexShaderOutput VertexShaderOutput)
@@ -12,6 +15,6 @@ void Main(in SVertexFactoryInput VertexFactoryInput, out SVertexShaderOutput Ver
 	VertexFactoryGetVertexShaderInput(VertexFactoryInput, VertexShaderInput);
 
 	//
-	VertexShaderOutput.NdcPosition = VertexShaderInput.GetWorldPosition();
+	VertexShaderOutput.NdcPosition = VertexFactoryGetWorldPosition(VertexFactoryInput, VertexShaderInput);
 	VertexShaderOutput.UV = float2(1, 0);
 }

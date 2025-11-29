@@ -12,6 +12,7 @@
 #include <dxgi1_6.h>
 #include <wrl/client.h>
 #include "d3dx12.h"
+#include "d3d12_limits.h"
 
 
 inline std::string get_error_string(const HRESULT code)
