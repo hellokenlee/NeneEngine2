@@ -7,6 +7,7 @@ import importlib.metadata
 from script.builder.common.log import log
 from script.builder.common.singleton import Singleton
 
+
 class PySideConfig(metaclass=Singleton):
 
 	PYSIDE6 = "PySide6"
@@ -58,7 +59,7 @@ class PySideConfig(metaclass=Singleton):
 
 	def print_brief(self):
 		#
-		log("DetectedPySide", "\n")
+		log("Detected PySide", "\n")
 		log("PySide version: %s" % self.version())
 		log("PySide install path: %s" % self.pyside_install_path())
 		log("Shiboken version: %s" % self._shiboken_generator_version)

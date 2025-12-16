@@ -6,20 +6,17 @@ import sys
 import shutil
 import tempfile
 import subprocess
-from pathlib import Path
 from xml.etree import ElementTree
 
-from extern.qt import Qt
-from extern.python import Python
+from extern.qtbase import QtBase
+from extern.python3 import Python3
 from extern.pyside import PySide
-from extern.dxc import Dxc
 from source.core import Core
 from source.core_object import CoreObject
 from source.engine import Engine
 
 from script.builder.common.nene_module import *
 from script.builder.common import utils
-from script.builder.python_confg import PythonConfig
 from script.builder.pyside_config import PySideConfig
 from script.builder.vistual_studio.visual_studio_config import VisualStudioConfig
 
@@ -29,7 +26,6 @@ class Editor(NeneModule):
 	QT_FOLDER = "qt"
 	BINDING_H_FILEPATH = os.path.join(QT_FOLDER, "bindings.h")
 	BINDING_XML_FILEPATH = os.path.join(QT_FOLDER, "bindings.xml")
-	TARGET_EXEC_FOLDER = os.path.join(".bin", "binary", "{Architecture}", "{Configuration}")
 	GENERATED_MOC_TARGET_FOLDER = os.path.join(".bin", "intermediate", "editor", "qt_moc")
 	GENERATED_BINDING_TARGET_FOLDER = os.path.join(".bin", "intermediate", "editor", "qt_binding")
 
@@ -41,9 +37,8 @@ class Editor(NeneModule):
 			[Core, CoreObject, Engine]
 		)
 		self.external_dependencies.extend(
-			[Qt, Python, PySide, Dxc]
+			[QtBase, PySide, Python3]
 		)
-
 		pass
 
 	def configure(self, build_config: BuildConfig) -> NeneModuleConfig:
@@ -56,7 +51,7 @@ class Editor(NeneModule):
 			["/Zc:__cplusplus"]
 		)
 		module_config.compiler.preprocessor_definitions.extend(
-			["_WINDLL", "NENE_PYTHON_HOME=\"%s\"" % Path(PythonConfig().install_path()).as_posix(), "NENE_EDITOR_MODULE_NAME=%s" % self._read_binding_module_name()]
+			["_WINDLL", "NENE_PYTHON_HOME=\"%s\"" % utils.posix_path(Python3().get_python_home_abs_path()), "NENE_EDITOR_MODULE_NAME=%s" % self._read_binding_module_name()]
 		)
 		# Deactivated "#pragma comment(lib)" in "$(PYTHON_HOME)/include/pyconfig.h"
 		module_config.linker.additional_linker_flags.extend(
@@ -101,7 +96,7 @@ class Editor(NeneModule):
 				if filename.endswith(".h"):
 					mocable_file_abs_paths.append(os.path.join(root, filename))
 		#
-		moc_exec_abs_path = os.path.join(Qt().get_binary_abs_path(), "windows", "moc.exe")
+		moc_exec_abs_path = QtBase().get_moc_abs_path()
 		#
 		for mocable_file_asb_path in mocable_file_abs_paths:
 			moc_target_file_name = "moc_%s.cpp" % os.path.basename(mocable_file_asb_path).split(".")[0]
@@ -113,7 +108,7 @@ class Editor(NeneModule):
 				"-o",
 				moc_target_file_abs_path,
 			]
-			print("Executing: `%s`" % " ".join(moc_command))
+			log("Executing: `%s`" % " ".join(moc_command))
 			os.system(" ".join(moc_command))
 		pass
 
@@ -139,8 +134,10 @@ class Editor(NeneModule):
 			# includes
 			#
 			"-I%s" % os.path.join(cls.engine_root_abs_path(), "source"),
-			"-I%s" % os.path.join(Qt().get_include_abs_paths()[0], "QtWidgets"),
-			"-I%s" % Qt().get_include_abs_paths()[0],
+			"-I%s" % os.path.join(QtBase().get_include_abs_paths(Platform.Windows, Architecture.x64, Configuration.Release)[0], "QtWidgets"),
+			"-I%s" % QtBase().get_include_abs_paths(Platform.Windows, Architecture.x64, Configuration.Release)[0],
+			# ...
+			# add other modules here
 			"-I%s" % cls().get_additional_include_folder_abs_paths()[0],
 			# typesystems
 			"-T%s" % cls().get_additional_include_folder_abs_paths()[0],
@@ -153,12 +150,12 @@ class Editor(NeneModule):
 			os.path.join(cls.root_abs_path(), cls.BINDING_XML_FILEPATH),
 		]
 		#
-		print("Executing: `%s`" % " ".join(shiboken_command))
+		log("Executing: `%s`" % " ".join(shiboken_command))
 		sys.stdout.flush()
 		env = {
 			'TEMP': tempfile.gettempdir(),
 			'TMP': tempfile.gettempdir(),
-			"LLVM_INSTALL_DIR": os.path.join(PySide.root_abs_path(), "llvm"),
+			"LLVM_INSTALL_DIR": os.path.join(PySide().get_llvm_root_abs_path()),
 		}
 		subprocess.run(" ".join(shiboken_command), shell=True, env=env).check_returncode()
 		# rename the module directory
@@ -166,7 +163,7 @@ class Editor(NeneModule):
 		dst_target_folder_path = os.path.join(cls._shiboken_target_folder_abs_path(), "qt_pyside")
 		shutil.rmtree(dst_target_folder_path, ignore_errors=True)
 		shutil.move(src_target_folder_path, dst_target_folder_path)
-		print("rename `%s` -> `%s`" % (src_target_folder_path, dst_target_folder_path))
+		log("Rename `%s` -> `%s`" % (src_target_folder_path, dst_target_folder_path))
 		pass
 
 	@classmethod
@@ -175,29 +172,14 @@ class Editor(NeneModule):
 		editor_qt_root_abs_path = os.path.join(cls.root_abs_path(), cls.QT_FOLDER)
 		#
 		if utils.get_modify_time(editor_qt_root_abs_path) < utils.get_modify_time(cls._moc_target_folder_abs_path()):
-			print("nothing changed. skipped moc.")
+			log("nothing changed. skipped moc.")
 		else:
 			cls.run_qt_moc()
 		#
 		if utils.get_modify_time(editor_qt_root_abs_path) < utils.get_modify_time(cls._shiboken_target_folder_abs_path()):
-			print("nothing changed. skipped shiboken.")
+			log("nothing changed. skipped shiboken.")
 		else:
 			cls.run_pyside_shiboken()
-		pass
-
-	@classmethod
-	def postbuild(cls, platform: Platform, arch: Architecture, con: Configuration):
-		target_exec_folder = cls.TARGET_EXEC_FOLDER.format(Architecture=arch.name, Configuration=con.name)
-		target_exec_folder_abs_path = os.path.join(cls.engine_root_abs_path(), target_exec_folder)
-		for extern_lib_class in cls().external_dependencies:
-			for dynamic_library_directory_abs_path in extern_lib_class().get_dynamic_library_directory_abs_paths(platform, arch, con):
-				for dynamic_library_filename in extern_lib_class().get_dynamic_library_filenames(platform, arch, con):
-					dynamic_library_file_abs_path = os.path.join(dynamic_library_directory_abs_path, dynamic_library_filename)
-					if os.path.exists(dynamic_library_file_abs_path):
-						target_dynamic_library_file_abs_path = os.path.join(target_exec_folder_abs_path, dynamic_library_filename)
-						if not os.path.exists(target_dynamic_library_file_abs_path):
-							print("cp %s -> %s" % (dynamic_library_file_abs_path, target_dynamic_library_file_abs_path))
-							shutil.copyfile(dynamic_library_file_abs_path, target_dynamic_library_file_abs_path)
 		pass
 
 	@classmethod

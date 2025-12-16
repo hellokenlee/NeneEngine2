@@ -10,10 +10,9 @@ Nene Engine is an in-house game engine named after Sakura Nene's game engine in 
 
 ### Preliminary
 
-Nene Engine use Python as main scripting language and tool-chain language. The following Python environment must be satisfied:
+Nene Engine use Vcpkg to manage dependencies. The following environment must be satisfied:
 
-- Python >= 3.10
-- Pyside6.9
+- Working Vcpkg environment
 
 Note that Nene Engine use Visual Studio's Project file  ( instead of CMake ) as a primary way to organize the source files. The following C++ environment should be satisfied in Windows:
 

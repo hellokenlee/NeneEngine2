@@ -3,11 +3,13 @@
 # __email__ = "hellokenlee@163.com"
 
 import os
+import shutil
 import inspect
 
+from script.builder.common.log import *
 from script.builder.common.build_common import *
+from script.builder.common.nene_dependency import NeneDenepndency
 from script.builder.common.singleton import Singleton
-from script.builder.common.external_library import ExternalLibrary
 
 
 class CppStandard(Enum):
@@ -104,6 +106,8 @@ class NeneModule(object, metaclass=Singleton):
 	Defined how the build tool compile and build a module
 	"""
 
+	TARGET_EXEC_FOLDER = os.path.join(".bin", "binary", "{Architecture}", "{Configuration}")
+
 	@classmethod
 	def available(cls) -> bool:
 		return True
@@ -117,7 +121,7 @@ class NeneModule(object, metaclass=Singleton):
 		self.build_target: BuildTarget = BuildTarget.DLL
 		#
 		self.module_dependencies: list[type['NeneModule']] = []
-		self.external_dependencies: list[type['ExternalLibrary']] = []
+		self.external_dependencies: list[type['NeneDenepndency']] = []
 		self.system_library_dependencies: list['str'] = []
 		#
 		self.windows_subsystem = WindowsSubsystem.Console
@@ -132,6 +136,9 @@ class NeneModule(object, metaclass=Singleton):
 		if build_config.configuration == Configuration.Debug:
 			#
 			module_config.add_defines(["NENE_DEBUG", "_CONSOLE", "NOMINMAX", "_ITERATOR_DEBUG_LEVEL=0"])
+			# See `pyconfig.h`::303
+			# 我们会手动指定链接库, 不需要 python 在代码里面使用 `pragma comment(lib, xxx)` 方式进行指定
+			module_config.add_defines(["Py_NO_LINK_LIB"])
 			module_config.compiler.msvc_conformance_mode = False
 			#
 			module_config.linker.msvc_com_dat_folding = False
@@ -168,8 +175,8 @@ class NeneModule(object, metaclass=Singleton):
 	def get_additional_source_folder_abs_paths(self) -> list[str]:
 		return []
 
-	def recursively_find_extern_libraries(self) -> set[type[ExternalLibrary]]:
-		extern_libraries_classes: set[type[ExternalLibrary]] = set()
+	def recursively_find_extern_libraries(self) -> set[type[NeneDenepndency]]:
+		extern_libraries_classes: set[type[NeneDenepndency]] = set()
 		for extern_library_class in self.external_dependencies:
 			extern_libraries_classes.add(extern_library_class)
 		for nene_module_class in self.module_dependencies:
@@ -204,3 +211,25 @@ class NeneModule(object, metaclass=Singleton):
 	def get_folder_name(cls):
 		folder_abs_path = os.path.dirname(os.path.abspath(inspect.getfile(cls)))
 		return os.path.basename(folder_abs_path)
+
+	@classmethod
+	def target_exec_folder_abs_path(cls, arch: Architecture, con: Configuration):
+		target_exec_folder = cls.TARGET_EXEC_FOLDER.format(Architecture=arch.name, Configuration=con.name)
+		target_exec_folder_abs_path = os.path.join(cls.engine_root_abs_path(), target_exec_folder)
+		return target_exec_folder_abs_path
+
+	@classmethod
+	def copy_dynamic_library_files(cls, platform: Platform, arch: Architecture, con: Configuration):
+		target_exec_folder_abs_path = cls.target_exec_folder_abs_path(arch, con)
+		log("Copying dynamic library files to: %s" % target_exec_folder_abs_path)
+		external_dependencies = cls().recursively_find_extern_libraries()
+		for extern_lib_class in external_dependencies:
+			for dynamic_library_directory_abs_path in extern_lib_class().get_dynamic_library_directory_abs_paths(platform, arch, con):
+				for dynamic_library_filename in extern_lib_class().get_dynamic_library_filenames(platform, arch, con):
+					dynamic_library_file_abs_path = os.path.join(dynamic_library_directory_abs_path, dynamic_library_filename)
+					if os.path.exists(dynamic_library_file_abs_path):
+						target_dynamic_library_file_abs_path = os.path.join(target_exec_folder_abs_path, dynamic_library_filename)
+						if not os.path.exists(target_dynamic_library_file_abs_path):
+							log("Copy %s -> %s" % (dynamic_library_file_abs_path, target_dynamic_library_file_abs_path))
+							shutil.copyfile(dynamic_library_file_abs_path, target_dynamic_library_file_abs_path)
+		pass

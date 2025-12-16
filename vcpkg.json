@@ -1,0 +1,16 @@
+{
+  "dependencies": [
+    "boost-intrusive",
+    "directx-dxc",
+    "nlohmann-json",
+    "pybind11",
+    "python3",
+    "rttr",
+    "qtbase"
+  ],
+  "builtin-baseline": "4c4abc2e8727221ede31021349386dac674309b0",
+  "overrides": [
+    {"name": "qtbase", "version": "6.9.0"},
+    {"name": "python", "version": "3.12.0"}
+  ]
+}

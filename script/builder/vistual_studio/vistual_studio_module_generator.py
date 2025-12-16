@@ -1,9 +1,12 @@
 # -*- coding=utf-8 -*-
 # __author__ = "KenLee"
 # __email__ = "hellokenlee@163.com"
-
+import os.path
 import uuid
 from xml.etree import ElementTree
+
+from extern.python3 import Python3
+
 from script.builder.common import utils
 from script.builder.common.nene_module import *
 from script.builder.common.build_configuration import BuildConfiguration
@@ -45,6 +48,10 @@ class VcTag(object):
 	Command = "Command"
 	Target = "Target"
 	Message = "Message"
+	VcpkgEnabled = "VcpkgEnabled"
+	VcpkgEnableManifest = "VcpkgEnableManifest"
+	LocalDebuggerCommand = "LocalDebuggerCommand"
+	LocalDebuggerEnvironment = "LocalDebuggerEnvironment"
 	pass
 
 class VcAttrib(object):
@@ -118,6 +125,7 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 		vcproj_tree.getroot().attrib[VcAttrib.DefaultTargets] = "Build"
 		#
 		self._add_item_group_project_configurations(vcproj_tree, nene_module_configs)
+		self._add_property_group_vcpakg(vcproj_tree)
 		self._add_property_group_globals(vcproj_tree, nene_module.name, vcproj_guid)
 		self._add_imports(vcproj_tree, VcImport.DefaultProps)
 		self._add_property_group_configurations(vcproj_tree, nene_module, nene_module_configs)
@@ -154,6 +162,13 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 			configuration.text = nene_module_config.configuration.name
 			platform = ElementTree.SubElement(project_configuration, VcTag.Platform)
 			platform.text = nene_module_config.architecture.name
+		pass
+
+	@staticmethod
+	def _add_property_group_vcpakg(vcproj_tree: ElementTree.ElementTree):
+		property_group = ElementTree.SubElement(vcproj_tree.getroot(), VcTag.PropertyGroup)
+		property_group.attrib[VcAttrib.Label] = "Vcpkg"
+		ElementTree.SubElement(property_group, VcTag.VcpkgEnabled).text = "false"
 		pass
 
 	@staticmethod
@@ -234,9 +249,9 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 		pass
 
 	def _add_property_group_per_configuration(self, vcproj_tree: ElementTree.ElementTree, nene_module: NeneModule, nene_module_configs: list[NeneModuleConfig]):
-		for nene_module_config in nene_module_configs:
+		for config in nene_module_configs:
 			property_group = ElementTree.SubElement(vcproj_tree.getroot(), VcTag.PropertyGroup)
-			property_group.attrib[VcAttrib.Condition] = "\'$(Configuration)|$(Platform)\'==\'%s|%s\'" % (nene_module_config.configuration.name, nene_module_config.architecture.name)
+			property_group.attrib[VcAttrib.Condition] = "\'$(Configuration)|$(Platform)\'==\'%s|%s\'" % (config.configuration.name, config.architecture.name)
 			ElementTree.SubElement(property_group, VcTag.LinkIncremental).text = "false"
 			ElementTree.SubElement(property_group, VcTag.OutDir).text = VisualStudioModuleGenerator.PROJ_OUTPUT_PATH
 			ElementTree.SubElement(property_group, VcTag.IntDir).text = VisualStudioModuleGenerator.PROJ_INTERMEDIATE_PATH
@@ -251,9 +266,12 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 				# Module
 				"$(ProjectDir)",
 			]
+			extern_include_paths: set[str] = set()
 			# Add all dependent extern's include paths to avoid chain `#include <>`
 			for extern_library_class in nene_module.recursively_find_extern_libraries():
-				include_paths.extend(extern_library_class().get_include_abs_paths())
+				for include_abs_path in extern_library_class().get_include_abs_paths(config.platform, config.architecture, config.configuration):
+					extern_include_paths.add(include_abs_path)
+			include_paths.extend(extern_include_paths)
 			include_paths.extend(nene_module.get_additional_include_folder_abs_paths())
 			include_paths.reverse()
 			ElementTree.SubElement(property_group, VcTag.ExternalIncludePath).text = ";".join(include_paths)
@@ -264,12 +282,45 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 				# Build Output
 				self.PROJ_OUTPUT_PATH,
 			]
+			extern_static_library_directory_abs_paths: set[str] = set()
 			for extern_library_class in nene_module.recursively_find_extern_libraries():
-				extern_static_library_directory_abs_pahs = extern_library_class().get_static_library_directory_abs_paths(nene_module_config.platform, nene_module_config.architecture, nene_module_config.configuration)
-				library_paths.extend(extern_static_library_directory_abs_pahs)
+				for directory_abs_path in extern_library_class().get_static_library_directory_abs_paths(config.platform, config.architecture, config.configuration):
+					extern_static_library_directory_abs_paths.add(directory_abs_path)
+			library_paths.extend(extern_static_library_directory_abs_paths)
 			library_paths.reverse()
 			ElementTree.SubElement(property_group, VcTag.LibraryPath).text = ";".join(library_paths)
-			pass
+			#
+			# 环境变量重定向
+			if nene_module.build_target == BuildTarget.EXE:
+				#
+				exec_paths: set[str] = set()
+				nene_dependencies = nene_module.recursively_find_extern_libraries()
+				for dependency in nene_dependencies:
+					for directory in dependency().get_dynamic_library_directory_abs_paths(config.platform, config.architecture, config.configuration):
+						exec_paths.add(directory)
+				exec_paths_str = ";".join(exec_paths)
+				ElementTree.SubElement(property_group, VcTag.LocalDebuggerEnvironment).text = "PATH=%s;%%(PATH)" % exec_paths_str
+				# 如果是 Rider 目前还不支持 `LocalDebuggerEnvironment` 手动写入 .env 文件
+				# refs: https://youtrack.jetbrains.com/issue/RIDER-101684/Respect-LocalDebuggerEnvironment-from-.vcxproj.user-file
+				target_exec_folder_abs_path = nene_module.target_exec_folder_abs_path(config.architecture, config.configuration)
+				target_env_abs_path = os.path.join(target_exec_folder_abs_path, ".env.%s" % nene_module.name)
+				with open(target_env_abs_path, "w") as fp:
+					envs = [
+						"PATH=%s;$PATH$" % exec_paths_str
+					]
+					fp.writelines("\n".join(envs))
+					log("Write: %s" % target_env_abs_path)
+				#
+				self._hack_rider_environment_variables(envs)
+		pass
+
+	@staticmethod
+	def _hack_rider_environment_variables(envs: list[str]):
+		rider_workspace_abs_path = os.path.join(BuildConfiguration().engine_root_abs_path, ".idea", ".idea.NeneEngine2", ".idea", "workspace.xml")
+		if os.path.exists(rider_workspace_abs_path):
+			tree = ElementTree.parse(rider_workspace_abs_path)
+			ElementTree.indent(tree, '  ')
+			tree.write(rider_workspace_abs_path + ".2", encoding='UTF-8', xml_declaration=True)
 		pass
 
 	@staticmethod
@@ -327,6 +378,7 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 			ElementTree.SubElement(link, "AdditionalOptions").text = " ".join(linker.additional_linker_flags)
 
 			# Build Events
+			py_exec_abs_path = Python3().get_python_exec_abs_path()
 			py_module_name = "%s.%s" % ("source", nene_module.name)
 			py_import_command = "import %s" % py_module_name
 			platform_str = "%s.%s" % (nene_module_config.platform.__class__.__name__, nene_module_config.platform.name)
@@ -336,12 +388,12 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 			if utils.overloaded(nene_module.prebuild):
 				pre_build_event = ElementTree.SubElement(item_definition_group, VcTag.PreBuildEvent)
 				call_function_command = "%s.%s.prebuild(%s, %s, %s)" % (py_module_name, nene_module.__class__.__name__, platform_str, architecture_str, configuration_str)
-				ElementTree.SubElement(pre_build_event, VcTag.Command).text = "cd %s\npy -c \"import sys; sys.dont_write_bytecode = True; from script.builder.common.build_common import *; %s; %s\"" % (VcMacro.SolutionDir, py_import_command, call_function_command)
+				ElementTree.SubElement(pre_build_event, VcTag.Command).text = "cd %s\n%s -c \"import sys; sys.dont_write_bytecode = True; from script.builder.common.build_common import *; %s; %s\"" % (VcMacro.SolutionDir, py_exec_abs_path, py_import_command, call_function_command)
 			# Post Build Event
 			if utils.overloaded(nene_module.postbuild):
 				post_build_event = ElementTree.SubElement(item_definition_group, VcTag.PostBuildEvent)
 				call_function_command = "%s.%s.postbuild(%s, %s, %s)" % (py_module_name, nene_module.__class__.__name__, platform_str, architecture_str, configuration_str)
-				ElementTree.SubElement(post_build_event, VcTag.Command).text = "cd %s\npy -c \"import sys; sys.dont_write_bytecode = True; from script.builder.common.build_common import *; %s; %s\"" % (VcMacro.SolutionDir, py_import_command, call_function_command)
+				ElementTree.SubElement(post_build_event, VcTag.Command).text = "cd %s\n%s -c \"import sys; sys.dont_write_bytecode = True; from script.builder.common.build_common import *; %s; %s\"" % (VcMacro.SolutionDir, py_exec_abs_path, py_import_command, call_function_command)
 		pass
 
 	@staticmethod

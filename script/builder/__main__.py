@@ -9,7 +9,7 @@
 		Run `py script/builder` in NeneEngine root.
 	
 """
-__version__ = '0.1.0'
+__version__ = '0.2.0'
 
 import os
 import sys
@@ -39,7 +39,6 @@ def main():
 	from common.project_generator import NeneProject
 	from common.build_configuration_utils import BuildConfigurationUtils
 	from readme_builder import ReadmeBuilder
-	from python_confg import PythonConfig
 	from pyside_config import PySideConfig
 	#
 	parser = argparse.ArgumentParser(description="Nene Build Tools v%s\n" % __version__)
@@ -62,7 +61,6 @@ def main():
 	BuildConfiguration().set_engine_root(engine_root_abs_path)
 
 	# Preliminary Detection
-	PythonConfig().print_brief()
 	PySideConfig().print_brief()
 	if BuildConfiguration().platform == Platform.Windows:
 		from script.builder.vistual_studio.visual_studio_config import VisualStudioConfig
