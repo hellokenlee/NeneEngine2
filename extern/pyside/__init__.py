@@ -3,7 +3,6 @@
 # __email__ = "hellokenlee@163.com"
 
 from pathlib import Path
-from extern.qt import Qt
 from script.builder.common.external_library import *
 from script.builder.common.build_configuration import BuildConfiguration
 from script.builder.pyside_config import PySideConfig
@@ -20,11 +19,14 @@ class PySide(ExternalLibrary):
 					self.dependent_libraries.append(Path(filename).stem)
 		pass
 
-	def get_include_abs_paths(self) -> list[str]:
+	def get_llvm_root_abs_path(self):
+		return os.path.join(os.path.dirname(os.path.abspath(inspect.getfile(self.__class__))), "llvm")
+
+	def get_include_abs_paths(self, plat: Platform, arch: Architecture, con: Configuration) -> list[str]:
 		# pyside root header path
 		result = [PySideConfig().pyside_include_path()]
-		# used pyside header paths
-		for module_name in Qt.INCLUDE_MODULES:
+		# pyside module header paths
+		for module_name in os.listdir(PySideConfig().pyside_include_path()):
 			result.append(os.path.join(PySideConfig().pyside_include_path(), module_name))
 		# shiboken root header path
 		result.append(os.path.join(PySideConfig().shiboken_generator_include_path()))

@@ -1,2 +1,0 @@
-The libs in this path are ripped from pre-built msvc2022_64 Qt6.9.0 from online installer.
-The original path is `${Qt_DIR}\6.9.0\msvc2022_64\lib`. All libs are release version and only for linking usage.

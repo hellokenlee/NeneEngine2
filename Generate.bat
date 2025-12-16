@@ -1,3 +1,1 @@
-py -m pip install -r requirements.txt
-py script/builder
-pause
+.\.package\x64-windows\tools\python3\python.exe script/builder
