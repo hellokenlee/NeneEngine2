@@ -10,9 +10,9 @@ Nene Engine is an in-house game engine named after Sakura Nene's game engine in 
 
 ### Preliminary
 
-Nene Engine use Vcpkg to manage dependencies. The following environment must be satisfied:
+Nene Engine use [Vcpkg](https://vcpkg.io/) to manage dependencies. The following environment must be satisfied:
 
-- Working Vcpkg environment
+- [Working Vcpkg environment](https://learn.microsoft.com/en-us/vcpkg/get_started/get-started?pivots=shell-cmd)
 
 Note that Nene Engine use Visual Studio's Project file  ( instead of CMake ) as a primary way to organize the source files. The following C++ environment should be satisfied in Windows:
 
@@ -117,7 +117,7 @@ graph TD
 
 #### Namespace
 
-You can use namespaces to organize your classes, functions and variables where appropriate. But Nene Engine uses some special single letter namespaces to annotate the category of the classes or functions:
+You can use namespaces to organize your classes, functions and variables where appropriate. But Nene Engine uses some special namespaces to annotate the category of the classes or functions:
 
 ```c++
 // Interface
@@ -168,7 +168,7 @@ The namespace `n` is for class that has reflection in Nene Engine. The classes i
 ```c++
 // QtExtension
 #include <QtWidgets/QWidget>
-namespace q
+namespace qt
 {
 	class BINDINGS_API some_qt_widget : public QWidget
     {
@@ -177,7 +177,7 @@ namespace q
 }
 ```
 
-The namespace `q` is for 
+The namespace `qt` is for Qt extension class for editor.
 
 
 
