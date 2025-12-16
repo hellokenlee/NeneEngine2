@@ -55,7 +55,7 @@ namespace i
 		virtual std::shared_ptr<gapi_resource> create_reserved_resource(const gapi_resource_desc& desc) = 0;
 
 		// Resource View
-		virtual std::shared_ptr<gapi_resource_view_allocator> create_resource_view_allocator(gapi_resource_view_type view_type, gapi_resource_view_allocator_type allocator_type, const uint32& max_num_views) = 0;
+		virtual std::shared_ptr<gapi_resource_view_allocator> create_resource_view_allocator(gapi_resource_view_type view_type, gapi_resource_view_allocator_type allocator_type) = 0;
 		virtual void create_constant_buffer_view(const std::shared_ptr<gapi_resource_view>& allocated_view, const std::shared_ptr<gapi_buffer>& buffer) = 0;
 		virtual void create_shader_resource_view(const std::shared_ptr<gapi_resource_view>& allocated_view, const std::shared_ptr<gapi_resource>& resource) = 0;
 		virtual void create_unordered_access_view(const std::shared_ptr<gapi_resource_view>& allocated_view, const std::shared_ptr<gapi_resource>& resource) = 0;

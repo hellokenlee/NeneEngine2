@@ -13,15 +13,16 @@ public:
 	//
 	gapi_online_resource_view_cache(const std::shared_ptr<i::gapi_device>& device);
 	
-	// 
+	// invalidate all cached resource views, called when the command list reset
 	void reset();
 	// initial the cache for a shader signature, called while binding pso
-	void initialize(const gapi_shader_resource_table& shader_resource_table);
+	void initialize(const gapi_shader_resource_tables& shader_resource_tables);
 	// stage the cache of a resource view, called while binding resource 
-	void stage_resource_view();
-	// commit all resource views in cache to GPU and make them online, called while draw | dispatch
+	void stage_resource_view(gapi_shader_stage stage, uint32 reg, const std::shared_ptr<i::gapi_resource_view>& view);
+	// commit all staged resource views in cache to GPU and make them online, called while draw | dispatch
 	void commit_staged_resource_views();
 	
 protected:
+	gapi_shader_resource_tables m_shader_resource_tables;
 	std::shared_ptr<i::gapi_resource_view_allocator> m_online_resource_view_allocator;
 };

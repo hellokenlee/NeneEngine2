@@ -5,13 +5,13 @@
 namespace t
 {
 	template<typename T>
-	consteval size_t num_bits_of()
+	consteval size_t bits_of()
 	{
 		return sizeof(T) * 8;
 	}
 	
 	template<typename T>
-	consteval size_t num_bits_of(const T& data)
+	consteval size_t bits_of(const T& data)
 	{
 		return sizeof(T) * 8;
 	}
@@ -25,6 +25,6 @@ namespace t
 		// `00000111`: v; `00010111`: x;
 		// `00000000`: v; `11111111`: v
 		// 因此如果 x 满足上述模式, 则 x & (x + 1) == 0
-		return x & (x + 1) == 0;
+		return (x & (x + 1)) == 0;
 	}
 }

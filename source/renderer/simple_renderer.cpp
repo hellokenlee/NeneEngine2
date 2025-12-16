@@ -41,7 +41,7 @@ void simple_renderer::render_view_family(const std::shared_ptr<i::gapi_texture>&
 		m_base_pass_pipeline_state = gapi_pipeline_state_manager::get().find_or_create_pipeline_state(mesh_pso_desc);
 	}
 
-	// TODO: Structured unfiom buffer creation
+	// TODO: Structured uniform buffer creation
 	if (m_view_constant_buffer == nullptr)
 	{
 		auto desc = gapi_buffer_desc::create(static_cast<uint32>(sizeof(SViewInfo)), gapi_buffer_usage_flag::dynamic_buffer);

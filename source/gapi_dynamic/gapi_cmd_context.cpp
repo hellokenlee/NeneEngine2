@@ -108,6 +108,8 @@ void gapi_cmd_context::draw_indexed(const uint32& num_indices, const uint32& num
 void gapi_cmd_context::set_pipeline_state(const std::shared_ptr<i::gapi_pipeline_state>& pipeline_state)
 {
 	//
+	m_online_resource_view_cache.initialize(pipeline_state->get_shader_resource_tables());
+	//
 	get_current_cmd_list()->set_pipeline_state(pipeline_state);
 }
 
@@ -128,7 +130,7 @@ void gapi_cmd_context::set_primitive_type(const gapi_primitive_type& ptype) cons
 
 void gapi_cmd_context::bind_shader_resource_view(const gapi_shader_stage& stage, const uint32& index, const std::shared_ptr<i::gapi_resource_view>& srv)
 {
-	m_online_resource_view_cache.stage_resource_view();
+	m_online_resource_view_cache.stage_resource_view(stage, index, srv);
 }
 
 void gapi_cmd_context::bind_constant_buffer_view(const gapi_shader_stage& stage, const uint32& index, const std::shared_ptr<i::gapi_resource_view>& cbv)

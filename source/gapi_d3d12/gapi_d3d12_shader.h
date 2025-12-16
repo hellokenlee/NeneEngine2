@@ -4,7 +4,7 @@
 
 #include "gapi/gapi_shader.h"
 #include "d3d12_utils.h"
-#include <d3d12shader.h>
+#include <directx-dxc/d3d12shader.h>
 
 
 class gapi_d3d12_shader : public i::gapi_shader

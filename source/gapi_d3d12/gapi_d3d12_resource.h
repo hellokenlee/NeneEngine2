@@ -6,7 +6,7 @@
 
 #include "gapi/gapi_resource.h"
 #include "d3d12_utils.h"
-#include "gapi_d3d12_resource_view_allocator.h"
+#include "gapi_d3d12_resource_view_page_allocator.h"
 
 
 class gapi_d3d12_resource : virtual public i::gapi_resource

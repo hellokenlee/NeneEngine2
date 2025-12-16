@@ -35,19 +35,25 @@ bool gapi_d3d12_shader::compile()
 			}
 		}
 	}
+	if (!gapi_shader_keep_sources.value())
+	{
+		m_name.clear();
+		m_shader_source.clear();
+		m_function_entry.clear();
+	}
 	return m_is_compiled;
 }
 
 template<typename T>
-bool set_register_bits(const D3D12_SHADER_INPUT_BIND_DESC& desc, T& bits)
+static bool set_register_bits(const D3D12_SHADER_INPUT_BIND_DESC& desc, T& bits)
 {
 	for (auto reg = desc.BindPoint; reg < desc.BindPoint + desc.BindCount; ++reg)
 	{
-		if (reg > t::num_bits_of<T>())
+		if (reg > t::bits_of<T>())
 		{
 			return false;
 		}
-		bits |= (1 << reg);
+		bits |= static_cast<T>(1ull << static_cast<uint64>(reg));
 	}
 	return true;
 }
@@ -66,13 +72,13 @@ bool gapi_d3d12_shader::build_reflection_data()
 	}
 	// validations
 	uint16 constant_buffer_register_bits = 0;
-	static_assert(t::num_bits_of(constant_buffer_register_bits) == NUM_D3D_MAX_CBVS);
+	static_assert(t::bits_of(constant_buffer_register_bits) == NUM_D3D_MAX_CBVS);
 	uint64 shader_resource_register_bits = 0;
-	static_assert(t::num_bits_of(shader_resource_register_bits) == NUM_D3D_MAX_SRVS);
+	static_assert(t::bits_of(shader_resource_register_bits) == NUM_D3D_MAX_SRVS);
 	uint16 unordered_access_register_bits = 0;
-	static_assert(t::num_bits_of(unordered_access_register_bits) == NUM_D3D_MAX_UAVS);
+	static_assert(t::bits_of(unordered_access_register_bits) == NUM_D3D_MAX_UAVS);
 	uint16 dynamic_sampler_register_bits = 0;
-	static_assert(t::num_bits_of(dynamic_sampler_register_bits) == NUM_D3D_MAX_DYNAMIC_SAMPLERS);
+	static_assert(t::bits_of(dynamic_sampler_register_bits) == NUM_D3D_MAX_DYNAMIC_SAMPLERS);
 	
 	//
 	for (const auto& bind_desc : m_d3d_shader_input_bind_descs)

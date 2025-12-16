@@ -3,7 +3,7 @@
 #pragma once
 
 #include "gapi_d3d12_shader.h"
-#include <dxcapi.h>
+#include <directx-dxc/dxcapi.h>
 
 
 class d3d12_shader_compiler

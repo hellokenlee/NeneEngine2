@@ -48,7 +48,7 @@ namespace i
 		virtual bool is_compute() const = 0;
 		virtual bool is_graphics() const = 0;
 		
-		const gapi_shader_resource_tables& get_shader_resource_table() const { return m_shader_resource_tables; }
+		const gapi_shader_resource_tables& get_shader_resource_tables() const { return m_shader_resource_tables; }
 
 	protected:
 		gapi_shader_resource_tables m_shader_resource_tables;

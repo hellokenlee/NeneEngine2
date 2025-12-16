@@ -9,7 +9,7 @@
 #include "gapi_d3d12_resource_heap.h"
 #include "gapi_d3d12_resource.h"
 #include "gapi_d3d12_resource_view.h"
-#include "gapi_d3d12_resource_view_allocator.h"
+#include "gapi_d3d12_resource_view_page_allocator.h"
 #include "gapi_d3d12_shader.h"
 
 #include "d3d12_type_cast.h"
@@ -214,21 +214,16 @@ std::shared_ptr<i::gapi_pipeline_state> gapi_d3d12_device::create_graphics_pipel
 	return std::make_shared<gapi_d3d12_pipeline_state>(root_signature.m_shader_resource_tables, std::move(d3d_pipeline_state), gapi_pipeline_state_type::graphics, std::move(root_signature.m_root_signature));
 }
 
-std::shared_ptr<i::gapi_resource_view_allocator> gapi_d3d12_device::create_resource_view_allocator(gapi_resource_view_type view_type, gapi_resource_view_allocator_type allocator_type, const uint32& max_num_views)
+std::shared_ptr<i::gapi_resource_view_allocator> gapi_d3d12_device::create_resource_view_allocator(gapi_resource_view_type view_type, gapi_resource_view_allocator_type allocator_type)
 {
-	// This method always create offline descriptor heap
-	D3D12_DESCRIPTOR_HEAP_DESC d3d_desc;
-	
-	d3d_desc.Type = d3d_cast(view_type);
-	d3d_desc.NumDescriptors = max_num_views;
-	d3d_desc.Flags = allocator_type == gapi_resource_view_allocator_type::offline ? D3D12_DESCRIPTOR_HEAP_FLAG_NONE : D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-	
-	d3d_desc.NodeMask = 0;
-	WinComPtr<ID3D12DescriptorHeap> heap;
-	VERIFY(m_d3d_device->CreateDescriptorHeap(&d3d_desc, IID_PPV_ARGS(&heap)));
-	// query the size of different descriptor because it's vendor specific
-	uint32 descriptor_size = m_d3d_device->GetDescriptorHandleIncrementSize(d3d_desc.Type);
-	return std::make_shared<gapi_d3d12_resource_view_allocator>(heap, d3d_desc, max_num_views, descriptor_size);
+	if (allocator_type == gapi_resource_view_allocator_type::online)
+	{
+		return std::make_shared<gapi_d3d12_offline_resource_view_page_allocator>(m_d3d_device, view_type, allocator_type);
+	}
+	else
+	{
+		return std::make_shared<gapi_d3d12_offline_resource_view_page_allocator>(m_d3d_device, view_type, allocator_type);
+	}
 }
 
 void gapi_d3d12_device::create_constant_buffer_view(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const std::shared_ptr<i::gapi_buffer>& buffer)
