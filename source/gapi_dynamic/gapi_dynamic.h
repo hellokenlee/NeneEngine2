@@ -61,7 +61,7 @@ public:
 protected:
 	/** Internal constructor. */
 	gapi_dynamic(const gapi_platform& platform, void* window, const upoint32& window_size);
-	//
+	/** Helper to create resource views. */
 	void create_texture_views(const std::shared_ptr<i::gapi_texture>& texture) const;
 	//
 	std::unique_ptr<i::gapi_factory> m_factory;

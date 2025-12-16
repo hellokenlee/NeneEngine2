@@ -53,7 +53,7 @@ namespace i
 
 		// Pipeline State Setter
 		virtual void set_pipeline_state(const std::shared_ptr<gapi_pipeline_state>& pipeline_state) = 0;
-		virtual void set_root_constant_buffer_view(const std::shared_ptr<gapi_resource_view>& cbv) = 0;
+		virtual void bind_root_constant_buffer_view(const uint32& index, const std::shared_ptr<gapi_resource_view>& cbv) = 0;
 		virtual void set_root_shader_resource_view(const std::shared_ptr<gapi_resource_view>& srv) = 0;
 		virtual void set_root_unordered_access_view(const std::shared_ptr<gapi_resource_view>& srv) = 0;
 		virtual void set_root_descriptor_table() = 0;

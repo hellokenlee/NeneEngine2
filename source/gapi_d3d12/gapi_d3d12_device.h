@@ -20,8 +20,8 @@ public:
 	
 	std::shared_ptr<i::gapi_pipeline_state> create_compute_pipeline_state(const gapi_compute_pipeline_state_desc& desc) override;
 	std::shared_ptr<i::gapi_pipeline_state> create_graphics_pipeline_state(const gapi_graphics_pipeline_state_desc& desc) override;
-
-	std::shared_ptr<i::gapi_resource_view_allocator> create_resource_view_allocator(const gapi_resource_view_type& heap_type, const uint32& max_num_views) override;
+	
+	std::shared_ptr<i::gapi_resource_view_allocator> create_resource_view_allocator(gapi_resource_view_type view_type, gapi_resource_view_allocator_type allocator_type, const uint32& max_num_views) override;
 	void create_constant_buffer_view(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const std::shared_ptr<i::gapi_buffer>& buffer) override;
 	void create_shader_resource_view(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const std::shared_ptr<i::gapi_resource>& resource) override;
 	void create_unordered_access_view(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const std::shared_ptr<i::gapi_resource>& resource) override;
@@ -34,10 +34,11 @@ public:
 	std::shared_ptr<i::gapi_resource> create_placed_resource(const gapi_resource_desc& desc) override;
 	std::shared_ptr<i::gapi_resource> create_reserved_resource(const gapi_resource_desc& desc) override;
 
-	std::shared_ptr<i::gapi_shader> create_and_compile_shader(const gapi_shader_type& stype, const std::string& source, const std::string& entry, const gapi_shader_feature_level& level, const std::string& debug_name) override;
+	std::shared_ptr<i::gapi_shader> create_and_compile_shader(const gapi_shader_stage& stype, const std::string& source, const std::string& entry, const gapi_shader_feature_level& level, const std::string& debug_name) override;
 
 public:
 	ID3D12Device* get_d3d_device() const { return m_d3d_device.Get(); }
+	void print_d3d_debug_messages() const;
 	
 protected:
 	std::shared_ptr<i::gapi_cmd_queue> m_cmd_queues[t::enum_count<gapi_cmd_type>()];
@@ -48,4 +49,7 @@ private:
 
 	D3D12_RESOURCE_BINDING_TIER m_d3d_resource_binding_tier;
 	D3D12_RESOURCE_HEAP_TIER m_d3d_resource_heap_tier;
+
+	WinComPtr<ID3D12InfoQueue> m_d3d_debug_info_queue;
+	HANDLE m_debug_exception_handler = INVALID_HANDLE_VALUE;
 };

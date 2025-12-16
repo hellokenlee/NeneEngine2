@@ -11,15 +11,15 @@
 
 namespace r
 {
-    class NENE_API system_vertex_buffers : public r::global_render_resource
+    class NENE_API system_static_meshes : public r::global_render_resource
     {
     public:
-        static const system_vertex_buffers& get();
+        static const system_static_meshes& get();
         void initialize(gapi_cmd_context& cmd_context) override;
         
         std::shared_ptr<local_space_vertex_factory> m_cube;
 
     protected:
-        system_vertex_buffers();
+        system_static_meshes();
     };
 }

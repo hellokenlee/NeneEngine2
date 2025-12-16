@@ -5,10 +5,15 @@
 #include "core/core.h"
 #include "gapi/gapi.h"
 
-#include <wrl/client.h>
+#include <Windows.h>
+#undef GetMessage
+#include <d3d12sdklayers.h>
 #include <d3d12.h>
 #include <dxgi1_6.h>
+#include <wrl/client.h>
 #include "d3dx12.h"
+#include "d3d12_limits.h"
+
 
 inline std::string get_error_string(const HRESULT code)
 {

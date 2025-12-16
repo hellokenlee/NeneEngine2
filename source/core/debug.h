@@ -7,7 +7,6 @@
 #include "platform.h"
 
 #ifdef _MSVC_LANG
-	#include <Windows.h>
 	#define DEBUG_BREAK() (__noop(), __debugbreak())
 #else  // _MSVC_LANG
 	#define DEBUG_BREAK raise(SIGTRAP)

@@ -5,7 +5,6 @@
 #include "gapi_d3d12_cmd_allocator.h"
 #include "gapi_d3d12_cmd_list.h"
 #include "gapi_d3d12_cmd_queue.h"
-#include "gapi_d3d12_bound_shader_signature.h"
 #include "gapi_d3d12_pipeline_state.h"
 #include "gapi_d3d12_resource_heap.h"
 #include "gapi_d3d12_resource.h"
@@ -17,6 +16,41 @@
 #include "d3d12_root_signature_manager.h"
 
 extern t::console_var<bool> cvar_gapi_d3d_debug;
+extern logger d3d12_;
+static gapi_d3d12_device* g_gapi_d3d12_device = nullptr;
+
+// ReSharper disable once CppParameterMayBeConstPtrOrRef
+static LONG __stdcall d3d_vectored_exception_handler(EXCEPTION_POINTERS* info)
+{
+	if (info->ExceptionRecord->ExceptionCode == _FACDXGI)
+	{
+		if (g_gapi_d3d12_device != nullptr)
+		{
+			g_gapi_d3d12_device->print_d3d_debug_messages();
+		}
+	}
+	return EXCEPTION_CONTINUE_SEARCH;
+}
+
+void gapi_d3d12_device::print_d3d_debug_messages() const
+{
+	size_t num_message = m_d3d_debug_info_queue->GetNumStoredMessagesAllowedByRetrievalFilter();
+	for (size_t i = 0; i < num_message; i++)
+	{
+		size_t message_length = 0;
+		VERIFY(m_d3d_debug_info_queue->GetMessage(i, nullptr, &message_length));
+
+		D3D12_MESSAGE* d3d_message = nullptr;
+		d3d_message = static_cast<D3D12_MESSAGE*>(malloc(message_length));
+
+		if (d3d_message != nullptr)
+		{
+			VERIFY(m_d3d_debug_info_queue->GetMessage(i, d3d_message, &message_length));
+			log(d3d12_, error, "D3D12 DebugLayer: {}", std::string_view(d3d_message->pDescription, d3d_message->DescriptionByteLength));
+			free(d3d_message);
+		}
+	}
+}
 
 gapi_d3d12_device::gapi_d3d12_device(const WinComPtr<ID3D12Device>& device)
 	: m_d3d_device(device)
@@ -27,12 +61,11 @@ gapi_d3d12_device::gapi_d3d12_device(const WinComPtr<ID3D12Device>& device)
 	// filter debug message
 	if (cvar_gapi_d3d_debug.value())
 	{
-		WinComPtr<ID3D12InfoQueue> info_queue;
-		if (SUCCEEDED(m_d3d_device2.As(&info_queue)))
+		if (SUCCEEDED(m_d3d_device2.As(&m_d3d_debug_info_queue)))
 		{
-			info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
-			info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
-			info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
+			m_d3d_debug_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
+			m_d3d_debug_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
+			m_d3d_debug_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
 
 			// supress some warnings
 			D3D12_MESSAGE_CATEGORY categories_to_supress[] = {
@@ -54,8 +87,12 @@ gapi_d3d12_device::gapi_d3d12_device(const WinComPtr<ID3D12Device>& device)
 			info_queue_filter.DenyList.pSeverityList = severities_to_supress;
 			info_queue_filter.DenyList.NumIDs = _countof(message_to_supress);
 			info_queue_filter.DenyList.pIDList = message_to_supress;
-			VERIFY(info_queue->PushStorageFilter(&info_queue_filter));
+			VERIFY(m_d3d_debug_info_queue->PushStorageFilter(&info_queue_filter));
 		}
+		//
+		CHECK(g_gapi_d3d12_device == nullptr);
+		g_gapi_d3d12_device = this;
+		m_debug_exception_handler = AddVectoredExceptionHandler(0, d3d_vectored_exception_handler);
 	}
 	//
 	m_cmd_queues[static_cast<uint32>(gapi_cmd_type::graphics)] = gapi_d3d12_device::create_cmd_queue(gapi_cmd_type::graphics);
@@ -109,7 +146,7 @@ std::shared_ptr<i::gapi_pipeline_state> gapi_d3d12_device::create_compute_pipeli
 	//
 	D3D12_COMPUTE_PIPELINE_STATE_DESC d3d_desc;
 	d3d_desc.pRootSignature = nullptr;
-	d3d_desc.CS = CD3DX12_SHADER_BYTECODE(t::gapi_pin<gapi_d3d12_shader>(desc.m_bound_shader_state.get_stage_shader<gapi_shader_type::compute_shader>()).get_d3d_bytecode());
+	d3d_desc.CS = CD3DX12_SHADER_BYTECODE(t::gapi_pin<gapi_d3d12_shader>(desc.m_bound_shader_state.get_shader(gapi_shader_stage::compute_shader)).get_d3d_bytecode());
 	// TODO: LDA setup support
 	d3d_desc.NodeMask = 0;
 	d3d_desc.CachedPSO = {};
@@ -117,34 +154,35 @@ std::shared_ptr<i::gapi_pipeline_state> gapi_d3d12_device::create_compute_pipeli
 	
 	WinComPtr<ID3D12PipelineState> d3d_pipeline_state;
 	VERIFY(m_d3d_device->CreateComputePipelineState(&d3d_desc, IID_PPV_ARGS(&d3d_pipeline_state)));
-	return std::make_shared<gapi_d3d12_pipeline_state>(std::move(d3d_pipeline_state), gapi_pipeline_state_type::compute, nullptr);
+	gapi_shader_resource_tables resource_tables;
+	return std::make_shared<gapi_d3d12_pipeline_state>(resource_tables, std::move(d3d_pipeline_state), gapi_pipeline_state_type::compute, nullptr);
 }
 
 std::shared_ptr<i::gapi_pipeline_state> gapi_d3d12_device::create_graphics_pipeline_state(const gapi_graphics_pipeline_state_desc& desc)
 {
 	//
-	auto d3d_root_signature = d3d12_root_signature_manager::get().find_or_create_root_signature(get_d3d_device(), desc.m_bound_shader_state);
+	auto root_signature = d3d12_root_signature_manager::get().find_or_create_root_signature(get_d3d_device(), desc.m_bound_shader_state);
 	std::vector<D3D12_INPUT_ELEMENT_DESC> input_element_descs;
 	//
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC d3d_desc = {};
 	//
-	d3d_desc.pRootSignature = d3d_root_signature.Get();
+	d3d_desc.pRootSignature = root_signature.m_root_signature.Get();
 	//
-	d3d_desc.VS = CD3DX12_SHADER_BYTECODE(t::gapi_pin<gapi_d3d12_shader>(desc.m_bound_shader_state.get_stage_shader<gapi_shader_type::vertex_shader>()).get_d3d_bytecode());
+	d3d_desc.VS = CD3DX12_SHADER_BYTECODE(t::gapi_pin<gapi_d3d12_shader>(desc.m_bound_shader_state.get_shader(gapi_shader_stage::vertex_shader)).get_d3d_bytecode());
 	//
-	if (auto pixel_shader = t::gapi_cast<gapi_d3d12_shader>(desc.m_bound_shader_state.get_stage_shader<gapi_shader_type::pixel_shader>()); pixel_shader != nullptr)
+	if (auto pixel_shader = t::gapi_cast<gapi_d3d12_shader>(desc.m_bound_shader_state.get_shader(gapi_shader_stage::pixel_shader)); pixel_shader != nullptr)
 	{
 		d3d_desc.PS = CD3DX12_SHADER_BYTECODE(pixel_shader->get_d3d_bytecode());
 	}
-	if (auto domain_shader = t::gapi_cast<gapi_d3d12_shader>(desc.m_bound_shader_state.get_stage_shader<gapi_shader_type::domain_shader>()); domain_shader != nullptr)
+	if (auto domain_shader = t::gapi_cast<gapi_d3d12_shader>(desc.m_bound_shader_state.get_shader(gapi_shader_stage::domain_shader)); domain_shader != nullptr)
 	{
 		d3d_desc.DS = CD3DX12_SHADER_BYTECODE(domain_shader->get_d3d_bytecode());
 	}
-	if (auto hull_shader = t::gapi_cast<gapi_d3d12_shader>(desc.m_bound_shader_state.get_stage_shader<gapi_shader_type::hull_shader>()); hull_shader != nullptr)
+	if (auto hull_shader = t::gapi_cast<gapi_d3d12_shader>(desc.m_bound_shader_state.get_shader(gapi_shader_stage::hull_shader)); hull_shader != nullptr)
 	{
 		d3d_desc.HS = CD3DX12_SHADER_BYTECODE(hull_shader->get_d3d_bytecode());
 	}
-	if (auto geometry_shader = t::gapi_cast<gapi_d3d12_shader>(desc.m_bound_shader_state.get_stage_shader<gapi_shader_type::geometry_shader>()); geometry_shader != nullptr)
+	if (auto geometry_shader = t::gapi_cast<gapi_d3d12_shader>(desc.m_bound_shader_state.get_shader(gapi_shader_stage::geometry_shader)); geometry_shader != nullptr)
 	{
 		d3d_desc.GS = CD3DX12_SHADER_BYTECODE(geometry_shader->get_d3d_bytecode());
 	}
@@ -154,7 +192,7 @@ std::shared_ptr<i::gapi_pipeline_state> gapi_d3d12_device::create_graphics_pipel
 	d3d_desc.SampleMask = UINT_MAX;
 	d3d_desc.RasterizerState = d3d_cast(desc.m_rasterizer_state);
 	d3d_desc.DepthStencilState = d3d_cast(desc.m_depth_stencil_state);
-	d3d_desc.InputLayout = d3d_cast(*desc.m_bound_shader_state.m_vertex_declaration, input_element_descs);
+	d3d_desc.InputLayout = d3d_cast(desc.m_bound_shader_state.get_vertices_declaration(), input_element_descs);
 	d3d_desc.IBStripCutValue = D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_DISABLED;
 	d3d_desc.PrimitiveTopologyType = d3d_cast(desc.m_primitive_type);
 	d3d_desc.NumRenderTargets = static_cast<uint32>(desc.m_render_target_formats.size());
@@ -173,17 +211,17 @@ std::shared_ptr<i::gapi_pipeline_state> gapi_d3d12_device::create_graphics_pipel
 	
 	WinComPtr<ID3D12PipelineState> d3d_pipeline_state;
 	VERIFY(m_d3d_device->CreateGraphicsPipelineState(&d3d_desc, IID_PPV_ARGS(&d3d_pipeline_state)));
-	return std::make_shared<gapi_d3d12_pipeline_state>(std::move(d3d_pipeline_state), gapi_pipeline_state_type::graphics, std::move(d3d_root_signature));
+	return std::make_shared<gapi_d3d12_pipeline_state>(root_signature.m_shader_resource_tables, std::move(d3d_pipeline_state), gapi_pipeline_state_type::graphics, std::move(root_signature.m_root_signature));
 }
 
-std::shared_ptr<i::gapi_resource_view_allocator> gapi_d3d12_device::create_resource_view_allocator(const gapi_resource_view_type& heap_type, const uint32& max_num_views)
+std::shared_ptr<i::gapi_resource_view_allocator> gapi_d3d12_device::create_resource_view_allocator(gapi_resource_view_type view_type, gapi_resource_view_allocator_type allocator_type, const uint32& max_num_views)
 {
 	// This method always create offline descriptor heap
 	D3D12_DESCRIPTOR_HEAP_DESC d3d_desc;
 	
-	d3d_desc.Type = d3d_cast(heap_type);
+	d3d_desc.Type = d3d_cast(view_type);
 	d3d_desc.NumDescriptors = max_num_views;
-	d3d_desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	d3d_desc.Flags = allocator_type == gapi_resource_view_allocator_type::offline ? D3D12_DESCRIPTOR_HEAP_FLAG_NONE : D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	
 	d3d_desc.NodeMask = 0;
 	WinComPtr<ID3D12DescriptorHeap> heap;
@@ -199,7 +237,7 @@ void gapi_d3d12_device::create_constant_buffer_view(const std::shared_ptr<i::gap
 	CHECK(allocated_view->get_type() == gapi_resource_view_type::unknown);
 	//
 	const auto& d3d_buffer = t::gapi_cast<gapi_d3d12_buffer>(buffer);
-	auto& d3d_view = t::gapi_pin<gapi_d3d12_resource_view>(allocated_view);
+	auto& d3d_view = t::gapi_pin<gapi_d3d12_offline_resource_view>(allocated_view);
 	
 	//
 	D3D12_CONSTANT_BUFFER_VIEW_DESC desc;
@@ -207,7 +245,7 @@ void gapi_d3d12_device::create_constant_buffer_view(const std::shared_ptr<i::gap
 	desc.SizeInBytes = d3d_buffer->get_resource_desc().m_width;
 	//
 	m_d3d_device->CreateConstantBufferView(&desc, d3d_view.get_d3d_cpu_handle());
-	d3d_view.m_type = gapi_resource_view_type::constant_buffer_view;
+	d3d_view.set_type(gapi_resource_view_type::constant_buffer_view);
 }
 
 void gapi_d3d12_device::create_shader_resource_view(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const std::shared_ptr<i::gapi_resource>& resource)
@@ -216,7 +254,7 @@ void gapi_d3d12_device::create_shader_resource_view(const std::shared_ptr<i::gap
 	CHECK(allocated_view->get_type() == gapi_resource_view_type::unknown);
 	//
 	const auto& d3d_resource = t::gapi_cast<gapi_d3d12_resource>(resource);
-	auto& d3d_view = t::gapi_pin<gapi_d3d12_resource_view>(allocated_view);
+	auto& d3d_view = t::gapi_pin<gapi_d3d12_offline_resource_view>(allocated_view);
 	const gapi_resource_desc& resource_desc = d3d_resource->get_resource_desc();
 	//
 	D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
@@ -268,7 +306,7 @@ void gapi_d3d12_device::create_shader_resource_view(const std::shared_ptr<i::gap
 	}
 	//
 	m_d3d_device->CreateShaderResourceView(d3d_resource->get_d3d_resource(), &desc, d3d_view.get_d3d_cpu_handle());
-	d3d_view.m_type = gapi_resource_view_type::shader_resource_view;
+	d3d_view.set_type(gapi_resource_view_type::shader_resource_view);
 }
 
 void gapi_d3d12_device::create_unordered_access_view(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const std::shared_ptr<i::gapi_resource>& resource)
@@ -277,7 +315,7 @@ void gapi_d3d12_device::create_unordered_access_view(const std::shared_ptr<i::ga
 	CHECK(allocated_view->get_type() == gapi_resource_view_type::unknown);
 	//
 	const auto& d3d_resource = t::gapi_cast<gapi_d3d12_resource>(resource);
-	auto& d3d_view = t::gapi_pin<gapi_d3d12_resource_view>(allocated_view);
+	auto& d3d_view = t::gapi_pin<gapi_d3d12_offline_resource_view>(allocated_view);
 	//
 	D3D12_UNORDERED_ACCESS_VIEW_DESC desc = {};
 	const gapi_resource_desc& resource_desc = d3d_resource->get_resource_desc();
@@ -324,7 +362,7 @@ void gapi_d3d12_device::create_unordered_access_view(const std::shared_ptr<i::ga
 	}
 	// TODO: Support UAV counter
 	m_d3d_device->CreateUnorderedAccessView(d3d_resource->get_d3d_resource(), nullptr, &desc, d3d_view.get_d3d_cpu_handle());
-	d3d_view.m_type = gapi_resource_view_type::unordered_access_view;
+	d3d_view.set_type(gapi_resource_view_type::unordered_access_view);
 }
 
 void gapi_d3d12_device::create_render_target_view(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const std::shared_ptr<i::gapi_texture>& texture)
@@ -333,7 +371,7 @@ void gapi_d3d12_device::create_render_target_view(const std::shared_ptr<i::gapi_
 	CHECK(allocated_view->get_type() == gapi_resource_view_type::unknown);
 	//
 	const auto& d3d_resource = t::gapi_cast<gapi_d3d12_texture>(texture);
-	auto& d3d_view = t::gapi_pin<gapi_d3d12_resource_view>(allocated_view);
+	auto& d3d_view = t::gapi_pin<gapi_d3d12_offline_resource_view>(allocated_view);
 	//
 	D3D12_RENDER_TARGET_VIEW_DESC desc = {};
 	const gapi_resource_desc& resource_desc = d3d_resource->get_resource_desc();
@@ -376,7 +414,7 @@ void gapi_d3d12_device::create_render_target_view(const std::shared_ptr<i::gapi_
 		CHECK(false);
 	}
 	m_d3d_device->CreateRenderTargetView(d3d_resource->get_d3d_resource(), &desc, d3d_view.get_d3d_cpu_handle());
-	d3d_view.m_type = gapi_resource_view_type::render_target_view;
+	d3d_view.set_type(gapi_resource_view_type::render_target_view);
 }
 
 void gapi_d3d12_device::create_depth_stencil_view(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const std::shared_ptr<i::gapi_texture>& texture)
@@ -385,7 +423,7 @@ void gapi_d3d12_device::create_depth_stencil_view(const std::shared_ptr<i::gapi_
 	CHECK(allocated_view->get_type() == gapi_resource_view_type::unknown);
 	//
 	const auto& d3d_resource = t::gapi_cast<gapi_d3d12_texture>(texture);
-	auto& d3d_view = t::gapi_pin<gapi_d3d12_resource_view>(allocated_view);
+	auto& d3d_view = t::gapi_pin<gapi_d3d12_offline_resource_view>(allocated_view);
 	//
 	D3D12_DEPTH_STENCIL_VIEW_DESC desc = {};
 	const gapi_resource_desc& resource_desc = d3d_resource->get_resource_desc();
@@ -413,17 +451,17 @@ void gapi_d3d12_device::create_depth_stencil_view(const std::shared_ptr<i::gapi_
 	}
 	//
 	m_d3d_device->CreateDepthStencilView(d3d_resource->get_d3d_resource(), &desc, d3d_view.get_d3d_cpu_handle());
-	d3d_view.m_type = gapi_resource_view_type::depth_stencil_view;
+	d3d_view.set_type(gapi_resource_view_type::depth_stencil_view);
 }
 
 void gapi_d3d12_device::create_sampler(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const gapi_sampler_desc& desc)
 {
 	//
 	const auto d3d_desc = d3d_cast(desc);
-	auto& d3d_view = t::gapi_pin<gapi_d3d12_resource_view>(allocated_view);
+	auto& d3d_view = t::gapi_pin<gapi_d3d12_offline_resource_view>(allocated_view);
 	//
 	m_d3d_device->CreateSampler(&d3d_desc, d3d_view.get_d3d_cpu_handle());
-	d3d_view.m_type = gapi_resource_view_type::texture_sampler;
+	d3d_view.set_type(gapi_resource_view_type::texture_sampler);
 }
 
 std::shared_ptr<i::gapi_resource_allocator> gapi_d3d12_device::create_resource_allocator()
@@ -483,7 +521,7 @@ std::shared_ptr<i::gapi_resource> gapi_d3d12_device::create_reserved_resource(co
 	return nullptr;
 }
 
-std::shared_ptr<i::gapi_shader> gapi_d3d12_device::create_and_compile_shader(const gapi_shader_type& stype, const std::string& source, const std::string& entry, const gapi_shader_feature_level& level, const std::string& debug_name)
+std::shared_ptr<i::gapi_shader> gapi_d3d12_device::create_and_compile_shader(const gapi_shader_stage& stype, const std::string& source, const std::string& entry, const gapi_shader_feature_level& level, const std::string& debug_name)
 {
 	auto result = std::make_shared<gapi_d3d12_shader>(stype, level, source, entry, debug_name);
 	if (result->compile())

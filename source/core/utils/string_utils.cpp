@@ -5,14 +5,18 @@
 #include <locale>
 #include <codecvt>
 
+#ifdef NENE_PLATFORM_WINDOWS
+#include <OleCtl.h>
+#endif // NENE_PLATFORM_WINDOWS
+
 namespace utils
 {
 	NENE_API std::wstring string_to_wstring(const std::string& in_string)
 	{
 #ifdef NENE_PLATFORM_WINDOWS
 		int len = MultiByteToWideChar(CP_UTF8, 0, in_string.c_str(), -1, nullptr, 0);
-		std::wstring result(len, 0);
-		MultiByteToWideChar(CP_UTF8, 0, in_string.c_str(), -1, result.data(), len);
+		std::wstring result(len - 1, 0);
+		MultiByteToWideChar(CP_UTF8, 0, in_string.c_str(), -1, result.data(), len - 1);
 		return result;
 #else  // NENE_PLATFORM_WINDOWS
 		// ReSharper disable CppDeprecatedEntity
@@ -26,8 +30,8 @@ namespace utils
 	{
 #ifdef NENE_PLATFORM_WINDOWS
 		int len = WideCharToMultiByte(CP_UTF8, 0, in_string.c_str(), -1, nullptr, 0, nullptr, nullptr);
-		std::string result(len, 0);
-		WideCharToMultiByte(CP_UTF8, 0, in_string.c_str(), -1, result.data(), len, nullptr, nullptr);
+		std::string result(len - 1, 0);
+		WideCharToMultiByte(CP_UTF8, 0, in_string.c_str(), -1, result.data(), len - 1, nullptr, nullptr);
 		return result;
 #else  // NENE_PLATFORM_WINDOWS
 		// ReSharper disable CppDeprecatedEntity
@@ -35,5 +39,16 @@ namespace utils
 		return result;
 		// ReSharper restore CppDeprecatedEntity
 #endif // NENE_PLATFORM_WINDOWS
+	}
+
+	void string_replace(std::string& s, std::string_view from, std::string_view to)
+	{
+		if (from.empty()) return; // 避免死循环
+		size_t pos = 0;
+		while ((pos = s.find(from, pos)) != std::string::npos)
+		{
+			s.replace(pos, from.size(), to);
+			pos += to.size(); // 移动到替换后的位置
+		}
 	}
 }

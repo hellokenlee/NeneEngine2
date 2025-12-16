@@ -5,6 +5,7 @@
 #include "core/core.h"
 #include "gapi/gapi_cmd_list.h"
 #include "gapi/gapi_device.h"
+#include "gapi_online_resource_view_cache.h"
 
 class scoped_render_pass;
 
@@ -40,19 +41,18 @@ public:
 
 	// void dispatch(const uvector3& thread_group_size) const;
 	void draw(const uint32& num_vertices, const uint32& num_instances, const uint32& vertex_offset = 0, const uint32& instance_offset = 0) const;
-	// void draw_indexed(const uint32& num_indices, const uint32& num_instances, const uint32& index_offset = 0, const uint32& vertex_offset = 0, const uint32& instance_offset = 0) const;
-
-
+	void draw_indexed(const uint32& num_indices, const uint32& num_instances, const uint32& index_offset = 0, const uint32& vertex_offset = 0, const uint32& instance_offset = 0);
 	
 	//
-	void set_pipeline_state(const std::shared_ptr<i::gapi_pipeline_state>& pipeline_state) const;
-	// void set_index_buffer(const std::shared_ptr<i::gapi_buffer>& index_buffer) const;
+	void set_pipeline_state(const std::shared_ptr<i::gapi_pipeline_state>& pipeline_state);
+	void set_index_buffer(const std::shared_ptr<i::gapi_buffer>& index_buffer) const;
 	void set_vertex_buffer(const std::shared_ptr<i::gapi_buffer>& vertex_buffer) const;
 	void set_primitive_type(const gapi_primitive_type& ptype) const;
 	// void set_viewports(const std::vector<gapi_viewport_desc>& viewports) const;
 	// void set_scissor_rects(const std::vector<rect>& scissors) const;
 
-	void bind_shader_resource(const gapi_shader_type& stage, const std::shared_ptr<i::gapi_resource>& resource) const;
+	void bind_shader_resource_view(const gapi_shader_stage& stage, const uint32& index, const std::shared_ptr<i::gapi_resource_view>& srv);
+	void bind_constant_buffer_view(const gapi_shader_stage& stage, const uint32& index, const std::shared_ptr<i::gapi_resource_view>& cbv);
 	
 	//
 	std::shared_ptr<i::gapi_resource> create_and_upload_resource(const gapi_resource_desc& desc, const void* initial_data);
@@ -61,6 +61,7 @@ public:
 	void transition_resource(const std::shared_ptr<i::gapi_resource>& resource, const gapi_resource_state& to_state) const;
 	
 protected:
+	//
 	struct one_frame_context_data 
 	{
 		// the command list
@@ -92,6 +93,8 @@ protected:
 	//
 	std::vector<rect> m_scissors;
 	std::vector<gapi_viewport_desc> m_viewports;
+	//
+	gapi_online_resource_view_cache m_online_resource_view_cache;
 };
 
 class NENE_API scoped_render_pass

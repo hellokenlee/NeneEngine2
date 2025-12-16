@@ -6,21 +6,28 @@
 #include "d3d12_utils.h"
 
 
-/** This is always an offline descriptor */
-class gapi_d3d12_resource_view : public i::gapi_resource_view
+class gapi_d3d12_offline_resource_view : public i::gapi_resource_view
 {
 public:
 	//
-	gapi_d3d12_resource_view(const uint32& index, const CD3DX12_CPU_DESCRIPTOR_HANDLE& handle);
+	gapi_d3d12_offline_resource_view(const uint32& index, const CD3DX12_CPU_DESCRIPTOR_HANDLE& cpu_handle);
 	//
 	uint32_t get_index_in_heap() const { return m_index_in_heap; }
-	const CD3DX12_CPU_DESCRIPTOR_HANDLE& get_d3d_cpu_handle() const { return m_handle; };
+	const CD3DX12_CPU_DESCRIPTOR_HANDLE& get_d3d_cpu_handle() const { return m_cpu_handle; };
 	
 protected:
 	// The index in its descriptor heap
 	uint32 m_index_in_heap;
 	// The cpu side address allocated by the heap 
-	CD3DX12_CPU_DESCRIPTOR_HANDLE m_handle;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE m_cpu_handle;
+};
 
-	friend class gapi_d3d12_device;
+class gapi_d3d12_online_resource_view : public gapi_d3d12_offline_resource_view
+{
+public:
+	gapi_d3d12_online_resource_view(const uint32& index, CD3DX12_CPU_DESCRIPTOR_HANDLE cpu_handle, CD3DX12_GPU_DESCRIPTOR_HANDLE gpu_handle);
+	const CD3DX12_GPU_DESCRIPTOR_HANDLE& get_d3d_gpu_handle() const { return m_gpu_handle; };
+
+protected:
+	CD3DX12_GPU_DESCRIPTOR_HANDLE m_gpu_handle;
 };

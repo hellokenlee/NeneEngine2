@@ -8,17 +8,20 @@
 
 #include "math/dxmath/DirectXMath.h"
 
-typedef DirectX::XMFLOAT2 float2;
+using float2 = DirectX::XMFLOAT2;
 
-typedef DirectX::XMFLOAT3 float3;
+using float3 = DirectX::XMFLOAT3;
 
-typedef DirectX::XMFLOAT4 float4;
+using float4 = DirectX::XMFLOAT4;
 
-typedef DirectX::XMUINT2 uint2;
+using uint2 = DirectX::XMUINT2;
 
-typedef DirectX::XMUINT3 uint3;
+using uint3 = DirectX::XMUINT3;
 
-typedef DirectX::XMUINT4 uint4;
+using uint4 = DirectX::XMUINT4;
+
+using float4x4 = DirectX::XMFLOAT4X4;
+
 
 /*
  * Other Fundamental Math Types

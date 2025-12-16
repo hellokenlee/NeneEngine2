@@ -8,8 +8,6 @@
 gapi_d3d12_gpu::gapi_d3d12_gpu(const WinComPtr<IDXGIAdapter1>& adapter1)
 	: m_adapter1(adapter1)
 {
-	// TODO: Support LDA device or multiple devices
-	m_devices.emplace_back(gapi_d3d12_gpu::create_device());
 }
 
 std::shared_ptr<i::gapi_device> gapi_d3d12_gpu::create_device()

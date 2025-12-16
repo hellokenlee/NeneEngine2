@@ -9,6 +9,7 @@ gapi_cmd_context::gapi_cmd_context(const std::shared_ptr<i::gapi_device>& device
 	, m_debug_id(debug_context_id)
 	, m_current_index(0)
 	, m_previous_index(num_cmd_list - 1)
+	, m_online_resource_view_cache(device)
 {
 	for (uint32 i = 0; i < num_cmd_list; i++)
 	{
@@ -51,6 +52,10 @@ void gapi_cmd_context::reset()
 	get_current_cmd_list()->reset(get_current_cmd_allocator(), nullptr);
 	//
 	release_tracked_resources();
+	// Default to triangle
+	set_primitive_type(gapi_primitive_type::triangle);
+	//
+	m_online_resource_view_cache.reset();
 }
 
 const std::shared_ptr<i::gapi_cmd_list>& gapi_cmd_context::close()
@@ -94,9 +99,21 @@ void gapi_cmd_context::draw(const uint32& num_vertices, const uint32& num_instan
 	get_current_cmd_list()->draw(num_vertices, num_instances, vertex_offset, instance_offset);
 }
 
-void gapi_cmd_context::set_pipeline_state(const std::shared_ptr<i::gapi_pipeline_state>& pipeline_state) const
+void gapi_cmd_context::draw_indexed(const uint32& num_indices, const uint32& num_instances, const uint32& index_offset, const uint32& vertex_offset, const uint32& instance_offset)
 {
+	m_online_resource_view_cache.commit_staged_resource_views();
+	get_current_cmd_list()->draw_indexed(num_indices, num_instances, index_offset, vertex_offset, instance_offset);
+}
+
+void gapi_cmd_context::set_pipeline_state(const std::shared_ptr<i::gapi_pipeline_state>& pipeline_state)
+{
+	//
 	get_current_cmd_list()->set_pipeline_state(pipeline_state);
+}
+
+void gapi_cmd_context::set_index_buffer(const std::shared_ptr<i::gapi_buffer>& index_buffer) const
+{
+	get_current_cmd_list()->set_index_buffer(index_buffer);
 }
 
 void gapi_cmd_context::set_vertex_buffer(const std::shared_ptr<i::gapi_buffer>& vertex_buffer) const
@@ -109,7 +126,12 @@ void gapi_cmd_context::set_primitive_type(const gapi_primitive_type& ptype) cons
 	get_current_cmd_list()->set_primitive_topology(ptype);
 }
 
-void gapi_cmd_context::bind_shader_resource(const gapi_shader_type& stage, const std::shared_ptr<i::gapi_resource>& resource) const
+void gapi_cmd_context::bind_shader_resource_view(const gapi_shader_stage& stage, const uint32& index, const std::shared_ptr<i::gapi_resource_view>& srv)
+{
+	m_online_resource_view_cache.stage_resource_view();
+}
+
+void gapi_cmd_context::bind_constant_buffer_view(const gapi_shader_stage& stage, const uint32& index, const std::shared_ptr<i::gapi_resource_view>& cbv)
 {
 	
 }

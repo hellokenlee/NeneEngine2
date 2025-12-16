@@ -39,9 +39,6 @@ public:
 	using gapi_d3d12_resource::gapi_d3d12_resource;
 
 	~gapi_d3d12_texture() override = default;
-
-public:
-	void recreate_resource_views();
 };
 
 

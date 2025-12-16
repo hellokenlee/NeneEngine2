@@ -7,6 +7,7 @@
 
 namespace r
 {
+	/** Basic Render Resource */
 	class NENE_API render_resource
 	{
 	public:
@@ -25,6 +26,6 @@ namespace r
 		static void initialize_global_render_resources(gapi_cmd_context& context);
     
 	protected:
-		static std::vector<render_resource*> s_global_render_resources; 
+		static std::vector<global_render_resource*> s_global_render_resources; 
 	};
 }

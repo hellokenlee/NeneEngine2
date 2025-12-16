@@ -336,12 +336,12 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 			if utils.overloaded(nene_module.prebuild):
 				pre_build_event = ElementTree.SubElement(item_definition_group, VcTag.PreBuildEvent)
 				call_function_command = "%s.%s.prebuild(%s, %s, %s)" % (py_module_name, nene_module.__class__.__name__, platform_str, architecture_str, configuration_str)
-				ElementTree.SubElement(pre_build_event, VcTag.Command).text = "cd %s\npy -3 -c \"import sys; sys.dont_write_bytecode = True; from script.builder.common.build_common import *; %s; %s\"" % (VcMacro.SolutionDir, py_import_command, call_function_command)
+				ElementTree.SubElement(pre_build_event, VcTag.Command).text = "cd %s\npy -c \"import sys; sys.dont_write_bytecode = True; from script.builder.common.build_common import *; %s; %s\"" % (VcMacro.SolutionDir, py_import_command, call_function_command)
 			# Post Build Event
 			if utils.overloaded(nene_module.postbuild):
 				post_build_event = ElementTree.SubElement(item_definition_group, VcTag.PostBuildEvent)
 				call_function_command = "%s.%s.postbuild(%s, %s, %s)" % (py_module_name, nene_module.__class__.__name__, platform_str, architecture_str, configuration_str)
-				ElementTree.SubElement(post_build_event, VcTag.Command).text = "cd %s\npy -3 -c \"import sys; sys.dont_write_bytecode = True; from script.builder.common.build_common import *; %s; %s\"" % (VcMacro.SolutionDir, py_import_command, call_function_command)
+				ElementTree.SubElement(post_build_event, VcTag.Command).text = "cd %s\npy -c \"import sys; sys.dont_write_bytecode = True; from script.builder.common.build_common import *; %s; %s\"" % (VcMacro.SolutionDir, py_import_command, call_function_command)
 		pass
 
 	@staticmethod

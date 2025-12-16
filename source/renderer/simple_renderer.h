@@ -15,8 +15,6 @@ public:
 	void render_view_family(const std::shared_ptr<i::gapi_texture>& view_family_texture) override;
 
 protected:
-	std::shared_ptr<i::gapi_pipeline_state> m_mesh_pass_pipeline_state;
-	std::shared_ptr<i::gapi_pipeline_state> m_screen_pass_pipeline_state;
-	std::shared_ptr<i::gapi_texture> m_scene_color;
-	std::shared_ptr<i::gapi_texture> m_scene_depth;
+	std::shared_ptr<i::gapi_pipeline_state> m_base_pass_pipeline_state;
+	std::shared_ptr<i::gapi_buffer> m_view_constant_buffer;
 };

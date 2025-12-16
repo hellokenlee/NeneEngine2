@@ -13,7 +13,7 @@ gapi_shader_manager& gapi_shader_manager::get()
 	return _instance;
 }
 
-const std::shared_ptr<i::gapi_shader>& gapi_shader_manager::find_or_create_shader(const gapi_shader_type& stage, const std::string& source_filepath, const std::string& entry_name)
+const std::shared_ptr<i::gapi_shader>& gapi_shader_manager::find_or_create_shader(const gapi_shader_stage& stage, const std::string& source_filepath, const std::string& entry_name)
 {
 	// refs: https://stackoverflow.com/questions/35985960/c-why-is-boosthash-combine-the-best-way-to-combine-hash-values
 	size_t runtime_shader_hash = std::hash<std::string>{}(source_filepath);

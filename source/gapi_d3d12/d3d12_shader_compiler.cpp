@@ -25,16 +25,16 @@ t::console_var<bool> cvar_gapi_d3d_shader_optimize(
 );
 
 
-static std::string d3d_cast(const gapi_shader_type& type, const gapi_shader_feature_level& level)
+static std::string d3d_cast(const gapi_shader_stage& type, const gapi_shader_feature_level& level)
 {
 	std::string shader_target;
 
 	switch (type)
 	{
-	case gapi_shader_type::vertex_shader:
+	case gapi_shader_stage::vertex_shader:
 		shader_target += "vs";
 		break;
-	case gapi_shader_type::pixel_shader:
+	case gapi_shader_stage::pixel_shader:
 		shader_target += "ps";
 		break;
 	default:
@@ -54,53 +54,6 @@ static std::string d3d_cast(const gapi_shader_type& type, const gapi_shader_feat
 	}
 
 	return shader_target;
-}
-
-bool d3d12_fxc_shader_compiler::compile(gapi_d3d12_shader& shader, WinComPtr<ID3DBlob>& out_bytecode, WinComPtr<ID3D12ShaderReflection>& out_reflection)
-{
-	// checks
-	if (shader.get_shader_source().empty() || shader.get_function_entry().empty())
-	{
-		return false;
-	}
-	
-	// compile
-	uint32 flag = 0;
-	if (cvar_gapi_d3d_shader_debug.get_value_thread_unsafe())
-	{
-		flag |= D3DCOMPILE_DEBUG;
-	}
-	if (cvar_gapi_d3d_shader_optimize.get_value_thread_unsafe())
-	{
-		flag |= D3DCOMPILE_SKIP_OPTIMIZATION;
-	}
-	const std::string target = d3d_cast(shader.get_shader_type(), shader.get_feature_level());
-	//
-	WinComPtr<ID3DBlob> message;
-	HRESULT result = D3DCompile(
-		shader.get_shader_source().c_str(), shader.get_shader_source().size(), shader.get_name().c_str(), 
-		nullptr, nullptr,
-		shader.get_function_entry().c_str(), target.c_str(),
-		flag, 0,
-		out_bytecode.GetAddressOf(), message.GetAddressOf()
-	);
-	if (FAILED(result))
-	{
-		log(shader_, error, "Failed to compile shader ( {}::{}(...) ) with compiler errors:\n\t{}", shader.get_name(), shader.get_function_entry(), message ?  message->GetBufferPointer() : "unknown error.");
-		return false;
-	}
-	
-	// reflection
-	result = D3DReflect(
-		shader.get_d3d_bytecode()->GetBufferPointer(), shader.get_d3d_bytecode()->GetBufferSize(),
-		IID_ID3D12ShaderReflection, reinterpret_cast<void**>(out_reflection.GetAddressOf())
-	);
-	if (FAILED(result))
-	{
-		log(shader_, error, "Failed to build reflection for shader ( {}::{}(...) )", shader.get_name(), shader.get_function_entry());
-		return false;
-	}
-	return true;
 }
 
 d3d12_dxc_shader_compiler::d3d12_dxc_shader_compiler()
@@ -123,13 +76,6 @@ bool d3d12_dxc_shader_compiler::compile(gapi_d3d12_shader& shader, WinComPtr<ID3
 	// compile options
 	std::vector<const wchar_t*> arguments;
 	{
-		arguments.push_back(L"-E");
-		arguments.push_back(entry.c_str());
-
-		arguments.push_back(L"-T");
-		arguments.push_back(target.c_str());
-
-		
 		arguments.push_back(L"-I");
 		arguments.push_back(engine_shader_root.c_str());
 	
@@ -148,13 +94,17 @@ bool d3d12_dxc_shader_compiler::compile(gapi_d3d12_shader& shader, WinComPtr<ID3
 			arguments.push_back(L"-Zsb");
 		}
 	}
+	WinComPtr<IDxcCompilerArgs> args;
+	auto filename =  utils::string_to_wstring(shader.get_function_entry());
+	m_utils->BuildArguments(filename.c_str(), entry.c_str(), target.c_str(), arguments.data(), static_cast<UINT32>(arguments.size()), nullptr, 0, args.GetAddressOf());
+	
 	DxcBuffer source {
 		.Ptr = shader.get_shader_source().c_str(),
 		.Size = shader.get_shader_source().size(),
 		.Encoding = DXC_CP_UTF8
 	};
 	WinComPtr<IDxcResult> result;
-	m_compiler->Compile(&source, arguments.data(), static_cast<UINT32>(arguments.size()), m_include_handler.Get(), IID_PPV_ARGS(&result));
+	m_compiler->Compile(&source, args->GetArguments(), args->GetCount(), m_include_handler.Get(), IID_PPV_ARGS(&result));
 	if (result == nullptr)
 	{
 		return false;

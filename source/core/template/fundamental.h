@@ -2,11 +2,6 @@
 
 #pragma once
 
-// Platform
-#ifdef _MSVC_LANG
-    #include <Windows.h>
-#endif
-
 /* >>> Unsigned base types >>> */
 // 8-bit unsigned integer
 typedef unsigned char 		uint8;

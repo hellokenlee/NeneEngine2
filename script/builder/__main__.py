@@ -6,7 +6,7 @@
 	Nene Build Tool (NBT) Entry File
 	
 	Usage:
-		Run `py -3 script/builder` in NeneEngine root.
+		Run `py script/builder` in NeneEngine root.
 	
 """
 __version__ = '0.1.0'

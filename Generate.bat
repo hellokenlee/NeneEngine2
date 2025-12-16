@@ -1,3 +1,3 @@
-py -3 -m pip install -r requirements.txt
-py -3 script/builder
+py -m pip install -r requirements.txt
+py script/builder
 pause

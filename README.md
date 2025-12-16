@@ -85,6 +85,7 @@ graph TD
   Core --> CoreObject
   Core --> CoreRender
   Gapi --> CoreRender
+  GapiDynamic --> CoreRender
   Core --> Editor
   CoreObject --> Editor
   Engine --> Editor
