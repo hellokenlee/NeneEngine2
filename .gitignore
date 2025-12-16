@@ -29,8 +29,9 @@ script/editor/.idea/*
 # Python Stub Files
 script/stubs
 
-# 
+# Nene Immediates Files
 .bin/*
+.package/*
 toolchain/.idea/*
 toolchain/__pycache__/*
 toolchain/common/__pycache__/*
