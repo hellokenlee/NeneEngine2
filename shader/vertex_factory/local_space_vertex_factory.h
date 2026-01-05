@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "vertex_factory_common.h"
+#include "/vertex_factory/vertex_factory_common.h"
 
 struct SVertexShaderInput
 {

@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "/common/common.h"
+
 struct SVertexShaderOutput
 {
 	float4 NdcPosition : SV_POSITION;

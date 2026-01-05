@@ -2,14 +2,16 @@
 
 #pragma once
 
-template<typename SVertexFactoryInput, typename SVertexShaderInput>
-void VertexFactoryGetVertexShaderInput(in SVertexFactoryInput VertexFactoryInput, out SVertexShaderInput VertexShaderInput)
+/** template routers: a vertex factory must implement all routed methods */
+
+template<typename SVertexShaderInput, typename SVertexFactoryInput>
+SVertexShaderInput VertexFactoryGetVertexShaderInput(SVertexFactoryInput VertexFactoryInput)
 {
-	VertexShaderInput = VertexFactoryInput.GetVertexShaderInput();
+	return VertexFactoryInput.GetVertexShaderInput();
 }
 
 template<typename SVertexFactoryInput, typename SVertexShaderInput>
-float3 VertexFactoryGetWorldPosition(in SVertexFactoryInput VertexFactoryInput, out SVertexShaderInput VertexShaderInput)
+float4 VertexFactoryGetWorldPosition(SVertexFactoryInput VertexFactoryInput, SVertexShaderInput VertexShaderInput)
 {
 	return VertexShaderInput.GetWorldPosition();
 }
