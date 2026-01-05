@@ -27,6 +27,10 @@ namespace i
 	public:
 		gapi_resource_view_allocator() = default;
 		~gapi_resource_view_allocator() override = default;
-		virtual std::shared_ptr<gapi_resource_view> allocate_resource_view() = 0;
+		virtual void reset() = 0;
+		virtual std::shared_ptr<gapi_resource_view> allocate_resource_view(gapi_resource_view_type vtype) = 0;
+		
+	protected:
+		virtual void initialize_resource_view(gapi_resource_view& view, gapi_resource_view_type vtype) { view.set_type(vtype); } 
 	};
 }

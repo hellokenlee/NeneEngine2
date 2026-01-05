@@ -8,5 +8,5 @@ constexpr uint32 NUM_D3D_MAX_CBVS = 16;
 constexpr uint32 NUM_D3D_MAX_UAVS = 16;
 constexpr uint32 NUM_D3D_MAX_DYNAMIC_SAMPLERS = 16;
 //
-constexpr uint32 NUM_D3D_MAX_ROOT_CBVS = NUM_D3D_MAX_CBVS;
+constexpr uint32 NUM_D3D_MAX_ROOT_CBVS = 0;
 constexpr uint32 NUM_D3D_MAX_ROOT_PARAMETERS = 32;

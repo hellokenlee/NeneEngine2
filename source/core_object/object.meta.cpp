@@ -8,7 +8,7 @@
 NMETA(m)
 {
 	t::n::class_<n::object>("Object", m)
-		.constructor<int>()
+		.constructor<>()
 		.method("func0", &n::object::func0)
 		.method("func1", &n::object::func1)
 		.static_method("test", &n::object::test)

@@ -17,7 +17,7 @@ public:
 	
 	std::shared_ptr<i::gapi_gpu> create_gpu() override;
 
-	std::shared_ptr<i::gapi_swap_chain> create_swap_chain(void* hwnd, const std::shared_ptr<i::gapi_cmd_queue>& cmd_queue, const upoint32& resolution, const uint32& multibuffer, const gapi_pixel_format& pixel_format, const uint32& multisample) override;
+	std::shared_ptr<i::gapi_swap_chain> create_swap_chain(void* hwnd, const std::shared_ptr<i::gapi_cmd_queue>& cmd_queue, const upoint32& resolution, uint32 multibuffer, const gapi_pixel_format& pixel_format, uint32 multisample) override;
 	
 protected:
 	WinComPtr<IDXGIFactory2> m_factory2;

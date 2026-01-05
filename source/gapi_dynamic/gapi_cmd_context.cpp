@@ -51,7 +51,7 @@ void gapi_cmd_context::reset()
 	get_current_cmd_allocator()->reset();
 	get_current_cmd_list()->reset(get_current_cmd_allocator(), nullptr);
 	//
-	release_tracked_resources();
+	release_deferred_resources();
 	// Default to triangle
 	set_primitive_type(gapi_primitive_type::triangle);
 	//
@@ -94,14 +94,15 @@ void gapi_cmd_context::clear_render_target(const std::shared_ptr<i::gapi_texture
 	get_current_cmd_list()->clear_render_target_view(render_target->get_render_target_view(), clear_color);
 }
 
-void gapi_cmd_context::draw(const uint32& num_vertices, const uint32& num_instances, const uint32& vertex_offset, const uint32& instance_offset) const
+void gapi_cmd_context::draw(uint32 num_vertices, uint32 num_instances, uint32 vertex_offset, uint32 instance_offset)
 {
+	m_online_resource_view_cache.commit_staged_resource_views(get_current_cmd_list(), m_device);
 	get_current_cmd_list()->draw(num_vertices, num_instances, vertex_offset, instance_offset);
 }
 
-void gapi_cmd_context::draw_indexed(const uint32& num_indices, const uint32& num_instances, const uint32& index_offset, const uint32& vertex_offset, const uint32& instance_offset)
+void gapi_cmd_context::draw_indexed(uint32 num_indices, uint32 num_instances, uint32 index_offset, uint32 vertex_offset, uint32 instance_offset)
 {
-	m_online_resource_view_cache.commit_staged_resource_views();
+	m_online_resource_view_cache.commit_staged_resource_views(get_current_cmd_list(), m_device);
 	get_current_cmd_list()->draw_indexed(num_indices, num_instances, index_offset, vertex_offset, instance_offset);
 }
 
@@ -128,53 +129,121 @@ void gapi_cmd_context::set_primitive_type(const gapi_primitive_type& ptype) cons
 	get_current_cmd_list()->set_primitive_topology(ptype);
 }
 
-void gapi_cmd_context::bind_shader_resource_view(const gapi_shader_stage& stage, const uint32& index, const std::shared_ptr<i::gapi_resource_view>& srv)
+void gapi_cmd_context::bind_shader_resource(const gapi_shader_stage& stage, uint32_t reg, const std::shared_ptr<i::gapi_resource>& resource)
 {
-	m_online_resource_view_cache.stage_resource_view(stage, index, srv);
+	CHECK(resource->get_shader_resource_view() != nullptr);
+	// TODO: auto barrier resolve
+	m_online_resource_view_cache.stage_resource_view(stage, reg, resource->get_shader_resource_view());
 }
 
-void gapi_cmd_context::bind_constant_buffer_view(const gapi_shader_stage& stage, const uint32& index, const std::shared_ptr<i::gapi_resource_view>& cbv)
+void gapi_cmd_context::bind_constant_buffer(const gapi_shader_stage& stage, uint32_t reg, const std::shared_ptr<i::gapi_buffer>& buffer)
 {
-	
+	//
+	CHECK(buffer->get_constant_buffer_view() != nullptr);
+	// TODO: auto barrier resolve
+	// TODO: inline root descriptor handling
+	m_online_resource_view_cache.stage_resource_view(stage, reg, buffer->get_constant_buffer_view());
 }
 
-std::shared_ptr<i::gapi_resource> gapi_cmd_context::create_and_upload_resource(const gapi_resource_desc& desc, const void* initial_data)
+std::shared_ptr<i::gapi_buffer> gapi_cmd_context::create_and_upload_buffer(const gapi_resource_desc& desc, const void* initial_data)
 {
-	// 先创建目标的资源, 该资源不一定要 CPU 可见
-	auto target_resource = m_device->create_resource(desc);
-	if (desc.is_buffer())
+	//
+	CHECK(desc.is_buffer());
+	// 先创建目标的资源
+	auto target_buffer = std::dynamic_pointer_cast<i::gapi_buffer>(m_device->create_resource(desc));
+	if (t::has_flag(desc.m_buffer_usage_flag, gapi_buffer_usage_flag::dynamic_buffer))
 	{
-		// 创建中介资源, 该资源需要对 CPU 可见
+		// 对于 CPU 可见直接拷贝
+		auto initial_data_size = desc.buffer_size();
+		target_buffer->map(
+			[&initial_data, &initial_data_size](void* mapped)
+			{
+				memcpy(mapped, initial_data, initial_data_size);
+			}
+		);
+	}
+	else
+	{
+		// 对于 CPU 不可见, 创建中介资源, 该资源需要对 CPU 可见
 		auto intermediate_buffer_desc = gapi_buffer_desc::create(desc.m_width, gapi_buffer_usage_flag::dynamic_buffer);
-		auto intermediate_resource = m_device->create_resource(intermediate_buffer_desc);
+		auto intermediate_buffer = std::dynamic_pointer_cast<i::gapi_buffer>(m_device->create_resource(intermediate_buffer_desc));
 		// 标记状态处理
-		transition_resource(intermediate_resource, gapi_resource_state::copy_source);
-		transition_resource(target_resource, gapi_resource_state::copy_destination);
+		transition_resource(intermediate_buffer, gapi_resource_state::copy_source);
+		transition_resource(target_buffer, gapi_resource_state::copy_destination);
 		auto initial_data_size = desc.buffer_size();
 		// 把数据从 RAM 拷贝到中介资源 VRAM 中
-		intermediate_resource->map(
+		intermediate_buffer->map(
 			[&initial_data, &initial_data_size](void* mapped)
 			{
 				memcpy(mapped, initial_data, initial_data_size);
 			}
 		);
 		// 插入一个从 VRAM -> VRAM 的拷贝指令
-		get_current_cmd_list()->copy_resource_region(target_resource, 0, intermediate_resource, 0, initial_data_size);
+		get_current_cmd_list()->copy_buffer_region(target_buffer, 0, intermediate_buffer, 0, initial_data_size);
 		// 延迟删除 ( 帧末删除 )
-		track_resource(intermediate_resource);
+		deferred_release(intermediate_buffer);
 	}
-	else if (desc.is_texture())
+	return target_buffer;
+}
+
+std::shared_ptr<i::gapi_texture> gapi_cmd_context::create_and_upload_texture(const gapi_resource_desc& desc, const std::vector<const void*>& initial_data)
+{
+	CHECK(desc.is_texture());
+	auto target_texture = std::dynamic_pointer_cast<i::gapi_texture>(m_device->create_resource(desc));
+	if (t::has_flag(desc.m_texture_create_flag, gapi_texture_create_flag::cpu_writable))
 	{
+		// 对于 CPU 可见直接拷贝
 		NOT_IMPLEMENTED();
 	}
 	else
 	{
-		CHECK(false);
+		//
+		uint64_t intermediate_buffer_required_size = 0;
+		auto intermediate_buffer_sublayouts = m_device->calculate_buffer_layout(target_texture, 0, static_cast<uint32_t>(initial_data.size()), intermediate_buffer_required_size);
+		// 对于 CPU 不可见, 创建中介资源, 该资源需要对 CPU 可见
+		auto intermediate_buffer_desc = gapi_buffer_desc::create(intermediate_buffer_required_size, gapi_buffer_usage_flag::dynamic_buffer);
+		auto intermediate_buffer = std::dynamic_pointer_cast<i::gapi_buffer>(m_device->create_resource(intermediate_buffer_desc));
+		// 标记状态处理
+		transition_resource(intermediate_buffer, gapi_resource_state::copy_source);
+		transition_resource(target_texture, gapi_resource_state::copy_destination);
+		// 把数据从 RAM 拷贝到中介资源 VRAM 中
+		intermediate_buffer->map(
+			[&initial_data, &intermediate_buffer_sublayouts](void* immediate_buffer_mapped)
+			{
+				// 按逐个 subtexture 顺序填充 intermediate buffer 数据
+				for (size_t subindex = 0; subindex < intermediate_buffer_sublayouts.size(); ++subindex)
+				{
+					//
+					const auto& sublayout = intermediate_buffer_sublayouts[subindex];
+					uint8* dst_start = static_cast<uint8*>(immediate_buffer_mapped) + sublayout->offset();
+					const uint8* src_start = static_cast<const uint8*>(initial_data[subindex]);
+					// 
+					for (uint32 z = 0; z < sublayout->num_slices(); ++z)
+					{
+						// 一个 slice 一共有 num_rows * bytes_per_row 个字节
+						uint8* dst_slice_start = dst_start + z * sublayout->num_rows() * sublayout->padded_bytes_per_row();
+						const uint8* src_slice_start = src_start + z * sublayout->num_rows() * sublayout->unpadded_bytes_per_row();
+						//
+						for (uint32 y = 0; y < sublayout->num_rows(); ++y)
+						{
+							// 逐行拷贝
+							// NOTE: 这里假设 `initial_data` 里面的一行像素的字节长度和在 vram 里面的是一样长的
+							memcpy(dst_slice_start + y * sublayout->padded_bytes_per_row(), src_slice_start + y * sublayout->unpadded_bytes_per_row(), sublayout->padded_bytes_per_row());
+						}
+					}
+				}
+			}
+		);
+		// 逐个 subtexture 插入从 VRAM -> VRAM 的拷贝指令
+		for (size_t subindex = 0; subindex < initial_data.size(); ++subindex)
+		{
+			get_current_cmd_list()->copy_buffer_region(target_texture, static_cast<uint32>(subindex), intermediate_buffer, intermediate_buffer_sublayouts[subindex]);
+		}
+		// 延迟删除 ( 帧末删除 )
+		deferred_release(intermediate_buffer);
 	}
-	//
-	return target_resource;
+	return target_texture;
 }
-//
 
 void gapi_cmd_context::transition_resource(const std::shared_ptr<i::gapi_resource>& resource, const gapi_resource_state& to_state) const
 {
@@ -182,12 +251,12 @@ void gapi_cmd_context::transition_resource(const std::shared_ptr<i::gapi_resourc
 	get_current_cmd_list()->transition_resource(resource, to_state);
 }
 
-void gapi_cmd_context::track_resource(const std::shared_ptr<i::gapi_resource>& resource)
+void gapi_cmd_context::deferred_release(const std::shared_ptr<i::gapi_resource>& resource)
 {
 	m_frame_contexts[m_current_index].m_tracked_resources.emplace_back(resource);
 }
 
-void gapi_cmd_context::release_tracked_resources()
+void gapi_cmd_context::release_deferred_resources()
 {
 	m_frame_contexts[m_current_index].m_tracked_resources.clear();
 }

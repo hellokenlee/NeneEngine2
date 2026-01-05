@@ -152,7 +152,7 @@ std::shared_ptr<i::gapi_gpu> gapi_d3d12_factory::create_gpu()
 	return std::make_shared<gapi_d3d12_gpu>(selected_adapter);
 }
 
-std::shared_ptr<i::gapi_swap_chain> gapi_d3d12_factory::create_swap_chain(void* hwnd, const std::shared_ptr<i::gapi_cmd_queue>& cmd_queue, const upoint32& resolution, const uint32& multibuffer, const gapi_pixel_format& pixel_format, const uint32& multisample)
+std::shared_ptr<i::gapi_swap_chain> gapi_d3d12_factory::create_swap_chain(void* hwnd, const std::shared_ptr<i::gapi_cmd_queue>& cmd_queue, const upoint32& resolution, uint32 multibuffer, const gapi_pixel_format& pixel_format, uint32 multisample)
 {
 	// variable refresh rate displays support ( while vsync is off )
 	bool b_supports_vrr = false;

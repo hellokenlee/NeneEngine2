@@ -29,7 +29,7 @@ public:
 	static gapi_dynamic& get();
 	
 	/** Get the context for a thread. */
-	gapi_cmd_context& get_cmd_context(const uint32& context_id = 0) const;
+	gapi_cmd_context& get_cmd_context(uint32 context_id = 0) const;
 
 	/** Pipeline state creations. */
 	std::shared_ptr<i::gapi_pipeline_state> create_compute_pipeline_state(const gapi_compute_pipeline_state_desc& desc) const;
@@ -62,6 +62,7 @@ protected:
 	/** Internal constructor. */
 	gapi_dynamic(const gapi_platform& platform, void* window, const upoint32& window_size);
 	/** Helper to create resource views. */
+	void create_buffer_views(const std::shared_ptr<i::gapi_buffer>& buffer) const;
 	void create_texture_views(const std::shared_ptr<i::gapi_texture>& texture) const;
 	//
 	std::unique_ptr<i::gapi_factory> m_factory;

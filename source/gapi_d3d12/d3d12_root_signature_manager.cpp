@@ -171,6 +171,7 @@ D3D12_VERSIONED_ROOT_SIGNATURE_DESC d3d12_root_signature_manager::make_root_sign
 		for (auto shader_visibility : magic_enum::enum_values<D3D12_SHADER_VISIBILITY>())
 		{
 			gapi_shader_stage stage = d3d_back_cast(shader_visibility);
+			uint32_t register_space = choose_register_space(stage);
 			const auto& shader_register_count = quantized_bound_shader_state.m_shader_register_counts[magic_enum::enum_underlying(stage)];
 			switch (root_parameter_type)
 			{
@@ -179,74 +180,74 @@ D3D12_VERSIONED_ROOT_SIGNATURE_DESC d3d12_root_signature_manager::make_root_sign
 					// we first try to bind CBV as a root descriptor
 					for (uint32 shader_register = 0; shader_register < shader_register_count.num_constant_buffer && shader_register < NUM_D3D_MAX_ROOT_CBVS; ++shader_register)
 					{
-						CHECK(current_root_parameter_index < NUM_D3D_MAX_ROOT_PARAMETERS);
-						root_parameters[current_root_parameter_index].InitAsConstantBufferView(shader_register, choose_register_space(stage), D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, shader_visibility);
-						out_shader_resource_table[magic_enum::enum_underlying(stage)].m_cbv_register_table.emplace_back(current_root_parameter_index);
+						root_parameters[current_root_parameter_index].InitAsConstantBufferView(shader_register, register_space, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, shader_visibility);
+						out_shader_resource_table.m_shader_stage_register_tables[magic_enum::enum_underlying(stage)].m_cbv_register_table.emplace_back(current_root_parameter_index);
 						++current_root_parameter_index;
+						CHECK(current_root_parameter_index <= NUM_D3D_MAX_ROOT_PARAMETERS);
 					}
 					break;
 				}
 				case D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE:
 				{
-					// CBV: if the num of CBV exceeds, bind it as a descriptor table
-					if (shader_register_count.num_constant_buffer >= NUM_D3D_MAX_CBVS)
+					// CBV: if the num of CBV exceeds, bind all remain CBVs as a descriptor range in a descriptor table
+					if (shader_register_count.num_constant_buffer > NUM_D3D_MAX_ROOT_CBVS)
 					{
-						CHECK(current_root_parameter_index < NUM_D3D_MAX_ROOT_PARAMETERS);
 						descriptor_ranges[current_root_parameter_index].Init(
 							D3D12_DESCRIPTOR_RANGE_TYPE_CBV,
 							shader_register_count.num_constant_buffer - NUM_D3D_MAX_ROOT_CBVS,
 							NUM_D3D_MAX_ROOT_CBVS,
-							NENE_D3D_SHARED_SHADER_REGISTER_SPACE,
+							register_space,
 							D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC_WHILE_SET_AT_EXECUTE | D3D12_DESCRIPTOR_RANGE_FLAG_DESCRIPTORS_VOLATILE
 						);
 						root_parameters[current_root_parameter_index].InitAsDescriptorTable(1, &descriptor_ranges[current_root_parameter_index], shader_visibility);
-						out_shader_resource_table[magic_enum::enum_underlying(stage)].m_cbv_register_table.emplace_back(current_root_parameter_index);
+						out_shader_resource_table.m_shader_stage_register_tables[magic_enum::enum_underlying(stage)].m_cbv_register_table.emplace_back(current_root_parameter_index);
 						++current_root_parameter_index;
+						CHECK(current_root_parameter_index <= NUM_D3D_MAX_ROOT_PARAMETERS);
 					}
-					// SRV: 
+					// SRV: bind all SRVs as a descriptor range in a descriptor table
 					if (shader_register_count.num_shader_resource > 0)
 					{
-						CHECK(current_root_parameter_index < NUM_D3D_MAX_SRVS);
 						descriptor_ranges[current_root_parameter_index].Init(
 							D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
 							shader_register_count.num_shader_resource,
 							0u,
-							NENE_D3D_SHARED_SHADER_REGISTER_SPACE,
+							register_space,
 							D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC_WHILE_SET_AT_EXECUTE | D3D12_DESCRIPTOR_RANGE_FLAG_DESCRIPTORS_VOLATILE
 						);
 						root_parameters[current_root_parameter_index].InitAsDescriptorTable(1, &descriptor_ranges[current_root_parameter_index], shader_visibility);
-						out_shader_resource_table[magic_enum::enum_underlying(stage)].m_srv_register_table.emplace_back(current_root_parameter_index);
+						out_shader_resource_table.m_shader_stage_register_tables[magic_enum::enum_underlying(stage)].m_srv_register_table.emplace_back(current_root_parameter_index);
 						++current_root_parameter_index;
+						CHECK(current_root_parameter_index <= NUM_D3D_MAX_ROOT_PARAMETERS);
 					}
-					// UAV:
+					// UAV: bind all UAVs as a descriptor range in a descriptor table
 					if (shader_register_count.num_unordered_access > 0)
 					{
-						CHECK(current_root_parameter_index < NUM_D3D_MAX_SRVS);
 						descriptor_ranges[current_root_parameter_index].Init(
 							D3D12_DESCRIPTOR_RANGE_TYPE_UAV,
 							shader_register_count.num_unordered_access,
 							0u,
-							NENE_D3D_SHARED_SHADER_REGISTER_SPACE,
+							register_space,
 							D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE | D3D12_DESCRIPTOR_RANGE_FLAG_DESCRIPTORS_VOLATILE
 						);
 						root_parameters[current_root_parameter_index].InitAsDescriptorTable(1, &descriptor_ranges[current_root_parameter_index], shader_visibility);
-						out_shader_resource_table[magic_enum::enum_underlying(stage)].m_uav_register_table.emplace_back(current_root_parameter_index);
+						out_shader_resource_table.m_shader_stage_register_tables[magic_enum::enum_underlying(stage)].m_uav_register_table.emplace_back(current_root_parameter_index);
 						++current_root_parameter_index;
+						CHECK(current_root_parameter_index <= NUM_D3D_MAX_ROOT_PARAMETERS);
 					}
-					// Sampler:
+					// Sampler: bind all dynamic samplers as a descriptor range in a descriptor table
 					if (shader_register_count.num_dynamic_sampler > 0)
 					{
-						CHECK(current_root_parameter_index < NUM_D3D_MAX_SRVS);
 						descriptor_ranges[current_root_parameter_index].Init(
 							D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER,
 							shader_register_count.num_dynamic_sampler,
 							0u,
-							NENE_D3D_SHARED_SHADER_REGISTER_SPACE,
+							register_space,
 							D3D12_DESCRIPTOR_RANGE_FLAG_DESCRIPTORS_VOLATILE
 						);
 						root_parameters[current_root_parameter_index].InitAsDescriptorTable(1, &descriptor_ranges[current_root_parameter_index], shader_visibility);
-						out_shader_resource_table[magic_enum::enum_underlying(stage)].m_dynamic_sampler_register_table.emplace_back(current_root_parameter_index);
+						out_shader_resource_table.m_shader_stage_register_tables[magic_enum::enum_underlying(stage)].m_dynamic_sampler_register_table.emplace_back(current_root_parameter_index);
 						++current_root_parameter_index;
+						CHECK(current_root_parameter_index <= NUM_D3D_MAX_ROOT_PARAMETERS);
 					}
 					break;
 				}
@@ -256,6 +257,9 @@ D3D12_VERSIONED_ROOT_SIGNATURE_DESC d3d12_root_signature_manager::make_root_sign
 			}
 		}
 	}
+	// 
+	out_shader_resource_table.m_num_total_parameters = current_root_parameter_index;
+	
 	// TODO: support bindless resource and ray tracing
 	D3D12_ROOT_SIGNATURE_FLAGS flags = D3D12_ROOT_SIGNATURE_FLAG_NONE;
 	// optimization: remove unnecessary access for stages in root signature 

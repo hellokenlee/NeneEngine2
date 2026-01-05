@@ -58,7 +58,7 @@ namespace impl
 			return internal_register_var<int32>(name, default_value, help, flag)->get_int32_ref();
 		}
 
-		uint32& register_var(const std::string& name, const uint32& default_value, const std::string& help, console_var_flag flag) override
+		uint32& register_var(const std::string& name, uint32 default_value, const std::string& help, console_var_flag flag) override
 		{
 			return internal_register_var<uint32>(name, default_value, help, flag)->get_uint32_ref();
 		}

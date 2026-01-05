@@ -11,8 +11,8 @@ namespace n
 	class NENE_API object: public i::serializable
 	{
 	public:
-		object(int data)
-			: m_data0(data)
+		object()
+			: m_data0(456)
 			, m_data1(234)
 		{}
 		~object() override = default;

@@ -28,11 +28,13 @@ public:
 	void create_render_target_view(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const std::shared_ptr<i::gapi_texture>& texture) override;
 	void create_depth_stencil_view(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const std::shared_ptr<i::gapi_texture>& texture) override;
 	void create_sampler(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const gapi_sampler_desc& desc) override;
+	void copy_resource_view(const std::shared_ptr<i::gapi_resource_view>& dst_view, const std::shared_ptr<i::gapi_resource_view>& src_view) override;
 
 	std::shared_ptr<i::gapi_resource_allocator> create_resource_allocator() override;
 	std::shared_ptr<i::gapi_resource> create_resource(const gapi_resource_desc& desc) override;
 	std::shared_ptr<i::gapi_resource> create_placed_resource(const gapi_resource_desc& desc) override;
 	std::shared_ptr<i::gapi_resource> create_reserved_resource(const gapi_resource_desc& desc) override;
+	std::vector<std::shared_ptr<i::gapi_buffer_sublayout>> calculate_buffer_layout(const std::shared_ptr<i::gapi_resource>& dst_resource, uint32_t dst_start_subindex, uint32_t num_subresources, uint64_t& out_num_total_bytes) override;
 
 	std::shared_ptr<i::gapi_shader> create_and_compile_shader(const gapi_shader_stage& stype, const std::string& source, const std::string& entry, const gapi_shader_feature_level& level, const std::string& debug_name) override;
 

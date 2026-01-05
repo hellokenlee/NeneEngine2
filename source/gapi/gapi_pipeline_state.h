@@ -4,6 +4,7 @@
 
 #include "core/core.h"
 #include "gapi_shader.h"
+#include "gapi_resource_view.h"
 
 
 enum class gapi_pipeline_state_type : uint8
@@ -24,7 +25,29 @@ struct gapi_shader_resource_table
 	// map `s#` to pipeline parameter index
 	std::vector<uint32> m_dynamic_sampler_register_table;
 };
-using gapi_shader_resource_tables = std::array<gapi_shader_resource_table, num_gapi_shader_stage>;
+struct gapi_shader_resource_tables
+{
+	std::array<gapi_shader_resource_table, num_gapi_shader_stage> m_shader_stage_register_tables;
+	uint32_t m_num_total_parameters = 0;
+
+	uint32_t get_parameter_index(gapi_shader_stage stage, gapi_resource_view_type stype, uint32_t reg) const
+	{
+		switch (stype)
+		{
+		case gapi_resource_view_type::constant_buffer_view:
+			return m_shader_stage_register_tables[magic_enum::enum_underlying(stage)].m_cbv_register_table[reg];
+		case gapi_resource_view_type::shader_resource_view:
+			return m_shader_stage_register_tables[magic_enum::enum_underlying(stage)].m_srv_register_table[reg];
+		case gapi_resource_view_type::unordered_access_view:
+			return m_shader_stage_register_tables[magic_enum::enum_underlying(stage)].m_uav_register_table[reg];
+		case gapi_resource_view_type::texture_sampler:
+			return m_shader_stage_register_tables[magic_enum::enum_underlying(stage)].m_dynamic_sampler_register_table[reg];
+		default:
+			CHECK(false);
+		}
+		return -1;
+	}
+};
 
 namespace i
 {

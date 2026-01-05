@@ -3,19 +3,19 @@
 #pragma once
 
 #include "core_object/object.h"
-#include "gapi/gapi_resource.h"
-#include "core/types.h"
+#include "core_render/render_texture.h"
 
 
 namespace n
 {
-    class NENE_API texture
+    /** A texture object for main thread */
+    class NENE_API texture : public object
     {
     public:
         texture();
 
     protected:
-        std::shared_ptr<i::gapi_texture> m_gapi_texture;
+        std::unique_ptr<r::render_texture> m_render_texture;
     };
 };
  

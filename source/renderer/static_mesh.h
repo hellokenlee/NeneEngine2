@@ -18,7 +18,7 @@ namespace r
 		size_t num_vertex_buffers() const { return m_vertex_factory.get_vertex_streams().size(); }
 		const std::shared_ptr<i::gapi_buffer>& get_vertex_buffer(size_t index) const { return m_vertex_factory.get_vertex_streams()[index]->get_vertex_buffer(); }
 		//
-		const uint32& num_index() const { return m_index_stream.num_index(); } 
+		uint32 num_index() const { return m_index_stream.num_index(); } 
 		const std::shared_ptr<i::gapi_buffer>& get_index_buffer() const { return m_index_stream.get_index_buffer(); }
 	
 	protected:

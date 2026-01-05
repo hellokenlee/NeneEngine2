@@ -20,9 +20,10 @@ public:
 	// stage the cache of a resource view, called while binding resource 
 	void stage_resource_view(gapi_shader_stage stage, uint32 reg, const std::shared_ptr<i::gapi_resource_view>& view);
 	// commit all staged resource views in cache to GPU and make them online, called while draw | dispatch
-	void commit_staged_resource_views();
+	void commit_staged_resource_views(const std::shared_ptr<i::gapi_cmd_list>& cmd_list, const std::shared_ptr<i::gapi_device>& device);
 	
 protected:
 	gapi_shader_resource_tables m_shader_resource_tables;
+	std::vector<std::shared_ptr<i::gapi_resource_view>> m_staged_resource_views;
 	std::shared_ptr<i::gapi_resource_view_allocator> m_online_resource_view_allocator;
 };

@@ -24,6 +24,13 @@ t::console_var<bool> cvar_gapi_d3d_shader_optimize(
 	console_var_flag::read_only
 );
 
+t::console_var<bool> cvar_gapi_d3d_shader_dump_shader_source(
+	"gapi.d3d.shader.dump_source",
+	true,
+	"",
+	console_var_flag::read_only
+);
+
 
 static std::string d3d_cast(const gapi_shader_stage& type, const gapi_shader_feature_level& level)
 {
@@ -107,6 +114,7 @@ bool d3d12_dxc_shader_compiler::compile(gapi_d3d12_shader& shader, WinComPtr<ID3
 	m_compiler->Compile(&source, args->GetArguments(), args->GetCount(), m_include_handler.Get(), IID_PPV_ARGS(&result));
 	if (result == nullptr)
 	{
+		log(shader_, fatal, "unknown fatal dxc internal error! try update dxc version and retry!");
 		return false;
 	}
 	
@@ -122,6 +130,23 @@ bool d3d12_dxc_shader_compiler::compile(gapi_d3d12_shader& shader, WinComPtr<ID3
 		{
 			log(shader_, error, "\t{}", message->GetStringPointer());
 		}
+
+		//
+		if (cvar_gapi_d3d_shader_dump_shader_source.get_value_thread_unsafe())
+		{
+			arguments.emplace_back(L"-P");
+			m_utils->BuildArguments(filename.c_str(), entry.c_str(), target.c_str(), arguments.data(), static_cast<UINT32>(arguments.size()), nullptr, 0, args.GetAddressOf());
+			WinComPtr<IDxcResult>  preprocess_result;
+			hres = m_compiler->Compile(&source, args->GetArguments(), args->GetCount(), m_include_handler.Get(), IID_PPV_ARGS(&result));
+			WinComPtr<IDxcBlob> preprocessed;
+			result->GetOutput(DXC_OUT_HLSL, IID_PPV_ARGS(preprocessed.GetAddressOf()), nullptr);
+			std::string preprocessed_string;
+			preprocessed_string.reserve(preprocessed->GetBufferSize());
+			preprocessed_string.insert(0, static_cast<const char*>(preprocessed->GetBufferPointer()), preprocessed->GetBufferSize());
+
+			log(shader_, error, "preprocessed:\n{}", preprocessed_string);
+		}
+		
 		return false;
 	}
 	if (message && message->GetStringLength() > 0)

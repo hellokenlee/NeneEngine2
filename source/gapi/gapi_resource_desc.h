@@ -40,7 +40,7 @@ DEFINE_FLAG_ENUM_CLASS_OPERATORS(gapi_texture_create_flag);
 
 
 /** The usage flag to create a buffer */
-enum class gapi_buffer_usage_flag : uint8
+enum class gapi_buffer_usage_flag : uint16_t
 {
 	none					= 0,
 
@@ -53,15 +53,17 @@ enum class gapi_buffer_usage_flag : uint8
 
 	// the buffer can be bound as a shader resource
 	shader_resource			= 1ull << 3,
+	constant_buffer			= 1ull << 4,
+	unordered_access		= 1ull << 5,
 
 	// the buffer is created as a vertex buffer
-	usage_vertex_buffer		= 1ull << 4,
+	usage_vertex_buffer		= 1ull << 6,
 	// the buffer is created as an index buffer
-	usage_index_buffer		= 1ull << 5,
+	usage_index_buffer		= 1ull << 7,
 	// the buffer is created as a structured buffer
-	usage_structured_buffer	= 1ull << 6,
+	usage_structured_buffer	= 1ull << 8,
 	// the buffer is created as an argument buffer for indirect draw
-	usage_argument_buffer	= 1ull << 7,
+	usage_argument_buffer	= 1ull << 9,
 };
 DEFINE_FLAG_ENUM_CLASS_OPERATORS(gapi_buffer_usage_flag);
 
@@ -95,7 +97,7 @@ enum class gapi_pixel_format : uint8
 struct NENE_API gapi_resource_desc
 {
 	gapi_resource_type m_type;
-	uint32 m_width;
+	uint64 m_width;
 	uint32 m_height;
 	uint16 m_depth;
 	uint16 m_array_size;
@@ -107,7 +109,7 @@ struct NENE_API gapi_resource_desc
 	gapi_texture_create_flag m_texture_create_flag;
 	std::string m_debug_name;
 
-	uint32 buffer_size() const
+	uint64 buffer_size() const
 	{
 		return m_width;
 	}
@@ -128,7 +130,24 @@ struct NENE_API gapi_resource_desc
  */
 namespace gapi_texture_desc
 {
-	inline gapi_resource_desc create_2d(const upoint32& extent, gapi_pixel_format pformat, gapi_texture_create_flag flags, uint8 num_mips = 1, uint8 num_samples = 1, const std::string& debug_name = "UnnamedTexture2D")
+	inline gapi_resource_desc create_1d(uint32 extent, gapi_pixel_format pformat, gapi_texture_create_flag flags, uint8 num_mips = 1, const std::string& debug_name = "UnnamedTexture1D")
+	{
+		return gapi_resource_desc{
+			.m_type = gapi_resource_type::texture1d,
+			.m_width = extent,
+			.m_height = 1,
+			.m_depth = 1,
+			.m_array_size = 1,
+			.m_num_mips = 1,
+			.m_num_samples = 1,
+			.m_format = pformat,
+			.m_buffer_usage_flag = gapi_buffer_usage_flag::none,
+			.m_texture_create_flag = flags,
+			.m_debug_name = debug_name,
+		};
+	}
+	
+	inline gapi_resource_desc create_2d(uint2 extent, gapi_pixel_format pformat, gapi_texture_create_flag flags, uint8 num_mips = 1, uint8 num_samples = 1, const std::string& debug_name = "UnnamedTexture2D")
 	{
 		return gapi_resource_desc{
 			.m_type = gapi_resource_type::texture2d,
@@ -144,28 +163,29 @@ namespace gapi_texture_desc
 			.m_debug_name = debug_name,
 		};
 	}
-	/*
-	inline gapi_resource_desc create_1d()
+	
+	inline gapi_resource_desc create_3d(uint3 extent, gapi_pixel_format pformat, gapi_texture_create_flag flags, uint8 num_mips = 1, const std::string& debug_name = "UnnamedTexture1D")
 	{
-		;
+		return gapi_resource_desc{
+			.m_type = gapi_resource_type::texture2d,
+			.m_width = extent.x,
+			.m_height = extent.y,
+			.m_depth = static_cast<uint16>(extent.z),
+			.m_array_size = 1,
+			.m_num_mips = 1,
+			.m_num_samples = 1,
+			.m_format = pformat,
+			.m_buffer_usage_flag = gapi_buffer_usage_flag::none,
+			.m_texture_create_flag = flags,
+			.m_debug_name = debug_name,
+		};
 	}
-
-	inline gapi_resource_desc create_3d()
-	{
-		;
-	}
-
-	inline gapi_resource_desc create_cube()
-	{
-		;
-	}
-	*/
 }
 
 
 namespace gapi_buffer_desc
 {
-	inline gapi_resource_desc create(const uint32& size, const gapi_buffer_usage_flag& flags, uint16 stride = 0, const std::string& debug_name= "UnnamedBuffer")
+	inline gapi_resource_desc create(uint64 size, const gapi_buffer_usage_flag& flags, uint16 stride = 0, const std::string& debug_name= "UnnamedBuffer")
 	{
 		return gapi_resource_desc{
 			.m_type = gapi_resource_type::buffer,

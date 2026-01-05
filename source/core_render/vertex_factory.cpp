@@ -12,7 +12,7 @@ namespace r
 		, m_debug_name(debug_name)
 	{
 		auto desc = gapi_buffer_desc::create(static_cast<uint32>(indices.size() * sizeof(uint32)), gapi_buffer_usage_flag::usage_index_buffer, size_of_gapi_vertex_element_type(gapi_vertex_element_type::unsigned_int), m_debug_name);
-		m_index_buffer = std::dynamic_pointer_cast<i::gapi_buffer>(gapi_dynamic::get().get_cmd_context().create_and_upload_resource(desc, indices.data()));
+		m_index_buffer = std::dynamic_pointer_cast<i::gapi_buffer>(gapi_dynamic::get().get_cmd_context().create_and_upload_buffer(desc, indices.data()));
 	}
 
 	vertex_stream::vertex_stream(const void* data, size_t size, gapi_vertex_element_type element_type, const std::string& debug_name)
@@ -22,7 +22,7 @@ namespace r
 	{
 		
 		auto desc = gapi_buffer_desc::create(static_cast<uint32>(size), gapi_buffer_usage_flag::usage_vertex_buffer, size_of_gapi_vertex_element_type(element_type), m_debug_name);
-		m_vertex_buffer = std::dynamic_pointer_cast<i::gapi_buffer>(gapi_dynamic::get().get_cmd_context().create_and_upload_resource(desc, data));
+		m_vertex_buffer = std::dynamic_pointer_cast<i::gapi_buffer>(gapi_dynamic::get().get_cmd_context().create_and_upload_buffer(desc, data));
 	}
 
 	void vertex_factory::modify_shader_translate_environment(shader_translate_environment& inout_shader_translate_environment) const

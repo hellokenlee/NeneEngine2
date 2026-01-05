@@ -40,8 +40,8 @@ public:
 
 
 	// void dispatch(const uvector3& thread_group_size) const;
-	void draw(const uint32& num_vertices, const uint32& num_instances, const uint32& vertex_offset = 0, const uint32& instance_offset = 0) const;
-	void draw_indexed(const uint32& num_indices, const uint32& num_instances, const uint32& index_offset = 0, const uint32& vertex_offset = 0, const uint32& instance_offset = 0);
+	void draw(uint32 num_vertices, uint32 num_instances, uint32 vertex_offset = 0, uint32 instance_offset = 0);
+	void draw_indexed(uint32 num_indices, uint32 num_instances, uint32 index_offset = 0, uint32 vertex_offset = 0, uint32 instance_offset = 0);
 	
 	//
 	void set_pipeline_state(const std::shared_ptr<i::gapi_pipeline_state>& pipeline_state);
@@ -50,12 +50,20 @@ public:
 	void set_primitive_type(const gapi_primitive_type& ptype) const;
 	// void set_viewports(const std::vector<gapi_viewport_desc>& viewports) const;
 	// void set_scissor_rects(const std::vector<rect>& scissors) const;
-
-	void bind_shader_resource_view(const gapi_shader_stage& stage, const uint32& index, const std::shared_ptr<i::gapi_resource_view>& srv);
-	void bind_constant_buffer_view(const gapi_shader_stage& stage, const uint32& index, const std::shared_ptr<i::gapi_resource_view>& cbv);
 	
-	//
-	std::shared_ptr<i::gapi_resource> create_and_upload_resource(const gapi_resource_desc& desc, const void* initial_data);
+	/** Resource binding */
+	void bind_shader_resource(const gapi_shader_stage& stage, uint32_t reg, const std::shared_ptr<i::gapi_resource>& resource);
+	void bind_constant_buffer(const gapi_shader_stage& stage, uint32_t reg, const std::shared_ptr<i::gapi_buffer>& buffer);
+	
+	
+	/** Resource creation */
+	std::shared_ptr<i::gapi_buffer> create_and_upload_buffer(const gapi_resource_desc& desc, const void* initial_data);
+	/**
+	 * 
+	 * @param desc 
+	 * @param initial_data mipmaps ( texture ) or slices ( texture array ) data, compactly packed row by row
+	 */
+	std::shared_ptr<i::gapi_texture> create_and_upload_texture(const gapi_resource_desc& desc, const std::vector<const void*>& initial_data);
 	
 	// Specify resource state
 	void transition_resource(const std::shared_ptr<i::gapi_resource>& resource, const gapi_resource_state& to_state) const;
@@ -73,8 +81,8 @@ protected:
 	};
 
 	//
-	void track_resource(const std::shared_ptr<i::gapi_resource>& resource);
-	void release_tracked_resources();
+	void deferred_release(const std::shared_ptr<i::gapi_resource>& resource);
+	void release_deferred_resources();
 
 	//
 	const std::shared_ptr<i::gapi_cmd_list>& get_current_cmd_list() const { return m_frame_contexts[m_current_index].m_cmd_list; }

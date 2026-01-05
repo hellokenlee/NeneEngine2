@@ -53,6 +53,7 @@ namespace i
 		virtual std::shared_ptr<gapi_resource> create_resource(const gapi_resource_desc& desc) = 0;
 		virtual std::shared_ptr<gapi_resource> create_placed_resource(const gapi_resource_desc& desc) = 0;
 		virtual std::shared_ptr<gapi_resource> create_reserved_resource(const gapi_resource_desc& desc) = 0;
+		virtual std::vector<std::shared_ptr<gapi_buffer_sublayout>> calculate_buffer_layout(const std::shared_ptr<gapi_resource>& dst_resource, uint32_t dst_start_subindex, uint32_t num_subresources, uint64_t& out_num_total_bytes) = 0;
 
 		// Resource View
 		virtual std::shared_ptr<gapi_resource_view_allocator> create_resource_view_allocator(gapi_resource_view_type view_type, gapi_resource_view_allocator_type allocator_type) = 0;
@@ -61,7 +62,8 @@ namespace i
 		virtual void create_unordered_access_view(const std::shared_ptr<gapi_resource_view>& allocated_view, const std::shared_ptr<gapi_resource>& resource) = 0;
 		virtual void create_render_target_view(const std::shared_ptr<gapi_resource_view>& allocated_view, const std::shared_ptr<gapi_texture>& texture) = 0;
 		virtual void create_depth_stencil_view(const std::shared_ptr<gapi_resource_view>& allocated_view, const std::shared_ptr<gapi_texture>& texture) = 0;
-		virtual void create_sampler(const std::shared_ptr<i::gapi_resource_view>& allocated_view, const gapi_sampler_desc& desc) = 0;
+		virtual void create_sampler(const std::shared_ptr<gapi_resource_view>& allocated_view, const gapi_sampler_desc& desc) = 0;
+		virtual void copy_resource_view(const std::shared_ptr<gapi_resource_view>& dst_view, const std::shared_ptr<gapi_resource_view>& src_view) = 0;
 
 		// Shaders ( Synchronized Compilation )
 		virtual std::shared_ptr<gapi_shader> create_and_compile_shader(const gapi_shader_stage& stype, const std::string& source, const std::string& entry, const gapi_shader_feature_level& level, const std::string& debug_name = "") = 0;

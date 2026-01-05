@@ -66,7 +66,7 @@ gapi_dynamic::gapi_dynamic(const gapi_platform& platform, void* window, const up
 
 gapi_dynamic::~gapi_dynamic() = default;
 
-gapi_cmd_context& gapi_dynamic::get_cmd_context(const uint32& context_id) const
+gapi_cmd_context& gapi_dynamic::get_cmd_context(uint32 context_id) const
 {
 	CHECK(context_id < cvar_gapi_num_context_thread.get_value_thread_unsafe());
 	return *m_cmd_contexts[context_id];
@@ -82,41 +82,67 @@ std::shared_ptr<i::gapi_pipeline_state> gapi_dynamic::create_graphics_pipeline_s
 	return m_device->create_graphics_pipeline_state(desc);
 }
 
-void gapi_dynamic::create_texture_views(const std::shared_ptr<i::gapi_texture>& texture) const
+void gapi_dynamic::create_buffer_views(const std::shared_ptr<i::gapi_buffer>& buffer) const
 {
 	// create offline resource views
-	const auto& create_flag = texture->get_resource_desc().m_texture_create_flag;
-	if (t::has_flag(create_flag, gapi_texture_create_flag::as_render_target))
+	const auto& create_flag = buffer->get_resource_desc().m_buffer_usage_flag;
+	if (t::has_flag(create_flag, gapi_buffer_usage_flag::constant_buffer))
 	{
-		auto rtv = m_rtv_allocator->allocate_resource_view();
-		m_device->create_render_target_view(rtv, texture);
-		texture->set_render_target_view(rtv);
+		auto cbv = m_cbv_srv_uav_allocator->allocate_resource_view(gapi_resource_view_type::constant_buffer_view);
+		m_device->create_constant_buffer_view(cbv, buffer);
+		buffer->set_constant_buffer_view(cbv);
 	}
-	if (t::has_flag(create_flag, gapi_texture_create_flag::as_depth_stencil))
+	if (t::has_flag(create_flag, gapi_buffer_usage_flag::shader_resource))
 	{
-		auto dsv = m_dsv_allocator->allocate_resource_view();
-		m_device->create_depth_stencil_view(dsv, texture);
-		texture->set_depth_stencil_view(dsv);
+		auto srv = m_cbv_srv_uav_allocator->allocate_resource_view(gapi_resource_view_type::constant_buffer_view);
+		m_device->create_constant_buffer_view(srv, buffer);
+		buffer->set_shader_resource_view(srv);
 	}
-	if (t::has_flag(create_flag, gapi_texture_create_flag::as_shader_resource))
+	if (t::has_flag(create_flag, gapi_buffer_usage_flag::unordered_access))
 	{
-		auto srv = m_cbv_srv_uav_allocator->allocate_resource_view();
-		m_device->create_shader_resource_view(srv, texture);
-		texture->set_shader_resource_view(srv);
-	}
-	if (t::has_flag(create_flag, gapi_texture_create_flag::as_unordered_access))
-	{
-		auto uav = m_cbv_srv_uav_allocator->allocate_resource_view();
-		m_device->create_unordered_access_view(uav, texture);
-		texture->set_unordered_access_view(uav);
+		auto uav = m_cbv_srv_uav_allocator->allocate_resource_view(gapi_resource_view_type::unordered_access_view);
+		m_device->create_unordered_access_view(uav, buffer);
+		buffer->set_unordered_access_view(uav);
 	}
 }
 
 std::shared_ptr<i::gapi_buffer> gapi_dynamic::create_buffer(const gapi_resource_desc& desc) const
 {
 	CHECK(desc.is_buffer())
-	auto buffer = m_device->create_resource(desc);
-	return std::dynamic_pointer_cast<i::gapi_buffer>(buffer);
+	auto resource = m_device->create_resource(desc);
+	auto buffer = std::dynamic_pointer_cast<i::gapi_buffer>(resource);
+	create_buffer_views(buffer);
+	return buffer;
+}
+
+void gapi_dynamic::create_texture_views(const std::shared_ptr<i::gapi_texture>& texture) const
+{
+	// create offline resource views
+	const auto& create_flag = texture->get_resource_desc().m_texture_create_flag;
+	if (t::has_flag(create_flag, gapi_texture_create_flag::as_render_target))
+	{
+		auto rtv = m_rtv_allocator->allocate_resource_view(gapi_resource_view_type::render_target_view);
+		m_device->create_render_target_view(rtv, texture);
+		texture->set_render_target_view(rtv);
+	}
+	if (t::has_flag(create_flag, gapi_texture_create_flag::as_depth_stencil))
+	{
+		auto dsv = m_dsv_allocator->allocate_resource_view(gapi_resource_view_type::depth_stencil_view);
+		m_device->create_depth_stencil_view(dsv, texture);
+		texture->set_depth_stencil_view(dsv);
+	}
+	if (t::has_flag(create_flag, gapi_texture_create_flag::as_shader_resource))
+	{
+		auto srv = m_cbv_srv_uav_allocator->allocate_resource_view(gapi_resource_view_type::shader_resource_view);
+		m_device->create_shader_resource_view(srv, texture);
+		texture->set_shader_resource_view(srv);
+	}
+	if (t::has_flag(create_flag, gapi_texture_create_flag::as_unordered_access))
+	{
+		auto uav = m_cbv_srv_uav_allocator->allocate_resource_view(gapi_resource_view_type::unordered_access_view);
+		m_device->create_unordered_access_view(uav, texture);
+		texture->set_unordered_access_view(uav);
+	}
 }
 
 std::shared_ptr<i::gapi_texture> gapi_dynamic::create_texture(const gapi_resource_desc& desc) const

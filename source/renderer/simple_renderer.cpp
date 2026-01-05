@@ -2,6 +2,7 @@
 
 #include "simple_renderer.h"
 #include "system_render_resource.h"
+#include "image_loader.h"
 #include "core_render/material_shader_map.h"
 #include "gapi_dynamic/gapi_pipeline_state_manager.h"
 #include "gapi_dynamic/gapi_shader_manager.h"
@@ -12,16 +13,26 @@
 simple_renderer::simple_renderer()
 	: renderer()
 	, m_base_pass_pipeline_state(nullptr)
-{}
+{
+	
+}
 
 void simple_renderer::render_view_family(const std::shared_ptr<i::gapi_texture>& view_family_texture)
 {
 	//
 	auto& context = gapi_dynamic::get().get_cmd_context();
 	context.clear_render_target(view_family_texture, color::rgba<float>({1.0f, 1.0f, 1.0f, 1.0f}));
+	
+	//
+	if (m_texture == nullptr)
+	{
+		// image_loader loader;
+		// auto data = loader.load("content/engine/sakura.png");
+		// m_texture = std::make_shared<r::render_texture>(data);
+	}
+
 	//
 	const auto& cube = r::system_static_meshes::get().m_cube;
-	
 	// TODO: Dynamic creation of PSO
 	if (m_base_pass_pipeline_state == nullptr)
 	{
@@ -44,7 +55,7 @@ void simple_renderer::render_view_family(const std::shared_ptr<i::gapi_texture>&
 	// TODO: Structured uniform buffer creation
 	if (m_view_constant_buffer == nullptr)
 	{
-		auto desc = gapi_buffer_desc::create(static_cast<uint32>(sizeof(SViewInfo)), gapi_buffer_usage_flag::dynamic_buffer);
+		auto desc = gapi_buffer_desc::create(sizeof(SViewInfo), gapi_buffer_usage_flag::dynamic_buffer | gapi_buffer_usage_flag::constant_buffer);
 		m_view_constant_buffer = gapi_dynamic::get().create_buffer(desc);
 	}
 	
@@ -59,7 +70,7 @@ void simple_renderer::render_view_family(const std::shared_ptr<i::gapi_texture>&
 		{
 			context.set_vertex_buffer(cube->get_vertex_buffer(i));
 		}
-		context.bind_constant_buffer_view(gapi_shader_stage::vertex_shader, 0, m_view_constant_buffer->get_constant_buffer_view());
+		context.bind_constant_buffer(gapi_shader_stage::vertex_shader, 0, m_view_constant_buffer);
 		context.draw_indexed(cube->num_index(), 1);
 	}
 }

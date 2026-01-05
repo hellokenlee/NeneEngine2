@@ -23,12 +23,12 @@
 #else  // NENE_DEBUG
 	#define CHECK(expr) 
 	#define CHECK_HINTS(expr, hints)
-	#define ENSURE(expr) expr
+	#define ENSURE(expr) (void)(expr)
 #endif // NENE_DEBUG
 
-NENE_API void check_failed(const std::string& filename, const uint32& line, const std::string& expression);
+NENE_API void check_failed(const std::string& filename, uint32 line, const std::string& expression);
 
-NENE_API void check_failed(const std::string& filename, const uint32& line, const std::string& expression, const std::string& hints);
+NENE_API void check_failed(const std::string& filename, uint32 line, const std::string& expression, const std::string& hints);
 
 #define CHECK_IMPL(expr)									\
 	{														\

@@ -25,20 +25,21 @@ public:
 	void clear_unordered_access_view(const std::shared_ptr<i::gapi_resource_view>& unorder_access_view, const std::shared_ptr<i::gapi_resource>& resource, const color::rgba<float>& clear_color) override;
 
 	void copy_resource(const std::shared_ptr<i::gapi_resource>& dst, const std::shared_ptr<i::gapi_resource>& src) override;
-	void copy_resource_region(const std::shared_ptr<i::gapi_resource>& dst, const uint32& dst_offset, const std::shared_ptr<i::gapi_resource>& src, const uint32& src_offset, const uint32& num_bytes) override;
+	void copy_buffer_region(const std::shared_ptr<i::gapi_buffer>& dst, uint32 dst_offset, const std::shared_ptr<i::gapi_buffer>& src, uint32 src_offset, uint64_t num_bytes) override;
+	void copy_buffer_region(const std::shared_ptr<i::gapi_texture>& dst, uint32 dst_subindex, const std::shared_ptr<i::gapi_buffer>& src, const std::shared_ptr<i::gapi_buffer_sublayout>& src_sublayout) override;
+	void copy_texture_region(const std::shared_ptr<i::gapi_texture>& dst, uint32 dst_subindex, const std::shared_ptr<i::gapi_texture>& src, uint32 src_subindex) override;
 	void discard_resource(const std::shared_ptr<i::gapi_resource>& resource) override;
 	
 	void dispatch(const uint3& thread_group_size) override;
-	void draw(const uint32& num_vertices, const uint32& num_instances, const uint32& vertex_offset, const uint32& instance_offset) override;
-	void draw_indexed(const uint32& num_indices, const uint32& num_instances, const uint32& index_offset, const uint32& vertex_offset, const uint32& instance_offset) override;
-	void execute_indirect(const std::shared_ptr<i::gapi_cmd_layout>& layout, const uint32& max_num_cmd, const std::shared_ptr<i::gapi_buffer>& arg_buffer, const uint32& arg_buffer_offset, const std::shared_ptr<i::gapi_buffer>& count_buffer, const uint32& count_buffer_offset) override;
+	void draw(uint32 num_vertices, uint32 num_instances, uint32 vertex_offset, uint32 instance_offset) override;
+	void draw_indexed(uint32 num_indices, uint32 num_instances, uint32 index_offset, uint32 vertex_offset, uint32 instance_offset) override;
+	void execute_indirect(const std::shared_ptr<i::gapi_cmd_layout>& layout, uint32 max_num_cmd, const std::shared_ptr<i::gapi_buffer>& arg_buffer, uint32 arg_buffer_offset, const std::shared_ptr<i::gapi_buffer>& count_buffer, uint32 count_buffer_offset) override;
 
 	void set_pipeline_state(const std::shared_ptr<i::gapi_pipeline_state>& pipeline_state) override;
-	void bind_root_constant_buffer_view(const uint32& index, const std::shared_ptr<i::gapi_resource_view>& cbv) override;
-	void set_root_shader_resource_view(const std::shared_ptr<i::gapi_resource_view>& srv) override;
-	void set_root_unordered_access_view(const std::shared_ptr<i::gapi_resource_view>& srv) override;
-	void set_root_descriptor_table() override;
-	void set_descriptor_heaps(const std::vector<std::shared_ptr<i::gapi_resource_view_allocator>>& heaps) override;
+	void bind_root_constant_buffer(uint32_t parameter_index, const std::shared_ptr<i::gapi_buffer>& buffer) override;
+	void bind_root_shader_resource(uint32_t parameter_index, const std::shared_ptr<i::gapi_resource>& resource) override;
+	void bind_root_unordered_access(uint32_t parameter_index, const std::shared_ptr<i::gapi_resource>& resource) override;
+	void bind_ranged_resource_views(uint32_t parameter_index, const std::shared_ptr<i::gapi_resource_view>& resource_view, const std::shared_ptr<i::gapi_resource_view_allocator>& allocator) override;
 	
 	void set_index_buffer(const std::shared_ptr<i::gapi_buffer>& index_buffer) override;
 	void set_vertex_buffer(const std::shared_ptr<i::gapi_buffer>& vertex_buffer) override;
@@ -49,7 +50,7 @@ public:
 	
 	void set_blend_factor(const float4& blend) override;
 	void set_render_targets(const std::vector<std::shared_ptr<i::gapi_resource_view>>& render_target_views, const std::shared_ptr<i::gapi_resource_view>& depth_stencil_view) override;
-	void set_stencil_ref(const uint32& stencil_ref) override;
+	void set_stencil_ref(uint32 stencil_ref) override;
 	void transition_resource(const std::shared_ptr<i::gapi_resource>& resource, const gapi_resource_state& to_state) override;
 	
 	void begin_query() override;
@@ -59,8 +60,9 @@ public:
 	void set_debug_name(const std::wstring& debug_name) override { d3d_set_debug_name(*get_d3d_cmd_list(), debug_name); }
 
 public:
-	ID3D12CommandList* get_d3d_cmd_list() const { return m_list.Get(); }
+	ID3D12CommandList* get_d3d_cmd_list() const { return m_d3d_list.Get(); }
 	
 private:
-	WinComPtr<ID3D12GraphicsCommandList> m_list;
+	WinComPtr<ID3D12GraphicsCommandList> m_d3d_list;
+	std::array<ID3D12DescriptorHeap*, 2> m_d3d_descriptor_heaps = {};
 };

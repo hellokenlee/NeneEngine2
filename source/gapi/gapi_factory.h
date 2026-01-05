@@ -25,6 +25,6 @@ namespace i
 		
 		virtual std::shared_ptr<gapi_gpu> create_gpu() = 0;
 
-		virtual std::shared_ptr<gapi_swap_chain> create_swap_chain(void* hwnd, const std::shared_ptr<gapi_cmd_queue>& cmd_queue, const upoint32& resolution, const uint32& multibuffer, const gapi_pixel_format& pixel_format = gapi_pixel_format::r8g8b8a8_unorm, const uint32& multisample = 1) = 0;
+		virtual std::shared_ptr<gapi_swap_chain> create_swap_chain(void* hwnd, const std::shared_ptr<gapi_cmd_queue>& cmd_queue, const upoint32& resolution, uint32 multibuffer, const gapi_pixel_format& pixel_format = gapi_pixel_format::r8g8b8a8_unorm, uint32 multisample = 1) = 0;
 	};
 }

@@ -53,15 +53,15 @@ void engine_loop::tick()
 		{
 			//
 			auto& gai = gapi_dynamic::get();
-			auto& swap_chain = gapi_dynamic::get().get_swap_chain();
+			auto& context = gai.get_cmd_context();
+			auto& back_buffer_texture = gai.get_swap_chain()->get_back_buffer();
 			//
 			gai.start_frame();
-			gai.get_cmd_context().transition_resource(swap_chain->get_back_buffer(), gapi_resource_state::render_target);
+			context.transition_resource(back_buffer_texture, gapi_resource_state::render_target);
 			{
-				m_renderer->render_view_family(swap_chain->get_back_buffer());
-				
+				m_renderer->render_view_family(back_buffer_texture);
 			}
-			gai.get_cmd_context().transition_resource(swap_chain->get_back_buffer(), gapi_resource_state::present);
+			context.transition_resource(back_buffer_texture, gapi_resource_state::present);
 			gai.finish_frame();
 			
 			//

@@ -17,7 +17,7 @@ void gapi_d3d12_swap_chain::create_back_buffer_textures()
 {
 	//
 	auto back_buffer_texture_desc = gapi_texture_desc::create_2d(
-		upoint32{.w = m_desc.BufferDesc.Width, .h = m_desc.BufferDesc.Height},
+		uint2(m_desc.BufferDesc.Width, m_desc.BufferDesc.Height),
 		// we don't really want to create the texture, so unknown it is
 		gapi_pixel_format::unknown,
 		gapi_texture_create_flag::as_render_target,
@@ -31,8 +31,8 @@ void gapi_d3d12_swap_chain::create_back_buffer_textures()
 		WinComPtr<ID3D12Resource> render_target;
 		m_d3d_swap_chain->GetBuffer(i, IID_PPV_ARGS(&render_target));
 		//
+		back_buffer_texture_desc.m_debug_name = std::format("SwapChainRenderTarget#{}", i);
 		auto back_buffer_texture = std::make_shared<gapi_d3d12_texture>(render_target, back_buffer_texture_desc);
-		back_buffer_texture->set_debug_name(std::format(L"SwapChainRenderTarget#{}", i));
 		m_back_buffer_textures.emplace_back(std::move(back_buffer_texture));
 	}
 }
