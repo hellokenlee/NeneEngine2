@@ -5,7 +5,7 @@
 from source import *
 from source.core import Core
 from source.core_object import CoreObject
-from source.gapi import Gapi
+from source.core_render import CoreRender
 from extern.rttr import Rttr
 
 
@@ -14,9 +14,6 @@ class CoreEngine(NeneModule):
     def __init__(self):
         super().__init__()
         self.module_dependencies.extend(
-            [Core, CoreObject, Gapi]
-        )
-        self.external_dependencies.extend(
-            [Rttr]
+            [Core, CoreObject, CoreRender]
         )
         pass

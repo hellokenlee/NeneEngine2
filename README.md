@@ -6,7 +6,7 @@ Nene Engine is an in-house game engine named after Sakura Nene's game engine in 
 
 
 
-## Getting Start
+## Getting Started
 
 ### Preliminary
 
@@ -14,7 +14,9 @@ Nene Engine use [Vcpkg](https://vcpkg.io/) to manage dependencies. The following
 
 - [Working Vcpkg environment](https://learn.microsoft.com/en-us/vcpkg/get_started/get-started?pivots=shell-cmd)
 
-Note that Nene Engine use Visual Studio's Project file  ( instead of CMake ) as a primary way to organize the source files. The following C++ environment should be satisfied in Windows:
+Note that Nene Engine use an inhouse build tool NBT  ( instead of CMake ) as a primary way to organize the source files. 
+
+The following C++ environment should be satisfied in Windows:
 
 - Visual Studio >= 2022.17.2 [*]
 - Compiler C++ Standard >= C++20 ( MSVC >= 143 )
@@ -26,22 +28,28 @@ Apple's MacOS, iPadOS, iOS with Metal 2; Linux, Android with Vulkan will be supp
 
 
 
-
 ### Development
+
+#### Setup
+
+1. Run `Setup.bat` or `Setup.sh` and wait patiently for the first time for dependency installation.
+2. Run `Generate.bat` or `Generate.sh` to generate build files of IDE.
+
+
 
 #### Build
 
-Currently Nene Engine is built with Visual Studio. To build Nene Engine, simply  press ▶ in the IDE.
+Open the `NeneEngine2` build file with corresponding IDE then compile and run.
 
 
 
 #### Build Tool
 
-To deal with module dependency, we use a Python based custom build tool ( Nene Build Tool or NBT ) which modify the Visual Studio project and solution files.
+To deal with module dependency, we use a Python based inhouse build tool ( Nene Build Tool or NBT ).
 
 All source of the NBT is located in `script/builder` folder, which is also the main entrance python module of NBT.
 
-After adding, removing or modifying a module, the best way to ensure that IDE can successfully build is to run NBT once:
+After adding, removing or modifying a module, the best way to ensure that IDE can successfully build is to run NBT once again:
 
 ```bash
 $ NeneEngine>: Generate.bat
@@ -51,21 +59,38 @@ $ NeneEngine>: Generate.bat
 
 #### Module Scheme
 
-NBT finds the configuration of each module in `module_name.py` file.
+Nene Engine organize c++ module as different folders located in  `source` directory. Each c++ module folder is also a python module, so NBT will finds the configuration of each module in `__init__.py` file.
+
+You can add, remove files in module as you want. Don't forget to re-generate build files after doing this.
 
 
 
 #### Project Scheme
 
-You can add, remove module directly in Visual Studio. Just don't forget to run NBT after doing this.
+You can add, remove module by adding a folder in `source` directory. 
+
+Then adding an `__init__py` to declare the basic information for this module, for example:
+
+```python
+# source/app/__init__.py
+
+from source import *
+from source.core import Core
+from source.engine import Engine
 
 
+class App(NeneModule):
 
-### Usage
-
-```bash
-$ NeneEngine>: Editor.bat
+	def __init__(self):
+		super().__init__()
+        # This module will be built into an executable, not a library
+		self.build_target = BuildTarget.EXE
+        # The other module that this module depends
+		self.module_dependencies.extend([Core, Engine])
+		pass
 ```
+
+
 
 
 
@@ -80,8 +105,9 @@ graph TD
   Engine --> App
   Core --> CoreEngine
   CoreObject --> CoreEngine
-  Gapi --> CoreEngine
+  CoreRender --> CoreEngine
   Core --> CoreObject
+  CoreRender --> CoreObject
   Core --> CoreRender
   Gapi --> CoreRender
   GapiDynamic --> CoreRender

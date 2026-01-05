@@ -206,9 +206,10 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 			ElementTree.SubElement(property_group, VcTag.UseDebugLibraries).text = "true" if nene_module_config.configuration == Configuration.Debug else "false"
 			# TODO: Use VisualStudioConfig's value
 			ElementTree.SubElement(property_group, VcTag.PlatformToolset).text = "v143"
-			#
+			# FIXME: 使用 /GL 会导致 pybind11 编译错误:
+			# refs: https://github.com/pybind/pybind11/pull/5939
 			if nene_module_config.configuration == Configuration.Release:
-				ElementTree.SubElement(property_group, VcTag.WholeProgramOptimization).text = "true"
+				ElementTree.SubElement(property_group, VcTag.WholeProgramOptimization).text = "false"
 			ElementTree.SubElement(property_group, VcTag.CharacterSet).text = "Unicode"
 		pass
 
@@ -249,6 +250,9 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 		pass
 
 	def _add_property_group_per_configuration(self, vcproj_tree: ElementTree.ElementTree, nene_module: NeneModule, nene_module_configs: list[NeneModuleConfig]):
+		#
+		rider_hack_envs: dict[str, dict[str, dict[str, str]]] = {}
+		#
 		for config in nene_module_configs:
 			property_group = ElementTree.SubElement(vcproj_tree.getroot(), VcTag.PropertyGroup)
 			property_group.attrib[VcAttrib.Condition] = "\'$(Configuration)|$(Platform)\'==\'%s|%s\'" % (config.configuration.name, config.architecture.name)
@@ -310,17 +314,50 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 					]
 					fp.writelines("\n".join(envs))
 					log("Write: %s" % target_env_abs_path)
-				#
-				self._hack_rider_environment_variables(envs)
+					envs = {
+						"PATH": "%s;$PATH$" % exec_paths_str
+					}
+					rider_hack_envs.setdefault(nene_module.name, {})[config.configuration.name] = envs
+		#
+		self._hack_rider_environment_variables(rider_hack_envs)
 		pass
 
 	@staticmethod
-	def _hack_rider_environment_variables(envs: list[str]):
+	def _hack_rider_add_envs(envs: ElementTree.Element, env_values: dict[str, str]):
+		envs.clear()
+		for key, val in env_values.items():
+			ele = ElementTree.SubElement(envs, "env")
+			ele.attrib["name"] = key
+			ele.attrib["value"] = val
+		pass
+
+	@staticmethod
+	def _hack_rider_environment_variables(envs: dict[str, dict[str, dict[str, str]]]):
 		rider_workspace_abs_path = os.path.join(BuildConfiguration().engine_root_abs_path, ".idea", ".idea.NeneEngine2", ".idea", "workspace.xml")
 		if os.path.exists(rider_workspace_abs_path):
 			tree = ElementTree.parse(rider_workspace_abs_path)
+			#
+			for comp in tree.findall("component"):
+				if "name" in comp.attrib:
+					if comp.attrib["name"] == "ProjectColorInfo" or comp.attrib["name"] == "PropertiesComponent":
+						comp.text = comp.text.replace("\"", "&quot;")
+					if comp.attrib["name"] == "RunManager":
+						for configuration in comp.findall("configuration"):
+							module_name = configuration.attrib["name"]
+							for configuration_n in configuration:
+								if configuration_n.tag.startswith("configuration"):
+									debug_or_release = configuration_n.find("option").attrib["value"]
+									if module_name in envs and debug_or_release in envs[module_name]:
+										element = configuration_n.find("envs")
+										if element is None:
+											element = ElementTree.SubElement(configuration_n, "envs")
+										VisualStudioModuleGenerator._hack_rider_add_envs(element, envs[module_name][debug_or_release])
+			#
 			ElementTree.indent(tree, '  ')
-			tree.write(rider_workspace_abs_path + ".2", encoding='UTF-8', xml_declaration=True)
+			content = ElementTree.tostring(tree.getroot(), encoding="unicode")
+			content = '<?xml version="1.0" encoding="UTF-8"?>\n' + content.replace("&amp;", "&")
+			with open(rider_workspace_abs_path, "w") as fp:
+				fp.write(content)
 		pass
 
 	@staticmethod

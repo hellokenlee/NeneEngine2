@@ -86,7 +86,8 @@ class VisualStudioSolutionGenerator(ProjectGenerator):
 		#
 		for nene_module_class in nene_project.nene_module_classes:
 			module_guid = nene_module_guids[nene_module_class]
-			category_guid = self.CONST_MODULE_VCXPROJECT_GUIDS[nene_module_class().category]
+			category = ModuleCategory.App if nene_module_class().build_target == BuildTarget.EXE else ModuleCategory.Library
+			category_guid = self.CONST_MODULE_VCXPROJECT_GUIDS[category]
 			solution.globals.nested_projects.attribs.append(Attribute(module_guid, category_guid))
 
 		#

@@ -31,7 +31,6 @@ class Editor(NeneModule):
 
 	def __init__(self):
 		super().__init__()
-		self.category = ModuleCategory.App
 		self.build_target = BuildTarget.EXE
 		self.module_dependencies.extend(
 			[Core, CoreObject, Engine]

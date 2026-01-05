@@ -116,7 +116,6 @@ class NeneModule(object, metaclass=Singleton):
 		super().__init__()
 		#
 		self.name: str = self.get_folder_name()
-		self.category: ModuleCategory = ModuleCategory.Library
 		#
 		self.build_target: BuildTarget = BuildTarget.DLL
 		#
