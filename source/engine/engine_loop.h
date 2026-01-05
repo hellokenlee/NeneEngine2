@@ -13,11 +13,11 @@ public:
 	engine_loop() = delete;
 	~engine_loop() = delete;
 	
-	static void initialize(void* window, const upoint32& window_size);
+	static void initialize(void* window, const uint2& window_size);
 
 	static void tick();
 
-	static void resize(const upoint32& new_window_size);
+	static void resize(const uint2& new_window_size);
 
 	static void shutdown();
 

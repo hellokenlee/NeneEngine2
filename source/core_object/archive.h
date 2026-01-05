@@ -4,7 +4,7 @@
 
 #include "core/core.h"
 
-enum class serialization : uint8
+enum class serialization : uint8_t
 {
     serializing,
     unserializing,

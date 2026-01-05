@@ -14,9 +14,9 @@ public:
 
 	void flush() override;
 	
-	uint64 signal() override;
+	uint64_t signal() override;
 
-	void wait_for_fence_value(uint64 fence_value) override;
+	void wait_for_fence_value(uint64_t fence_value) override;
 
 	void execute_cmd_list(const std::shared_ptr<i::gapi_cmd_list>& cmd_list) override;
 
@@ -26,7 +26,7 @@ public:
 	
 private:
 	HANDLE m_fence_event;
-	std::atomic<uint64> m_fence_value;
+	std::atomic<uint64_t> m_fence_value;
 	WinComPtr<ID3D12Fence> m_d3d_fence;
 	WinComPtr<ID3D12CommandQueue> m_d3d_queue;
 };

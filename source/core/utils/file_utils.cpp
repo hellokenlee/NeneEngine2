@@ -1,5 +1,7 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
+#include <fstream>
+
 #include "file_utils.h"
 #include "string_utils.h"
 #include "core/debug.h"

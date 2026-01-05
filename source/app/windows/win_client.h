@@ -4,8 +4,8 @@
 
 #include <Windows.h>
 
-#include "core/types.h"
-#include "../client.h"
+#include "core/core.h"
+#include "app/client.h"
 
 
 class win_client : public i::client

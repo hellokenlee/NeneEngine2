@@ -8,7 +8,7 @@
 
 
 /** The transition state of a resource */
-enum class gapi_resource_state : uint8
+enum class gapi_resource_state : uint8_t
 {
 	present,
 	render_target,
@@ -46,9 +46,9 @@ namespace i
 		template<typename t_lambda>
 		void map(t_lambda&& lambda)
 		{
-			map(upoint64::zero(), std::function<void(void*)>(std::forward<t_lambda>(lambda)));
+			map(upoint64_t::zero(), std::function<void(void*)>(std::forward<t_lambda>(lambda)));
 		}
-		virtual void map(const upoint64& read_range, std::function<void(void*)> vram_operator) = 0;
+		virtual void map(const upoint64_t& read_range, std::function<void(void*)> vram_operator) = 0;
 
 		//
 		const auto& get_unordered_access_view() const { return m_unordered_access_view; }

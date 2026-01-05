@@ -8,12 +8,12 @@
 #include "gapi_d3d12/gapi_d3d12_factory.h"
 #include "gapi_d3d12/gapi_d3d12_shader.h"
 
-t::console_var<uint32> cvar_gapi_platform("gapi.platform", 0u, "The graphics api that engine use: 0: d3d12; 1: vulkan; 2:metal;");
-t::console_var<uint32> cvar_gapi_num_context_thread("gapi.num_context_thread", 1u, "How many cmd contexts to create;", console_var_flag::read_only);
-t::console_var<uint32> cvar_gapi_shader_feature_level("gapi.shader.feature_level", 0u, "Select the platform that engine use: 0: shading model 5.0;1: shading model 6.0;");
-t::console_var<uint32> cvar_gapi_num_swap_chain_buffer("gapi.num_swap_chain_buffer", 2u, "How many buffers should create in swap-chain; Default is 2 for double buffering.", console_var_flag::read_only);
+t::console_var<uint32_t> cvar_gapi_platform("gapi.platform", 0u, "The graphics api that engine use: 0: d3d12; 1: vulkan; 2:metal;");
+t::console_var<uint32_t> cvar_gapi_num_context_thread("gapi.num_context_thread", 1u, "How many cmd contexts to create;", console_var_flag::read_only);
+t::console_var<uint32_t> cvar_gapi_shader_feature_level("gapi.shader.feature_level", 0u, "Select the platform that engine use: 0: shading model 5.0;1: shading model 6.0;");
+t::console_var<uint32_t> cvar_gapi_num_swap_chain_buffer("gapi.num_swap_chain_buffer", 2u, "How many buffers should create in swap-chain; Default is 2 for double buffering.", console_var_flag::read_only);
 
-gapi_dynamic::gapi_dynamic(const gapi_platform& platform, void* window, const upoint32& window_size)
+gapi_dynamic::gapi_dynamic(const gapi_platform& platform, void* window, const uint2& window_size)
 	: m_factory(nullptr)
 	, m_gpu(nullptr)
 	, m_device(nullptr)
@@ -43,7 +43,7 @@ gapi_dynamic::gapi_dynamic(const gapi_platform& platform, void* window, const up
 	//
 	m_swap_chain = m_factory->create_swap_chain(window, m_device->get_cmd_queue(gapi_cmd_type::graphics), window_size, num_multi_buffer);
 	//
-	for (uint32 context_id = 0; context_id < cvar_gapi_num_context_thread.get_value_thread_unsafe(); ++context_id)
+	for (uint32_t context_id = 0; context_id < cvar_gapi_num_context_thread.get_value_thread_unsafe(); ++context_id)
 	{
 		m_cmd_contexts.push_back(std::make_unique<gapi_cmd_context>(m_device, num_multi_buffer, context_id));
 	}
@@ -66,7 +66,7 @@ gapi_dynamic::gapi_dynamic(const gapi_platform& platform, void* window, const up
 
 gapi_dynamic::~gapi_dynamic() = default;
 
-gapi_cmd_context& gapi_dynamic::get_cmd_context(uint32 context_id) const
+gapi_cmd_context& gapi_dynamic::get_cmd_context(uint32_t context_id) const
 {
 	CHECK(context_id < cvar_gapi_num_context_thread.get_value_thread_unsafe());
 	return *m_cmd_contexts[context_id];
@@ -187,14 +187,14 @@ void gapi_dynamic::present_frame()
 	// mark current frame fence value
 	const auto current_frame_index = m_swap_chain->get_current_back_buffer_index();
 	const auto current_frame_fence_value = m_device->get_cmd_queue(gapi_cmd_type::graphics)->signal();
-	m_cmd_queue_fence_values[static_cast<uint32>(gapi_cmd_type::graphics)][current_frame_index] = current_frame_fence_value;
+	m_cmd_queue_fence_values[static_cast<uint32_t>(gapi_cmd_type::graphics)][current_frame_index] = current_frame_fence_value;
 
 	// present and move to next frame
 	m_swap_chain->present();
 
 	// wait for previous frame's fence
 	const auto previous_frame_index = m_swap_chain->get_current_back_buffer_index();
-	const auto previous_frame_fence_value = m_cmd_queue_fence_values[static_cast<uint32>(gapi_cmd_type::graphics)][previous_frame_index];
+	const auto previous_frame_fence_value = m_cmd_queue_fence_values[static_cast<uint32_t>(gapi_cmd_type::graphics)][previous_frame_index];
 	m_device->get_cmd_queue(gapi_cmd_type::graphics)->wait_for_fence_value(previous_frame_fence_value);
 }
 
@@ -203,7 +203,7 @@ const std::shared_ptr<i::gapi_swap_chain>& gapi_dynamic::get_swap_chain() const
 	return m_swap_chain;
 }
 
-void gapi_dynamic::resize_swap_chain(const upoint32& new_size)
+void gapi_dynamic::resize_swap_chain(const uint2& new_size)
 {
 	if (m_swap_chain->get_back_buffer_size() != new_size)
 	{
@@ -212,9 +212,9 @@ void gapi_dynamic::resize_swap_chain(const upoint32& new_size)
 		// since all previous frame's fence value must smaller than current's.
 		// reset all fence values to current's to ensure that the fence value is at least the value that was last signaled on the command queue.
 		const auto current_frame_index = m_swap_chain->get_current_back_buffer_index();
-		for (auto& fence_value : m_cmd_queue_fence_values[static_cast<uint32>(gapi_cmd_type::graphics)])
+		for (auto& fence_value : m_cmd_queue_fence_values[static_cast<uint32_t>(gapi_cmd_type::graphics)])
 		{
-			fence_value = m_cmd_queue_fence_values[static_cast<uint32>(gapi_cmd_type::graphics)][current_frame_index];
+			fence_value = m_cmd_queue_fence_values[static_cast<uint32_t>(gapi_cmd_type::graphics)][current_frame_index];
 		}
 		//
 		m_swap_chain->resize_back_buffer(new_size);
@@ -238,7 +238,7 @@ const std::shared_ptr<i::gapi_device>& gapi_dynamic::get_device() const
 
 std::unique_ptr<gapi_dynamic> gapi_dynamic::s_instance = {};
 
-void gapi_dynamic::initialize(void* window, const upoint32& window_size)
+void gapi_dynamic::initialize(void* window, const uint2& window_size)
 {
 	CHECK(window != nullptr);
 	CHECK(s_instance == nullptr);

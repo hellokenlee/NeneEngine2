@@ -8,7 +8,7 @@
 
 namespace
 {
-	D3D12_STATIC_SAMPLER_DESC make_static_sampler(D3D12_FILTER d3d_filter, D3D12_TEXTURE_ADDRESS_MODE d3d_wrap_mode, uint32 shader_register)
+	D3D12_STATIC_SAMPLER_DESC make_static_sampler(D3D12_FILTER d3d_filter, D3D12_TEXTURE_ADDRESS_MODE d3d_wrap_mode, uint32_t shader_register)
 	{
 		D3D12_STATIC_SAMPLER_DESC d3d_desc = {
 			.Filter = d3d_filter,
@@ -133,7 +133,7 @@ D3D12_ROOT_SIGNATURE_FLAGS get_d3d_root_signature_deny_flag(D3D12_SHADER_VISIBIL
 	}
 }
 
-uint32 choose_register_space(gapi_shader_stage stage)
+uint32_t choose_register_space(gapi_shader_stage stage)
 {
 	switch (stage)
 	{
@@ -161,7 +161,7 @@ D3D12_VERSIONED_ROOT_SIGNATURE_DESC d3d12_root_signature_manager::make_root_sign
 	//
 	CD3DX12_DESCRIPTOR_RANGE1 descriptor_ranges[NUM_D3D_MAX_ROOT_PARAMETERS];
 	CD3DX12_ROOT_PARAMETER1 root_parameters[NUM_D3D_MAX_ROOT_PARAMETERS];
-	uint32 current_root_parameter_index = 0;
+	uint32_t current_root_parameter_index = 0;
 	// we only bind:
 	//		1. Root Descriptor: It can only be CBV
 	//		2. Descriptor Table: SRV, UAV, Sampler and `exceeded` CBV
@@ -178,7 +178,7 @@ D3D12_VERSIONED_ROOT_SIGNATURE_DESC d3d12_root_signature_manager::make_root_sign
 				case D3D12_ROOT_PARAMETER_TYPE_CBV:
 				{
 					// we first try to bind CBV as a root descriptor
-					for (uint32 shader_register = 0; shader_register < shader_register_count.num_constant_buffer && shader_register < NUM_D3D_MAX_ROOT_CBVS; ++shader_register)
+					for (uint32_t shader_register = 0; shader_register < shader_register_count.num_constant_buffer && shader_register < NUM_D3D_MAX_ROOT_CBVS; ++shader_register)
 					{
 						root_parameters[current_root_parameter_index].InitAsConstantBufferView(shader_register, register_space, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, shader_visibility);
 						out_shader_resource_table.m_shader_stage_register_tables[magic_enum::enum_underlying(stage)].m_cbv_register_table.emplace_back(current_root_parameter_index);
@@ -274,7 +274,7 @@ D3D12_VERSIONED_ROOT_SIGNATURE_DESC d3d12_root_signature_manager::make_root_sign
 	}
 	
 	//
-	desc.Init_1_1(current_root_parameter_index, root_parameters, static_cast<uint32>(g_d3d12_static_sampler_descs.size()), g_d3d12_static_sampler_descs.data(), D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+	desc.Init_1_1(current_root_parameter_index, root_parameters, static_cast<uint32_t>(g_d3d12_static_sampler_descs.size()), g_d3d12_static_sampler_descs.data(), D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 	//
 	return desc;
 }

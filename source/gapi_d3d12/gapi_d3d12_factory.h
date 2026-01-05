@@ -13,11 +13,11 @@ public:
 	gapi_d3d12_factory();
 	~gapi_d3d12_factory() override = default;
 
-	static int32 get_d3d12_version();
+	static int32_t get_d3d12_version();
 	
 	std::shared_ptr<i::gapi_gpu> create_gpu() override;
 
-	std::shared_ptr<i::gapi_swap_chain> create_swap_chain(void* hwnd, const std::shared_ptr<i::gapi_cmd_queue>& cmd_queue, const upoint32& resolution, uint32 multibuffer, const gapi_pixel_format& pixel_format, uint32 multisample) override;
+	std::shared_ptr<i::gapi_swap_chain> create_swap_chain(void* hwnd, const std::shared_ptr<i::gapi_cmd_queue>& cmd_queue, const uint2& resolution, uint32_t multibuffer, const gapi_pixel_format& pixel_format, uint32_t multisample) override;
 	
 protected:
 	WinComPtr<IDXGIFactory2> m_factory2;

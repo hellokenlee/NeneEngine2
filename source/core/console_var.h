@@ -2,9 +2,13 @@
 
 #pragma once
 
-#include "types.h"
+#include <cstdint>
+#include <memory>
+#include <string>
 
-enum class console_var_flag : uint8
+#include "windll.h"
+
+enum class console_var_flag : uint8_t
 {
 	none,
 	read_only,
@@ -20,7 +24,7 @@ namespace i
 		console_var& operator=(const console_var&) = default;
 		virtual ~console_var() = default;
 
-		virtual int32 as_int32() = 0;
+		virtual int32_t as_int32() = 0;
 
 		virtual bool as_bool() = 0;
 	};
@@ -37,9 +41,9 @@ namespace i
 
 		virtual bool& register_var(const std::string& name, const bool& default_value, const std::string& help, console_var_flag flag) = 0;
 
-		virtual int32& register_var(const std::string& name, const int32& default_value, const std::string& help, console_var_flag flag) = 0;
+		virtual int32_t& register_var(const std::string& name, const int32_t& default_value, const std::string& help, console_var_flag flag) = 0;
 
-		virtual uint32& register_var(const std::string& name, uint32 default_value, const std::string& help, console_var_flag flag) = 0;
+		virtual uint32_t& register_var(const std::string& name, uint32_t default_value, const std::string& help, console_var_flag flag) = 0;
 	};
 }
 

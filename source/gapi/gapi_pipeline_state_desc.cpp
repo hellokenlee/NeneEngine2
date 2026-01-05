@@ -2,7 +2,7 @@
 
 #include "gapi_pipeline_state_desc.h"
 
-uint16 size_of_gapi_vertex_element_type(const gapi_vertex_element_type& element_type)
+uint16_t size_of_gapi_vertex_element_type(const gapi_vertex_element_type& element_type)
 {
 	switch (element_type)
 	{
@@ -19,9 +19,9 @@ uint16 size_of_gapi_vertex_element_type(const gapi_vertex_element_type& element_
 	case gapi_vertex_element_type::half4:
 		return sizeof(float) * 2;
 	case gapi_vertex_element_type::unsigned_int:
-		return sizeof(uint32);
+		return sizeof(uint32_t);
 	case gapi_vertex_element_type::unsigned_byte4:
-		return sizeof(uint8) * 4;
+		return sizeof(uint8_t) * 4;
 	default:
 		CHECK(false);
 		return 0;

@@ -7,7 +7,7 @@
 #include "gapi_resource_view.h"
 
 
-enum class gapi_pipeline_state_type : uint8
+enum class gapi_pipeline_state_type : uint8_t
 {
 	compute,
 	graphics,
@@ -17,13 +17,13 @@ enum class gapi_pipeline_state_type : uint8
 struct gapi_shader_resource_table
 {
 	// map `t#` to pipeline parameter index
-	std::vector<uint32> m_srv_register_table;
+	std::vector<uint32_t> m_srv_register_table;
 	// map `b#` to pipeline parameter index
-	std::vector<uint32> m_cbv_register_table;
+	std::vector<uint32_t> m_cbv_register_table;
 	// map `u#` to pipeline parameter index
-	std::vector<uint32> m_uav_register_table;
+	std::vector<uint32_t> m_uav_register_table;
 	// map `s#` to pipeline parameter index
-	std::vector<uint32> m_dynamic_sampler_register_table;
+	std::vector<uint32_t> m_dynamic_sampler_register_table;
 };
 struct gapi_shader_resource_tables
 {

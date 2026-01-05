@@ -1,5 +1,7 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
+#include <unordered_map>
+
 #include "console_var.h"
 
 namespace impl
@@ -17,14 +19,14 @@ namespace impl
 		
 		bool as_bool() override;
 
-		int32 as_int32() override;
+		int32_t as_int32() override;
 
 	protected:
 		bool& get_bool_ref();
 
-		int32& get_int32_ref();
+		int32_t& get_int32_ref();
 
-		uint32& get_uint32_ref();
+		uint32_t& get_uint32_ref();
 		
 	protected:
 		T m_value;
@@ -53,14 +55,14 @@ namespace impl
 			return internal_register_var<bool>(name, default_value, help, flag)->get_bool_ref();
 		}
 
-		int32& register_var(const std::string& name, const int32& default_value, const std::string& help, console_var_flag flag) override
+		int32_t& register_var(const std::string& name, const int32_t& default_value, const std::string& help, console_var_flag flag) override
 		{
-			return internal_register_var<int32>(name, default_value, help, flag)->get_int32_ref();
+			return internal_register_var<int32_t>(name, default_value, help, flag)->get_int32_ref();
 		}
 
-		uint32& register_var(const std::string& name, uint32 default_value, const std::string& help, console_var_flag flag) override
+		uint32_t& register_var(const std::string& name, uint32_t default_value, const std::string& help, console_var_flag flag) override
 		{
-			return internal_register_var<uint32>(name, default_value, help, flag)->get_uint32_ref();
+			return internal_register_var<uint32_t>(name, default_value, help, flag)->get_uint32_ref();
 		}
 		
 	protected:
@@ -89,7 +91,7 @@ bool impl::console_var<bool>::as_bool()
 }
 
 template <>
-int32 impl::console_var<bool>::as_int32()
+int32_t impl::console_var<bool>::as_int32()
 {
 	return m_value ? 0 : 1;
 }
@@ -101,37 +103,37 @@ bool& impl::console_var<bool>::get_bool_ref()
 }
 
 template <>
-bool impl::console_var<int32>::as_bool()
+bool impl::console_var<int32_t>::as_bool()
 {
 	return m_value ? true : false;
 }
 
 template <>
-int32 impl::console_var<int32>::as_int32()
+int32_t impl::console_var<int32_t>::as_int32()
 {
 	return m_value;
 }
 
 template <>
-int32& impl::console_var<int32>::get_int32_ref()
+int32_t& impl::console_var<int32_t>::get_int32_ref()
 {
 	return m_value;
 }
 
 template <>
-bool impl::console_var<uint32>::as_bool()
+bool impl::console_var<uint32_t>::as_bool()
 {
 	return m_value ? true : false;
 }
 
 template <>
-int32 impl::console_var<uint32>::as_int32()
+int32_t impl::console_var<uint32_t>::as_int32()
 {
-	return static_cast<int32>(m_value);
+	return static_cast<int32_t>(m_value);
 }
 
 template <>
-uint32& impl::console_var<uint32>::get_uint32_ref()
+uint32_t& impl::console_var<uint32_t>::get_uint32_ref()
 {
 	return m_value;
 }

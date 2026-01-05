@@ -6,10 +6,6 @@
  * Dynamic Library Macros
  */
 
-#ifdef _MSC_VER
-	#define NENE_DYNAMIC_LIB _WINDLL
-#endif
-
 #ifdef _WINDLL
 	#define NENE_API __declspec(dllexport)
 #else

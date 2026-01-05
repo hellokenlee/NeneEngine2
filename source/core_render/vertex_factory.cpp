@@ -6,12 +6,12 @@
 
 namespace r
 {
-	index_stream::index_stream(const std::vector<uint32>& indices, const std::string& debug_name)
+	index_stream::index_stream(const std::vector<uint32_t>& indices, const std::string& debug_name)
 		: render_resource()
-		, m_num_index(static_cast<uint32>(indices.size()))
+		, m_num_index(static_cast<uint32_t>(indices.size()))
 		, m_debug_name(debug_name)
 	{
-		auto desc = gapi_buffer_desc::create(static_cast<uint32>(indices.size() * sizeof(uint32)), gapi_buffer_usage_flag::usage_index_buffer, size_of_gapi_vertex_element_type(gapi_vertex_element_type::unsigned_int), m_debug_name);
+		auto desc = gapi_buffer_desc::create(static_cast<uint32_t>(indices.size() * sizeof(uint32_t)), gapi_buffer_usage_flag::usage_index_buffer, size_of_gapi_vertex_element_type(gapi_vertex_element_type::unsigned_int), m_debug_name);
 		m_index_buffer = std::dynamic_pointer_cast<i::gapi_buffer>(gapi_dynamic::get().get_cmd_context().create_and_upload_buffer(desc, indices.data()));
 	}
 
@@ -21,7 +21,7 @@ namespace r
 		, m_element_type(element_type)
 	{
 		
-		auto desc = gapi_buffer_desc::create(static_cast<uint32>(size), gapi_buffer_usage_flag::usage_vertex_buffer, size_of_gapi_vertex_element_type(element_type), m_debug_name);
+		auto desc = gapi_buffer_desc::create(static_cast<uint32_t>(size), gapi_buffer_usage_flag::usage_vertex_buffer, size_of_gapi_vertex_element_type(element_type), m_debug_name);
 		m_vertex_buffer = std::dynamic_pointer_cast<i::gapi_buffer>(gapi_dynamic::get().get_cmd_context().create_and_upload_buffer(desc, data));
 	}
 
@@ -34,7 +34,7 @@ namespace r
 	{
 		// add declaration of this stream 
 		auto [it, _] = m_current_semantic_index.emplace(shader_semantic, 0);
-		uint8 current_semantic_index = it->second;
+		uint8_t current_semantic_index = it->second;
 		++(it->second);
 		m_vertices_declaration.emplace_back(shader_semantic, current_semantic_index, vertex_stream->get_element_type(), m_current_stream_index, 0, false, 0);
 		++m_current_stream_index;

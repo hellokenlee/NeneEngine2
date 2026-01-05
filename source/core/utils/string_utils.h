@@ -2,7 +2,8 @@
 
 #pragma once
 
-#include "core/types.h"
+#include <string>
+#include "core/windll.h"
 
 namespace utils
 {

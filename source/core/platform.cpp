@@ -9,7 +9,7 @@
 #endif // NENE_PLATFORM_WINDOWS
 
 
-void platform::local_time(std::tm* const tm, std::time_t const* const time)
+void platform::local_time(std::tm* tm, std::time_t const* time)
 {
 #ifdef _MSVC_LANG
 	localtime_s(tm, time);
@@ -18,13 +18,13 @@ void platform::local_time(std::tm* const tm, std::time_t const* const time)
 #endif
 }
 
-std::vector<void*> platform::get_windows(int32 pid)
+std::vector<void*> platform::get_windows(int32_t pid)
 {
 	std::vector<void*> results;
 #if defined(_WIN32) || defined(_WIN64)
 	if (pid < 0)
 	{
-		pid = static_cast<int32>(GetCurrentProcessId());
+		pid = static_cast<int32_t>(GetCurrentProcessId());
 	}
 	HWND curr_window = nullptr;
 	

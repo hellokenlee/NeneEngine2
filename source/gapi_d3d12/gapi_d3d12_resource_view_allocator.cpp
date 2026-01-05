@@ -10,7 +10,7 @@ gapi_d3d12_offline_resource_view_page_allocator::gapi_d3d12_offline_resource_vie
 	: gapi_resource_view_allocator()
 	, m_d3d_device(d3d_device)
 	, m_d3d_page_desc{.Type = d3d_cast(view_type), .NumDescriptors = static_cast<UINT>(page_size), .Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE, .NodeMask = 0}
-	, m_page_size(static_cast<uint32>(page_size))
+	, m_page_size(static_cast<uint32_t>(page_size))
 	, m_resource_view_size(m_d3d_device->GetDescriptorHandleIncrementSize(m_d3d_page_desc.Type))
 {}
 
@@ -25,12 +25,12 @@ std::shared_ptr<i::gapi_resource_view> gapi_d3d12_offline_resource_view_page_all
 		WinComPtr<ID3D12DescriptorHeap> heap;
 		VERIFY(m_d3d_device->CreateDescriptorHeap(&m_d3d_page_desc, IID_PPV_ARGS(&heap)));
 		//
-		uint32 page_index = static_cast<uint32>(m_pages.size());
+		uint32_t page_index = static_cast<uint32_t>(m_pages.size());
 		m_pages.emplace_back(heap, heap->GetCPUDescriptorHandleForHeapStart());
 		//
-		for (uint32 index_in_heap = 0; index_in_heap < m_page_size; ++index_in_heap)
+		for (uint32_t index_in_heap = 0; index_in_heap < m_page_size; ++index_in_heap)
 		{
-			m_free_resource_view_indices.emplace(page_index, static_cast<int32>(index_in_heap));
+			m_free_resource_view_indices.emplace(page_index, static_cast<int32_t>(index_in_heap));
 		}
 	}
 	// request a free view

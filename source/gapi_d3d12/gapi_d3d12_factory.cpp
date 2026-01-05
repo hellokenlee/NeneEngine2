@@ -46,7 +46,7 @@ gapi_d3d12_factory::gapi_d3d12_factory()
 {
 	
 	// Init dxgi crate flag
-	uint32 dxgi_factory_flags = 0;
+	uint32_t dxgi_factory_flags = 0;
 	
 	// Enable debug layer if needed
 	if (cvar_gapi_d3d_debug.get_value_thread_unsafe())
@@ -81,9 +81,9 @@ std::shared_ptr<i::gapi_gpu> gapi_d3d12_factory::create_gpu()
 	//
 	log(d3d12_, info, "Listing all gpus:");
 	//
-	uint32 gpu_index = 0;
+	uint32_t gpu_index = 0;
 	auto target_version = static_cast<D3D_FEATURE_LEVEL>(get_d3d12_version());
-	uint32 selected_gpu_index = 0;
+	uint32_t selected_gpu_index = 0;
 	WinComPtr<IDXGIAdapter1> selected_adapter = nullptr;
 	//
 	auto select_adapter = [&gpu_index, &target_version, &selected_adapter, &selected_gpu_index](const WinComPtr<IDXGIAdapter1>& adapter) -> void
@@ -117,7 +117,7 @@ std::shared_ptr<i::gapi_gpu> gapi_d3d12_factory::create_gpu()
 	// Factory 7 api
 	if (m_factory7 != nullptr)
 	{
-		for (uint32 index = 0; ; ++index)
+		for (uint32_t index = 0; ; ++index)
 		{
 			WinComPtr<IDXGIAdapter1> next_adapter = nullptr;
 			const auto res = m_factory7->EnumAdapterByGpuPreference(index, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&next_adapter));
@@ -133,7 +133,7 @@ std::shared_ptr<i::gapi_gpu> gapi_d3d12_factory::create_gpu()
 	if (selected_adapter == nullptr && m_factory4 != nullptr)
 	{
 		WinComPtr<IDXGIAdapter1> next_adapter = nullptr;
-		for (uint32 index = 0; SUCCEEDED(m_factory4->EnumAdapters1(index, &next_adapter)); ++index)
+		for (uint32_t index = 0; SUCCEEDED(m_factory4->EnumAdapters1(index, &next_adapter)); ++index)
 		{
 			select_adapter(next_adapter);
 		}
@@ -152,7 +152,7 @@ std::shared_ptr<i::gapi_gpu> gapi_d3d12_factory::create_gpu()
 	return std::make_shared<gapi_d3d12_gpu>(selected_adapter);
 }
 
-std::shared_ptr<i::gapi_swap_chain> gapi_d3d12_factory::create_swap_chain(void* hwnd, const std::shared_ptr<i::gapi_cmd_queue>& cmd_queue, const upoint32& resolution, uint32 multibuffer, const gapi_pixel_format& pixel_format, uint32 multisample)
+std::shared_ptr<i::gapi_swap_chain> gapi_d3d12_factory::create_swap_chain(void* hwnd, const std::shared_ptr<i::gapi_cmd_queue>& cmd_queue, const uint2& resolution, uint32_t multibuffer, const gapi_pixel_format& pixel_format, uint32_t multisample)
 {
 	// variable refresh rate displays support ( while vsync is off )
 	bool b_supports_vrr = false;
@@ -194,7 +194,7 @@ std::shared_ptr<i::gapi_swap_chain> gapi_d3d12_factory::create_swap_chain(void* 
 	return result;
 }
 
-int32 gapi_d3d12_factory::get_d3d12_version()
+int32_t gapi_d3d12_factory::get_d3d12_version()
 {
 	switch (cvar_gapi_d3d_version.get_value_thread_unsafe())
 	{

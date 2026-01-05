@@ -53,7 +53,7 @@ struct gapi_sampler_desc
 	gapi_sample_test m_sample_test;
 	gapi_address_mode m_address_mode_uvw[3];
 	float m_mipmap_bias;
-	uint32 m_max_anisotropy;
+	uint32_t m_max_anisotropy;
 	gapi_compare_func m_comparsion_func;
 	linear_color m_border_color;
 	float m_lod_min_max[2];

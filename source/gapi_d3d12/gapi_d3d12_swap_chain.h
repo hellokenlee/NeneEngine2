@@ -20,11 +20,11 @@ public:
 
 	const std::shared_ptr<i::gapi_texture>& get_back_buffer(size_t index) const override { return m_back_buffer_textures[index]; }
 
-	uint32 get_current_back_buffer_index() override;
+	uint32_t get_current_back_buffer_index() override;
 
-	upoint32 get_back_buffer_size() override;
+	uint2 get_back_buffer_size() override;
 	
-	void resize_back_buffer(const upoint32& resolution) override;
+	void resize_back_buffer(const uint2& resolution) override;
 
 	void set_debug_name(const std::string& debug_name) override;
 	

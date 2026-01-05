@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "template/fundamental.h"
+#include <cstdint>
 
 namespace t
 {
@@ -16,8 +16,6 @@ namespace t
     };
 };
 
-typedef t::rect<uint16> rect16;
+using rect16_t = t::rect<uint16_t>;
 
-typedef t::rect<uint32> rect32;
-
-typedef rect32 rect;
+using rect32_t = t::rect<uint32_t>;

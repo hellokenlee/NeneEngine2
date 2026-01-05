@@ -38,10 +38,7 @@ static LRESULT CALLBACK WindowProcessFunction(HWND hWnd, UINT msg, WPARAM wParam
 			{
 				RECT window_rect = {};
 				::GetWindowRect(hWnd, &window_rect);
-				upoint32 window_size{
-					.w = static_cast<uint32>(window_rect.right - window_rect.left),
-					.h = static_cast<uint32>(window_rect.bottom - window_rect.top)
-				};
+				uint2 window_size(static_cast<uint32_t>(window_rect.right - window_rect.left), static_cast<uint32_t>(window_rect.bottom - window_rect.top));
 				engine_loop::resize(window_size);
 			}
 			
@@ -102,7 +99,7 @@ win_client::win_client(const std::wstring& name)
 	::ShowWindow(m_window, SW_SHOW);
 
 	//
-	engine_loop::initialize(m_window, upoint32{.w = DEFAULT_WINDOW_WIDTH, .h = DEFAULT_WINDOW_HEIGHT});
+	engine_loop::initialize(m_window, uint2(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT));
 }
 
 win_client::~win_client()

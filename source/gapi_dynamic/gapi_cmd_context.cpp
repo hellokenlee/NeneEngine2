@@ -2,16 +2,16 @@
 
 #include "gapi_cmd_context.h"
 
-extern t::console_var<uint32> cvar_gapi_num_multi_buffer;
+extern t::console_var<uint32_t> cvar_gapi_num_multi_buffer;
 
-gapi_cmd_context::gapi_cmd_context(const std::shared_ptr<i::gapi_device>& device, uint32 num_cmd_list, uint32 debug_context_id)
+gapi_cmd_context::gapi_cmd_context(const std::shared_ptr<i::gapi_device>& device, uint32_t num_cmd_list, uint32_t debug_context_id)
 	: m_device(device)
 	, m_debug_id(debug_context_id)
 	, m_current_index(0)
 	, m_previous_index(num_cmd_list - 1)
 	, m_online_resource_view_cache(device)
 {
-	for (uint32 i = 0; i < num_cmd_list; i++)
+	for (uint32_t i = 0; i < num_cmd_list; i++)
 	{
 		one_frame_context_data context_data;
 		context_data.m_cmd_allocator = m_device->create_cmd_allocator(gapi_cmd_type::graphics);
@@ -69,7 +69,7 @@ const std::shared_ptr<i::gapi_cmd_list>& gapi_cmd_context::close()
 	return get_previous_cmd_list();
 }
 
-void gapi_cmd_context::set_resolution(const upoint32& resolution)
+void gapi_cmd_context::set_resolution(const uint2& resolution)
 {
 	m_viewports.clear();
 
@@ -84,7 +84,7 @@ void gapi_cmd_context::set_resolution(const upoint32& resolution)
 	m_scissors.clear();
 
 	m_scissors.emplace_back(
-		rect{.left = 0, .top = 0, .right = resolution.w, .bottom = resolution.h}
+		rect32_t{.left = 0, .top = 0, .right = resolution.w, .bottom = resolution.h}
 	);
 }
 
@@ -94,13 +94,13 @@ void gapi_cmd_context::clear_render_target(const std::shared_ptr<i::gapi_texture
 	get_current_cmd_list()->clear_render_target_view(render_target->get_render_target_view(), clear_color);
 }
 
-void gapi_cmd_context::draw(uint32 num_vertices, uint32 num_instances, uint32 vertex_offset, uint32 instance_offset)
+void gapi_cmd_context::draw(uint32_t num_vertices, uint32_t num_instances, uint32_t vertex_offset, uint32_t instance_offset)
 {
 	m_online_resource_view_cache.commit_staged_resource_views(get_current_cmd_list(), m_device);
 	get_current_cmd_list()->draw(num_vertices, num_instances, vertex_offset, instance_offset);
 }
 
-void gapi_cmd_context::draw_indexed(uint32 num_indices, uint32 num_instances, uint32 index_offset, uint32 vertex_offset, uint32 instance_offset)
+void gapi_cmd_context::draw_indexed(uint32_t num_indices, uint32_t num_instances, uint32_t index_offset, uint32_t vertex_offset, uint32_t instance_offset)
 {
 	m_online_resource_view_cache.commit_staged_resource_views(get_current_cmd_list(), m_device);
 	get_current_cmd_list()->draw_indexed(num_indices, num_instances, index_offset, vertex_offset, instance_offset);
@@ -215,16 +215,16 @@ std::shared_ptr<i::gapi_texture> gapi_cmd_context::create_and_upload_texture(con
 				{
 					//
 					const auto& sublayout = intermediate_buffer_sublayouts[subindex];
-					uint8* dst_start = static_cast<uint8*>(immediate_buffer_mapped) + sublayout->offset();
-					const uint8* src_start = static_cast<const uint8*>(initial_data[subindex]);
+					uint8_t* dst_start = static_cast<uint8_t*>(immediate_buffer_mapped) + sublayout->offset();
+					const uint8_t* src_start = static_cast<const uint8_t*>(initial_data[subindex]);
 					// 
-					for (uint32 z = 0; z < sublayout->num_slices(); ++z)
+					for (uint32_t z = 0; z < sublayout->num_slices(); ++z)
 					{
 						// 一个 slice 一共有 num_rows * bytes_per_row 个字节
-						uint8* dst_slice_start = dst_start + z * sublayout->num_rows() * sublayout->padded_bytes_per_row();
-						const uint8* src_slice_start = src_start + z * sublayout->num_rows() * sublayout->unpadded_bytes_per_row();
+						uint8_t* dst_slice_start = dst_start + z * sublayout->num_rows() * sublayout->padded_bytes_per_row();
+						const uint8_t* src_slice_start = src_start + z * sublayout->num_rows() * sublayout->unpadded_bytes_per_row();
 						//
-						for (uint32 y = 0; y < sublayout->num_rows(); ++y)
+						for (uint32_t y = 0; y < sublayout->num_rows(); ++y)
 						{
 							// 逐行拷贝
 							// NOTE: 这里假设 `initial_data` 里面的一行像素的字节长度和在 vram 里面的是一样长的
@@ -237,7 +237,7 @@ std::shared_ptr<i::gapi_texture> gapi_cmd_context::create_and_upload_texture(con
 		// 逐个 subtexture 插入从 VRAM -> VRAM 的拷贝指令
 		for (size_t subindex = 0; subindex < initial_data.size(); ++subindex)
 		{
-			get_current_cmd_list()->copy_buffer_region(target_texture, static_cast<uint32>(subindex), intermediate_buffer, intermediate_buffer_sublayouts[subindex]);
+			get_current_cmd_list()->copy_buffer_region(target_texture, static_cast<uint32_t>(subindex), intermediate_buffer, intermediate_buffer_sublayouts[subindex]);
 		}
 		// 延迟删除 ( 帧末删除 )
 		deferred_release(intermediate_buffer);

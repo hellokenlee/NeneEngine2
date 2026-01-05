@@ -6,7 +6,7 @@
 #include "gapi_cmd_list.h"
 
 
-enum class gapi_cmd_type : uint8
+enum class gapi_cmd_type : uint8_t
 {
 	graphics = 0,
 	compute,
@@ -35,9 +35,9 @@ namespace i
 
 		virtual void flush() = 0;
 		
-		virtual uint64 signal() = 0;
+		virtual uint64_t signal() = 0;
 
-		virtual void wait_for_fence_value(uint64 fence_value) = 0;
+		virtual void wait_for_fence_value(uint64_t fence_value) = 0;
 		
 		virtual void execute_cmd_list(const std::shared_ptr<gapi_cmd_list>& cmd_list) = 0;
 

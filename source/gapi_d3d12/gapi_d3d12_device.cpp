@@ -95,9 +95,9 @@ gapi_d3d12_device::gapi_d3d12_device(const WinComPtr<ID3D12Device>& device)
 		m_debug_exception_handler = AddVectoredExceptionHandler(0, d3d_vectored_exception_handler);
 	}
 	//
-	m_cmd_queues[static_cast<uint32>(gapi_cmd_type::graphics)] = gapi_d3d12_device::create_cmd_queue(gapi_cmd_type::graphics);
-	m_cmd_queues[static_cast<uint32>(gapi_cmd_type::compute)] = gapi_d3d12_device::create_cmd_queue(gapi_cmd_type::compute);
-	m_cmd_queues[static_cast<uint32>(gapi_cmd_type::copy)] = gapi_d3d12_device::create_cmd_queue(gapi_cmd_type::copy);
+	m_cmd_queues[static_cast<uint32_t>(gapi_cmd_type::graphics)] = gapi_d3d12_device::create_cmd_queue(gapi_cmd_type::graphics);
+	m_cmd_queues[static_cast<uint32_t>(gapi_cmd_type::compute)] = gapi_d3d12_device::create_cmd_queue(gapi_cmd_type::compute);
+	m_cmd_queues[static_cast<uint32_t>(gapi_cmd_type::copy)] = gapi_d3d12_device::create_cmd_queue(gapi_cmd_type::copy);
 
 	//
 	// check resource tiers
@@ -195,8 +195,8 @@ std::shared_ptr<i::gapi_pipeline_state> gapi_d3d12_device::create_graphics_pipel
 	d3d_desc.InputLayout = d3d_cast(desc.m_bound_shader_state.get_vertices_declaration(), input_element_descs);
 	d3d_desc.IBStripCutValue = D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_DISABLED;
 	d3d_desc.PrimitiveTopologyType = d3d_cast(desc.m_primitive_type);
-	d3d_desc.NumRenderTargets = static_cast<uint32>(desc.m_render_target_formats.size());
-	for (int32 i = 0; i < desc.m_render_target_formats.size(); ++i)
+	d3d_desc.NumRenderTargets = static_cast<uint32_t>(desc.m_render_target_formats.size());
+	for (int32_t i = 0; i < desc.m_render_target_formats.size(); ++i)
 	{
 		d3d_desc.RTVFormats[i] = d3d_cast(desc.m_render_target_formats[i]);
 	}

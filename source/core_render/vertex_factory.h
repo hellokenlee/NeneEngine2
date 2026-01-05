@@ -18,12 +18,12 @@ namespace r
 	class NENE_API index_stream : render_resource
 	{
 	public:
-		index_stream(const std::vector<uint32>& indices, const std::string& debug_name = "");
+		index_stream(const std::vector<uint32_t>& indices, const std::string& debug_name = "");
 		const uint32_t& num_index() const { return m_num_index; }
 		const std::shared_ptr<i::gapi_buffer>& get_index_buffer() const { return m_index_buffer; }
 		
 	private:
-		uint32 m_num_index;
+		uint32_t m_num_index;
 		std::string m_debug_name;
 		std::shared_ptr<i::gapi_buffer> m_index_buffer;
 	};
@@ -67,7 +67,7 @@ namespace r
 		std::vector<std::shared_ptr<vertex_stream>> m_vertex_streams;
 		gapi_vertices_declaration m_vertices_declaration;
 		//
-		uint8 m_current_stream_index = 0;
-		std::unordered_map<std::string, uint8> m_current_semantic_index;
+		uint8_t m_current_stream_index = 0;
+		std::unordered_map<std::string, uint8_t> m_current_semantic_index;
 	};
 }

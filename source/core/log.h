@@ -4,13 +4,14 @@
 
 #pragma once
 
-#include "platform.h"
-
+#include <set>
 #include <queue>
 #include <string>
 #include <chrono>
 #include <format>
 #include <source_location>
+
+#include "platform.h"
 
 namespace i
 {
@@ -20,7 +21,7 @@ namespace i
 /**
  * Level of each log
  */
-enum log_level : uint8
+enum log_level : uint8_t
 {
 	fatal = 0, 
 	warning, 

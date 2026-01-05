@@ -20,7 +20,7 @@ class NENE_API gapi_cmd_context : noncopyable
 {
 public:
 	//
-	gapi_cmd_context(const std::shared_ptr<i::gapi_device>& device, uint32 num_cmd_list, uint32 debug_context_id);
+	gapi_cmd_context(const std::shared_ptr<i::gapi_device>& device, uint32_t num_cmd_list, uint32_t debug_context_id);
 	~gapi_cmd_context() override = default;
 	
 	// A render pass is a set of drawcalls shared same render targets.
@@ -33,15 +33,15 @@ public:
 	/** Close current command list. Do ping-pong swap with previous one. */
 	const std::shared_ptr<i::gapi_cmd_list>& close();
 
-	void set_resolution(const upoint32& resolution);
+	void set_resolution(const uint2& resolution);
 
 	//
 	void clear_render_target(const std::shared_ptr<i::gapi_texture>& render_target, const color::rgba<float>& clear_color) const;
 
 
 	// void dispatch(const uvector3& thread_group_size) const;
-	void draw(uint32 num_vertices, uint32 num_instances, uint32 vertex_offset = 0, uint32 instance_offset = 0);
-	void draw_indexed(uint32 num_indices, uint32 num_instances, uint32 index_offset = 0, uint32 vertex_offset = 0, uint32 instance_offset = 0);
+	void draw(uint32_t num_vertices, uint32_t num_instances, uint32_t vertex_offset = 0, uint32_t instance_offset = 0);
+	void draw_indexed(uint32_t num_indices, uint32_t num_instances, uint32_t index_offset = 0, uint32_t vertex_offset = 0, uint32_t instance_offset = 0);
 	
 	//
 	void set_pipeline_state(const std::shared_ptr<i::gapi_pipeline_state>& pipeline_state);
@@ -92,14 +92,14 @@ protected:
 	
 	std::shared_ptr<i::gapi_device> m_device;
 	
-	uint32 m_debug_id;
-	uint32 m_current_index;
-	uint32 m_previous_index;
+	uint32_t m_debug_id;
+	uint32_t m_current_index;
+	uint32_t m_previous_index;
 
 	std::vector<one_frame_context_data> m_frame_contexts;
 
 	//
-	std::vector<rect> m_scissors;
+	std::vector<rect32_t> m_scissors;
 	std::vector<gapi_viewport_desc> m_viewports;
 	//
 	gapi_online_resource_view_cache m_online_resource_view_cache;

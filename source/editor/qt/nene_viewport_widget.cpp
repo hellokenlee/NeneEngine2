@@ -39,7 +39,7 @@ void NeneViewportWidget::showEvent(QShowEvent* event)
 {
 	if (!engine_loop::is_initialized())
 	{
-		engine_loop::initialize(reinterpret_cast<void*>(winId()), upoint32{ .w = static_cast<uint32>(size().width()), .h = static_cast<uint32>(size().height()) });
+		engine_loop::initialize(reinterpret_cast<void*>(winId()), uint2(static_cast<uint32_t>(size().width()), static_cast<uint32_t>(size().height())));
 		connect(&m_engine_tick_timer, &QTimer::timeout, &engine_loop::tick);
 		m_engine_tick_timer.start(EDITOR_MILLISECOND_PER_FRAME);
 	}
@@ -65,7 +65,7 @@ void NeneViewportWidget::resizeEvent(QResizeEvent* event)
 	// tell engine to resize the swap chain
 	if (engine_loop::is_initialized())
 	{
-		engine_loop::resize(upoint32{ .w = static_cast<uint32>(event->size().width()), .h = static_cast<uint32>(event->size().height()) });
+		engine_loop::resize(uint2(static_cast<uint32_t>(event->size().width()), static_cast<uint32_t>(event->size().height())));
 	}
 }
 

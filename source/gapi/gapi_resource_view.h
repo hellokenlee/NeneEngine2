@@ -5,7 +5,7 @@
 #include "core/core.h"
 
 
-enum class gapi_resource_view_type : uint8
+enum class gapi_resource_view_type : uint8_t
 {
 	unknown = 0b000000,
 	
@@ -19,14 +19,14 @@ enum class gapi_resource_view_type : uint8
 	depth_stencil_view		= 0b100000,
 };
 
-enum class gapi_filter : uint8
+enum class gapi_filter : uint8_t
 {
 	point,
 	linear,
 	anisotropic,
 };
 
-enum class gapi_sample_test : uint8
+enum class gapi_sample_test : uint8_t
 {
 	none,
 	minimum,
@@ -34,7 +34,7 @@ enum class gapi_sample_test : uint8
 	comparison,
 };
 
-enum class gapi_address_mode : uint8
+enum class gapi_address_mode : uint8_t
 {
 	wrap,
 	mirror,
@@ -53,7 +53,7 @@ struct gapi_sampler_desc
 	gapi_sample_test m_sample_test;
 	gapi_address_mode m_address_mode_uvw[3];
 	float m_mipmap_bias;
-	uint32 m_max_anisotropy;
+	uint32_t m_max_anisotropy;
 	gapi_compare_func m_compare_func;
 	color::rgba<float> m_border_color;
 	float m_lod_min_max[2];

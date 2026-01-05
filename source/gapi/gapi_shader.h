@@ -5,7 +5,7 @@
 #include "core/core.h"
 
 
-enum class gapi_shader_stage : uint8
+enum class gapi_shader_stage : uint8_t
 {
 	vertex_shader,
 	hull_shader,
@@ -24,7 +24,7 @@ enum class gapi_shader_stage : uint8
 constexpr size_t num_gapi_shader_stage = magic_enum::enum_count<gapi_shader_stage>();
 
 
-enum class gapi_shader_feature_level : uint8
+enum class gapi_shader_feature_level : uint8_t
 {
 	sm_5_1,
 	sm_6_0,
@@ -33,13 +33,13 @@ enum class gapi_shader_feature_level : uint8
 struct gapi_shader_register_count
 {
 	// num of `register(t#, ...)`
-	uint32 num_shader_resource = 0;
+	uint32_t num_shader_resource = 0;
 	// num of `register(b#, ...)`
-	uint32 num_constant_buffer = 0;
+	uint32_t num_constant_buffer = 0;
 	// num of `register(u#, ...)`
-	uint32 num_unordered_access = 0;
+	uint32_t num_unordered_access = 0;
 	// num of `register(s#, ...)`
-	uint32 num_dynamic_sampler = 0;
+	uint32_t num_dynamic_sampler = 0;
 
 	bool empty() const
 	{

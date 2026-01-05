@@ -15,7 +15,7 @@ std::shared_ptr<n::engine> engine_loop::m_engine = nullptr;
 std::shared_ptr<i::renderer> engine_loop::m_renderer = nullptr;
 
 
-void engine_loop::initialize(void* window, const upoint32& window_size)
+void engine_loop::initialize(void* window, const uint2& window_size)
 {
 	//
 	log(engine_, info, "Engine Init!");
@@ -71,7 +71,7 @@ void engine_loop::tick()
 	
 }
 
-void engine_loop::resize(const upoint32& new_window_size)
+void engine_loop::resize(const uint2& new_window_size)
 {
 	gapi_dynamic::get().resize_swap_chain(new_window_size);
 }

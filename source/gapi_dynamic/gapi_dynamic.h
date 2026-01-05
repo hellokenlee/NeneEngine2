@@ -6,7 +6,7 @@
 #include "gapi/gapi_factory.h"
 #include "gapi_cmd_context.h"
 
-enum class gapi_platform : uint8
+enum class gapi_platform : uint8_t
 {
 	direct3d12,
 	vulkan,
@@ -23,13 +23,13 @@ public:
 	~gapi_dynamic() override;
 
 	/** Create adapter and device from a window handler. */
-	static void initialize(void* window, const upoint32& window_size);
+	static void initialize(void* window, const uint2& window_size);
 	
 	/** Fetch the current gapi that is using. */
 	static gapi_dynamic& get();
 	
 	/** Get the context for a thread. */
-	gapi_cmd_context& get_cmd_context(uint32 context_id = 0) const;
+	gapi_cmd_context& get_cmd_context(uint32_t context_id = 0) const;
 
 	/** Pipeline state creations. */
 	std::shared_ptr<i::gapi_pipeline_state> create_compute_pipeline_state(const gapi_compute_pipeline_state_desc& desc) const;
@@ -56,11 +56,11 @@ public:
 	//
 	const std::shared_ptr<i::gapi_swap_chain>& get_swap_chain() const;
 	//
-	void resize_swap_chain(const upoint32& new_size);
+	void resize_swap_chain(const uint2& new_size);
 
 protected:
 	/** Internal constructor. */
-	gapi_dynamic(const gapi_platform& platform, void* window, const upoint32& window_size);
+	gapi_dynamic(const gapi_platform& platform, void* window, const uint2& window_size);
 	/** Helper to create resource views. */
 	void create_buffer_views(const std::shared_ptr<i::gapi_buffer>& buffer) const;
 	void create_texture_views(const std::shared_ptr<i::gapi_texture>& texture) const;
@@ -78,7 +78,7 @@ protected:
 	//
 	std::vector<std::unique_ptr<gapi_cmd_context>> m_cmd_contexts;
 	//
-	std::array<std::vector<uint64>, magic_enum::enum_count<gapi_cmd_type>()> m_cmd_queue_fence_values;
+	std::array<std::vector<uint64_t>, magic_enum::enum_count<gapi_cmd_type>()> m_cmd_queue_fence_values;
 	//
 	static std::unique_ptr<gapi_dynamic> s_instance;
 };

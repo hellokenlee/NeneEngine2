@@ -7,12 +7,12 @@
 #include "gapi_resource_desc.h"
 
 
-constexpr uint32 MAX_RENDER_TARGET_COUNT = 8;
+constexpr uint32_t MAX_RENDER_TARGET_COUNT = 8;
 
 /**
  *	Bound Shader State ( name = stride )
  */
-enum class gapi_vertex_element_type : uint8
+enum class gapi_vertex_element_type : uint8_t
 {
 	float1 = 0,
 	float2,
@@ -25,22 +25,22 @@ enum class gapi_vertex_element_type : uint8
 	unsigned_int,
 	unsigned_byte4,
 };
-NENE_API uint16 size_of_gapi_vertex_element_type(const gapi_vertex_element_type& element_type);
+NENE_API uint16_t size_of_gapi_vertex_element_type(const gapi_vertex_element_type& element_type);
 
 struct gapi_vertex_element_desc
 {
 	std::string m_semantic_name;
-	uint8 m_semantic_index;
+	uint8_t m_semantic_index;
 	gapi_vertex_element_type m_element_type;
-	uint8 m_stream_index;
-	uint8 m_offset;
+	uint8_t m_stream_index;
+	uint8_t m_offset;
 	// 
 	bool m_use_instance_index : 1;
-	uint16 m_stride;
+	uint16_t m_stride;
 };
 typedef std::vector<gapi_vertex_element_desc> gapi_vertices_declaration;
 
-enum class gapi_primitive_type : uint8
+enum class gapi_primitive_type : uint8_t
 {
 	point,
 	line,
@@ -84,7 +84,7 @@ protected:
 /**
  *	Blend State
  */
-enum class gapi_blend_op: uint8
+enum class gapi_blend_op: uint8_t
 {
 	add,
 	subtract,
@@ -93,7 +93,7 @@ enum class gapi_blend_op: uint8
 	reverse_subtract,
 };
 
-enum class gapi_blend_factor: uint8
+enum class gapi_blend_factor: uint8_t
 {
 	zero,
 	one,
@@ -113,7 +113,7 @@ enum class gapi_blend_factor: uint8
 	inverse_source1_alpha,
 };
 
-enum class gapi_color_write_mask: uint8
+enum class gapi_color_write_mask: uint8_t
 {
 	//
 	none = 0x00,
@@ -153,7 +153,7 @@ struct gapi_blend_state_desc
 		m_render_target_blend_descs[0] = in_render_target_blend_desc;
 	}
 
-	template<uint32 num_render_targets>
+	template<uint32_t num_render_targets>
 	gapi_blend_state_desc(const std::array<gapi_render_target_blend_desc, num_render_targets>& in_render_target_blend_descs, bool in_use_alpha_to_coverage)
 		: m_use_alpha_to_coverage(in_use_alpha_to_coverage)
 		, m_use_independent_blend(num_render_targets > 1)
@@ -171,13 +171,13 @@ struct gapi_blend_state_desc
 /**
  *	Rasterizer State
  */
-enum class gapi_rasterizer_fill_mode: uint8
+enum class gapi_rasterizer_fill_mode: uint8_t
 {
 	wireframe,
 	solid,
 };
 
-enum class gapi_rasterizer_cull_mode : uint8
+enum class gapi_rasterizer_cull_mode : uint8_t
 {
 	// dont cull anything
 	cull_none,
@@ -187,7 +187,7 @@ enum class gapi_rasterizer_cull_mode : uint8
 	cull_front,
 };
 
-enum class gapi_rasterizer_depth_clip_mode : uint8
+enum class gapi_rasterizer_depth_clip_mode : uint8_t
 {
 	// discard the pixel if its depth is out of range
 	clip,
@@ -213,7 +213,7 @@ struct gapi_rasterizer_state_desc
 /**
  *	Depth Stencil State
  */
-enum class gapi_cmp_func : uint8
+enum class gapi_cmp_func : uint8_t
 {
 	less,
 	less_equal,
@@ -225,7 +225,7 @@ enum class gapi_cmp_func : uint8
 	always,
 };
 
-enum class gapi_stencil_op : uint8
+enum class gapi_stencil_op : uint8_t
 {
 	keep,
 	zero,
@@ -254,8 +254,8 @@ struct gapi_depth_stencil_state_desc
 	};
 	gapi_stencil_state_desc m_front_stencil_test;
 	gapi_stencil_state_desc m_back_stencil_test;
-	uint8 m_stencil_read_mask;
-	uint8 m_stencil_write_mask;
+	uint8_t m_stencil_read_mask;
+	uint8_t m_stencil_write_mask;
 
 	// Default Constructor
 	gapi_depth_stencil_state_desc();
@@ -279,7 +279,7 @@ struct NENE_API gapi_graphics_pipeline_state_desc
 	gapi_rasterizer_state_desc m_rasterizer_state;
 	gapi_primitive_type m_primitive_type = gapi_primitive_type::triangle;
 	// OM
-	uint16 m_num_samples = 1;
+	uint16_t m_num_samples = 1;
 	gapi_blend_state_desc m_blend_state;
 	gapi_depth_stencil_state_desc m_depth_stencil_state;
 	gapi_pixel_format m_depth_stencil_format = gapi_pixel_format::unknown;

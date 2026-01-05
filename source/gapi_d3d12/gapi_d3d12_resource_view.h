@@ -7,8 +7,8 @@
 
 struct d3d12_resource_view_index
 {
-	uint32 m_heap_page_index;
-	int32 m_index_in_heap;
+	uint32_t m_heap_page_index;
+	int32_t m_index_in_heap;
 };
 
 class gapi_d3d12_offline_resource_view : public i::gapi_resource_view

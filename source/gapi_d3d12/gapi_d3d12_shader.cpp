@@ -53,7 +53,7 @@ static bool set_register_bits(const D3D12_SHADER_INPUT_BIND_DESC& desc, T& bits)
 		{
 			return false;
 		}
-		bits |= static_cast<T>(1ull << static_cast<uint64>(reg));
+		bits |= static_cast<T>(1ull << static_cast<uint64_t>(reg));
 	}
 	return true;
 }
@@ -64,20 +64,20 @@ bool gapi_d3d12_shader::build_reflection_data()
 	//
 	m_d3d_reflection->GetDesc(&m_shader_desc);
 	m_d3d_shader_input_bind_descs.clear();
-	for (uint32 i = 0; i < m_shader_desc.BoundResources; i++)
+	for (uint32_t i = 0; i < m_shader_desc.BoundResources; i++)
 	{
 		D3D12_SHADER_INPUT_BIND_DESC resource_desc;
 		m_d3d_reflection->GetResourceBindingDesc(i, &resource_desc);
 		m_d3d_shader_input_bind_descs.emplace_back(resource_desc);
 	}
 	// validations
-	uint16 constant_buffer_register_bits = 0;
+	uint16_t constant_buffer_register_bits = 0;
 	static_assert(t::bits_of(constant_buffer_register_bits) == NUM_D3D_MAX_CBVS);
-	uint64 shader_resource_register_bits = 0;
+	uint64_t shader_resource_register_bits = 0;
 	static_assert(t::bits_of(shader_resource_register_bits) == NUM_D3D_MAX_SRVS);
-	uint16 unordered_access_register_bits = 0;
+	uint16_t unordered_access_register_bits = 0;
 	static_assert(t::bits_of(unordered_access_register_bits) == NUM_D3D_MAX_UAVS);
-	uint16 dynamic_sampler_register_bits = 0;
+	uint16_t dynamic_sampler_register_bits = 0;
 	static_assert(t::bits_of(dynamic_sampler_register_bits) == NUM_D3D_MAX_DYNAMIC_SAMPLERS);
 	
 	//

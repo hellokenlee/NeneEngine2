@@ -3,7 +3,6 @@
 #pragma once
 
 #include "log.h"
-#include "types.h"
 #include "platform.h"
 
 #ifdef _MSVC_LANG
@@ -26,9 +25,9 @@
 	#define ENSURE(expr) (void)(expr)
 #endif // NENE_DEBUG
 
-NENE_API void check_failed(const std::string& filename, uint32 line, const std::string& expression);
+NENE_API void check_failed(const std::string& filename, uint32_t line, const std::string& expression);
 
-NENE_API void check_failed(const std::string& filename, uint32 line, const std::string& expression, const std::string& hints);
+NENE_API void check_failed(const std::string& filename, uint32_t line, const std::string& expression, const std::string& hints);
 
 #define CHECK_IMPL(expr)									\
 	{														\

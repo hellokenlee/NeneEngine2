@@ -28,8 +28,8 @@ protected:
 	//
 	WinComPtr<ID3D12Device> m_d3d_device;
 	D3D12_DESCRIPTOR_HEAP_DESC m_d3d_page_desc;
-	uint32 m_page_size = 0;
-	uint32 m_resource_view_size = 0;
+	uint32_t m_page_size = 0;
+	uint32_t m_resource_view_size = 0;
 	//
 	std::vector<d3d12_offline_page_data> m_pages;
 	std::queue<d3d12_resource_view_index> m_free_resource_view_indices;

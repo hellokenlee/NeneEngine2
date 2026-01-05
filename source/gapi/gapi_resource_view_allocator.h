@@ -6,7 +6,7 @@
 #include "gapi_resource_view.h"
 
 
-enum class gapi_resource_view_allocator_type : uint8
+enum class gapi_resource_view_allocator_type : uint8_t
 {
 	online,
 	offline,

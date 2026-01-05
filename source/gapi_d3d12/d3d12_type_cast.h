@@ -114,7 +114,7 @@ inline D3D12_RENDER_TARGET_BLEND_DESC d3d_cast(const gapi_blend_state_desc::gapi
 inline D3D12_BLEND_DESC d3d_cast(const gapi_blend_state_desc& desc)
 {
 	D3D12_BLEND_DESC d3d_desc;
-	for (int32 i = 0; i < desc.m_render_target_blend_descs.size(); ++i)
+	for (int32_t i = 0; i < desc.m_render_target_blend_descs.size(); ++i)
 	{
 		d3d_desc.RenderTarget[i] = d3d_cast(desc.m_render_target_blend_descs[i]);
 	}
@@ -296,7 +296,7 @@ inline D3D12_INPUT_LAYOUT_DESC d3d_cast(const gapi_vertices_declaration& desc, s
 	}
 	D3D12_INPUT_LAYOUT_DESC d3d_desc{
 		.pInputElementDescs = out_d3d_input_element_descs.data(),
-		.NumElements = static_cast<uint32>(out_d3d_input_element_descs.size()),
+		.NumElements = static_cast<uint32_t>(out_d3d_input_element_descs.size()),
 	};
 	return d3d_desc;
 }

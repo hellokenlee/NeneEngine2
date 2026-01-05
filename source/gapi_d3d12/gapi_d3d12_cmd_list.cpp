@@ -26,10 +26,7 @@ void gapi_d3d12_cmd_list::reset(const std::shared_ptr<i::gapi_cmd_allocator>& al
 	auto& d3d_allocator = t::gapi_pin<gapi_d3d12_cmd_allocator>(allocator);
 	m_d3d_list->Reset(d3d_allocator.get_d3d_allocator(), pipeline_state ? t::gapi_pin<gapi_d3d12_pipeline_state>(pipeline_state).get_d3d_pipeline_state() : nullptr);
 	//
-	for (auto& d3d_heap : m_d3d_descriptor_heaps)
-	{
-		d3d_heap = nullptr;
-	}
+	m_d3d_descriptor_heaps.fill(nullptr);
 }
 
 void gapi_d3d12_cmd_list::clear_state(const std::shared_ptr<i::gapi_pipeline_state>& pipeline_state)
@@ -37,7 +34,7 @@ void gapi_d3d12_cmd_list::clear_state(const std::shared_ptr<i::gapi_pipeline_sta
 	m_d3d_list->ClearState(t::gapi_pin<gapi_d3d12_pipeline_state>(pipeline_state).get_d3d_pipeline_state());
 }
 
-void gapi_d3d12_cmd_list::clear_depth_stencil_view(const std::shared_ptr<i::gapi_resource_view>& depth_stencil, const float& depth, const uint8& stencil)
+void gapi_d3d12_cmd_list::clear_depth_stencil_view(const std::shared_ptr<i::gapi_resource_view>& depth_stencil, const float& depth, const uint8_t& stencil)
 {
 	auto& d3d_view = t::gapi_pin<gapi_d3d12_offline_resource_view>(depth_stencil);
 	CHECK(d3d_view.get_type() == gapi_resource_view_type::depth_stencil_view);
@@ -64,7 +61,7 @@ void gapi_d3d12_cmd_list::clear_unordered_access_view(const std::shared_ptr<i::g
 	// Unsigned integer format
 	else
 	{
-		color::rgba<uint32> integer_color;
+		color::rgba<uint32_t> integer_color;
 		integer_color = clear_color;
 		m_d3d_list->ClearUnorderedAccessViewUint(D3D12_GPU_DESCRIPTOR_HANDLE(), d3d_view.get_d3d_cpu_handle(), d3d_resource.get_d3d_resource(), integer_color.container().data(), 0, nullptr);
 	}
@@ -79,7 +76,7 @@ void gapi_d3d12_cmd_list::copy_resource(const std::shared_ptr<i::gapi_resource>&
 	m_d3d_list->CopyResource(d3d_dst->get_d3d_resource(), d3d_src->get_d3d_resource());
 }
 
-void gapi_d3d12_cmd_list::copy_buffer_region(const std::shared_ptr<i::gapi_buffer>& dst, uint32 dst_offset, const std::shared_ptr<i::gapi_buffer>& src, uint32 src_offset, uint64_t num_bytes)
+void gapi_d3d12_cmd_list::copy_buffer_region(const std::shared_ptr<i::gapi_buffer>& dst, uint32_t dst_offset, const std::shared_ptr<i::gapi_buffer>& src, uint32_t src_offset, uint64_t num_bytes)
 {
 	// buffer -> buffer copy
 	const auto& d3d_dst = t::gapi_cast<gapi_d3d12_buffer>(dst);
@@ -88,7 +85,7 @@ void gapi_d3d12_cmd_list::copy_buffer_region(const std::shared_ptr<i::gapi_buffe
 	m_d3d_list->CopyBufferRegion(d3d_dst->get_d3d_resource(), dst_offset, d3d_src->get_d3d_resource(), src_offset, num_bytes);
 }
 
-void gapi_d3d12_cmd_list::copy_texture_region(const std::shared_ptr<i::gapi_texture>& dst, uint32 dst_subindex, const std::shared_ptr<i::gapi_texture>& src, uint32 src_subindex)
+void gapi_d3d12_cmd_list::copy_texture_region(const std::shared_ptr<i::gapi_texture>& dst, uint32_t dst_subindex, const std::shared_ptr<i::gapi_texture>& src, uint32_t src_subindex)
 {
 	// texture -> texture copy
 	auto& d3d_dst = t::gapi_pin<gapi_d3d12_texture>(dst);
@@ -108,7 +105,7 @@ void gapi_d3d12_cmd_list::copy_texture_region(const std::shared_ptr<i::gapi_text
 	m_d3d_list->CopyTextureRegion(&dst_location, 0,0,0, &src_location, nullptr);
 }
 
-void gapi_d3d12_cmd_list::copy_buffer_region(const std::shared_ptr<i::gapi_texture>& dst, uint32 dst_subindex, const std::shared_ptr<i::gapi_buffer>& src, const std::shared_ptr<i::gapi_buffer_sublayout>& src_sublayout)
+void gapi_d3d12_cmd_list::copy_buffer_region(const std::shared_ptr<i::gapi_texture>& dst, uint32_t dst_subindex, const std::shared_ptr<i::gapi_buffer>& src, const std::shared_ptr<i::gapi_buffer_sublayout>& src_sublayout)
 {
 	// buffer -> texture copy
 	auto& d3d_dst = t::gapi_pin<gapi_d3d12_texture>(dst);
@@ -142,18 +139,18 @@ void gapi_d3d12_cmd_list::dispatch(const uint3& thread_group_size)
 	m_d3d_list->Dispatch(thread_group_size.x, thread_group_size.y, thread_group_size.z);
 }
 
-void gapi_d3d12_cmd_list::draw(uint32 num_vertices, uint32 num_instances, uint32 vertex_offset, uint32 instance_offset)
+void gapi_d3d12_cmd_list::draw(uint32_t num_vertices, uint32_t num_instances, uint32_t vertex_offset, uint32_t instance_offset)
 {
 	m_d3d_list->DrawInstanced(num_vertices, num_instances, vertex_offset, instance_offset);
 }
 
-void gapi_d3d12_cmd_list::draw_indexed(uint32 num_indices, uint32 num_instances, uint32 index_offset, uint32 vertex_offset, uint32 instance_offset)
+void gapi_d3d12_cmd_list::draw_indexed(uint32_t num_indices, uint32_t num_instances, uint32_t index_offset, uint32_t vertex_offset, uint32_t instance_offset)
 {
 	m_d3d_list->DrawIndexedInstanced(num_indices, num_instances, index_offset, vertex_offset, instance_offset);
 }
 
-void gapi_d3d12_cmd_list::execute_indirect(const std::shared_ptr<i::gapi_cmd_layout>& layout, uint32 max_num_cmd, const std::shared_ptr<i::gapi_buffer>& arg_buffer, uint32 arg_buffer_offset, const std::shared_ptr<i::gapi_buffer>& count_buffer,
-	uint32 count_buffer_offset)
+void gapi_d3d12_cmd_list::execute_indirect(const std::shared_ptr<i::gapi_cmd_layout>& layout, uint32_t max_num_cmd, const std::shared_ptr<i::gapi_buffer>& arg_buffer, uint32_t arg_buffer_offset, const std::shared_ptr<i::gapi_buffer>& count_buffer,
+	uint32_t count_buffer_offset)
 {
 	NOT_IMPLEMENTED();
 }
@@ -253,12 +250,12 @@ void gapi_d3d12_cmd_list::set_primitive_topology(const gapi_primitive_type& ptyp
 
 void gapi_d3d12_cmd_list::set_viewports(const std::vector<gapi_viewport_desc>& viewports)
 {
-	m_d3d_list->RSSetViewports(static_cast<uint32>(viewports.size()), reinterpret_cast<const D3D12_VIEWPORT*>(viewports.data()));
+	m_d3d_list->RSSetViewports(static_cast<uint32_t>(viewports.size()), reinterpret_cast<const D3D12_VIEWPORT*>(viewports.data()));
 }
 
-void gapi_d3d12_cmd_list::set_scissor_rects(const std::vector<rect>& scissors)
+void gapi_d3d12_cmd_list::set_scissor_rects(const std::vector<rect32_t>& scissors)
 {
-	m_d3d_list->RSSetScissorRects(static_cast<uint32>(scissors.size()), reinterpret_cast<const RECT*>(scissors.data()));
+	m_d3d_list->RSSetScissorRects(static_cast<uint32_t>(scissors.size()), reinterpret_cast<const RECT*>(scissors.data()));
 }
 
 void gapi_d3d12_cmd_list::set_blend_factor(const float4& blend)
@@ -285,14 +282,14 @@ void gapi_d3d12_cmd_list::set_render_targets(const std::vector<std::shared_ptr<i
 	}
 	
 	m_d3d_list->OMSetRenderTargets(
-		static_cast<uint32>(d3d_handles.size()),
+		static_cast<uint32_t>(d3d_handles.size()),
 		d3d_handles.data(),
 		false,
 		depth_stencil_descriptor_handle
 	);
 }
 
-void gapi_d3d12_cmd_list::set_stencil_ref(uint32 stencil_ref)
+void gapi_d3d12_cmd_list::set_stencil_ref(uint32_t stencil_ref)
 {
 	m_d3d_list->OMSetStencilRef(stencil_ref);
 }

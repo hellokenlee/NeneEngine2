@@ -2,10 +2,11 @@
 
 #pragma once
 
-#include "types.h"
+#include "math.h"
 #include "debug.h"
-#include "globals.h"
+#include "color.h"
 #include "platform.h"
 #include "pattern.h"
-#include "flag_enum_class.h"
+#include "template.h"
 #include "console_var.h"
+#include "utils.h"

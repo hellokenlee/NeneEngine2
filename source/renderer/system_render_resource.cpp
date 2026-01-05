@@ -111,7 +111,7 @@ namespace r
 				{0, 0},
 				{1, 0},
 			};
-			std::vector<uint32> indices =
+			std::vector<uint32_t> indices =
 			{
 				0, 1, 2,  2, 3, 0,		// +X
 				4, 5, 6,  6, 7, 4,		// -X

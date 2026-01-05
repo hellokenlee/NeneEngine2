@@ -25,7 +25,7 @@ void gapi_d3d12_swap_chain::create_back_buffer_textures()
 		m_desc.SampleDesc.Count
 	);
 	//
-	for (uint32 i = 0; i < m_desc.BufferCount; ++i)
+	for (uint32_t i = 0; i < m_desc.BufferCount; ++i)
 	{
 		//
 		WinComPtr<ID3D12Resource> render_target;
@@ -44,9 +44,9 @@ void gapi_d3d12_swap_chain::present()
 	m_d3d_swap_chain->Present(b_vsync_enabled ? 1 : 0, b_supports_vrr ? DXGI_PRESENT_ALLOW_TEARING : 0);
 }
 
-upoint32 gapi_d3d12_swap_chain::get_back_buffer_size()
+uint2 gapi_d3d12_swap_chain::get_back_buffer_size()
 {
-	return upoint32{.w = m_desc.BufferDesc.Width, .h = m_desc.BufferDesc.Height}; 
+	return uint2(m_desc.BufferDesc.Width, m_desc.BufferDesc.Height); 
 }
 
 const std::shared_ptr<i::gapi_texture>& gapi_d3d12_swap_chain::get_back_buffer() const
@@ -56,12 +56,12 @@ const std::shared_ptr<i::gapi_texture>& gapi_d3d12_swap_chain::get_back_buffer()
 	return m_back_buffer_textures[index];
 }
 
-uint32 gapi_d3d12_swap_chain::get_current_back_buffer_index()
+uint32_t gapi_d3d12_swap_chain::get_current_back_buffer_index()
 {
 	return m_d3d_swap_chain->GetCurrentBackBufferIndex();
 }
 
-void gapi_d3d12_swap_chain::resize_back_buffer(const upoint32& resolution)
+void gapi_d3d12_swap_chain::resize_back_buffer(const uint2& resolution)
 {
 	m_back_buffer_textures.clear();
 	//

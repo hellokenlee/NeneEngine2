@@ -18,7 +18,7 @@ public:
 	// initial the cache for a shader signature, called while binding pso
 	void initialize(const gapi_shader_resource_tables& shader_resource_tables);
 	// stage the cache of a resource view, called while binding resource 
-	void stage_resource_view(gapi_shader_stage stage, uint32 reg, const std::shared_ptr<i::gapi_resource_view>& view);
+	void stage_resource_view(gapi_shader_stage stage, uint32_t reg, const std::shared_ptr<i::gapi_resource_view>& view);
 	// commit all staged resource views in cache to GPU and make them online, called while draw | dispatch
 	void commit_staged_resource_views(const std::shared_ptr<i::gapi_cmd_list>& cmd_list, const std::shared_ptr<i::gapi_device>& device);
 	

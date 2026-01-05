@@ -20,7 +20,7 @@ void gapi_online_resource_view_cache::initialize(const gapi_shader_resource_tabl
 	m_staged_resource_views.resize(m_shader_resource_tables.m_num_total_parameters);
 }
 
-void gapi_online_resource_view_cache::stage_resource_view(gapi_shader_stage stage, uint32 reg, const std::shared_ptr<i::gapi_resource_view>& view)
+void gapi_online_resource_view_cache::stage_resource_view(gapi_shader_stage stage, uint32_t reg, const std::shared_ptr<i::gapi_resource_view>& view)
 {
 	//
 	const auto vtype = view->get_type();

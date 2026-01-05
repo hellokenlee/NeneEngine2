@@ -12,7 +12,7 @@ namespace r
 		CHECK(!mipmaps.empty());
 		//
 		const auto& mip0 = mipmaps.front();
-		uint8 num_mipmaps = static_cast<uint8>(mipmaps.size());
+		uint8_t num_mipmaps = static_cast<uint8_t>(mipmaps.size());
 		if (mip0.m_extent.xyz() > uint3::one())
 		{
 			desc = gapi_texture_desc::create_3d(mip0.m_extent.xyz(), mip0.m_format, gapi_texture_create_flag::as_shader_resource, num_mipmaps);

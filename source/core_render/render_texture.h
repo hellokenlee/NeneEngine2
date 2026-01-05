@@ -16,7 +16,7 @@ namespace r
 		// 
 		gapi_pixel_format m_format;
 		// 
-		std::vector<uint8> m_pixels;
+		std::vector<uint8_t> m_pixels;
 	};
 	
 	/** The render thread representation of a texture */

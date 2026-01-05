@@ -19,5 +19,5 @@ private:
 
 	
 protected:
-	std::unordered_map<uint64, std::shared_ptr<i::gapi_shader>> m_shader_map;
+	std::unordered_map<uint64_t, std::shared_ptr<i::gapi_shader>> m_shader_map;
 };
