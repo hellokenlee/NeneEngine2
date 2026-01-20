@@ -307,17 +307,18 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 				# 如果是 Rider 目前还不支持 `LocalDebuggerEnvironment` 手动写入 .env 文件
 				# refs: https://youtrack.jetbrains.com/issue/RIDER-101684/Respect-LocalDebuggerEnvironment-from-.vcxproj.user-file
 				target_exec_folder_abs_path = nene_module.target_exec_folder_abs_path(config.architecture, config.configuration)
-				target_env_abs_path = os.path.join(target_exec_folder_abs_path, ".env.%s" % nene_module.name)
-				with open(target_env_abs_path, "w") as fp:
-					envs = [
-						"PATH=%s;$PATH$" % exec_paths_str
-					]
-					fp.writelines("\n".join(envs))
-					log("Write: %s" % target_env_abs_path)
-					envs = {
-						"PATH": "%s;$PATH$" % exec_paths_str
-					}
-					rider_hack_envs.setdefault(nene_module.name, {})[config.configuration.name] = envs
+				if os.path.exists(target_exec_folder_abs_path):
+					target_env_abs_path = os.path.join(target_exec_folder_abs_path, ".env.%s" % nene_module.name)
+					with open(target_env_abs_path, "w") as fp:
+						envs = [
+							"PATH=%s;$PATH$" % exec_paths_str
+						]
+						fp.writelines("\n".join(envs))
+						log("Write: %s" % target_env_abs_path)
+						envs = {
+							"PATH": "%s;$PATH$" % exec_paths_str
+						}
+						rider_hack_envs.setdefault(nene_module.name, {})[config.configuration.name] = envs
 		#
 		self._hack_rider_environment_variables(rider_hack_envs)
 		pass
