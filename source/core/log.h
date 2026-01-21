@@ -24,7 +24,7 @@ namespace i
 enum log_level : uint8_t
 {
 	fatal = 0, 
-	warning, 
+	warn, 
 	error,
 	info,
 };

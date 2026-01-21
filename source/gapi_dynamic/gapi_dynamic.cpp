@@ -4,7 +4,6 @@
 
 #include "gapi_pipeline_state_manager.h"
 #include "core/core.h"
-#include "core/utils.h"
 #include "gapi_d3d12/gapi_d3d12_factory.h"
 #include "gapi_d3d12/gapi_d3d12_shader.h"
 

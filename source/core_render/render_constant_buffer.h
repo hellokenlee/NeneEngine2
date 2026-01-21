@@ -4,6 +4,7 @@
 
 #include "render_resource.h"
 #include "gapi/gapi_resource.h"
+#include "gapi_dynamic/gapi_dynamic.h"
 
 namespace r
 {
@@ -13,7 +14,11 @@ namespace r
 	public:
 		render_constant_buffer()
 		{
-			memset(m_data, 0, sizeof(m_data));
+			//
+			memset(&m_data, 0, sizeof(m_data));
+			//
+			auto desc = gapi_buffer_desc::create(sizeof(t_shader_struct), gapi_buffer_usage_flag::dynamic_buffer | gapi_buffer_usage_flag::constant_buffer);
+			m_gapi_buffer = gapi_dynamic::get().create_buffer(desc);
 		}
 
 		void update()

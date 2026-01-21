@@ -151,8 +151,8 @@ bool d3d12_dxc_shader_compiler::compile(gapi_d3d12_shader& shader, WinComPtr<ID3
 	}
 	if (message && message->GetStringLength() > 0)
 	{
-		log(shader_, warning, "compiled shader( {}::{}(...) ) with warnings:", shader.get_name(), shader.get_function_entry());
-		log(shader_, warning, "\t{}", message->GetStringPointer());
+		log(shader_, warn, "compiled shader( {}::{}(...) ) with warnings:", shader.get_name(), shader.get_function_entry());
+		log(shader_, warn, "\t{}", message->GetStringPointer());
 	}
 	WinComPtr<ID3DBlob> reflection;
 	result->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&out_bytecode), nullptr);

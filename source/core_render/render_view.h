@@ -7,7 +7,7 @@
 
 namespace r
 {
-	class render_view : public render_constant_buffer<SViewInfo>
+	class NENE_API render_view : public render_constant_buffer<SViewInfo>
 	{
 	public:
 		void update_view_matrix(const float3& view_location, const rotator& view_rotator);

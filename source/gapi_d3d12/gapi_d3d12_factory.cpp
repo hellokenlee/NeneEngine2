@@ -184,7 +184,8 @@ std::shared_ptr<i::gapi_swap_chain> gapi_d3d12_factory::create_swap_chain(void* 
 	WinComPtr<IDXGISwapChain> swap_chain;
 	VERIFY(m_factory4->CreateSwapChain(t::gapi_cast<gapi_d3d12_cmd_queue>(cmd_queue)->get_d3d_queue(), &desc, &swap_chain));
 	VERIFY(m_factory4->MakeWindowAssociation(static_cast<HWND>(hwnd), DXGI_MWA_NO_ALT_ENTER));
-	swap_chain->SetPrivateData(WKPDID_D3DDebugObjectName, 1, " ");
+	static std::string s_default_swapchain_name = "DefaultSwapChain";
+	swap_chain->SetPrivateData(WKPDID_D3DDebugObjectName, static_cast<uint32_t>(s_default_swapchain_name.size()), s_default_swapchain_name.c_str());
 
 	// nene require at least `IDXGISwapChain3` to work
 	WinComPtr<IDXGISwapChain3> swap_chain3;
