@@ -21,4 +21,5 @@ protected:
 	SDL_Window* m_window = nullptr;
 	SDL_Event m_current_event = {};
 	std::atomic_bool m_client_should_exit = false;
+	static std::atomic_uint32_t m_num_existing_client;
 };

@@ -12,15 +12,28 @@
 
 logger client_("client");
 
+std::atomic_uint32_t client::m_num_existing_client = 0;
+
 client::client()
 {
+	//
+	if (!SDL_WasInit(SDL_INIT_VIDEO))
+	{
+		if (!SDL_Init(SDL_INIT_VIDEO))
+		{
+			log(client_, fatal, "failed to init sdl!");
+			return;
+		}
+	}
+	m_num_existing_client.fetch_add(1);
+	
 	// create window
 	constexpr auto DEFAULT_WINDOW_WIDTH = 800u;
 	constexpr auto DEFAULT_WINDOW_HEIGHT = 600u;
 	m_window = SDL_CreateWindow("NeneEngine", DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE);
 	if (!m_window)
 	{
-		log(client_, log_level::fatal, "failed to create sdl window!");
+		log(client_, fatal, "failed to create sdl window!");
 		return;
 	}
 	//
@@ -33,7 +46,7 @@ client::client()
 	else
 	{
 		auto error = SDL_GetError();
-		log(client_, log_level::warn, "failed load nene engine icon! reason: {}.", error);
+		log(client_, warn, "failed load nene engine icon! reason: {}.", error);
 	}
 	
 	// TODO: multi windows support
@@ -45,6 +58,10 @@ client::~client()
 	if (m_window != nullptr)
 	{
 		SDL_DestroyWindow(m_window);	
+	}
+	if (m_num_existing_client.fetch_sub(1) == 1)
+	{
+		SDL_Quit();
 	}
 }
 
