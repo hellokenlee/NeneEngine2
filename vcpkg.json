@@ -7,10 +7,12 @@
     "python3",
     "rttr",
     "qtbase",
-    "stb"
+    "stb",
+    "sdl3"
   ],
-  "builtin-baseline": "4c4abc2e8727221ede31021349386dac674309b0",
+  "builtin-baseline": "734f8130ffe2f02cf855a3a42a2958f01b3fb005",
   "overrides": [
+    {"name": "sdl3", "version": "3.4.0"},
     {"name": "qtbase", "version": "6.9.0"},
     {"name": "python", "version": "3.12.0"},
     {"name": "pybind11", "version": "3.0.0"}

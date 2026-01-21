@@ -2,18 +2,23 @@
 
 #pragma once
 
-namespace i
+#include <atomic>
+#include <SDL3/SDL.h>
+
+class client
 {
-	class client
-	{
-	public:
-		client() = default;
-		virtual ~client() = default;
-		
-		virtual bool should_exit() = 0;
-
-		virtual void poll_message() = 0;
-
-		virtual void* get_window() = 0;
-	};
-}
+public:
+	//
+	client();
+	virtual ~client();
+	//
+	virtual bool should_exit() const { return m_client_should_exit.load(); }
+	virtual void* get_window();
+	//
+	virtual void update();
+	
+protected:
+	SDL_Window* m_window = nullptr;
+	SDL_Event m_current_event = {};
+	std::atomic_bool m_client_should_exit = false;
+};
