@@ -13,13 +13,11 @@ class NENE_API simple_renderer : public i::renderer
 {
 public:
 	simple_renderer();
-
-	void render_view_family(const std::shared_ptr<i::gapi_texture>& view_family_texture) override;
+	
+	void render_view_family(const r::render_view& view, const r::render_texture& view_family_texture) override;
 
 protected:
 	std::shared_ptr<i::gapi_pipeline_state> m_base_pass_pipeline_state;
 
 	std::shared_ptr<r::render_texture> m_texture;
-	
-	std::shared_ptr<r::render_view> m_view;
 };

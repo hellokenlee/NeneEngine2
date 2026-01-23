@@ -13,9 +13,7 @@ namespace n
     {
     public:
         texture();
-
-    protected:
-        std::unique_ptr<r::render_texture> m_render_texture;
+        
     };
 };
  

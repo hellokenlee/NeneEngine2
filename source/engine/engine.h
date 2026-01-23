@@ -3,7 +3,7 @@
 #pragma once
 
 #include "core/core.h"
-
+#include "camera.h"
 #include <chrono>
 
 namespace n
@@ -15,5 +15,10 @@ namespace n
 		virtual ~engine() = default;
 
 		virtual void update(std::chrono::milliseconds delta) {}
+
+		const camera& get_camera() const { return m_camera; }
+
+	protected:
+		camera m_camera;
 	};
 }

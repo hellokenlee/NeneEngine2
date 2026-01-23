@@ -31,7 +31,7 @@ namespace r
 			);
 		}
 
-		const std::shared_ptr<i::gapi_buffer>& get_constant_buffer()
+		const std::shared_ptr<i::gapi_buffer>& get_constant_buffer() const
 		{
 			return m_gapi_buffer;
 		}

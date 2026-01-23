@@ -7,6 +7,7 @@
 #include "renderer/renderer.h"
 #include "renderer/simple_renderer.h"
 #include "core_render/render_thread.h"
+#include "camera.h"
 
 
 static logger engine_("engine");
@@ -49,17 +50,18 @@ void engine_loop::tick()
 	
 	// renderer render
 	enqueue_render_command<"Render">(
-		[]()
+		[_render_view = m_engine->get_camera().get_render_view()]()
 		{
 			//
 			auto& gai = gapi_dynamic::get();
 			auto& context = gai.get_cmd_context();
 			auto& back_buffer_texture = gai.get_swap_chain()->get_back_buffer();
+			
 			//
 			gai.start_frame();
 			context.transition_resource(back_buffer_texture, gapi_resource_state::render_target);
 			{
-				m_renderer->render_view_family(back_buffer_texture);
+				m_renderer->render_view_family(*_render_view, r::render_texture(back_buffer_texture));
 			}
 			context.transition_resource(back_buffer_texture, gapi_resource_state::present);
 			gai.finish_frame();

@@ -34,4 +34,8 @@ namespace r
 		gapi_dynamic::get().get_cmd_context().create_and_upload_texture(desc, mipmap_datas);
 	}
 
+	render_texture::render_texture(const std::shared_ptr<i::gapi_texture>& gapi_texture)
+		: m_gapi_texture(gapi_texture)
+	{
+	}
 }

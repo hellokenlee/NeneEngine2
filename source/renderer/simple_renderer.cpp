@@ -12,15 +12,14 @@
 simple_renderer::simple_renderer()
 	: renderer()
 	, m_base_pass_pipeline_state(nullptr)
-{
-	m_view = std::make_shared<r::render_view>();
-}
+{}
 
-void simple_renderer::render_view_family(const std::shared_ptr<i::gapi_texture>& view_family_texture)
+
+void simple_renderer::render_view_family(const r::render_view& view, const r::render_texture& view_family_texture)
 {
 	//
 	auto& context = gapi_dynamic::get().get_cmd_context();
-	context.clear_render_target(view_family_texture, color::rgba<float>({1.0f, 1.0f, 1.0f, 1.0f}));
+	context.clear_render_target(view_family_texture.get_texture(), color::rgba<float>({1.0f, 1.0f, 1.0f, 1.0f}));
 	
 	//
 	if (m_texture == nullptr)
@@ -50,12 +49,9 @@ void simple_renderer::render_view_family(const std::shared_ptr<i::gapi_texture>&
 		mesh_pso_desc.m_depth_stencil_format = gapi_pixel_format::unknown;
 		m_base_pass_pipeline_state = gapi_pipeline_state_manager::get().find_or_create_pipeline_state(mesh_pso_desc);
 	}
-
-	//
-	m_view->update_view_matrix(float3::zero(), rotator());
 	
 	{
-		auto _ = context.render_pass({view_family_texture});
+		auto _ = context.render_pass({view_family_texture.get_texture()});
 
 		// TODO: dynamic creation of mesh draw commands
 		// 发起一次绘制的流程
@@ -69,7 +65,7 @@ void simple_renderer::render_view_family(const std::shared_ptr<i::gapi_texture>&
 				context.set_vertex_buffer(cube->get_vertex_buffer(i));
 			}
 			// 3. 设置 Resource Binding
-			context.bind_constant_buffer(gapi_shader_stage::vertex_shader, 0, m_view->get_constant_buffer());
+			context.bind_constant_buffer(gapi_shader_stage::vertex_shader, 0, view.get_constant_buffer());
 			// 4. 发起绘制指令
 			context.draw_indexed(cube->num_index(), 1);
 		}

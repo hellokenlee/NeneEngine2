@@ -2,7 +2,9 @@
 
 #pragma once
 
-#include "gapi/gapi_resource.h"
+#include "core_render/render_view.h"
+#include "core_render/render_texture.h"
+
 
 namespace i
 {
@@ -13,6 +15,6 @@ namespace i
 		
 		virtual ~renderer() = default;
 
-		virtual void render_view_family(const std::shared_ptr<gapi_texture>& view_family_texture) = 0;
+		virtual void render_view_family(const r::render_view& view, const r::render_texture& view_family_texture) = 0;
 	};
 }

@@ -24,6 +24,7 @@ namespace r
 	{
 	public:
 		render_texture(const std::vector<image_data>& mipmaps);
+		render_texture(const std::shared_ptr<i::gapi_texture>& gapi_texture);
 
 		const std::shared_ptr<i::gapi_texture>& get_texture() const { return m_gapi_texture; }
 

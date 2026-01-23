@@ -2,9 +2,12 @@
 
 #include "client.h"
 #include "core/log.h"
+#include "core/event_id.h"
+#include "core_engine/input_manager.h"
+#include "engine/engine_loop.h"
+
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_surface.h>
-#include "engine/engine_loop.h"
 
 #ifdef NENE_PLATFORM_WINDOWS
 #include <Windows.h>
@@ -65,6 +68,48 @@ client::~client()
 	}
 }
 
+keyboard_event sdl_keyboard_event_to_key_event(const SDL_KeyboardEvent& sdl_event)
+{
+	// sdl key code to char
+	char key = 0;
+	if (sdl_event.key & SDLK_SCANCODE_MASK == 0)
+	{
+		key = static_cast<char>(sdl_event.key & SDLK_SCANCODE_MASK);
+	}
+	// sdl key mod to char
+	key_modifier mod = key_modifier::none;
+	if (sdl_event.mod & SDL_KMOD_CTRL)
+	{
+		mod &= key_modifier::ctrl;
+	}
+	if (sdl_event.mod & SDL_KMOD_ALT)
+	{
+		mod &= key_modifier::alt;
+	}
+	if (sdl_event.mod & SDL_KMOD_SHIFT)
+	{
+		mod &= key_modifier::shift;
+	}
+	if (sdl_event.mod & SDL_KMOD_CAPS)
+	{
+		mod &= key_modifier::caps;
+	}
+	if (sdl_event.mod & SDL_KMOD_NUM)
+	{
+		mod &= key_modifier::num;
+	}
+	if (sdl_event.mod & SDL_KMOD_GUI)
+	{
+		mod &= key_modifier::sys;
+	}
+	keyboard_event result;
+	result.m_id = event_id::keyboard_event;
+	result.m_key = key;
+	result.m_modifier = mod;
+	result.m_type = sdl_event.repeat ? key_event_type::on_key_repeated : (sdl_event.down ? key_event_type::on_key_pressed : key_event_type::on_key_released);
+	return result;
+}
+
 void client::update()
 {
 	//
@@ -80,6 +125,27 @@ void client::update()
 			int w, h;
 			SDL_GetWindowSize(m_window, &w, &h);
 			engine_loop::resize(uint2(static_cast<uint32_t>(w), static_cast<uint32_t>(h)));
+			break;
+		case SDL_EVENT_KEY_UP:
+		case SDL_EVENT_KEY_DOWN:
+			//
+			const auto& key_event = m_current_event.key;
+			// ignore other keys
+			if (key_event.key & SDLK_SCANCODE_MASK == 0)
+			{
+				input_manager::instance().notify(sdl_keyboard_event_to_key_event(key_event));
+			}
+			break;
+		case SDL_EVENT_MOUSE_MOTION:
+			//
+			const auto& motion_event = m_current_event.motion;
+			break;
+		case SDL_EVENT_MOUSE_WHEEL:
+			const auto& wheel_event = m_current_event.wheel;
+			break;
+		case SDL_EVENT_MOUSE_BUTTON_UP:
+		case SDL_EVENT_MOUSE_BUTTON_DOWN:
+			const auto& button_event = m_current_event.button;
 			break;
 		default:
 			break;
