@@ -1,5 +1,7 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
+// ReSharper disable CppClangTidyBugproneBranchClone
+// ReSharper disable CppRedundantTemplateKeyword
 #pragma once
 
 #include "core/core.h"
@@ -10,8 +12,43 @@
 #include <pybind11/functional.h>
 #include <pybind11/complex.h>
 
-namespace n
+/*	
+ *	Usage:
+ *		// In `*.h`
+ *		```c++
+ *		namespace nene::g
+ *		{
+ *			class my_class
+ *			{
+ *			public:
+ *				void func0();
+ *			};
+ *		}
+ *		```
+ *		
+ *		// In `*.meta.cpp`
+ *		```c++
+ *		namespace nene::g
+ *		{
+ *			META(m)
+ *			{
+ *				n::t::class_<my_class>("my_class", m)
+ *					.method("func0", &my_class::func0)
+ *				;
+ *			}
+ *		}
+ *		```
+ */
+namespace nene::g
 {
+	/** reflection basics */
+	namespace reflection
+	{
+		using type = ::rttr::type;
+		using variant = ::rttr::variant;
+	}
+
+	/** the singleton class for initializing reflections */
 	class NENE_API binding
 	{
 	public:
@@ -33,15 +70,6 @@ namespace n
 		std::vector<t_py_class_init_function> py_class_init_functions;
 	};
 
-	namespace reflection
-	{
-		using type = ::rttr::type;
-		using variant = ::rttr::variant;
-	}
-}
-
-namespace t::n
-{
 	template<typename t_cxx_class, typename... pyoptions>
 	class class_
 	{
@@ -176,28 +204,7 @@ namespace t::n
 	}
 }
 
-/*	
- *	Usage:
- *		// In `*.h`
- *		```c++
- *			class my_class
- *			{
- *			public:
- *				void func0();
- *			}
- *		```
- *		
- *		// In `*.meta.cpp`
- *		```c++
- *		NMETA(m)
- *		{
- *			n::t::class_<my_class>("my_class", m)
- *				.method("func0", &my_class::func0)
- *			;
- *		}
- *		```
- */
-#define NMETA(variable)																									\
+#define META(variable)																									\
 static void __nene_auto_register_func(::pybind11::module_*);															\
 namespace																												\
 {																														\
@@ -208,7 +215,7 @@ namespace																												\
 			/* 1st init for rttr */																						\
 			__nene_auto_register_func(nullptr); 																		\
 			/* 2nd init for pybind11 (deferred call) */																	\
-			::n::binding::get().add_py_class_init_function(__nene_auto_register_func);									\
+			binding::get().add_py_class_init_function(__nene_auto_register_func);										\
 		}																												\
 	};																													\
 }																														\

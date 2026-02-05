@@ -103,9 +103,6 @@ graph TD
   Core --> App
   CoreObject --> App
   Engine --> App
-  Core --> CoreEngine
-  CoreObject --> CoreEngine
-  CoreRender --> CoreEngine
   Core --> CoreObject
   CoreRender --> CoreObject
   Core --> CoreRender
@@ -131,7 +128,6 @@ graph TD
   Gapi --> GapiVulkan
   Core --> Renderer
   Gapi --> Renderer
-  CoreEngine --> Renderer
   CoreRender --> Renderer
   GapiDynamic --> Renderer
 ```

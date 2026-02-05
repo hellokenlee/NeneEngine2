@@ -2,23 +2,26 @@
 
 #pragma once
 
-#include "core/core.h"
-#include "camera.h"
 #include <chrono>
+#include <core/windll.h>
 
-namespace n
+namespace nene::g
+{
+	class camera;		
+}
+
+namespace nene
 {
 	class NENE_API engine
 	{
 	public:
-		engine() = default;
 		virtual ~engine() = default;
 
 		virtual void update(std::chrono::milliseconds delta) {}
 
-		const camera& get_camera() const { return m_camera; }
+		const g::camera& get_camera() const { return *m_camera; }
 
 	protected:
-		camera m_camera;
+		std::shared_ptr<g::camera> m_camera;
 	};
 }

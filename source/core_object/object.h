@@ -3,21 +3,23 @@
 #pragma once
 
 #include "meta.h"
-#include "serializable.h"
+#include "interface/serializable.h"
 
 
-namespace n
+namespace nene::g
 {
-	class NENE_API object: public i::serializable
+	/** Minimal base class for */
+	class NENE_API object: public serializable
 	{
 	public:
 		object()
-			: m_data0(456)
+			: serializable()
+			, m_data0(456)
 			, m_data1(234)
 		{}
 		~object() override = default;
 
-		void serialize(i::archive& ar) override;
+		void serialize(archive& ar) override;
 
 		void func0() const;
 

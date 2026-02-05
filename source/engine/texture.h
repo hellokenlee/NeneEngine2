@@ -6,14 +6,13 @@
 #include "core_render/render_texture.h"
 
 
-namespace n
+namespace nene::g
 {
-    /** A texture object for main thread */
+    /** A texture object for game thread */
     class NENE_API texture : public object
     {
     public:
         texture();
         
     };
-};
- 
+}

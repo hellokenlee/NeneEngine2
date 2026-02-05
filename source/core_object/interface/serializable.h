@@ -4,13 +4,14 @@
 
 #include "archive.h"
 
-
-namespace i
+namespace nene
 {
 	class serializable
 	{
 	public:
+		//
 		virtual ~serializable() = default;
+		//
 		virtual void serialize(archive& ar) = 0;
 	};
 }

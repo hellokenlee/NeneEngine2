@@ -4,7 +4,7 @@
 
 #include "core/core.h"
 
-namespace qt
+namespace nene::qt
 {
 	class NENE_API binding
 	{

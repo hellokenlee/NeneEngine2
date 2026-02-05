@@ -2,12 +2,10 @@
 
 #include "nene_viewport_widget.h"
 
-#include <qevent.h>
-
+#include <QtGui/qevent.h>
+#include <QtGui/QWindow>
 #include "engine/engine_loop.h"
 
-#include <QtGui/QWindow>
-#include <rttr/detail/type/type_name.h>
 
 constexpr int EDITOR_FRAME_PER_SECOND    = 60.0f;
 constexpr int EDITOR_MILLISECOND_PER_FRAME = static_cast<int>((1.0f / EDITOR_FRAME_PER_SECOND) * 1000.0f);
@@ -37,10 +35,10 @@ bool NeneViewportWidget::event(QEvent* e)
 
 void NeneViewportWidget::showEvent(QShowEvent* event)
 {
-	if (!engine_loop::is_initialized())
+	if (!nene::engine_loop::is_initialized())
 	{
-		engine_loop::initialize(reinterpret_cast<void*>(winId()), uint2(static_cast<uint32_t>(size().width()), static_cast<uint32_t>(size().height())));
-		connect(&m_engine_tick_timer, &QTimer::timeout, &engine_loop::tick);
+		nene::engine_loop::initialize(reinterpret_cast<void*>(winId()), uint2(static_cast<uint32_t>(size().width()), static_cast<uint32_t>(size().height())));
+		connect(&m_engine_tick_timer, &QTimer::timeout, &nene::engine_loop::tick);
 		m_engine_tick_timer.start(EDITOR_MILLISECOND_PER_FRAME);
 	}
 	
@@ -63,9 +61,9 @@ void NeneViewportWidget::resizeEvent(QResizeEvent* event)
 	//
 	QWidget::resizeEvent(event);
 	// tell engine to resize the swap chain
-	if (engine_loop::is_initialized())
+	if (nene::engine_loop::is_initialized())
 	{
-		engine_loop::resize(uint2(static_cast<uint32_t>(event->size().width()), static_cast<uint32_t>(event->size().height())));
+		nene::engine_loop::resize(uint2(static_cast<uint32_t>(event->size().width()), static_cast<uint32_t>(event->size().height())));
 	}
 }
 

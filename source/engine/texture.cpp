@@ -2,9 +2,9 @@
 
 #include "texture.h"
 
-namespace n
+namespace nene::g
 {
 	texture::texture()
 	{
 	}
-};
+}

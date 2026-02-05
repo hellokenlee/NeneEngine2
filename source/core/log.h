@@ -12,11 +12,7 @@
 #include <source_location>
 
 #include "platform.h"
-
-namespace i
-{
-	class log_handler;	
-}
+#include "interface/log_handler.h"
 
 /**
  * Level of each log
@@ -48,15 +44,15 @@ public:
 	bool should_log(const log_level& level) const { return m_enabled_level >= level; }
 
 	/** Handler operations */
-	static void add_handler(const std::shared_ptr<i::log_handler>& handler);
-	static void remove_handler(const std::shared_ptr<i::log_handler>& handler);
+	static void add_handler(const std::shared_ptr<nene::log_handler>& handler);
+	static void remove_handler(const std::shared_ptr<nene::log_handler>& handler);
 	
 protected:
 	//
 	std::string m_name;
 	log_level m_enabled_level = info;
 	//
-	static std::set<std::shared_ptr<i::log_handler>> s_handlers;
+	static std::set<std::shared_ptr<nene::log_handler>> s_handlers;
 };
 
 /**

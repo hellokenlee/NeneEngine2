@@ -1,25 +1,22 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #include "meta.h"
-
 #include <pybind11/embed.h>
-
-#include "pybind11/pybind11.h"
-#include "object.h"
+#include <pybind11/pybind11.h>
 
 namespace
 {
 	PYBIND11_MODULE(nene, m)
 	{
 		// Do python class bindings initialization
-		for (const auto& py_init_function : n::binding::get().get_py_class_init_functions())
+		for (const auto& py_init_function : nene::g::binding::get().get_py_class_init_functions())
 		{
 			py_init_function(&m);
 		}
 	}
 }
 
-namespace n
+namespace nene::g
 {
 	binding& binding::get()
 	{

@@ -4,9 +4,14 @@
 
 #include <cstdint>
 
-enum class event_id : uint32_t
+namespace nene
 {
-	empty_event = 0,
-	keyboard_event,
-	mouse_event,
-};
+	enum class event_id : uint16_t
+	{
+		empty_event = 0,
+		keyboard_event,
+		mouse_event,
+
+		/** ... add new event here ... */
+	};	
+}

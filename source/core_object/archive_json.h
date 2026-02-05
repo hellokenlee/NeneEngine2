@@ -2,16 +2,16 @@
 
 #pragma once
 
-#include "archive.h"
+#include "interface/archive.h"
 
-
-class json_writer : public i::archive
+namespace nene::g
 {
+	class json_writer : public archive
+	{
 	
-};
-
-
-class json_reader : public i::archive
-{
+	};
+	class json_reader : public archive
+	{
 	
-};
+	};
+}

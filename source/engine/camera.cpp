@@ -2,9 +2,9 @@
 
 #include "camera.h"
 #include "core/event_id.h"
-#include "core_engine/input_manager.h"
+#include "input_manager.h"
 
-namespace n
+namespace nene::g
 {
 	camera::camera()
 	{

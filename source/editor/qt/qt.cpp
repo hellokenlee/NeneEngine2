@@ -6,7 +6,7 @@
 
 extern "C" NENE_API PyObject* NENE_CAT(PyInit_, NENE_EDITOR_MODULE_NAME)();
 
-namespace qt
+namespace nene::qt
 {
 	binding& binding::get()
 	{

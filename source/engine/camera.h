@@ -6,7 +6,7 @@
 #include "core_object/object.h"
 #include "core_render/render_view.h"
 
-namespace n
+namespace nene::g
 {
 	class NENE_API camera: public object, public event_listener
 	{

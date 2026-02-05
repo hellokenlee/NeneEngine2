@@ -2,14 +2,14 @@
 
 #include "client.h"
 #include "core/log.h"
-#include "core/log_handler.h"
+#include "core/stdout_log_handler.h"
 
 int main()
 {
 	// 
-	logger::add_handler(std::make_shared<stdout_log_handler>());
+	logger::add_handler(std::make_shared<nene::stdout_log_handler>());
 	// create client
-	client runtime_client;
+	nene::client runtime_client;
 	if (runtime_client.get_window() == nullptr)
 	{
 		return -1;

@@ -15,7 +15,7 @@ bool is_in_render_threads()
 	
 }
 
-bool is_in_main_thread()
+bool is_in_game_thread()
 {
 	
 }

@@ -5,7 +5,6 @@
 from source import *
 from source.core import Core
 from source.gapi import Gapi
-from source.core_engine import CoreEngine
 from source.core_render import CoreRender
 from source.gapi_dynamic import GapiDynamic
 
@@ -18,7 +17,6 @@ class Renderer(NeneModule):
 			[
 				Core,
 				Gapi,
-				CoreEngine,
 				CoreRender,
 				GapiDynamic,
 			]

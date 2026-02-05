@@ -3,14 +3,14 @@
 #include <filesystem>
 
 #include "qt/qt.h"
-#include "core/log_handler.h"
+#include "core/stdout_log_handler.h"
 #include "core_object/object.h"
 
 int main()
 {
 	//
-	n::binding::get().initialize();
-	qt::binding::get().initialize();
+	nene::g::binding::get().initialize();
+	nene::qt::binding::get().initialize();
 	//
 	auto py_home = std::filesystem::path(NENE_PYTHON_HOME).wstring();
 	PyConfig config;

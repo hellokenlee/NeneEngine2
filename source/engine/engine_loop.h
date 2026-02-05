@@ -2,28 +2,41 @@
 
 #pragma once
 
-#include "core/core.h"
-#include "renderer/renderer.h"
-#include "engine.h"
+#include <memory>
+#include "core/windll.h"
+#include "core/math/numeric.h"
 
-class NENE_API engine_loop
+namespace i
 {
-public:
-	// This is a static class
-	engine_loop() = delete;
-	~engine_loop() = delete;
+	class renderer;
+}
+
+namespace nene
+{
+	class engine;
+}
+
+namespace nene
+{
+	class NENE_API engine_loop
+	{
+	public:
+		// This is a static class
+		engine_loop() = delete;
+		~engine_loop() = delete;
 	
-	static void initialize(void* window, const uint2& window_size);
+		static void initialize(void* window, const uint2& window_size);
 
-	static void tick();
+		static void tick();
 
-	static void resize(const uint2& new_window_size);
+		static void resize(const uint2& new_window_size);
 
-	static void shutdown();
+		static void shutdown();
 
-	static bool is_initialized();
+		static bool is_initialized();
 
-protected:
-	static std::shared_ptr<n::engine> m_engine;
-	static std::shared_ptr<i::renderer> m_renderer;
-};
+	protected:
+		static std::shared_ptr<engine> m_engine;
+		static std::shared_ptr<i::renderer> m_renderer;
+	};
+}
