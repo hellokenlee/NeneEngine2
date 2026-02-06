@@ -94,12 +94,16 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 
 	def __init__(self):
 		self.nene_module_classes: list[type[NeneModule]] = []
+		# 修改 Rider 调试的 PATH 环境变量
+		self._rider_hack_envs: dict[str, dict[str, dict[str, str]]] = {}
 		pass
 
 	def generate(self, nene_module_classes: list[type[NeneModule]]):
 		self.nene_module_classes = nene_module_classes
 		for nene_module_class in nene_module_classes:
 			self._generate_vcxproj_file(nene_module_class())
+		#
+		self._hack_rider_environment_variables(self._rider_hack_envs)
 		pass
 
 	def _generate_vcxproj_file(self, nene_module: NeneModule):
@@ -251,8 +255,6 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 
 	def _add_property_group_per_configuration(self, vcproj_tree: ElementTree.ElementTree, nene_module: NeneModule, nene_module_configs: list[NeneModuleConfig]):
 		#
-		rider_hack_envs: dict[str, dict[str, dict[str, str]]] = {}
-		#
 		for config in nene_module_configs:
 			property_group = ElementTree.SubElement(vcproj_tree.getroot(), VcTag.PropertyGroup)
 			property_group.attrib[VcAttrib.Condition] = "\'$(Configuration)|$(Platform)\'==\'%s|%s\'" % (config.configuration.name, config.architecture.name)
@@ -318,9 +320,7 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 						envs = {
 							"PATH": "%s;$PATH$" % exec_paths_str
 						}
-						rider_hack_envs.setdefault(nene_module.name, {})[config.configuration.name] = envs
-		#
-		self._hack_rider_environment_variables(rider_hack_envs)
+						self._rider_hack_envs.setdefault(nene_module.name, {})[config.configuration.name] = envs
 		pass
 
 	@staticmethod
@@ -334,6 +334,7 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 
 	@staticmethod
 	def _hack_rider_environment_variables(envs: dict[str, dict[str, dict[str, str]]]):
+		# 修改 [Run] - [Edit Configurations...] - [Environment variables] 的值
 		rider_workspace_abs_path = os.path.join(BuildConfiguration().engine_root_abs_path, ".idea", ".idea.NeneEngine2", ".idea", "workspace.xml")
 		if os.path.exists(rider_workspace_abs_path):
 			tree = ElementTree.parse(rider_workspace_abs_path)
@@ -349,6 +350,7 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 								if configuration_n.tag.startswith("configuration"):
 									debug_or_release = configuration_n.find("option").attrib["value"]
 									if module_name in envs and debug_or_release in envs[module_name]:
+										log("Hack rider module: %s" % module_name)
 										element = configuration_n.find("envs")
 										if element is None:
 											element = ElementTree.SubElement(configuration_n, "envs")
@@ -359,6 +361,7 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 			content = '<?xml version="1.0" encoding="UTF-8"?>\n' + content.replace("&amp;", "&")
 			with open(rider_workspace_abs_path, "w") as fp:
 				fp.write(content)
+			log("Hack rider workspace: %s" % rider_workspace_abs_path)
 		pass
 
 	@staticmethod

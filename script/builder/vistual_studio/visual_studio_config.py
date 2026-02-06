@@ -3,6 +3,7 @@
 # __email__ = "hellokenlee@163.com"
 
 import os
+import json
 import subprocess
 import packaging.version
 
@@ -14,26 +15,27 @@ class VisualStudioConfig(metaclass=Singleton):
 	# The first VisualStudio2022.17.2 version
 	# Refs: https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-history
 	MIN_VS_VERSION = "17.2.32505.173"
+	MAX_VS_VERSION = "18.0"
 	MICROSOFT_SDKS = "Microsoft SDKs"
 	WINDOWS_KITS = "Windows Kits"
 
 	def __init__(self):
 		super(VisualStudioConfig, self).__init__()
 		#
-		self.visual_studio_attributes: dict[str, str] = {}
+		self._current_visual_studio_attributes: dict = {}
 		self._window_sdk_version = ""
 		self._windows_sdk_install_path = ""
 		#
-		vswhere_abs_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "tool", "vswhere.exe")
+		vswhere_abs_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "tool", "vswhere.exe -sort -format json -version [%s, %s)" % (self.MIN_VS_VERSION, self.MAX_VS_VERSION))
 		result = subprocess.run([vswhere_abs_path], capture_output=True, text=True, check=True)
 		# multi instances
-		infos = result.stdout.split("\n\n")
+		vs_infos = json.loads(result.stdout)
 		# first section is copyright
-		assert len(infos) > 1
-		for line in infos[1].split("\n"):
-			key_value = line.split(": ")
-			if len(key_value) == 2:
-				self.visual_studio_attributes[key_value[0]] = key_value[1]
+		assert len(vs_infos) > 0, "Visual Studio not found! NeneEngine Erequires Visual Studio 2022 to build."
+		log("Found Visual Studio:")
+		for vs_info in vs_infos:
+			log("\t%s" % vs_info["installationName"])
+		self._current_visual_studio_attributes = vs_infos[0]
 		#
 		self._windows_sdk_install_path = os.path.join(os.getenv("ProgramFiles"), self.WINDOWS_KITS)
 		if not os.path.exists(self._windows_sdk_install_path):
@@ -52,7 +54,7 @@ class VisualStudioConfig(metaclass=Singleton):
 		#
 		self._msvc_version = "uninstalled"
 		self._msvc_install_path = "uninstalled"
-		msvc_parent_dir_abs_path = os.path.join(self.visual_studio_attributes["installationPath"], "VC", "Tools", "MSVC")
+		msvc_parent_dir_abs_path = os.path.join(self._current_visual_studio_attributes["installationPath"], "VC", "Tools", "MSVC")
 		versions = []
 		if os.path.exists(msvc_parent_dir_abs_path):
 			for version in os.listdir(msvc_parent_dir_abs_path):
@@ -69,10 +71,10 @@ class VisualStudioConfig(metaclass=Singleton):
 		pass
 
 	def visual_studio_version(self):
-		return self.visual_studio_attributes["installationVersion"]
+		return self._current_visual_studio_attributes["installationVersion"]
 
 	def visual_studio_install_path(self):
-		return self.visual_studio_attributes["installationPath"]
+		return self._current_visual_studio_attributes["installationPath"]
 
 	def windows_sdk_version(self):
 		return self._window_sdk_version
