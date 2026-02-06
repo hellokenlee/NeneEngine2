@@ -1,6 +1,6 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
-#include "meta.h"
+#include "py.h"
 #include <pybind11/embed.h>
 #include <pybind11/pybind11.h>
 
@@ -11,7 +11,7 @@ namespace
 		// Do python class bindings initialization
 		for (const auto& py_init_function : nene::g::binding::get().get_py_class_init_functions())
 		{
-			py_init_function(&m);
+			py_init_function(m);
 		}
 	}
 }
@@ -41,10 +41,18 @@ namespace nene::g
 		{
 			::pybind11::pybind11_fail("Can't add new modules after the interpreter has been initialized");
 		}
-		auto result = PyImport_AppendInittab("nene", PyInit_nene);
+		auto result = PyImport_AppendInittab(PY_NENE_MODULE_NAME, PyInit_nene);
 		if (result == -1)
 		{
 			::pybind11::pybind11_fail("Insufficient memory to add a new module");
 		}
+	}
+
+	py::object reflection::get_class(const std::string& name)
+	{
+		py::gil_scoped_acquire gil;
+		py::module_ m = py::module_::import(binding::PY_NENE_MODULE_NAME);
+		py::object cls = m.attr(name.c_str());
+		return cls;
 	}
 }

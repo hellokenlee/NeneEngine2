@@ -1,7 +1,7 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #include "object.h"
-#include "meta.h"
+#include "py.h"
 #include "core/core.h"
 
 static logger object_("object");
@@ -29,14 +29,14 @@ namespace nene::g
 	{
 		//
 		log(object_, info, "object::test()::call method by string");
-		reflection::type nobject_t = reflection::type::get_by_name("object");
-		reflection::variant obj = nobject_t.create({12});
-		nobject_t.invoke("func0", obj, {});
-		nobject_t.invoke("func1", obj, { 233 });
+		reflection::type obj_class = reflection::get_class("Object");
+		reflection::variant obj = reflection::create(obj_class, 12);
+		reflection::invoke(obj, "func0");
+		reflection::invoke(obj, "func1", py::make_tuple(233));
 		//
 		log(object_, info, "object::test()::call method by get object");
-		auto& obj2 = obj.get_value<object>();
-		obj2.func0();
-		obj2.func1(12345);
+		auto& cxx_obj = obj.cast<object&>();
+		cxx_obj.func0();
+		cxx_obj.func1(12345);
 	}
 }

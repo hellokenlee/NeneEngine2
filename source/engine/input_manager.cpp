@@ -6,7 +6,7 @@ namespace nene
 {
 	input_manager& input_manager::instance()
 	{
-		input_manager _instance;
+		static input_manager _instance;
 		return _instance;
 	}
 }

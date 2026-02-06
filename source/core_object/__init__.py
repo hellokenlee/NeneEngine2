@@ -5,7 +5,6 @@
 from source import *
 from source.core import Core
 from source.core_render import CoreRender
-from extern.rttr import Rttr
 from extern.python3 import Python3
 from extern.pybind11 import Pybind11
 from extern.nlohmann_json import NlohmannJson
@@ -19,6 +18,6 @@ class CoreObject(NeneModule):
             [Core, CoreRender]
         )
         self.external_dependencies.extend(
-            [Rttr, Python3, Pybind11, NlohmannJson]
+            [Python3, Pybind11, NlohmannJson]
         )
         pass

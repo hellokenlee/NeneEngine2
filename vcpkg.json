@@ -5,7 +5,6 @@
     "nlohmann-json",
     "pybind11",
     "python3",
-    "rttr",
     "qtbase",
     "stb",
     "sdl3"

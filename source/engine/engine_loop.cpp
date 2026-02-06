@@ -1,6 +1,7 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #include "engine_loop.h"
+#include "engine.h"
 #include "core/core.h"
 #include "core_render/render_resource.h"
 #include "gapi_dynamic/gapi_dynamic.h"

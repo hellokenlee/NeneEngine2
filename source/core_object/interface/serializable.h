@@ -3,10 +3,11 @@
 #pragma once
 
 #include "archive.h"
+#include "core/windll.h"
 
 namespace nene
 {
-	class serializable
+	class NENE_API serializable
 	{
 	public:
 		//
