@@ -10,7 +10,7 @@ class Platform(Enum):
 	Mac = "mac"
 	Ios = "ios"
 	Android = "android"
-	Linux = "linx"
+	Linux = "linux"
 
 	def get_static_library_extension(self) -> str:
 		if self == Platform.Windows:
