@@ -26,7 +26,7 @@ class VisualStudioSolutionGenerator(ProjectGenerator):
 		# Generate `.sln` file
 		solution = Solution()
 		solution.format.version = "12.00"
-		solution.comment.version = "17"
+		solution.comment.version = VisualStudioConfig().visual_studio_version().split(".")[0]
 		solution.vs_version.value = VisualStudioConfig().visual_studio_version()
 		solution.min_vs_version.value = VisualStudioConfig.MIN_VS_VERSION
 
@@ -62,9 +62,9 @@ class VisualStudioSolutionGenerator(ProjectGenerator):
 					config_platforms.append("%s|%s" % (con.name, arch.name))
 			pass
 
-		try_add_config(Configuration.Debug, Architecture.x64)
+		try_add_config(Configuration.Development, Architecture.x64)
 		try_add_config(Configuration.Release, Architecture.x64)
-		try_add_config(Configuration.Debug, Architecture.x86)
+		try_add_config(Configuration.Development, Architecture.x86)
 		try_add_config(Configuration.Release, Architecture.x86)
 
 		for config_platform in config_platforms:

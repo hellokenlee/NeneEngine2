@@ -27,44 +27,44 @@ class VcpkgPackage(NeneDenepndency, metaclass=Singleton):
 		return os.path.join(engine_root, VcpkgPackage.PACKAGE_INSTALL_ROOT)
 
 	def tools_abs_path(self, plat: Platform, arch: Architecture) -> str:
-		platform_dirname = self.__platform_dirname(plat, arch)
+		platform_dirname = self._platform_dirname(plat, arch)
 		return os.path.join(self.root_abs_path(), platform_dirname, "tools")
 
 	def get_include_abs_paths(self, plat: Platform, arch: Architecture, con: Configuration) -> list[str]:
 		engine_root = BuildConfiguration().engine_root_abs_path
-		platform_dirname = self.__platform_dirname(plat, arch)
+		platform_dirname = self._platform_dirname(plat, arch)
 		return [os.path.abspath(os.path.join(engine_root, self.PACKAGE_INSTALL_ROOT, platform_dirname, "include"))]
 
 	def get_static_library_filenames(self, plat: Platform, arch: Architecture, con: Configuration) -> list[str]:
 		result = []
-		directory_rel_path = posix_path(os.path.join(self.__platform_dirname(plat, arch, con), "lib"))
-		for filename in self._file_list[self.__platform_dirname(plat, arch)]:
+		directory_rel_path = posix_path(os.path.join(self._platform_dirname(plat, arch, con), "lib"))
+		for filename in self._file_list[self._platform_dirname(plat, arch)]:
 			if filename.startswith(directory_rel_path) and filename.endswith(plat.get_static_library_extension()):
 				result.append(os.path.basename(filename))
 		return result
 
 	def get_static_library_directory_abs_paths(self, plat: Platform, arch: Architecture, con: Configuration) -> list[str]:
 		engine_root = BuildConfiguration().engine_root_abs_path
-		platform_dirname = self.__platform_dirname(plat, arch, con)
+		platform_dirname = self._platform_dirname(plat, arch, con)
 		return [os.path.abspath(os.path.join(engine_root, self.PACKAGE_INSTALL_ROOT, platform_dirname, "lib"))]
 
 	def get_dynamic_library_filenames(self, plat: Platform, arch: Architecture, con: Configuration) -> list[str]:
 		result = []
-		directory_rel_path = posix_path(os.path.join(self.__platform_dirname(plat, arch, con), "bin"))
-		for filename in self._file_list[self.__platform_dirname(plat, arch)]:
+		directory_rel_path = posix_path(os.path.join(self._platform_dirname(plat, arch, con), "bin"))
+		for filename in self._file_list[self._platform_dirname(plat, arch)]:
 			if filename.startswith(directory_rel_path) and filename.endswith(plat.get_dynamic_library_extension()):
 				result.append(os.path.basename(filename))
 		return result
 
 	def get_dynamic_library_directory_abs_paths(self, plat: Platform, arch: Architecture, con: Configuration) -> list[str]:
 		engine_root = BuildConfiguration().engine_root_abs_path
-		platform_dirname = self.__platform_dirname(plat, arch, con)
+		platform_dirname = self._platform_dirname(plat, arch, con)
 		return [os.path.abspath(os.path.join(engine_root, self.PACKAGE_INSTALL_ROOT, platform_dirname, "bin"))]
 
 	@staticmethod
-	def __platform_dirname(plat: Platform, arch: Architecture, con: Configuration = Configuration.Release) -> str:
+	def _platform_dirname(plat: Platform, arch: Architecture, _con: Configuration = Configuration.Release) -> str:
 		name = "%s-%s" % (arch.name, plat.value)
-		return name if con == Configuration.Release else os.path.join(name, "debug")
+		return name
 
 	@staticmethod
 	def __python_package_to_vcpkg_package_name(package_name: str) -> str:

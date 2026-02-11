@@ -13,6 +13,10 @@ class QtBase(VcpkgPackage):
 	def get_moc_abs_path(self):
 		return os.path.join(self.tools_abs_path(Platform.Windows, Architecture.x64), "Qt6", "bin", "moc.exe")
 
+	def get_plugin_abs_path(self):
+		platform_dirname = self._platform_dirname(Platform.Windows, Architecture.x64)
+		return os.path.join(self.root_abs_path(), platform_dirname, "Qt6", "plugins")
+
 	def get_include_abs_paths(self, plat: Platform, arch: Architecture, con: Configuration) -> list[str]:
 		assert len(super().get_include_abs_paths(plat, arch, con)) == 1
 		qt_root_include_abs_path = os.path.join(super().get_include_abs_paths(plat, arch, con)[0], "Qt6")

@@ -13,10 +13,17 @@ from script.builder.common.singleton import Singleton
 
 
 class CppStandard(Enum):
-	Cpp11 = 11
-	Cpp14 = 14
-	Cpp17 = 17
-	Cpp20 = 20
+	Cpp11 = "11"
+	Cpp14 = "14"
+	Cpp17 = "17"
+	Cpp20 = "20"
+
+
+class CppOptimazation(Enum):
+	Disabled = "Disabled"
+	MinSpace = "MinSpace"
+	MaxSpeed = "MaxSpeed"
+	Full = "Full"
 
 
 class BuildTarget(Enum):
@@ -41,6 +48,8 @@ class Compiler(object):
 		self.disabled_warnings: list[int] = []
 		self.preprocessor_definitions: list[str] = []
 		self.additional_compiler_flags: list[str] = []
+		#
+		self.optimazation: CppOptimazation = CppOptimazation.Full
 		# MSVC
 		self.msvc_conformance_mode: bool = True
 		self.msvc_security_development_lifecycle: bool = True
@@ -73,9 +82,9 @@ class BuildConfig(object):
 class NeneModuleConfig(object):
 
 	def __init__(self, build_config: BuildConfig):
-		self.compiler = Compiler()
-		self.linker = Linker()
-		self.build_config = build_config
+		self.compiler: Compiler = Compiler()
+		self.linker: Linker = Linker()
+		self.build_config: BuildConfig = build_config
 		pass
 
 	@property
@@ -132,14 +141,13 @@ class NeneModule(object, metaclass=Singleton):
 		module_config = NeneModuleConfig(build_config)
 		# Default Settings
 		module_config.compiler.disabled_warnings.extend({4251, 4819})
-		if build_config.configuration == Configuration.Debug:
+		if build_config.configuration == Configuration.Development:
 			#
-			module_config.add_defines(["NENE_DEBUG", "_CONSOLE", "NOMINMAX", "_ITERATOR_DEBUG_LEVEL=0"])
-			# See `pyconfig.h`::303
-			# 我们会手动指定链接库, 不需要 python 在代码里面使用 `pragma comment(lib, xxx)` 方式进行指定
-			module_config.add_defines(["Py_NO_LINK_LIB"])
+			module_config.add_defines(["NENE_DEVELOPMENT", "_CONSOLE", "NOMINMAX"])
+			module_config.compiler.optimazation = CppOptimazation.Disabled
 			module_config.compiler.msvc_conformance_mode = False
 			#
+			module_config.linker.generate_debug_info = True
 			module_config.linker.msvc_com_dat_folding = False
 			module_config.linker.msvc_optimize_references = False
 		else:
@@ -148,6 +156,7 @@ class NeneModule(object, metaclass=Singleton):
 			module_config.compiler.msvc_function_level_linking = True
 			module_config.compiler.msvc_intrinsic_functions = True
 			#
+			module_config.linker.generate_debug_info = False
 			module_config.linker.msvc_com_dat_folding = True
 			module_config.linker.msvc_optimize_references = True
 		#

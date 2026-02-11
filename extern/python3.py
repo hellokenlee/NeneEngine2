@@ -18,10 +18,3 @@ class Python3(VcpkgPackage):
 	def get_include_abs_paths(self, plat: Platform, arch: Architecture, con: Configuration) -> list[str]:
 		assert len(super().get_include_abs_paths(plat, arch, con)) == 1
 		return [os.path.join(super().get_include_abs_paths(plat, arch, con)[0], "python3.12")]
-
-	def get_dynamic_library_directory_abs_paths(self, plat: Platform, arch: Architecture, con: Configuration) -> list[str]:
-		if con == Configuration.Debug:
-			result = super().get_dynamic_library_directory_abs_paths(plat, arch, Configuration.Debug)
-			result.extend(super().get_dynamic_library_directory_abs_paths(plat, arch, Configuration.Release))
-			return result
-		return super().get_dynamic_library_directory_abs_paths(plat, arch, Configuration.Debug)

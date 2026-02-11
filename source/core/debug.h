@@ -15,15 +15,15 @@
 #define NOT_IMPLEMENTED() DEBUG_BREAK()
 
 //
-#ifdef NENE_DEBUG
+#ifdef NENE_DEVELOPMENT
 	#define CHECK(expr) CHECK_IMPL(expr)
 	#define CHECK_HINTS(expr, hints) CHECK_HINTS_IMPL(expr, hints)
 	#define ENSURE(expr) CHECK(expr) 
-#else  // NENE_DEBUG
+#else  // NENE_DEVELOPMENT
 	#define CHECK(expr) 
 	#define CHECK_HINTS(expr, hints)
 	#define ENSURE(expr) (void)(expr)
-#endif // NENE_DEBUG
+#endif // NENE_DEVELOPMENT
 
 NENE_API void check_failed(const std::string& filename, uint32_t line, const std::string& expression);
 

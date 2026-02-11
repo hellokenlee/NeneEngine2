@@ -11,6 +11,7 @@ from script.builder.common import utils
 from script.builder.common.nene_module import *
 from script.builder.common.build_configuration import BuildConfiguration
 from script.builder.common.module_generator import ModuleGenerator
+from script.builder.vistual_studio.visual_studio_config import VisualStudioConfig
 
 
 class VcTag(object):
@@ -52,6 +53,7 @@ class VcTag(object):
 	VcpkgEnableManifest = "VcpkgEnableManifest"
 	LocalDebuggerCommand = "LocalDebuggerCommand"
 	LocalDebuggerEnvironment = "LocalDebuggerEnvironment"
+	LocalDebuggerWorkingDirectory = "LocalDebuggerWorkingDirectory"
 	pass
 
 class VcAttrib(object):
@@ -112,7 +114,7 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 		print("[NBT] Generate: %s" % vcxproj_file_abs_path)
 		#
 		nene_module_configs: list[NeneModuleConfig] = []
-		possible_cons = [Configuration.Debug, Configuration.Release]
+		possible_cons = [Configuration.Development, Configuration.Release]
 		possible_archs = [Architecture.x64, Architecture.x86]
 		for con in possible_cons:
 			for arch in possible_archs:
@@ -207,9 +209,8 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 			property_group.attrib[VcAttrib.Condition] = "\'$(Configuration)|$(Platform)\'==\'%s|%s\'" % (nene_module_config.configuration.name, nene_module_config.architecture.name)
 			property_group.attrib[VcAttrib.Label] = "Configuration"
 			ElementTree.SubElement(property_group, VcTag.ConfigurationType).text = "Application" if nene_module.build_target == BuildTarget.EXE else "DynamicLibrary"
-			ElementTree.SubElement(property_group, VcTag.UseDebugLibraries).text = "true" if nene_module_config.configuration == Configuration.Debug else "false"
-			# TODO: Use VisualStudioConfig's value
-			ElementTree.SubElement(property_group, VcTag.PlatformToolset).text = "v143"
+			ElementTree.SubElement(property_group, VcTag.UseDebugLibraries).text = "false"
+			ElementTree.SubElement(property_group, VcTag.PlatformToolset).text = VisualStudioConfig().msbuild_toolset_version()
 			# FIXME: 使用 /GL 会导致 pybind11 编译错误:
 			# refs: https://github.com/pybind/pybind11/pull/5939
 			if nene_module_config.configuration == Configuration.Release:
@@ -306,6 +307,7 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 						exec_paths.add(directory)
 				exec_paths_str = ";".join(exec_paths)
 				ElementTree.SubElement(property_group, VcTag.LocalDebuggerEnvironment).text = "PATH=%s;%%(PATH)" % exec_paths_str
+				ElementTree.SubElement(property_group, VcTag.LocalDebuggerWorkingDirectory).text = "$(SolutionDir)"
 				# 如果是 Rider 目前还不支持 `LocalDebuggerEnvironment` 手动写入 .env 文件
 				# refs: https://youtrack.jetbrains.com/issue/RIDER-101684/Respect-LocalDebuggerEnvironment-from-.vcxproj.user-file
 				target_exec_folder_abs_path = nene_module.target_exec_folder_abs_path(config.architecture, config.configuration)
@@ -337,6 +339,9 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 		# 修改 [Run] - [Edit Configurations...] - [Environment variables] 的值
 		rider_workspace_abs_path = os.path.join(BuildConfiguration().engine_root_abs_path, ".idea", ".idea.NeneEngine2", ".idea", "workspace.xml")
 		if os.path.exists(rider_workspace_abs_path):
+			#
+			log("Hack rider workspace: %s" % rider_workspace_abs_path)
+			#
 			tree = ElementTree.parse(rider_workspace_abs_path)
 			#
 			for comp in tree.findall("component"):
@@ -350,7 +355,7 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 								if configuration_n.tag.startswith("configuration"):
 									debug_or_release = configuration_n.find("option").attrib["value"]
 									if module_name in envs and debug_or_release in envs[module_name]:
-										log("Hack rider module: %s" % module_name)
+										log("Hack rider module: %s-%s" % (module_name, debug_or_release))
 										element = configuration_n.find("envs")
 										if element is None:
 											element = ElementTree.SubElement(configuration_n, "envs")
@@ -361,7 +366,6 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 			content = '<?xml version="1.0" encoding="UTF-8"?>\n' + content.replace("&amp;", "&")
 			with open(rider_workspace_abs_path, "w") as fp:
 				fp.write(content)
-			log("Hack rider workspace: %s" % rider_workspace_abs_path)
 		pass
 
 	@staticmethod
@@ -391,6 +395,7 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 			disabled_warnings = list(map(str, compiler.disabled_warnings))
 			disabled_warnings.append("%(DisableSpecificWarnings)")
 			ElementTree.SubElement(cl_compile, "DisableSpecificWarnings").text = ";".join(disabled_warnings)
+			ElementTree.SubElement(cl_compile, "Optimization").text = compiler.optimazation.value
 			ElementTree.SubElement(cl_compile, "AdditionalOptions").text = " ".join(compiler.additional_compiler_flags)
 			# Linker Settings
 			linker = nene_module_config.linker

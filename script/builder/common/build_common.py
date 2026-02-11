@@ -2,7 +2,7 @@
 # __author__ = "KenLee"
 # __email__ = "hellokenlee@163.com"
 
-from enum import Enum, IntFlag, auto
+from enum import Enum, IntFlag, auto, IntEnum
 
 
 class Platform(Enum):
@@ -36,6 +36,11 @@ class Architecture(IntFlag):
 
 
 class Configuration(IntFlag):
-	Debug = auto()
+	"""
+		We don't support `Debug` configuration because the windows runtime library is different.
+		We cannot enforce all 3-party libraries we use are built in debug, especially those we install with `pip`.
+		Hence, we use `Development` ( or `RelWithDebugInfo` in CMAKE ) to avoid this situation.
+	"""
 	Release = auto()
-	All = Debug | Release
+	Development = auto()
+	All = Release | Development

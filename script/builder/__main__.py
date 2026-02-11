@@ -9,7 +9,7 @@
 		Run `py script/builder` in NeneEngine root.
 	
 """
-__version__ = '0.2.0'
+__version__ = '0.3.0'
 
 import os
 import sys
@@ -52,7 +52,7 @@ def main():
 	BuildConfiguration().platform = Platform[cmdargs.platform]
 	BuildConfiguration().architecture = Architecture[cmdargs.arch]
 	BuildConfiguration().configuration = Configuration[cmdargs.config]
-	log("Current Settings Platform: <%s>, Arch: <%s>, Config: <%s>" % (BuildConfiguration().platform.name, BuildConfiguration().architecture.name, BuildConfiguration().configuration.name))
+	log("Current Triplet: Platform <%s>, Arch <%s>, Config <%s>" % (BuildConfiguration().platform.name, BuildConfiguration().architecture.name, BuildConfiguration().configuration.name))
 
 	# Nene Engine Root
 	engine_root_abs_path = os.path.abspath(".")
