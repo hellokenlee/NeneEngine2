@@ -396,6 +396,10 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 			disabled_warnings.append("%(DisableSpecificWarnings)")
 			ElementTree.SubElement(cl_compile, "DisableSpecificWarnings").text = ";".join(disabled_warnings)
 			ElementTree.SubElement(cl_compile, "Optimization").text = compiler.optimazation.value
+			if nene_module_config.linker.generate_debug_info:
+				ElementTree.SubElement(cl_compile, "DebugInformationFormat").text = "ProgramDatabase"
+			else:
+				ElementTree.SubElement(cl_compile, "DebugInformationFormat").text = "None"
 			ElementTree.SubElement(cl_compile, "AdditionalOptions").text = " ".join(compiler.additional_compiler_flags)
 			# Linker Settings
 			linker = nene_module_config.linker
@@ -407,6 +411,8 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 				ElementTree.SubElement(link, "OptimizeReferences").text = "true"
 			if linker.generate_debug_info:
 				ElementTree.SubElement(link, "GenerateDebugInformation").text = "true"
+			else:
+				ElementTree.SubElement(link, "GenerateDebugInformation").text = "false"
 
 			# Dependencies
 			additional_dependencies = []
