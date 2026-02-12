@@ -45,7 +45,7 @@ public:
 
 	d3d12_root_signature find_or_create_root_signature(ID3D12Device* d3d_device, const gapi_bound_shader_state_desc& bound_shader_state_desc);
 
-	D3D12_VERSIONED_ROOT_SIGNATURE_DESC make_root_signature_desc(const d3d12_quantized_bound_shader_state& quantized_bound_shader_state, gapi_shader_resource_tables& out_shader_resource_table) const;
+	WinComPtr<ID3DBlob> create_serialized_root_signature(const d3d12_quantized_bound_shader_state& quantized_bound_shader_state, gapi_shader_resource_tables& out_shader_resource_table) const;
 	
 private:
 	d3d12_root_signature_manager() = default;

@@ -6,6 +6,8 @@
 #include "core/template/magic_enum/magic_enum_utility.hpp"
 #include "shader/cppshared/d3d12.h"
 
+extern logger d3d12_;
+
 namespace
 {
 	D3D12_STATIC_SAMPLER_DESC make_static_sampler(D3D12_FILTER d3d_filter, D3D12_TEXTURE_ADDRESS_MODE d3d_wrap_mode, uint32_t shader_register)
@@ -71,14 +73,10 @@ d3d12_root_signature d3d12_root_signature_manager::find_or_create_root_signature
 	*/
 	//
 	gapi_shader_resource_tables shader_resource_tables;
-	auto root_signature_desc = make_root_signature_desc(quantized_bound_shader_state, shader_resource_tables);
-	//
-	WinComPtr<ID3DBlob> root_signature_blob;
-	WinComPtr<ID3DBlob> serialization_error_blob;
-	VERIFY(D3DX12SerializeVersionedRootSignature(&root_signature_desc, D3D_ROOT_SIGNATURE_VERSION_1_1, &root_signature_blob, &serialization_error_blob));
+	WinComPtr<ID3DBlob> serialized_root_signature = create_serialized_root_signature(quantized_bound_shader_state, shader_resource_tables);
 	//
 	WinComPtr<ID3D12RootSignature> new_root_signature;
-	VERIFY(d3d_device->CreateRootSignature(0, root_signature_blob->GetBufferPointer(), root_signature_blob->GetBufferSize(), IID_PPV_ARGS(&new_root_signature)));
+	VERIFY(d3d_device->CreateRootSignature(0, serialized_root_signature->GetBufferPointer(), serialized_root_signature->GetBufferSize(), IID_PPV_ARGS(&new_root_signature)));
 
 	/*
 	auto cit = m_root_signature_map.emplace(bound_shader_state_desc, std::move(new_root_signature));
@@ -153,7 +151,7 @@ uint32_t choose_register_space(gapi_shader_stage stage)
 }
 
 
-D3D12_VERSIONED_ROOT_SIGNATURE_DESC d3d12_root_signature_manager::make_root_signature_desc(const d3d12_quantized_bound_shader_state& quantized_bound_shader_state, gapi_shader_resource_tables& out_shader_resource_table) const
+WinComPtr<ID3DBlob> d3d12_root_signature_manager::create_serialized_root_signature(const d3d12_quantized_bound_shader_state& quantized_bound_shader_state, gapi_shader_resource_tables& out_shader_resource_table) const
 {
 	//
 	CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC desc;
@@ -185,6 +183,7 @@ D3D12_VERSIONED_ROOT_SIGNATURE_DESC d3d12_root_signature_manager::make_root_sign
 						++current_root_parameter_index;
 						CHECK(current_root_parameter_index <= NUM_D3D_MAX_ROOT_PARAMETERS);
 					}
+						
 					break;
 				}
 				case D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE:
@@ -276,5 +275,18 @@ D3D12_VERSIONED_ROOT_SIGNATURE_DESC d3d12_root_signature_manager::make_root_sign
 	//
 	desc.Init_1_1(current_root_parameter_index, root_parameters, static_cast<uint32_t>(g_d3d12_static_sampler_descs.size()), g_d3d12_static_sampler_descs.data(), D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 	//
-	return desc;
+	WinComPtr<ID3DBlob> result;
+	WinComPtr<ID3DBlob> error;
+	if (D3DX12SerializeVersionedRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1_1, &result, &error) != S_OK)
+	{
+		//
+		if (error != nullptr) 
+		{
+			const char* message = static_cast<const char*>(error->GetBufferPointer());
+			log(d3d12_, fatal, "serialize root signature error {}", message);
+		}
+		// 
+		CHECK(false);
+	}
+	return result;
 }
