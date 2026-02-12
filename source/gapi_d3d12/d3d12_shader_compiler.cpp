@@ -85,6 +85,9 @@ bool d3d12_dxc_shader_compiler::compile(gapi_d3d12_shader& shader, WinComPtr<ID3
 	{
 		arguments.push_back(L"-I");
 		arguments.push_back(engine_shader_root.c_str());
+		
+		// whole nene engine is row major 
+		arguments.push_back(L"/Zpr");
 	
 		if (cvar_gapi_d3d_shader_optimize.get_value_thread_unsafe())
 		{

@@ -16,6 +16,8 @@ namespace nene::g
 		const std::shared_ptr<r::render_view>& get_render_view() const { return m_render_view; }
 
 	private:
+		float3 m_location;
+		rotator m_rotator;
 		std::shared_ptr<r::render_view> m_render_view;
 	};
 }

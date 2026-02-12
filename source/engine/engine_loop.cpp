@@ -43,9 +43,8 @@ namespace nene
 	void engine_loop::tick()
 	{
 		// engine update
-		static std::chrono::high_resolution_clock clock;
-		static auto tick = clock.now();
-		auto tock = clock.now();
+		static auto tick = std::chrono::high_resolution_clock::now();
+		auto tock = std::chrono::high_resolution_clock::now();
 		auto delta = tock - tick;
 		tick = tock;
 		m_engine->update(std::chrono::duration_cast<std::chrono::milliseconds>(delta));

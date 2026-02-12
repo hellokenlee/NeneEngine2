@@ -76,7 +76,7 @@ namespace nene
 		char key = 0;
 		if ((sdl_event.key & SDLK_SCANCODE_MASK) == 0)
 		{
-			key = static_cast<char>(sdl_event.key & SDLK_SCANCODE_MASK);
+			key = static_cast<char>(sdl_event.key);
 		}
 		// sdl key mod to char
 		key_modifier mod = key_modifier::none;

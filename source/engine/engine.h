@@ -15,6 +15,7 @@ namespace nene
 	class NENE_API engine
 	{
 	public:
+		engine();
 		virtual ~engine() = default;
 
 		virtual void update(std::chrono::milliseconds delta) {}

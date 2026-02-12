@@ -4,6 +4,9 @@
 
 namespace t
 {
+	/**
+	 *	the unit of all components is degrees 
+	 */
 	template<typename t_class>
 	struct rotator
 	{

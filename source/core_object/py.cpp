@@ -39,12 +39,12 @@ namespace nene::g
 	{
 		if (Py_IsInitialized() != 0)
 		{
-			::pybind11::pybind11_fail("Can't add new modules after the interpreter has been initialized");
+			::py::pybind11_fail("Can't add new modules after the interpreter has been initialized");
 		}
 		auto result = PyImport_AppendInittab(PY_NENE_MODULE_NAME, PyInit_nene);
 		if (result == -1)
 		{
-			::pybind11::pybind11_fail("Insufficient memory to add a new module");
+			::py::pybind11_fail("Insufficient memory to add a new module");
 		}
 	}
 

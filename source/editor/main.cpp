@@ -9,6 +9,8 @@
 int main()
 {
 	//
+	logger::add_handler(std::make_shared<nene::stdout_log_handler>());
+	//
 	nene::g::binding::get().initialize();
 	nene::qt::binding::get().initialize();
 	//

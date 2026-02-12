@@ -52,7 +52,7 @@ void NeneViewportWidget::paintEvent(QPaintEvent* event)
 
 QPaintEngine* NeneViewportWidget::paintEngine() const
 {
-	// make sure we do not want qt to paint for use
+	// make sure we do not want qt to paint for us
 	return nullptr;
 }
 

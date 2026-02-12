@@ -30,9 +30,9 @@ namespace nene::g
 		//
 		log(object_, info, "object::test()::call method by string");
 		reflection::type obj_class = reflection::get_class("Object");
-		reflection::variant obj = reflection::create(obj_class, 12);
+		reflection::variant obj = reflection::create(obj_class);
 		reflection::invoke(obj, "func0");
-		reflection::invoke(obj, "func1", py::make_tuple(233));
+		reflection::invoke(obj, "func1", 123);
 		//
 		log(object_, info, "object::test()::call method by get object");
 		auto& cxx_obj = obj.cast<object&>();
