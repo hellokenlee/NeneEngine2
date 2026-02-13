@@ -4,7 +4,7 @@
 
 #include <cstdint>
 
-namespace t
+namespace nene::t
 {
 	template<typename t_class>
 	struct numeric2
@@ -120,8 +120,11 @@ namespace t
 	};
 }
 
-using uint2 = t::numeric2<uint32_t>;
+namespace nene
+{
+	using uint2 = t::numeric2<uint32_t>;
 
-using uint3 = t::numeric3<uint32_t>;
+	using uint3 = t::numeric3<uint32_t>;
 
-using upoint64_t = t::numeric2<uint64_t>;
+	using upoint64_t = t::numeric2<uint64_t>;
+}

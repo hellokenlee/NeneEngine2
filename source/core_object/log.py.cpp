@@ -4,6 +4,11 @@
 #include "core/log.h"
 #include "core/interface/log_handler.h"
 
+#ifdef _MSC_VER
+	#pragma warning(push)
+	#pragma warning(disable: 4275)
+#endif // _MSC_VER
+
 /** additional reflection binding for "core/log.h" */
 
 namespace nene::g
@@ -29,3 +34,8 @@ namespace nene::g
 		;
 	}
 }
+
+#ifdef _MSC_VER
+	#pragma warning(push)
+	#pragma warning(disable: 4275)
+#endif // _MSC_VER

@@ -52,6 +52,8 @@ void simple_renderer::render_view_family(const r::render_view& view, const r::re
 	
 	{
 		auto _ = context.render_pass({view_family_texture.get_texture()});
+		
+		view.update();
 
 		// TODO: dynamic creation of mesh draw commands
 		// 发起一次绘制的流程

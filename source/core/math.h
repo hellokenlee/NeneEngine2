@@ -8,6 +8,7 @@
 #include "math/types.h"
 #include "math/rotator.h"
 #include "math/numeric.h"
+#include "math/transform.h"
 
 namespace t
 {

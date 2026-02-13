@@ -2,7 +2,7 @@
 
 #pragma once
 
-namespace t
+namespace nene::t
 {
 	/**
 	 *	the unit of all components is degrees 
@@ -16,4 +16,7 @@ namespace t
 	};
 }
 
-using rotator = t::rotator<float>;
+namespace nene
+{
+	using rotator = t::rotator<float>;	
+}

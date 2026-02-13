@@ -13,11 +13,27 @@ namespace r
 	{
 		//
 		m_data.ViewOrigin = view_location;
-		// quick way to: M_{rotation_world_to_camera} = M_{rotation_camera_to_world}^-1
-		matrix view_rotation_matrix = matrix(view_rotator).transpose();
-		// quick way to: M_{translation_world_to_camera} = M_{translation_camera_to_world}^-1
-		matrix view_translation_matrix(-view_location);
+		// quick way to: M_{rotation_world_to_camera} = M_{rotation_camera_in_world}^-1
+		matrix view_rotation_matrix = matrix::make_rotation_matrix(view_rotator).transpose();
+		// quick way to: M_{translation_world_to_camera} = M_{translation_camera_in_world}^-1
+		matrix view_translation_matrix = matrix::make_translation_matrix(-view_location);
 		// translate first, then rotate the camera
 		m_data.ViewMatrix = view_translation_matrix * view_rotation_matrix;
+		
+		mark_dirty();
+	}
+
+	void render_view::set_perspective_projection_matrix(float fov, float ratio, float near, float far)
+	{
+		m_data.ProjectionMatrix = matrix::make_perspective_projection_matrix(fov, ratio, near, far);
+		
+		mark_dirty();
+	}
+
+	void render_view::set_orthographic_projection_matrix(float width, float height, float near, float far)
+	{
+		m_data.ProjectionMatrix = matrix::make_orthographic_projection_matrix(width, height, near, far);
+		
+		mark_dirty();
 	}
 }

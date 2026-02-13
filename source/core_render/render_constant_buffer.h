@@ -21,14 +21,23 @@ namespace r
 			m_gapi_buffer = gapi_dynamic::get().create_buffer(desc);
 		}
 
-		void update()
+		void update() const
 		{
-			m_gapi_buffer->map(
-				[this](void* mapped)
-				{
-					memcpy(mapped, &m_data, sizeof(m_data));
-				}
-			);
+			if (m_is_dirty)
+			{
+				m_is_dirty = false;
+				m_gapi_buffer->map(
+					[this](void* mapped)
+					{
+						memcpy(mapped, &m_data, sizeof(m_data));
+					}
+				);
+			}
+		}
+		
+		void mark_dirty() const
+		{
+			m_is_dirty = true;
 		}
 
 		const std::shared_ptr<i::gapi_buffer>& get_constant_buffer() const
@@ -39,6 +48,8 @@ namespace r
 		t_shader_struct m_data;
 		
 	protected:
+		// for data initialization
+		mutable bool m_is_dirty : 1 = true;
 		std::shared_ptr<i::gapi_buffer> m_gapi_buffer;
 	};
 }

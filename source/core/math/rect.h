@@ -4,7 +4,7 @@
 
 #include <cstdint>
 
-namespace t
+namespace nene::t
 {
     template<typename T>
     struct rect
@@ -14,8 +14,11 @@ namespace t
         T right;
         T bottom;
     };
-};
+}
 
-using rect16_t = t::rect<uint16_t>;
+namespace nene
+{
+    using rect16_t = t::rect<uint16_t>;
 
-using rect32_t = t::rect<uint32_t>;
+    using rect32_t = t::rect<uint32_t>;
+}

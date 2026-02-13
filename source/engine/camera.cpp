@@ -11,13 +11,13 @@ namespace nene::g
 		: m_location(0.0, 0.0, 0.0)
 		, m_rotator(0.0, 0.0, 0.0)
 	{
-		
 		// TODO: create render resource when added to scene
 		enqueue_render_command<__func__>(
 			[this, view_location = m_location, view_rotator = m_rotator]()
 			{
 				m_render_view = std::make_shared<r::render_view>();
 				m_render_view->update_view_matrix(view_location, view_rotator);
+				m_render_view->set_perspective_projection_matrix();
 			}
 		);
 	}
