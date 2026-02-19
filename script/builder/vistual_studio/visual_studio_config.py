@@ -32,14 +32,14 @@ class VisualStudioConfig(metaclass=Singleton):
 			"-format", "json",
 			"-version", "%s" % self.MIN_VS_VERSION,
 		]
-		result = subprocess.run(vswhere_cmd_with_args, capture_output=True, text=True, check=True)
+		result = subprocess.run(vswhere_cmd_with_args, capture_output=True, text=True, check=True, encoding="utf-8")
 		# multi instances
 		vs_infos = json.loads(result.stdout)
 		assert len(vs_infos) > 0, "Visual Studio not found! NeneEngine requires Visual Studio 2022 or later to build."
 		log("Finding Visual Studio:", prefix="\n")
 		for vs_info in vs_infos:
 			log("\t%s@%s" % (vs_info["displayName"], vs_info["installationPath"]))
-		# find latest
+		# find the latest
 		self._current_visual_studio_attributes = vs_infos[0]
 		#
 		self._windows_sdk_install_path = os.path.join(os.getenv("ProgramFiles"), self.WINDOWS_KITS)
