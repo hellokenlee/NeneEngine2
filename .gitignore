@@ -20,6 +20,7 @@ script/editor/.idea/*
 *.ilk
 *.iobj
 *.ipdb
+!script/builder/vistual_studio/tool/vswhere.exe
 
 # Python Cache Files
 *.pyc
@@ -30,10 +31,8 @@ script/editor/.idea/*
 script/stubs
 
 # Nene Immediates Files
+*.DotSettings
 .bin/*
 .package/*
-toolchain/.idea/*
-toolchain/__pycache__/*
-toolchain/common/__pycache__/*
 source/editor_wrapper/x64/*
-*.DotSettings
+
