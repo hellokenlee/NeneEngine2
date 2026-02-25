@@ -11,13 +11,13 @@
 #define NENE_TEXT(str) L##str
 
 #ifdef _UNICODE
-    #ifndef TXT
-        #define TXT(str) NENE_TEXT(str) 
-    #endif
+	#ifndef TXT
+		#define TXT(str) NENE_TEXT(str) 
+	#endif
 #else
-    #ifndef TXT
-        #define TXT(str) str
-    #endif
+	#ifndef TXT
+		#define TXT(str) str
+	#endif
 #endif
 /* <<< String types <<< */
 

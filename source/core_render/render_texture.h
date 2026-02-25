@@ -6,7 +6,7 @@
 #include "gapi/gapi_resource.h"
 
 
-namespace r
+namespace nene::r
 {
 	/** Creation of render texture */
 	struct image_data
@@ -24,11 +24,11 @@ namespace r
 	{
 	public:
 		render_texture(const std::vector<image_data>& mipmaps);
-		render_texture(const std::shared_ptr<i::gapi_texture>& gapi_texture);
+		render_texture(const std::shared_ptr<gapi_texture>& gapi_texture);
 
-		const std::shared_ptr<i::gapi_texture>& get_texture() const { return m_gapi_texture; }
+		const std::shared_ptr<gapi_texture>& get_texture() const { return m_gapi_texture; }
 
 	protected:
-		std::shared_ptr<i::gapi_texture> m_gapi_texture;
+		std::shared_ptr<gapi_texture> m_gapi_texture;
 	};
 }

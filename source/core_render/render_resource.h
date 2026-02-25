@@ -5,7 +5,8 @@
 #include "core/core.h"
 #include "gapi_dynamic/gapi_cmd_context.h"
 
-namespace r
+
+namespace nene::r
 {
 	/** Basic Render Resource */
 	class NENE_API render_resource
@@ -24,7 +25,7 @@ namespace r
 		virtual void initialize(gapi_cmd_context& context) = 0;
 
 		static void initialize_global_render_resources(gapi_cmd_context& context);
-    
+	
 	protected:
 		static std::vector<global_render_resource*> s_global_render_resources; 
 	};

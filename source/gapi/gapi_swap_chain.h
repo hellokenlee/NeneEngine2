@@ -6,7 +6,7 @@
 #include "gapi_resource.h"
 
 
-namespace i
+namespace nene
 {
 	/**
 	*	The swap chain is essentially a queue of images that are waiting to be presented to the screen.

@@ -5,7 +5,8 @@
 #include <string>
 #include <unordered_map>
 
-namespace r
+
+namespace nene::r
 {
 	struct shader_translate_environment
 	{

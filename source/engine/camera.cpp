@@ -17,7 +17,7 @@ namespace nene::g
 			{
 				m_render_view = std::make_shared<r::render_view>();
 				m_render_view->update_view_matrix(view_location, view_rotator);
-				m_render_view->set_perspective_projection_matrix();
+				// m_render_view->set_perspective_projection_matrix();
 			}
 		);
 	}

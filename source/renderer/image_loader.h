@@ -5,8 +5,11 @@
 #include "core/core.h"
 #include "core_render/render_texture.h"
 
-class image_loader
+namespace nene
 {
-public:
-	std::vector<r::image_data> load(const std::string& image_path) const;
-};
+	class image_loader
+	{
+	public:
+		std::vector<r::image_data> load(const std::string& image_path) const;
+	};
+}

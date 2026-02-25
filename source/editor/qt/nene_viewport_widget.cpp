@@ -7,7 +7,7 @@
 #include "engine/engine_loop.h"
 
 
-constexpr int EDITOR_FRAME_PER_SECOND    = 60.0f;
+constexpr int EDITOR_FRAME_PER_SECOND	= 60.0f;
 constexpr int EDITOR_MILLISECOND_PER_FRAME = static_cast<int>((1.0f / EDITOR_FRAME_PER_SECOND) * 1000.0f);
 
 NeneViewportWidget::NeneViewportWidget(QWidget* parent)
@@ -15,7 +15,7 @@ NeneViewportWidget::NeneViewportWidget(QWidget* parent)
 {
 	// 
 	setPalette(Qt::blue);
-    setAutoFillBackground(true);
+	setAutoFillBackground(true);
 
 	// tell qt crate a native window such that `winId()` is valid
 	setAttribute(Qt::WA_NativeWindow);
@@ -37,7 +37,7 @@ void NeneViewportWidget::showEvent(QShowEvent* event)
 {
 	if (!nene::engine_loop::is_initialized())
 	{
-		nene::engine_loop::initialize(reinterpret_cast<void*>(winId()), uint2(static_cast<uint32_t>(size().width()), static_cast<uint32_t>(size().height())));
+		nene::engine_loop::initialize(reinterpret_cast<void*>(winId()), nene::uint2(static_cast<uint32_t>(size().width()), static_cast<uint32_t>(size().height())));
 		connect(&m_engine_tick_timer, &QTimer::timeout, &nene::engine_loop::tick);
 		m_engine_tick_timer.start(EDITOR_MILLISECOND_PER_FRAME);
 	}
@@ -63,7 +63,7 @@ void NeneViewportWidget::resizeEvent(QResizeEvent* event)
 	// tell engine to resize the swap chain
 	if (nene::engine_loop::is_initialized())
 	{
-		nene::engine_loop::resize(uint2(static_cast<uint32_t>(event->size().width()), static_cast<uint32_t>(event->size().height())));
+		nene::engine_loop::resize(nene::uint2(static_cast<uint32_t>(event->size().width()), static_cast<uint32_t>(event->size().height())));
 	}
 }
 

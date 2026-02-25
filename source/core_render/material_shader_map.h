@@ -6,7 +6,7 @@
 #include "vertex_factory.h"
 #include "shader_map.h"
 
-namespace r
+namespace nene::r
 {
 	class NENE_API material_shader_map : public shader_map
 	{

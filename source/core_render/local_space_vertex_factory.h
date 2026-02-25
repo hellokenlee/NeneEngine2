@@ -5,7 +5,7 @@
 #include "vertex_factory.h"
 
 
-namespace r
+namespace nene::r
 {
 	/** A vertex factory which transforms vertices from local space to world space */
 	class NENE_API local_space_vertex_factory : public vertex_factory

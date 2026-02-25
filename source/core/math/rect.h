@@ -6,12 +6,12 @@
 
 namespace nene::t
 {
-    template<typename T>
-    struct rect
-    {
-        T left;
-        T top;
-        T right;
+	template<typename T>
+	struct rect
+	{
+		T left;
+		T top;
+		T right;
         T bottom;
     };
 }

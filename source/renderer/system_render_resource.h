@@ -9,17 +9,18 @@
 #include "gapi/gapi_resource.h"
 #include "gapi/gapi_pipeline_state_desc.h"
 
-namespace r
-{
-    class NENE_API system_static_meshes : public global_render_resource
-    {
-    public:
-        static const system_static_meshes& get();
-        void initialize(gapi_cmd_context& cmd_context) override;
-        
-        std::shared_ptr<static_mesh> m_cube;
 
-    protected:
-        system_static_meshes() = default;
-    };
+namespace nene::r
+{
+	class NENE_API system_static_meshes : public global_render_resource
+	{
+	public:
+		static const system_static_meshes& get();
+		void initialize(gapi_cmd_context& cmd_context) override;
+		
+		std::shared_ptr<static_mesh> m_cube;
+
+	protected:
+		system_static_meshes() = default;
+	};
 }

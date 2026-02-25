@@ -4,7 +4,7 @@
 
 #include "console_var.h"
 
-namespace impl
+namespace nene::impl
 {
 	template<class T>
 	class console_var : public i::console_var
@@ -82,64 +82,63 @@ namespace impl
 		
 		std::unordered_map<std::string, i::console_var*> m_console_vars;
 	};
+	
+	template <>
+	bool console_var<bool>::as_bool()
+	{
+		return m_value;
+	}
+
+	template <>
+	int32_t console_var<bool>::as_int32()
+	{
+		return m_value ? 0 : 1;
+	}
+
+	template <>
+	bool& console_var<bool>::get_bool_ref()
+	{
+		return m_value;
+	}
+
+	template <>
+	bool console_var<int32_t>::as_bool()
+	{
+		return m_value ? true : false;
+	}
+
+	template <>
+	int32_t console_var<int32_t>::as_int32()
+	{
+		return m_value;
+	}
+
+	template <>
+	int32_t& console_var<int32_t>::get_int32_ref()
+	{
+		return m_value;
+	}
+
+	template <>
+	bool console_var<uint32_t>::as_bool()
+	{
+		return m_value ? true : false;
+	}
+
+	template <>
+	int32_t console_var<uint32_t>::as_int32()
+	{
+		return static_cast<int32_t>(m_value);
+	}
+
+	template <>
+	uint32_t& console_var<uint32_t>::get_uint32_ref()
+	{
+		return m_value;
+	}
 }
 
-template <>
-bool impl::console_var<bool>::as_bool()
-{
-	return m_value;
-}
-
-template <>
-int32_t impl::console_var<bool>::as_int32()
-{
-	return m_value ? 0 : 1;
-}
-
-template <>
-bool& impl::console_var<bool>::get_bool_ref()
-{
-	return m_value;
-}
-
-template <>
-bool impl::console_var<int32_t>::as_bool()
-{
-	return m_value ? true : false;
-}
-
-template <>
-int32_t impl::console_var<int32_t>::as_int32()
-{
-	return m_value;
-}
-
-template <>
-int32_t& impl::console_var<int32_t>::get_int32_ref()
-{
-	return m_value;
-}
-
-template <>
-bool impl::console_var<uint32_t>::as_bool()
-{
-	return m_value ? true : false;
-}
-
-template <>
-int32_t impl::console_var<uint32_t>::as_int32()
-{
-	return static_cast<int32_t>(m_value);
-}
-
-template <>
-uint32_t& impl::console_var<uint32_t>::get_uint32_ref()
-{
-	return m_value;
-}
-
-
-namespace i
+namespace nene::i
 {
 	std::shared_ptr<console_var_manager> instance = nullptr;
 	
@@ -151,5 +150,4 @@ namespace i
 		}
 		return instance;
 	}
-
 }

@@ -6,7 +6,7 @@
  * Simple Proxy For DirectX Math Library
  */
 
-#include "math/dxmath/DirectXMath.h"
+#include <DirectXMath.h>
 #include "rotator.h"
 
 using float2 = DirectX::XMFLOAT2;
@@ -40,7 +40,7 @@ struct matrix : DirectX::XMMATRIX
 	{}
 	
 	/** factory methods */
-	static matrix make_rotation_matrix(const rotator& rot)
+	static matrix make_rotation_matrix(const nene::rotator& rot)
 	{
 		return DirectX::XMMatrixRotationRollPitchYaw(rot.pitch, rot.yaw, rot.roll); 
 	}

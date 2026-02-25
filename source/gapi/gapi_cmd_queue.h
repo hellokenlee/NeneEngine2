@@ -13,7 +13,7 @@ enum class gapi_cmd_type : uint8_t
 	copy,
 };
 
-namespace i
+namespace nene
 {
 	/**
 	 *	The command queue within a device.

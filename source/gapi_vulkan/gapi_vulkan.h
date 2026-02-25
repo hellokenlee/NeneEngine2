@@ -4,8 +4,11 @@
 
 #include "gapi/gapi_factory.h"
 
-class NENE_API gapi_vulkan : public i::gapi_factory
+namespace nene
 {
-public:
-	gapi_vulkan();
-};
+	class NENE_API gapi_vulkan : public gapi_factory
+	{
+	public:
+		gapi_vulkan();
+	};
+}

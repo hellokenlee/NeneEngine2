@@ -2,9 +2,12 @@
 
 #include "render_thread.h"
 
-t::console_var<bool> cvar_render_thread_enabled("render.render_thread_enabled", false, "if to use render thread or not");
-
-bool is_render_thread_enabled()
+namespace nene
 {
-	return false;
+	t::console_var<bool> cvar_render_thread_enabled("render.render_thread_enabled", false, "if to use render thread or not");
+
+	bool is_render_thread_enabled()
+	{
+		return false;
+	}
 }

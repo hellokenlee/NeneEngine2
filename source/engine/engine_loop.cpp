@@ -16,7 +16,7 @@ static logger engine_("engine");
 namespace nene
 {
 	std::shared_ptr<engine> engine_loop::m_engine = nullptr;
-	std::shared_ptr<i::renderer> engine_loop::m_renderer = nullptr;
+	std::shared_ptr<renderer> engine_loop::m_renderer = nullptr;
 
 	void engine_loop::initialize(void* window, const uint2& window_size)
 	{

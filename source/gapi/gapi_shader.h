@@ -4,51 +4,50 @@
 
 #include "core/core.h"
 
-
-enum class gapi_shader_stage : uint8_t
+namespace nene
 {
-	vertex_shader,
-	hull_shader,
-	domain_shader,
-	geometry_shader,
-	pixel_shader,
-
-	compute_shader,
-
-	mesh_shader,
-	amplification_shader,
-	
-	ray_gen_shader,
-	ray_tracing_shader,
-};
-constexpr size_t num_gapi_shader_stage = magic_enum::enum_count<gapi_shader_stage>();
-
-
-enum class gapi_shader_feature_level : uint8_t
-{
-	sm_5_1,
-	sm_6_0,
-};
-
-struct gapi_shader_register_count
-{
-	// num of `register(t#, ...)`
-	uint32_t num_shader_resource = 0;
-	// num of `register(b#, ...)`
-	uint32_t num_constant_buffer = 0;
-	// num of `register(u#, ...)`
-	uint32_t num_unordered_access = 0;
-	// num of `register(s#, ...)`
-	uint32_t num_dynamic_sampler = 0;
-
-	bool empty() const
+	enum class gapi_shader_stage : uint8_t
 	{
-		return num_shader_resource == 0 && num_constant_buffer == 0 && num_dynamic_sampler == 0 && num_unordered_access == 0;
-	}
-};
+		vertex_shader,
+		hull_shader,
+		domain_shader,
+		geometry_shader,
+		pixel_shader,
 
-namespace i
-{
+		compute_shader,
+
+		mesh_shader,
+		amplification_shader,
+		
+		ray_gen_shader,
+		ray_tracing_shader,
+	};
+	constexpr size_t num_gapi_shader_stage = magic_enum::enum_count<gapi_shader_stage>();
+
+
+	enum class gapi_shader_feature_level : uint8_t
+	{
+		sm_5_1,
+		sm_6_0,
+	};
+
+	struct gapi_shader_register_count
+	{
+		// num of `register(t#, ...)`
+		uint32_t num_shader_resource = 0;
+		// num of `register(b#, ...)`
+		uint32_t num_constant_buffer = 0;
+		// num of `register(u#, ...)`
+		uint32_t num_unordered_access = 0;
+		// num of `register(s#, ...)`
+		uint32_t num_dynamic_sampler = 0;
+
+		bool empty() const
+		{
+			return num_shader_resource == 0 && num_constant_buffer == 0 && num_dynamic_sampler == 0 && num_unordered_access == 0;
+		}
+	};
+	
 	/**
 	*	A gapi shader is an object contains a bindable GPU program to PSO.
 	*

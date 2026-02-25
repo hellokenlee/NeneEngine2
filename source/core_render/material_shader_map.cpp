@@ -2,7 +2,7 @@
 
 #include "material_shader_map.h"
 
-namespace r
+namespace nene::r
 {
 	material_shader_map::material_shader_map(const std::string& vertex_shader_source, const vertex_factory& vf)
 	{
@@ -10,5 +10,4 @@ namespace r
 		vf.modify_shader_translate_environment(vertex_shader_environment);
 		shader_map::add_shader(gapi_shader_stage::vertex_shader, vertex_shader_source, vertex_shader_environment);
 	}
-	
 }

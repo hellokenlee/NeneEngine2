@@ -2,7 +2,7 @@
 
 #include "system_render_resource.h"
 
-namespace r
+namespace nene::r
 {
 	[[maybe_unused]] static auto& g_system_vertex_buffers_auto_register = system_static_meshes::get();
 

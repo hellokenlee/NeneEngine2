@@ -3,7 +3,7 @@
 #include "local_space_vertex_factory.h"
 
 
-namespace r
+namespace nene::r
 {
 	local_space_vertex_factory::local_space_vertex_factory(const std::vector<float3>& positions, const std::vector<float3>& normals, const std::vector<float2>& uvs)
 	{

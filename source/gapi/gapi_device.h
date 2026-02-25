@@ -15,7 +15,7 @@
 #include "gapi_resource_view_allocator.h"
 
 
-namespace i
+namespace nene
 {
 	/**
 	 *	The abstraction of a driver context ( logical device ) of a specified GPU hardware.

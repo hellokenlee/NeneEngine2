@@ -7,27 +7,30 @@
 #include <directx-dxc/d3d12shader.h>
 
 
-class gapi_d3d12_shader : public i::gapi_shader
+namespace nene
 {
-public:
-	using gapi_shader::gapi_shader;
-	
-	~gapi_d3d12_shader() override = default;
+	class gapi_d3d12_shader : public gapi_shader
+	{
+	public:
+		using gapi_shader::gapi_shader;
+		
+		~gapi_d3d12_shader() override = default;
 
-	bool compile() override;
+		bool compile() override;
 
-public:
-	ID3DBlob* get_d3d_bytecode() const { return m_d3d_bytecode.Get(); }
-	const D3D12_SHADER_DESC& get_d3d_shader_desc() const { return m_shader_desc; }
-	const std::vector<D3D12_SHADER_INPUT_BIND_DESC>& get_d3d_input_bind_descs() const { return m_d3d_shader_input_bind_descs; }
-	
-protected:
-	//
-	bool build_reflection_data();
-	//
-	WinComPtr<ID3DBlob> m_d3d_bytecode;
-	WinComPtr<ID3D12ShaderReflection> m_d3d_reflection;
-	//
-	D3D12_SHADER_DESC m_shader_desc = {};
-	std::vector<D3D12_SHADER_INPUT_BIND_DESC> m_d3d_shader_input_bind_descs;
-};
+	public:
+		ID3DBlob* get_d3d_bytecode() const { return m_d3d_bytecode.Get(); }
+		const D3D12_SHADER_DESC& get_d3d_shader_desc() const { return m_shader_desc; }
+		const std::vector<D3D12_SHADER_INPUT_BIND_DESC>& get_d3d_input_bind_descs() const { return m_d3d_shader_input_bind_descs; }
+		
+	protected:
+		//
+		bool build_reflection_data();
+		//
+		WinComPtr<ID3DBlob> m_d3d_bytecode;
+		WinComPtr<ID3D12ShaderReflection> m_d3d_reflection;
+		//
+		D3D12_SHADER_DESC m_shader_desc = {};
+		std::vector<D3D12_SHADER_INPUT_BIND_DESC> m_d3d_shader_input_bind_descs;
+	};
+}

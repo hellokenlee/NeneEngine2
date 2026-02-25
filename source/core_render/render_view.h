@@ -5,7 +5,8 @@
 #include "render_constant_buffer.h"
 #include "shader/cppshared/view_uniform_buffer.h"
 
-namespace r
+
+namespace nene::r
 {
 	class NENE_API render_view : public render_constant_buffer<SViewInfo>
 	{

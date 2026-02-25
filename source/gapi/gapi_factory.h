@@ -6,7 +6,7 @@
 #include "gapi_gpu.h"
 #include "gapi_swap_chain.h"
 
-namespace i
+namespace nene
 {
 	/**
 	 *	The one and only graphics application interface at runtime.

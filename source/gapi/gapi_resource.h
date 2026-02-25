@@ -7,20 +7,19 @@
 #include "gapi_resource_view.h"
 
 
-/** The transition state of a resource */
-enum class gapi_resource_state : uint8_t
+namespace nene
 {
-	present,
-	render_target,
-	shader_resource,
+	/** The transition state of a resource */
+	enum class gapi_resource_state : uint8_t
+	{
+		present,
+		render_target,
+		shader_resource,
 
-	copy_source,
-	copy_destination,
-};
-
-
-namespace i
-{
+		copy_source,
+		copy_destination,
+	};
+	
 	/**
 	*	A resource is a piece of memory allocated by device in VRAM.
 	*

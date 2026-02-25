@@ -5,7 +5,7 @@
 #include "gapi_device.h"
 
 
-namespace i
+namespace nene
 {
 	/**
 	 *	The abstraction of a single GPU hardware ( or GPU adapter ).

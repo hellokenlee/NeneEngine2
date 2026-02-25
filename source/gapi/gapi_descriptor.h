@@ -4,63 +4,70 @@
 
 #include "core/core.h"
 
-
-enum class gapi_descriptor_type
+namespace nene
 {
-	constant_buffer_view	= 0b000001,
-	shader_resource_view	= 0b000010,
-	unorederd_access_view	= 0b000100,
+	enum class gapi_descriptor_type : uint8_t
+	{
+		constant_buffer_view	= 0b00000001,
+		shader_resource_view	= 0b00000010,
+		unordered_access_view	= 0b00000100,
+		
+		texture_sampler			= 0b00001000,
+
+		render_target_view		= 0b00010000,
+		depth_stencil_view		= 0b00100000,
+
+		cbv_srv_uav = constant_buffer_view | shader_resource_view | unordered_access_view,
+	};
+
+	enum class gapi_filter : uint8_t
+	{
+		point,
+		linear,
+		anisotropic,
+	};
+
+	enum class gapi_sample_test : uint8_t
+	{
+		none,
+		minimum,
+		maximum,
+		comparison,
+	};
+
+	enum class gapi_address_mode : uint8_t
+	{
+		wrap,
+		mirror,
+		clamp,
+		border,
+	};
+
+	enum class gapi_compare_func : uint8_t
+	{
+		never,
+		less,
+		equal,
+		greater,
+		always,
+		
+		not_equal,
+		less_equal,
+		greater_equal,
+	};
+
+	struct gapi_sampler_desc
+	{
+		gapi_filter m_filer;
+		gapi_sample_test m_sample_test;
+		gapi_address_mode m_address_mode_uvw[3];
+		float m_mipmap_bias;
+		uint32_t m_max_anisotropy;
+		gapi_compare_func m_compare_func;
+		float4 m_border_color;
+		float m_lod_min_max[2];
+	};
 	
-	texture_sampler			= 0b001000,
-
-	render_target_view		= 0b010000,
-	depth_stenicl_view		= 0b100000,
-
-	cbv_srv_uav = constant_buffer_view | shader_resource_view | unorederd_access_view,
-};
-
-enum class gapi_filter
-{
-	point,
-	linear,
-	anisotropic,
-};
-
-enum class gapi_sample_test
-{
-	none,
-	minimum,
-	maximum,
-	comparison,
-};
-
-enum class gapi_address_mode
-{
-	wrap,
-	mirror,
-	clamp,
-	border,
-};
-
-enum class gapi_compare_func
-{
-	
-};
-
-struct gapi_sampler_desc
-{
-	gapi_filter m_filer;
-	gapi_sample_test m_sample_test;
-	gapi_address_mode m_address_mode_uvw[3];
-	float m_mipmap_bias;
-	uint32_t m_max_anisotropy;
-	gapi_compare_func m_comparsion_func;
-	linear_color m_border_color;
-	float m_lod_min_max[2];
-};
-
-namespace i
-{
 	/**
 	*	A descriptor is for how to treat ( view ) a resource aka. resource view.
 	*

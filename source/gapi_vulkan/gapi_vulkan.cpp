@@ -2,6 +2,8 @@
 
 #include "gapi_vulkan.h"
 
-gapi_vulkan::gapi_vulkan()
+namespace nene
 {
+	gapi_vulkan::gapi_vulkan()
+	{}
 }

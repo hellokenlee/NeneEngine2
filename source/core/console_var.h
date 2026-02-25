@@ -8,13 +8,16 @@
 
 #include "windll.h"
 
-enum class console_var_flag : uint8_t
+namespace nene
 {
-	none,
-	read_only,
-};
+	enum class console_var_flag : uint8_t
+	{
+		none,
+		read_only,
+	};
+}
 
-namespace i
+namespace nene::i
 {
 	class NENE_API console_var
 	{
@@ -48,7 +51,7 @@ namespace i
 }
 
 
-namespace t
+namespace nene::t
 {
 	/**
 	 *	A console variable object.

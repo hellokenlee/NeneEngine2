@@ -6,7 +6,8 @@
 #include "gapi/gapi_resource.h"
 #include "gapi_dynamic/gapi_dynamic.h"
 
-namespace r
+
+namespace nene::r
 {
 	template<typename t_shader_struct>
 	class render_constant_buffer : public render_resource
@@ -40,7 +41,7 @@ namespace r
 			m_is_dirty = true;
 		}
 
-		const std::shared_ptr<i::gapi_buffer>& get_constant_buffer() const
+		const std::shared_ptr<gapi_buffer>& get_constant_buffer() const
 		{
 			return m_gapi_buffer;
 		}
@@ -50,6 +51,6 @@ namespace r
 	protected:
 		// for data initialization
 		mutable bool m_is_dirty : 1 = true;
-		std::shared_ptr<i::gapi_buffer> m_gapi_buffer;
+		std::shared_ptr<gapi_buffer> m_gapi_buffer;
 	};
 }

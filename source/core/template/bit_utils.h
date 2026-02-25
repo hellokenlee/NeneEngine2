@@ -2,7 +2,7 @@
 
 #pragma once
 
-namespace t
+namespace nene::t
 {
 	template<typename T>
 	consteval size_t bits_of()

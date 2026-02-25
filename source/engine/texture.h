@@ -8,11 +8,11 @@
 
 namespace nene::g
 {
-    /** A texture object for game thread */
-    class NENE_API texture : public object
-    {
-    public:
-        texture();
-        
-    };
+	/** A texture object for game thread */
+	class NENE_API texture : public object
+	{
+	public:
+		texture();
+		
+	};
 }

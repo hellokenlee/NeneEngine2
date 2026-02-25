@@ -12,7 +12,7 @@
 #include "gapi_resource_view_allocator.h"
 
 
-namespace i
+namespace nene
 {
 	class gapi_device;
 	

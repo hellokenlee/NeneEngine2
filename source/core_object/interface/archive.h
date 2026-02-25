@@ -15,9 +15,9 @@ namespace nene
 		//
 		virtual ~archive() = default;
 		//
-    	virtual void serialize(void *data, const size_t& length) = 0;
-    	virtual void serialize(const int& data) = 0;
-    	virtual void serialize(const bool& data) = 0;
+		virtual void serialize(void *data, const size_t& length) = 0;
+		virtual void serialize(const int& data) = 0;
+		virtual void serialize(const bool& data) = 0;
 		virtual void serialize(const std::string& data) = 0;
 	};
 }

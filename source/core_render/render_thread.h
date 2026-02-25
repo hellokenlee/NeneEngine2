@@ -4,25 +4,28 @@
 
 #include "core/core.h"
 
-extern t::console_var<bool> cvar_render_thread_enabled;
-
-NENE_API bool is_render_thread_enabled();
-
-NENE_API bool is_in_resource_thread();
-
-NENE_API bool is_in_render_threads();
-
-NENE_API bool is_in_game_thread();
-
-template<t::string_literal command_name, typename t_lambda>
-void enqueue_render_command(t_lambda&& lambda)
+namespace nene
 {
-	if (is_render_thread_enabled())
+	/** check if render threads are enabled */
+	NENE_API bool is_render_thread_enabled();
+
+	/** check if current stack in render thread */
+	NENE_API bool is_in_render_threads();
+
+	/** check if current stack in game thread */
+	NENE_API bool is_in_game_thread();
+
+	/** enqueue a lambda function that will be executed in render thread */
+	template<t::string_literal command_name, typename t_lambda>
+	void enqueue_render_command(t_lambda&& lambda)
 	{
-		NOT_IMPLEMENTED();
-	}
-	else
-	{
-		lambda();
+		if (is_render_thread_enabled())
+		{
+			NOT_IMPLEMENTED();
+		}
+		else
+		{
+			lambda();
+		}
 	}
 }

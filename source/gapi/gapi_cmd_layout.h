@@ -5,7 +5,7 @@
 #include "core/core.h"
 
 
-namespace i
+namespace nene
 {
 	/**
 	 *	The command list layout is for specify the information for indirect draw

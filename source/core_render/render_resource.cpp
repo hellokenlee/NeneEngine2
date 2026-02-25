@@ -3,7 +3,7 @@
 #include "render_resource.h"
 
 
-namespace r
+namespace nene::r
 {
 	std::vector<global_render_resource*> global_render_resource::s_global_render_resources;
 

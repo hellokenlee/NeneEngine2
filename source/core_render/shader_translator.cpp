@@ -4,7 +4,7 @@
 
 #include "core/utils/string_utils.h"
 
-namespace r
+namespace nene::r
 {
 	std::string shader_translator::translate(const shader_translator_input& input) const
 	{

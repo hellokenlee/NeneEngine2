@@ -5,15 +5,14 @@
 #include "core/core.h"
 #include "gapi_resource_view.h"
 
-
-enum class gapi_resource_view_allocator_type : uint8_t
+namespace nene
 {
-	online,
-	offline,
-};
-
-namespace i
-{
+	enum class gapi_resource_view_allocator_type : uint8_t
+	{
+		online,
+		offline,
+	};
+	
 	/**
 	*	A resource view allocator is the heap where resource view actually allocate memory ( VRAM ) from.
 	*

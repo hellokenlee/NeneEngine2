@@ -2,10 +2,7 @@
 
 #pragma once
 
-#include "core/core.h"
-
-
-namespace i
+namespace nene
 {
 	/**
 	*	A resource allocator allows for various memory mapping techniques ( placed and reserved ) to be implemented which may be used to optimize GPU memory utilization

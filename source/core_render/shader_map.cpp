@@ -4,7 +4,7 @@
 #include "core/utils.h"
 #include "gapi_dynamic/gapi_dynamic.h"
 
-namespace r
+namespace nene::r
 {
 	void shader_map::add_shader(gapi_shader_stage stype, const std::string& main_body_file_path, const shader_translate_environment& translate_environment)
 	{
@@ -23,7 +23,7 @@ namespace r
 		m_gpi_shaders[static_cast<uint8_t>(stype)] = gapi_dynamic::get().get_device()->create_and_compile_shader(stype, source,translator_input.m_entry, gapi_shader_feature_level::sm_6_0,  main_body_file_path);
 	}
 
-	const std::shared_ptr<i::gapi_shader>& shader_map::get_shader(gapi_shader_stage stype) const
+	const std::shared_ptr<gapi_shader>& shader_map::get_shader(gapi_shader_stage stype) const
 	{
 		return m_gpi_shaders[static_cast<uint8_t>(stype)];
 	}

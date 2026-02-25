@@ -2,7 +2,7 @@
 
 #include "render_view.h"
 
-namespace r
+namespace nene::r
 {
 	render_view::render_view()
 	{

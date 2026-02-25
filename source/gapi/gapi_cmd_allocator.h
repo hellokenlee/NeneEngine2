@@ -4,7 +4,7 @@
 
 #include "core/core.h"
 
-namespace i
+namespace nene
 {
 	/**
 	 *	The opaque objects that command list is allocated from.

@@ -6,7 +6,7 @@
 #include "gapi_descriptor.h"
 
 
-namespace i
+namespace nene
 {
 	/**
 	*	A descriptor heap is that place where descriptor actually allocate memory ( VRAM ) from.

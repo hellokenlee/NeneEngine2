@@ -10,7 +10,7 @@
 #include "math/numeric.h"
 #include "math/transform.h"
 
-namespace t
+namespace nene::t
 {
 	template <typename t_class>
 	constexpr t_class align(t_class val, uint64_t alignment)

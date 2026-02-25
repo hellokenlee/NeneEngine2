@@ -6,14 +6,11 @@
 #include "core/windll.h"
 #include "core/math/numeric.h"
 
-namespace i
-{
-	class renderer;
-}
 
 namespace nene
 {
 	class engine;
+	class renderer;
 }
 
 namespace nene
@@ -37,6 +34,6 @@ namespace nene
 
 	protected:
 		static std::shared_ptr<engine> m_engine;
-		static std::shared_ptr<i::renderer> m_renderer;
+		static std::shared_ptr<renderer> m_renderer;
 	};
 }

@@ -6,7 +6,7 @@
 #include "core_render/render_texture.h"
 
 
-namespace i
+namespace nene
 {
 	class NENE_API renderer
 	{
