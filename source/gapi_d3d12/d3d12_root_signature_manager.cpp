@@ -3,8 +3,9 @@
 #include "d3d12_root_signature_manager.h"
 
 #include "d3dx12.h"
-#include "core/template/magic_enum/magic_enum_utility.hpp"
 #include "shader/cppshared/d3d12.h"
+
+#include <magic_enum/magic_enum_utility.hpp>
 
 extern logger d3d12_;
 

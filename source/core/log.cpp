@@ -3,7 +3,7 @@
 #include "log.h"
 #include "debug.h"
 #include "stdout_log_handler.h"
-#include "template/magic_enum/magic_enum.hpp"
+#include <magic_enum/magic_enum.hpp>
 
 
 std::set<std::shared_ptr<nene::log_handler>> logger::s_handlers;

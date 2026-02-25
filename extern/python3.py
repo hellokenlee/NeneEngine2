@@ -16,5 +16,4 @@ class Python3(VcpkgPackage):
 		return os.path.join(self.tools_abs_path(Platform.Windows, Architecture.x64), "python3", "python")
 
 	def get_include_abs_paths(self, plat: Platform, arch: Architecture, con: Configuration) -> list[str]:
-		assert len(super().get_include_abs_paths(plat, arch, con)) == 1
-		return [os.path.join(super().get_include_abs_paths(plat, arch, con)[0], "python3.12")]
+		return [os.path.join(self.get_root_include_abs_paths(plat, arch), "python3.12")]

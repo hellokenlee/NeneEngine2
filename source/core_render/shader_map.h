@@ -3,7 +3,7 @@
 #pragma once
 
 #include "gapi/gapi_shader.h"
-#include "core/template/magic_enum/magic_enum.hpp"
+#include <magic_enum/magic_enum.hpp>
 
 #include "shader_translator.h"
 

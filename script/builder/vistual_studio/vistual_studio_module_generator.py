@@ -11,6 +11,7 @@ from script.builder.common import utils
 from script.builder.common.nene_module import *
 from script.builder.common.build_configuration import BuildConfiguration
 from script.builder.common.module_generator import ModuleGenerator
+from script.builder.common.vcpkg_package import VcpkgPackage
 from script.builder.vistual_studio.visual_studio_config import VisualStudioConfig
 
 
@@ -274,6 +275,8 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 				"$(ProjectDir)",
 			]
 			extern_include_paths: set[str] = set()
+			# For header only librarys
+			extern_include_paths.add(VcpkgPackage.get_root_include_abs_paths(config.platform, config.architecture))
 			# Add all dependent extern's include paths to avoid chain `#include <>`
 			for extern_library_class in nene_module.recursively_find_extern_libraries():
 				for include_abs_path in extern_library_class().get_include_abs_paths(config.platform, config.architecture, config.configuration):

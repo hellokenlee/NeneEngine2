@@ -18,8 +18,7 @@ class QtBase(VcpkgPackage):
 		return os.path.join(self.root_abs_path(), platform_dirname, "Qt6", "plugins")
 
 	def get_include_abs_paths(self, plat: Platform, arch: Architecture, con: Configuration) -> list[str]:
-		assert len(super().get_include_abs_paths(plat, arch, con)) == 1
-		qt_root_include_abs_path = os.path.join(super().get_include_abs_paths(plat, arch, con)[0], "Qt6")
+		qt_root_include_abs_path = os.path.join(self.get_root_include_abs_paths(plat, arch), "Qt6")
 		result = [qt_root_include_abs_path]
 		for module_name in os.listdir(qt_root_include_abs_path):
 			result.append(os.path.join(qt_root_include_abs_path, module_name))

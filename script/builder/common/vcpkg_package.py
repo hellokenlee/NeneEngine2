@@ -22,6 +22,12 @@ class VcpkgPackage(NeneDenepndency, metaclass=Singleton):
 			raise RuntimeError("Cant find valid vcpkg info for `%s`. Please make sure you have run 'Setup.bat' before running this script." % self.__class__.__name__)
 		pass
 
+	@classmethod
+	def get_root_include_abs_paths(cls, plat: Platform, arch: Architecture) -> str:
+		engine_root = BuildConfiguration().engine_root_abs_path
+		platform_dirname = cls._platform_dirname(plat, arch)
+		return os.path.abspath(os.path.join(engine_root, cls.PACKAGE_INSTALL_ROOT, platform_dirname, "include"))
+
 	def root_abs_path(self) -> str:
 		engine_root = BuildConfiguration().engine_root_abs_path
 		return os.path.join(engine_root, VcpkgPackage.PACKAGE_INSTALL_ROOT)
@@ -31,9 +37,7 @@ class VcpkgPackage(NeneDenepndency, metaclass=Singleton):
 		return os.path.join(self.root_abs_path(), platform_dirname, "tools")
 
 	def get_include_abs_paths(self, plat: Platform, arch: Architecture, con: Configuration) -> list[str]:
-		engine_root = BuildConfiguration().engine_root_abs_path
-		platform_dirname = self._platform_dirname(plat, arch)
-		return [os.path.abspath(os.path.join(engine_root, self.PACKAGE_INSTALL_ROOT, platform_dirname, "include"))]
+		return []
 
 	def get_static_library_filenames(self, plat: Platform, arch: Architecture, con: Configuration) -> list[str]:
 		result = []

@@ -3,7 +3,6 @@
 # __email__ = "hellokenlee@163.com"
 
 import sys
-import shutil
 import tempfile
 import subprocess
 from xml.etree import ElementTree
