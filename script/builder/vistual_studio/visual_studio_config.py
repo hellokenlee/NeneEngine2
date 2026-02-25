@@ -32,9 +32,13 @@ class VisualStudioConfig(metaclass=Singleton):
 			"-format", "json",
 			"-version", "%s" % self.MIN_VS_VERSION,
 		]
-		result = subprocess.run(vswhere_cmd_with_args, capture_output=True, text=True, check=True, encoding="utf-8")
+		result = subprocess.run(vswhere_cmd_with_args, capture_output=True, check=True)
+		try:
+			output = result.stdout.decode('utf-8')
+		except UnicodeDecodeError:
+			output = result.stdout.decode('gbk')
 		# multi instances
-		vs_infos = json.loads(result.stdout)
+		vs_infos = json.loads(output)
 		assert len(vs_infos) > 0, "Visual Studio not found! NeneEngine requires Visual Studio 2022 or later to build."
 		log("Finding Visual Studio:", prefix="\n")
 		for vs_info in vs_infos:
