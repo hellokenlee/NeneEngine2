@@ -23,9 +23,9 @@ namespace nene::r
 		mark_dirty();
 	}
 
-	void render_view::set_perspective_projection_matrix(float fov, float ratio, float near, float far)
+	void render_view::set_perspective_projection_matrix(float fov_angle, float ratio, float near, float far)
 	{
-		m_data.ProjectionMatrix = matrix::make_perspective_projection_matrix(fov, ratio, near, far);
+		m_data.ProjectionMatrix = matrix::make_perspective_projection_matrix(fov_angle, ratio, near, far);
 		
 		mark_dirty();
 	}
