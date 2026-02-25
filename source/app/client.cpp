@@ -136,7 +136,7 @@ namespace nene
 					// ignore other keys
 					if ((key_event.key & SDLK_SCANCODE_MASK) == 0)
 					{
-						input_manager::instance().notify(sdl_keyboard_event_to_keyboard_event(key_event));
+						input_manager::get().notify(sdl_keyboard_event_to_keyboard_event(key_event));
 					}
 					break;
 				}
@@ -146,7 +146,7 @@ namespace nene
 					mouse_event mouse_event;
 					mouse_event.m_delta_motion = float2(motion_event.xrel, motion_event.yrel); 
 					mouse_event.m_position_in_window = float2(motion_event.x, motion_event.y);
-					input_manager::instance().notify(mouse_event);
+					input_manager::get().notify(mouse_event);
 					break;
 				}
 			case SDL_EVENT_MOUSE_WHEEL:
@@ -155,7 +155,7 @@ namespace nene
 					mouse_event mouse_event;
 					mouse_event.m_delta_scroll = wheel_event.integer_y;
 					mouse_event.m_position_in_window = float2(wheel_event.mouse_x, wheel_event.mouse_y);
-					input_manager::instance().notify(mouse_event);
+					input_manager::get().notify(mouse_event);
 					break;
 				}
 			case SDL_EVENT_MOUSE_BUTTON_UP:
@@ -165,7 +165,7 @@ namespace nene
 					mouse_event mouse_event;
 					mouse_event.m_button_index = button_event.button;
 					mouse_event.m_position_in_window = float2(button_event.x, button_event.y);
-					input_manager::instance().notify(mouse_event);
+					input_manager::get().notify(mouse_event);
 					break;
 				}
 			default:

@@ -57,11 +57,18 @@ namespace nene
 		float2 m_delta_motion = {};
 		float2 m_position_in_window = {};
 	};
+	
+	struct windows_resize_event : event
+	{
+		windows_resize_event() : event(event_id::window_resize_event) {}
+		
+		uint2 m_new_window_size = {};
+	};
 
 	class NENE_API input_manager : public event_publisher
 	{
 	public:
-		static input_manager& instance();
+		static input_manager& get();
 
 	private:
 		input_manager() = default;

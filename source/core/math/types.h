@@ -9,11 +9,29 @@
 #include <DirectXMath.h>
 #include "rotator.h"
 
-using float2 = DirectX::XMFLOAT2;
+constexpr float KINDA_SMALL_FLOAT = 1.e-4f;
 
 using float4 = DirectX::XMFLOAT4;
 
 using uint4 = DirectX::XMUINT4;
+
+struct float2 : DirectX::XMFLOAT2
+{
+	using XMFLOAT2::XMFLOAT2;
+	
+	static constexpr float2 zero()
+	{
+		return {};
+	}
+	
+	bool equals(const float2& rhs, float tolerance = KINDA_SMALL_FLOAT) const
+	{
+		const auto vlhs = DirectX::XMLoadFloat2(this);
+		const auto vrhs = DirectX::XMLoadFloat2(&rhs);
+		const auto vabs = DirectX::XMVectorAbs(DirectX::XMVectorSubtract(vlhs, vrhs));
+		return DirectX::XMVector2Less(vabs, DirectX::XMLoadFloat(&tolerance));
+	}
+};
 
 struct float3 : DirectX::XMFLOAT3
 {
@@ -24,9 +42,40 @@ struct float3 : DirectX::XMFLOAT3
 		return {};
 	}
 	
+	/** construct forward vector of a rotator */
+	float3(const nene::rotator& rot)
+	{
+		// remove winding and clamp to [-360, 360]
+		float pitch = fmodf(rot.pitch, 360.0f);
+		float yaw = fmodf(rot.yaw, 360.0f);
+		// convert ro radians
+		pitch = DirectX::XMConvertToRadians(pitch);
+		yaw = DirectX::XMConvertToRadians(yaw);
+		
+		// nene uses left handed coordinate system
+		x = cosf(pitch) * sinf(yaw);
+		y = -sinf(pitch);
+		z = cosf(pitch) * cosf(yaw);
+	}
+	
 	float3 operator-() const
 	{
 		return float3{-x, -y, -z };
+	}
+	
+	float3 operator+(const float3& rhs) const
+	{
+		return float3{x + rhs.x, y + rhs.y, z + rhs.z};
+	}
+	
+	float3 operator-(const float3& rhs) const
+	{
+		return float3{x - rhs.x, y - rhs.y, z - rhs.z};
+	}
+	
+	float3 operator*(const float& scalar) const
+	{
+		return float3{x * scalar, y * scalar, z * scalar};
 	}
 };
 

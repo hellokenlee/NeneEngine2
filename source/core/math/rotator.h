@@ -5,7 +5,7 @@
 namespace nene::t
 {
 	/**
-	 *	the unit of all components is degrees 
+	 *	all components are in angle
 	 */
 	template<typename t_class>
 	struct rotator
@@ -14,6 +14,21 @@ namespace nene::t
 		t_class pitch;
 		t_class roll;
 	};
+	
+	float3 up() const
+	{
+		
+	}
+	
+	float3 right() const
+	{
+		
+	}
+	
+	float3 forward() const
+	{
+		
+	}
 }
 
 namespace nene

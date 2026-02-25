@@ -9,6 +9,7 @@
 #include "renderer/simple_renderer.h"
 #include "core_render/render_thread.h"
 #include "camera.h"
+#include "input_manager.h"
 
 
 static logger engine_("engine");
@@ -76,6 +77,11 @@ namespace nene
 
 	void engine_loop::resize(const uint2& new_window_size)
 	{
+		//
+		windows_resize_event e;
+		e.m_new_window_size = new_window_size;
+		input_manager::get().notify(e);
+		//
 		gapi_dynamic::get().resize_swap_chain(new_window_size);
 	}
 

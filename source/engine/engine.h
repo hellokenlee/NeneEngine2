@@ -7,7 +7,7 @@
 
 namespace nene::g
 {
-	class camera;		
+	class camera_component;		
 }
 
 namespace nene
@@ -20,9 +20,9 @@ namespace nene
 
 		virtual void update(std::chrono::milliseconds delta) {}
 
-		const g::camera& get_camera() const { return *m_camera; }
+		const g::camera_component& get_camera() const { return *m_camera; }
 
 	protected:
-		std::shared_ptr<g::camera> m_camera;
+		std::shared_ptr<g::camera_component> m_camera;
 	};
 }

@@ -6,6 +6,6 @@
 
 nene::engine::engine()
 {
-	m_camera = std::make_shared<g::camera>();
-	input_manager::instance().add_listener(*m_camera);
+	m_camera = std::make_shared<g::camera_component>();
+	input_manager::get().add_listener(*m_camera);
 }

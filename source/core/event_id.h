@@ -11,6 +11,7 @@ namespace nene
 		empty_event = 0,
 		keyboard_event,
 		mouse_event,
+		window_resize_event,
 
 		/** ... add new event here ... */
 	};	
