@@ -108,7 +108,7 @@ namespace nene
 		result.m_id = event_id::keyboard_event;
 		result.m_key = key;
 		result.m_modifier = mod;
-		result.m_type = sdl_event.repeat ? key_event_type::on_key_repeated : (sdl_event.down ? key_event_type::on_key_pressed : key_event_type::on_key_released);
+		result.m_type = sdl_event.repeat ? key_event_type::on_key_repeat : (sdl_event.down ? key_event_type::on_key_press : key_event_type::on_key_release);
 		return result;
 	}
 
@@ -164,6 +164,7 @@ namespace nene
 					const auto& button_event = m_current_event.button;
 					mouse_event mouse_event;
 					mouse_event.m_button_index = button_event.button;
+					mouse_event.m_button_type = button_event.down ? key_event_type::on_key_press : key_event_type::on_key_release;
 					mouse_event.m_position_in_window = float2(button_event.x, button_event.y);
 					input_manager::get().notify(mouse_event);
 					break;

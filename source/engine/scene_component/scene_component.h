@@ -5,10 +5,10 @@
 
 namespace nene::g
 {
-	class scene_component
+	class NENE_API scene_component
 	{
 	public:
-		virtual ~scene_component();
+		virtual ~scene_component() = default;
 		virtual void on_add_to_scene() {}
 		virtual void on_remove_from_scene() {}
 	};

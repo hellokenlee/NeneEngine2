@@ -125,6 +125,6 @@ namespace nene
 	using uint2 = t::numeric2<uint32_t>;
 
 	using uint3 = t::numeric3<uint32_t>;
-
-	using upoint64_t = t::numeric2<uint64_t>;
+	
+	using ulonglong2 = t::numeric2<uint64_t>;
 }

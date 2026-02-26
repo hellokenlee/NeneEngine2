@@ -21,7 +21,7 @@ namespace nene
 		m_d3d_resource = std::move(other.m_d3d_resource);
 	}
 
-	void gapi_d3d12_resource::map(const upoint64_t& read_range, std::function<void(void*)> vram_operator)
+	void gapi_d3d12_resource::map(const ulonglong2& read_range, std::function<void(void*)> vram_operator)
 	{
 		D3D12_RANGE _read_range = {read_range.begin, read_range.end};
 		void* mapped_memory = nullptr;

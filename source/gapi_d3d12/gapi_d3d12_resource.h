@@ -16,7 +16,7 @@ namespace nene
 		gapi_d3d12_resource(gapi_d3d12_resource&& other) noexcept;
 		~gapi_d3d12_resource() override = default;
 		
-		void map(const upoint64_t& read_range, std::function<void(void*)> vram_operator) override;
+		void map(const ulonglong2& read_range, std::function<void(void*)> vram_operator) override;
 
 		void set_debug_name(const std::wstring& debug_name) override;
 

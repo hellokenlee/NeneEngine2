@@ -5,10 +5,12 @@
 #include <type_traits>
 
 #include "math/rect.h"
-#include "math/types.h"
+#include "math/matrix.h"
+#include "math/floats.h"
 #include "math/rotator.h"
 #include "math/numeric.h"
 #include "math/transform.h"
+#include "math/constants.h"
 
 namespace nene::t
 {

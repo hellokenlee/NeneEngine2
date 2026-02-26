@@ -45,9 +45,9 @@ namespace nene
 		template<typename t_lambda>
 		void map(t_lambda&& lambda)
 		{
-			map(upoint64_t::zero(), std::function<void(void*)>(std::forward<t_lambda>(lambda)));
+			map(ulonglong2::zero(), std::function<void(void*)>(std::forward<t_lambda>(lambda)));
 		}
-		virtual void map(const upoint64_t& read_range, std::function<void(void*)> vram_operator) = 0;
+		virtual void map(const ulonglong2& read_range, std::function<void(void*)> vram_operator) = 0;
 
 		//
 		const auto& get_unordered_access_view() const { return m_unordered_access_view; }

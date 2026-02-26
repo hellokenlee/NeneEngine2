@@ -21,7 +21,7 @@ namespace nene::g
 		void on_remove_from_scene() override;
 		
 		// event_listener overrides
-		void on_notified(const event& e) override;
+		void on_notify(const event& e) override;
 
 	private:
 		void update_render_view();
@@ -29,9 +29,10 @@ namespace nene::g
 		// location
 		float3 m_location;
 		// rotation
-		float3 m_right;
-		float3 m_forward;
 		rotator m_rotator;
+		float3 m_cached_right;
+		float3 m_cached_forward;
+		bool m_b_rotating : 1 = false;
 		//
 		float m_sensitivity;
 		float m_move_speed;

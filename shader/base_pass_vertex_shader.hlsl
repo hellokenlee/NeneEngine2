@@ -14,7 +14,7 @@ void Main(in SVertexFactoryInput VertexFactoryInput, out SVertexShaderOutput Ver
 	SVertexShaderInput VertexShaderInput = VertexFactoryGetVertexShaderInput<SVertexShaderInput>(VertexFactoryInput);
 
 	//
-	float3 WorldPosition = VertexFactoryGetWorldPosition(VertexFactoryInput, VertexShaderInput);
+	float4 WorldPosition = VertexFactoryGetWorldPosition(VertexFactoryInput, VertexShaderInput);
 	VertexShaderOutput.NdcPosition = mul(mul(WorldPosition, ViewInfo.ViewMatrix), ViewInfo.ProjectionMatrix);
-	VertexShaderOutput.UV = float2(1, 0);
+	VertexShaderOutput.UV = float2(1.0, 0.0);
 }

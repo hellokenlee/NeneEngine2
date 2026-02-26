@@ -14,21 +14,6 @@ namespace nene::t
 		t_class pitch;
 		t_class roll;
 	};
-	
-	float3 up() const
-	{
-		
-	}
-	
-	float3 right() const
-	{
-		
-	}
-	
-	float3 forward() const
-	{
-		
-	}
 }
 
 namespace nene

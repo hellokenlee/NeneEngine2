@@ -12,9 +12,9 @@ namespace nene
 	enum class key_event_type : uint8_t
 	{
 		none,
-		on_key_pressed,
-		on_key_released,
-		on_key_repeated,
+		on_key_press,
+		on_key_release,
+		on_key_repeat,
 	};
 
 	enum class key_modifier : uint8_t
@@ -56,6 +56,12 @@ namespace nene
 		int32_t m_delta_scroll = 0;
 		float2 m_delta_motion = {};
 		float2 m_position_in_window = {};
+		
+		static constexpr uint8_t MOUSE_BUTTON_LEFT = 1;
+		static constexpr uint8_t MOUSE_BUTTON_MIDDLE = 2;
+		static constexpr uint8_t MOUSE_BUTTON_RIGHT = 3;
+		static constexpr uint8_t MOUSE_BUTTON_SIDE_FRONT = 4;
+		static constexpr uint8_t MOUSE_BUTTON_SIDE_BACK = 5;
 	};
 	
 	struct windows_resize_event : event

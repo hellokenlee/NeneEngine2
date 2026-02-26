@@ -8,14 +8,14 @@
 #include "renderer/renderer.h"
 #include "renderer/simple_renderer.h"
 #include "core_render/render_thread.h"
-#include "camera.h"
+#include "scene_component/camera_component.h"
 #include "input_manager.h"
 
 
-static logger engine_("engine");
-
 namespace nene
 {
+	logger engine_("engine");
+	
 	std::shared_ptr<engine> engine_loop::m_engine = nullptr;
 	std::shared_ptr<renderer> engine_loop::m_renderer = nullptr;
 

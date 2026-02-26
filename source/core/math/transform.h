@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "types.h"
+#include "floats.h"
 #include "quaternion.h"
 
 namespace nene

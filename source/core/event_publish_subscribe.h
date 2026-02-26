@@ -25,7 +25,7 @@ namespace nene
 	{
 	public:
 		virtual ~event_listener() = default;
-		virtual void on_notified(const event& e) {}
+		virtual void on_notify(const event& e) {}
 	};
 
 	class NENE_API event_publisher

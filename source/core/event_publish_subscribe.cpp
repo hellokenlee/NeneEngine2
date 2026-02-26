@@ -20,7 +20,7 @@ namespace nene
 			auto subscribed_ = subscribed.lock();
 			if (subscribed_)
 			{
-				subscribed_->on_notified(event);
+				subscribed_->on_notify(event);
 			}
 		}
 	}

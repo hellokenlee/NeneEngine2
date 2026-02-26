@@ -13,13 +13,15 @@ namespace nene::r
 	{
 		//
 		m_data.ViewOrigin = view_location;
+		/*
 		// quick way to: M_{rotation_world_to_camera} = M_{rotation_camera_in_world}^-1
 		matrix view_rotation_matrix = matrix::make_rotation_matrix(view_rotator).transpose();
 		// quick way to: M_{translation_world_to_camera} = M_{translation_camera_in_world}^-1
 		matrix view_translation_matrix = matrix::make_translation_matrix(-view_location);
 		// translate first, then rotate the camera
 		m_data.ViewMatrix = view_translation_matrix * view_rotation_matrix;
-		
+		*/
+		m_data.ViewMatrix = matrix::make_view_matrix(view_location, float3::make_forward_vector(view_rotator));
 		mark_dirty();
 	}
 
