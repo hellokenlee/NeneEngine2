@@ -10,7 +10,8 @@
     "sdl3",
     "directxmath",
     "magic-enum",
-    "taskflow"
+    "taskflow",
+    "entt"
   ],
   "builtin-baseline": "734f8130ffe2f02cf855a3a42a2958f01b3fb005",
   "overrides": [
