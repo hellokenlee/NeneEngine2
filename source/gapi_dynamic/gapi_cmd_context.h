@@ -48,7 +48,7 @@ namespace nene
 		//
 		void set_pipeline_state(const std::shared_ptr<gapi_pipeline_state>& pipeline_state);
 		void set_index_buffer(const std::shared_ptr<gapi_buffer>& index_buffer) const;
-		void set_vertex_buffer(const std::shared_ptr<gapi_buffer>& vertex_buffer) const;
+		void set_vertex_buffers(const std::vector<std::shared_ptr<gapi_buffer>>& vertex_buffers) const;
 		void set_primitive_type(const gapi_primitive_type& ptype) const;
 		// void set_viewports(const std::vector<gapi_viewport_desc>& viewports) const;
 		// void set_scissor_rects(const std::vector<rect>& scissors) const;

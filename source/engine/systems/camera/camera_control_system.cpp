@@ -16,21 +16,24 @@ namespace nene::g
 			cam.m_right = cam.m_up.cross(cam.m_forward);
 				
 			// update location 
-			if (m_b_moving_forward)
+			if (m_b_operating)
 			{
-				cam.m_location += (cam.m_forward * m_move_speed);
-			}
-			if (m_b_moving_back)
-			{
-				cam.m_location -= (cam.m_forward * m_move_speed);
-			}
-			if (m_b_moving_right)
-			{
-				cam.m_location += (cam.m_right * m_move_speed);
-			}
-			if (m_b_moving_left)
-			{
-				cam.m_location -= (cam.m_right * m_move_speed);
+				if (m_b_moving_forward)
+				{
+					cam.m_location += (cam.m_forward * m_move_speed);
+				}
+				if (m_b_moving_back)
+				{
+					cam.m_location -= (cam.m_forward * m_move_speed);
+				}
+				if (m_b_moving_right)
+				{
+					cam.m_location += (cam.m_right * m_move_speed);
+				}
+				if (m_b_moving_left)
+				{
+					cam.m_location -= (cam.m_right * m_move_speed);
+				}
 			}
 			
 			// update aspect ratio
@@ -46,28 +49,25 @@ namespace nene::g
 		{
 		case event_id::keyboard_event:
 			{
-				if (m_b_operating)
+				const auto& ee = static_cast<const keyboard_event&>(e);
+				if (ee.m_type == key_event_type::on_key_press || ee.m_type == key_event_type::on_key_release)
 				{
-					const auto& ee = static_cast<const keyboard_event&>(e);
-					if (ee.m_type == key_event_type::on_key_press || ee.m_type == key_event_type::on_key_release)
+					switch (ee.m_key)
 					{
-						switch (ee.m_key)
-						{
-						case 'w':
-							m_b_moving_forward = ee.m_type == key_event_type::on_key_press;
-							break;
-						case 's':
-							m_b_moving_back = ee.m_type == key_event_type::on_key_press;
-							break;
-						case 'a':
-							m_b_moving_left = ee.m_type == key_event_type::on_key_press;
-							break;
-						case 'd':
-							m_b_moving_right = ee.m_type == key_event_type::on_key_press;
-							break;
-						default:
-							break;
-						}
+					case 'w':
+						m_b_moving_forward = ee.m_type == key_event_type::on_key_press;
+						break;
+					case 's':
+						m_b_moving_back = ee.m_type == key_event_type::on_key_press;
+						break;
+					case 'a':
+						m_b_moving_left = ee.m_type == key_event_type::on_key_press;
+						break;
+					case 'd':
+						m_b_moving_right = ee.m_type == key_event_type::on_key_press;
+						break;
+					default:
+						break;
 					}
 				}
 				break;

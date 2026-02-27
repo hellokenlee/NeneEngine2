@@ -41,5 +41,8 @@ namespace nene::r
 		
 		// add this stream
 		m_vertex_streams.emplace_back(vertex_stream);
+		
+		// cache vertex stream buffer
+		m_vertex_streams_buffers.emplace_back(vertex_stream->get_vertex_buffer());
 	}
 }

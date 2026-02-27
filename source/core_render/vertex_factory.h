@@ -62,10 +62,13 @@ namespace nene::r
 		virtual void add_vertex_stream(const std::string& shader_semantic, const std::shared_ptr<vertex_stream>& vertex_stream);
 		virtual const std::vector<std::shared_ptr<vertex_stream>>& get_vertex_streams() const { return m_vertex_streams; }
 		virtual const gapi_vertices_declaration& get_vertices_declaration() const { return m_vertices_declaration; }
+		virtual const std::vector<std::shared_ptr<gapi_buffer>>& get_vertex_buffers() const { return m_vertex_streams_buffers; }
 
 	protected:
 		//
 		std::vector<std::shared_ptr<vertex_stream>> m_vertex_streams;
+		/** cached vertex buffer in vertex streams */
+		std::vector<std::shared_ptr<gapi_buffer>> m_vertex_streams_buffers;
 		gapi_vertices_declaration m_vertices_declaration;
 		//
 		uint8_t m_current_stream_index = 0;

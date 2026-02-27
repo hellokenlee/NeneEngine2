@@ -122,9 +122,9 @@ namespace nene
 		get_current_cmd_list()->set_index_buffer(index_buffer);
 	}
 
-	void gapi_cmd_context::set_vertex_buffer(const std::shared_ptr<gapi_buffer>& vertex_buffer) const
+	void gapi_cmd_context::set_vertex_buffers(const std::vector<std::shared_ptr<gapi_buffer>>& vertex_buffers) const
 	{
-		get_current_cmd_list()->set_vertex_buffer(vertex_buffer);
+		get_current_cmd_list()->set_vertex_buffers(vertex_buffers);
 	}
 
 	void gapi_cmd_context::set_primitive_type(const gapi_primitive_type& ptype) const

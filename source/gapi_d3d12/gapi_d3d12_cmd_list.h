@@ -43,7 +43,7 @@ namespace nene
 		void bind_ranged_resource_views(uint32_t parameter_index, const std::shared_ptr<gapi_resource_view>& resource_view, const std::shared_ptr<gapi_resource_view_allocator>& allocator) override;
 		
 		void set_index_buffer(const std::shared_ptr<gapi_buffer>& index_buffer) override;
-		void set_vertex_buffer(const std::shared_ptr<gapi_buffer>& vertex_buffer) override;
+		void set_vertex_buffers(const std::vector<std::shared_ptr<gapi_buffer>>& vertex_buffers) override;
 		void set_primitive_topology(const gapi_primitive_type& ptype) override;
 
 		void set_viewports(const std::vector<gapi_viewport_desc>& viewports) override;

@@ -65,7 +65,7 @@ namespace nene
 
 		// Input Assemble Settings
 		virtual void set_index_buffer(const std::shared_ptr<gapi_buffer>& index_buffer) = 0;
-		virtual void set_vertex_buffer(const std::shared_ptr<gapi_buffer>& vertex_buffer) = 0;
+		virtual void set_vertex_buffers(const std::vector<std::shared_ptr<gapi_buffer>>& vertex_buffers) = 0;
 		virtual void set_primitive_topology(const gapi_primitive_type& ptype) = 0;
 
 		// Rasterization Settings

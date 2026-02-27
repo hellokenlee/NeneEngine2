@@ -230,11 +230,15 @@ namespace nene
 		auto& d3d12_index_buffer = t::gapi_pin<gapi_d3d12_buffer>(index_buffer);
 		m_d3d_list->IASetIndexBuffer(&d3d12_index_buffer.m_optional_index_buffer_view);
 	}
-
-	void gapi_d3d12_cmd_list::set_vertex_buffer(const std::shared_ptr<gapi_buffer>& vertex_buffer)
+	
+	void gapi_d3d12_cmd_list::set_vertex_buffers(const std::vector<std::shared_ptr<gapi_buffer>>& vertex_buffers)
 	{
-		auto& d3d12_vertex_buffer = t::gapi_pin<gapi_d3d12_buffer>(vertex_buffer);
-		m_d3d_list->IASetVertexBuffers(0, 1, &d3d12_vertex_buffer.m_optional_vertex_buffer_view);
+		// TODO: 把一个 vertex factory 的 view 都放一起, 这样可以一次性绑定
+		for (uint32_t slot = 0; slot < vertex_buffers.size(); ++slot)
+		{
+			auto& d3d12_vertex_buffer = t::gapi_pin<gapi_d3d12_buffer>(vertex_buffers[slot]);
+			m_d3d_list->IASetVertexBuffers(slot, 1, &d3d12_vertex_buffer.m_optional_vertex_buffer_view);
+		}
 	}
 
 	void gapi_d3d12_cmd_list::set_primitive_topology(const gapi_primitive_type& ptype)
