@@ -9,17 +9,13 @@
 
 namespace nene
 {
-	class engine;
-	class renderer;
-}
-
-namespace nene
-{
 	class NENE_API engine_loop
 	{
 	public:
 		// This is a static class
 		engine_loop() = delete;
+		engine_loop(const engine_loop&) = delete;
+		engine_loop& operator =(const engine_loop&) = delete;
 		~engine_loop() = delete;
 	
 		static void initialize(void* window, const uint2& window_size);
@@ -33,7 +29,6 @@ namespace nene
 		static bool is_initialized();
 
 	protected:
-		static std::shared_ptr<engine> m_engine;
-		static std::shared_ptr<renderer> m_renderer;
+		static std::unique_ptr<class engine> m_engine;
 	};
 }

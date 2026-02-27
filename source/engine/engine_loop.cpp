@@ -3,33 +3,25 @@
 #include "engine_loop.h"
 #include "engine.h"
 #include "core/core.h"
-#include "core_render/render_resource.h"
-#include "gapi_dynamic/gapi_dynamic.h"
-#include "renderer/renderer.h"
-#include "renderer/simple_renderer.h"
-#include "core_render/render_thread.h"
-#include "scene_component/camera_component.h"
 #include "input_manager.h"
+#include "core_render/render_thread.h"
 
 
 namespace nene
 {
 	logger engine_("engine");
 	
-	std::shared_ptr<engine> engine_loop::m_engine = nullptr;
-	std::shared_ptr<renderer> engine_loop::m_renderer = nullptr;
+	std::unique_ptr<engine> engine_loop::m_engine = nullptr;
 
 	void engine_loop::initialize(void* window, const uint2& window_size)
 	{
 		//
 		log(engine_, info, "Engine Init!");
-		//
+		
+		// initialize gapi 
 		gapi_dynamic::initialize(window, window_size);
-		//
-		m_engine = std::make_shared<engine>();
-		m_renderer = std::make_shared<simple_renderer>();
-		//
-		//
+		
+		// initialize render thread
 		enqueue_render_command<"RenderThreadInit">(
 			[]()
 			{
@@ -39,6 +31,9 @@ namespace nene
 				gai.finish_frame();
 			}
 		);
+		
+		// initialize engine instance
+		m_engine = std::make_unique<engine>();
 	}
 
 	void engine_loop::tick()
@@ -49,30 +44,6 @@ namespace nene
 		auto delta = tock - tick;
 		tick = tock;
 		m_engine->update(std::chrono::duration_cast<std::chrono::milliseconds>(delta));
-	
-		// renderer render
-		enqueue_render_command<"Render">(
-			[_render_view = m_engine->get_camera().get_render_view()]()
-			{
-				//
-				auto& gai = gapi_dynamic::get();
-				auto& context = gai.get_cmd_context();
-				auto& back_buffer_texture = gai.get_swap_chain()->get_back_buffer();
-			
-				//
-				gai.start_frame();
-				context.transition_resource(back_buffer_texture, gapi_resource_state::render_target);
-				{
-					m_renderer->render_view_family(*_render_view, r::render_texture(back_buffer_texture));
-				}
-				context.transition_resource(back_buffer_texture, gapi_resource_state::present);
-				gai.finish_frame();
-			
-				//
-				gai.present_frame();
-			}
-		);
-	
 	}
 
 	void engine_loop::resize(const uint2& new_window_size)
@@ -87,13 +58,16 @@ namespace nene
 
 	void engine_loop::shutdown()
 	{
+		// wait for render thread
+		flush_render_commands();
+		
 		// wait for executing all commands
 		gapi_dynamic::get().start_frame();
 		gapi_dynamic::get().finish_frame();
 		gapi_dynamic::get().flush();
-
+		
 		//
-		m_renderer.reset();
+		m_engine.reset();
 	
 		//
 		log(engine_, info, "Engine Shutdown!");
@@ -101,6 +75,6 @@ namespace nene
 
 	bool engine_loop::is_initialized()
 	{
-		return m_renderer != nullptr;
+		return m_engine != nullptr;
 	}
 }

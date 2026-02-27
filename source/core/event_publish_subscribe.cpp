@@ -25,20 +25,20 @@ namespace nene
 		}
 	}
 
-	void event_publisher::add_listener(event_listener& listener)
+	void event_publisher::add_listener(const std::shared_ptr<event_listener>& listener)
 	{
 		//
 		cleanup_expired_listeners();
 		// 去重
 		for (const auto& subscribed : m_listeners)
 		{
-			if (subscribed.lock().get() == &listener)
+			if (subscribed.lock() == listener)
 			{
 				return;	
 			}
 		}
 
-		m_listeners.emplace_back(listener.weak_from_this());
+		m_listeners.emplace_back(listener);
 	}
 
 	void event_publisher::cleanup_expired_listeners()

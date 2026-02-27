@@ -6,10 +6,10 @@ namespace nene::r
 {
 	render_view::render_view()
 	{
-		update_view_matrix(float3(0.0, 0.0, 0.0), rotator(0.0, 0.0, 0.0));
+		update_view_matrix(float3::zero(), float3::forward_vector());
 	}
 
-	void render_view::update_view_matrix(const float3& view_location, const rotator& view_rotator)
+	void render_view::update_view_matrix(const float3& view_location, const float3& view_direction)
 	{
 		//
 		m_data.ViewOrigin = view_location;
@@ -21,7 +21,7 @@ namespace nene::r
 		// translate first, then rotate the camera
 		m_data.ViewMatrix = view_translation_matrix * view_rotation_matrix;
 		*/
-		m_data.ViewMatrix = matrix::make_view_matrix(view_location, float3::make_forward_vector(view_rotator));
+		m_data.ViewMatrix = matrix::make_view_matrix(view_location, view_direction);
 		mark_dirty();
 	}
 

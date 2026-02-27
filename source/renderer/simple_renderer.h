@@ -8,7 +8,7 @@
 #include "core_render/render_texture.h"
 #include "core_render/render_view.h"
 
-namespace nene
+namespace nene::r
 {
 	class NENE_API simple_renderer : public renderer
 	{

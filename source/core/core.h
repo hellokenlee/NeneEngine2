@@ -10,3 +10,4 @@
 #include "template.h"
 #include "console_var.h"
 #include "utils.h"
+#include "event_publish_subscribe.h"

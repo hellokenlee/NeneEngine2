@@ -144,6 +144,7 @@ namespace nene
 				{
 					const auto& motion_event = m_current_event.motion;
 					mouse_event mouse_event;
+					mouse_event.m_type = mouse_event_type::on_mouse_move;
 					mouse_event.m_delta_motion = float2(motion_event.xrel, motion_event.yrel); 
 					mouse_event.m_position_in_window = float2(motion_event.x, motion_event.y);
 					input_manager::get().notify(mouse_event);
@@ -153,6 +154,7 @@ namespace nene
 				{
 					const auto& wheel_event = m_current_event.wheel;
 					mouse_event mouse_event;
+					mouse_event.m_type = mouse_event_type::on_mouse_wheel;
 					mouse_event.m_delta_scroll = wheel_event.integer_y;
 					mouse_event.m_position_in_window = float2(wheel_event.mouse_x, wheel_event.mouse_y);
 					input_manager::get().notify(mouse_event);
@@ -163,6 +165,7 @@ namespace nene
 				{
 					const auto& button_event = m_current_event.button;
 					mouse_event mouse_event;
+					mouse_event.m_type = mouse_event_type::on_mouse_button;
 					mouse_event.m_button_index = button_event.button;
 					mouse_event.m_button_type = button_event.down ? key_event_type::on_key_press : key_event_type::on_key_release;
 					mouse_event.m_position_in_window = float2(button_event.x, button_event.y);

@@ -12,7 +12,7 @@ namespace nene::r
 	{
 	public:
 		render_view();
-		void update_view_matrix(const float3& view_location, const rotator& view_rotator);
+		void update_view_matrix(const float3& view_location, const float3& view_direction);
 		void set_perspective_projection_matrix(float fov_angle, float ratio, float near, float far);
 		void set_orthographic_projection_matrix(float width, float height, float near, float far);
 	};

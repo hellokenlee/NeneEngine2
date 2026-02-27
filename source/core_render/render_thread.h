@@ -17,7 +17,7 @@ namespace nene
 
 	/** enqueue a lambda function that will be executed in render thread */
 	template<t::string_literal command_name, typename t_lambda>
-	void enqueue_render_command(t_lambda&& lambda)
+	NENE_API void enqueue_render_command(t_lambda&& lambda)
 	{
 		if (is_render_thread_enabled())
 		{
@@ -28,4 +28,6 @@ namespace nene
 			lambda();
 		}
 	}
+	
+	NENE_API inline void flush_render_commands() {}
 }

@@ -9,7 +9,7 @@
 #include "shader/cppshared/view_uniform_buffer.h"
 
 
-namespace nene
+namespace nene::r
 {
 	simple_renderer::simple_renderer()
 		: renderer()
@@ -37,7 +37,7 @@ namespace nene
 		if (m_base_pass_pipeline_state == nullptr)
 		{
 			// 
-			r::material_shader_map base_pass_shader_map("shader/base_pass_vertex_shader.hlsl", cube->get_vertex_factory());
+			material_shader_map base_pass_shader_map("shader/base_pass_vertex_shader.hlsl", cube->get_vertex_factory());
 			base_pass_shader_map.add_shader(gapi_shader_stage::pixel_shader, "shader/base_pass_pixel_shader.hlsl", {});
 		
 			gapi_graphics_pipeline_state_desc mesh_pso_desc(

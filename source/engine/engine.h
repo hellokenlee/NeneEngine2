@@ -4,25 +4,26 @@
 
 #include <chrono>
 #include <core/windll.h>
-
-namespace nene::g
-{
-	class camera_component;		
-}
+#include "world.h"
+#include "renderer/renderer.h"
 
 namespace nene
 {
+	namespace r
+	{
+		class render_view;	
+	}
+	
 	class NENE_API engine
 	{
 	public:
 		engine();
 		virtual ~engine() = default;
 
-		virtual void update(std::chrono::milliseconds delta) {}
-
-		const g::camera_component& get_camera() const { return *m_camera; }
-
+		virtual void update(std::chrono::milliseconds delta);
+		
 	protected:
-		std::shared_ptr<g::camera_component> m_camera;
+		std::unique_ptr<g::world> m_world;
+		std::unique_ptr<r::renderer> m_renderer;
 	};
 }

@@ -14,7 +14,8 @@ namespace nene
 	{
 		event();
 		event(event_id id);
-	
+		event(const event&) = default;
+		event& operator=(const event&) = default;
 		virtual ~event() = default;
 
 		event_id m_id;
@@ -24,18 +25,25 @@ namespace nene
 	class NENE_API event_listener : public std::enable_shared_from_this<event_listener>
 	{
 	public:
+		event_listener() = default;
 		virtual ~event_listener() = default;
-		virtual void on_notify(const event& e) {}
+		event_listener(const event_listener&) = default;
+		event_listener& operator=(const event_listener&) = default;
+		
+		virtual void on_notify(const event& e) = 0;
 	};
 
 	class NENE_API event_publisher
 	{
 	public:
+		event_publisher() = default;
 		virtual ~event_publisher() = default;
+		event_publisher(const event_publisher&) = default;
+		event_publisher& operator=(const event_publisher&) = default;
 	
 		virtual void notify(const event& event);
 
-		virtual void add_listener(event_listener& listener);
+		virtual void add_listener(const std::shared_ptr<event_listener>& listener);
 
 	protected:
 		virtual void cleanup_expired_listeners();

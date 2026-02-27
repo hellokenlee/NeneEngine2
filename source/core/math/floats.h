@@ -36,7 +36,12 @@ struct float3 : DirectX::XMFLOAT3
 	// factory methods
 	static constexpr float3 zero()
 	{
-		return {};
+		return {0.0, 0.0, 0.0};
+	}
+	
+	static constexpr float3 one()
+	{
+		return {1.0, 1.0, 1.0};
 	}
 	
 	static constexpr float3 x_axis_vector()
