@@ -103,7 +103,7 @@ namespace nene
 			if (cvar_gapi_d3d_shader_debug.get_value_thread_unsafe())
 			{
 				arguments.push_back(L"-Zi");
-				arguments.push_back(L"-Zsb");
+				arguments.push_back(L"-Qembed_debug");
 			}
 		}
 		WinComPtr<IDxcCompilerArgs> args;

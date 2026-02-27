@@ -1,7 +1,7 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #include "simple_renderer.h"
-#include "system_render_resource.h"
+#include "builtin_render_resource.h"
 #include "image_loader.h"
 #include "core_render/material_shader_map.h"
 #include "gapi_dynamic/gapi_pipeline_state_manager.h"
@@ -21,7 +21,7 @@ namespace nene::r
 	{
 		//
 		auto& context = gapi_dynamic::get().get_cmd_context();
-		context.clear_render_target(view_family_texture.get_texture(), color::rgba<float>({1.0f, 1.0f, 1.0f, 1.0f}));
+		context.clear_render_target(view_family_texture.get_texture(), color::rgba<float>({0.0f, 0.0f, 0.0f, 0.0f}));
 	
 		//
 		if (m_texture == nullptr)
@@ -32,7 +32,7 @@ namespace nene::r
 		}
 
 		//
-		const auto& cube = r::system_static_meshes::get().m_cube;
+		const auto& cube = builtin_static_meshes::get().m_cube;
 		// TODO: Dynamic creation of PSO
 		if (m_base_pass_pipeline_state == nullptr)
 		{
