@@ -27,6 +27,9 @@ namespace nene::r
 		render_texture(const std::shared_ptr<gapi_texture>& gapi_texture);
 
 		const std::shared_ptr<gapi_texture>& get_texture() const { return m_gapi_texture; }
+		
+		uint32_t get_texture_width() const;
+		uint32_t get_texture_height() const;
 
 	protected:
 		std::shared_ptr<gapi_texture> m_gapi_texture;

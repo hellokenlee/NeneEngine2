@@ -14,22 +14,42 @@ namespace nene::r
 	simple_renderer::simple_renderer()
 		: renderer()
 		, m_base_pass_pipeline_state(nullptr)
-	{}
+	{
+	}
 
+	void simple_renderer::ensure_valid_scene_textures(const render_texture& view_family_texture)
+	{
+		if (m_scene_depth == nullptr || m_scene_depth->get_resource_desc().m_width != view_family_texture.get_texture_width() || m_scene_depth->get_resource_desc().m_height != view_family_texture.get_texture_height())
+		{
+			auto desc = gapi_texture_desc::create_2d(uint2(view_family_texture.get_texture_width(), view_family_texture.get_texture_height()), gapi_pixel_format::d24_s8, gapi_texture_create_flag::as_depth_stencil);
+			m_scene_depth = gapi_dynamic::get().create_texture(desc);
+		}
+		if (m_scene_color == nullptr || m_scene_color->get_resource_desc().m_width != view_family_texture.get_texture_width() || m_scene_color->get_resource_desc().m_height != view_family_texture.get_texture_height())
+		{
+			auto desc = gapi_texture_desc::create_2d(uint2(view_family_texture.get_texture_width(), view_family_texture.get_texture_height()), gapi_pixel_format::r8g8b8a8_unorm, gapi_texture_create_flag::as_render_target);
+			m_scene_color = gapi_dynamic::get().create_texture(desc);
+		}
+	}
 
-	void simple_renderer::render_view_family(const r::render_view& view, const r::render_texture& view_family_texture)
+	void simple_renderer::render_view_family(const render_view& view, const render_texture& view_family_texture)
 	{
 		//
 		auto& context = gapi_dynamic::get().get_cmd_context();
-		context.clear_render_target(view_family_texture.get_texture(), color::rgba<float>({0.0f, 0.0f, 0.0f, 0.0f}));
-	
 		//
+		ensure_valid_scene_textures(view_family_texture);
+		//
+		
+		context.clear_render_target(view_family_texture.get_texture(), color::rgba<float>({0.0f, 0.0f, 0.0f, 0.0f}));
+		
+	
+		/*
 		if (m_texture == nullptr)
 		{
-			// image_loader loader;
-			// auto data = loader.load("content/engine/sakura.png");
-			// m_texture = std::make_shared<r::render_texture>(data);
+			image_loader loader;
+			auto data = loader.load("content/engine/sakura.png");
+			m_texture = std::make_shared<r::render_texture>(data);
 		}
+		*/
 
 		//
 		const auto& cube = builtin_static_meshes::get().m_cube;
@@ -48,12 +68,12 @@ namespace nene::r
 				)
 			);
 			mesh_pso_desc.m_render_target_formats.emplace_back(gapi_pixel_format::r8g8b8a8_unorm);
-			mesh_pso_desc.m_depth_stencil_format = gapi_pixel_format::unknown;
+			mesh_pso_desc.m_depth_stencil_format = gapi_pixel_format::d24_s8;
 			m_base_pass_pipeline_state = gapi_pipeline_state_manager::get().find_or_create_pipeline_state(mesh_pso_desc);
 		}
 	
 		{
-			auto _ = context.render_pass({view_family_texture.get_texture()});
+			auto _ = context.render_pass({view_family_texture.get_texture()}, m_scene_depth);
 		
 			view.update();
 

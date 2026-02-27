@@ -24,7 +24,7 @@ namespace nene
 		}
 	}
 
-	void gapi_cmd_context::begin_render_pass(const std::vector<std::shared_ptr<gapi_texture>>& render_targets) const
+	void gapi_cmd_context::begin_render_pass(const std::vector<std::shared_ptr<gapi_texture>>& render_targets, const std::shared_ptr<gapi_texture>& depth_stencil) const
 	{
 		std::vector<std::shared_ptr<gapi_resource_view>> rtvs;
 		for (auto& render_target: render_targets)
@@ -34,7 +34,7 @@ namespace nene
 		}
 		get_current_cmd_list()->set_viewports(m_viewports);
 		get_current_cmd_list()->set_scissor_rects(m_scissors);
-		get_current_cmd_list()->set_render_targets(rtvs, {});
+		get_current_cmd_list()->set_render_targets(rtvs, depth_stencil ? depth_stencil->get_depth_stencil_view() : nullptr);
 	}
 
 	void gapi_cmd_context::end_render_pass() const
@@ -42,9 +42,9 @@ namespace nene
 		
 	}
 
-	scoped_render_pass gapi_cmd_context::render_pass(const std::vector<std::shared_ptr<gapi_texture>>& render_targets)
+	scoped_render_pass gapi_cmd_context::render_pass(const std::vector<std::shared_ptr<gapi_texture>>& render_targets, const std::shared_ptr<gapi_texture>& depth_stencil)
 	{
-		scoped_render_pass render_pass(this, render_targets);
+		scoped_render_pass render_pass(this, render_targets, depth_stencil);
 		return render_pass;
 	}
 
@@ -264,10 +264,10 @@ namespace nene
 		m_frame_contexts[m_current_index].m_tracked_resources.clear();
 	}
 
-	scoped_render_pass::scoped_render_pass(gapi_cmd_context* context, const std::vector<std::shared_ptr<gapi_texture>>& render_targets)
+	scoped_render_pass::scoped_render_pass(gapi_cmd_context* context, const std::vector<std::shared_ptr<gapi_texture>>& render_targets, const std::shared_ptr<gapi_texture>& depth_stencil)
 		: m_context(context)
 	{
-		m_context->begin_render_pass(render_targets);
+		m_context->begin_render_pass(render_targets, depth_stencil);
 	}
 
 	scoped_render_pass::~scoped_render_pass()

@@ -371,13 +371,13 @@ namespace nene
 		{
 			d3d_desc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
 		}
-		if (!t::has_flag(desc.m_texture_create_flag, gapi_texture_create_flag::as_shader_resource))
-		{
-			d3d_desc.Flags |= D3D12_RESOURCE_FLAG_DENY_SHADER_RESOURCE;
-		}
 		if (t::has_flag(desc.m_texture_create_flag, gapi_texture_create_flag::as_depth_stencil))
 		{
 			d3d_desc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+			if (!t::has_flag(desc.m_texture_create_flag, gapi_texture_create_flag::as_shader_resource))
+			{
+				d3d_desc.Flags |= D3D12_RESOURCE_FLAG_DENY_SHADER_RESOURCE;
+			}
 		}
 		if (t::has_flag(desc.m_texture_create_flag, gapi_texture_create_flag::as_unordered_access))
 		{

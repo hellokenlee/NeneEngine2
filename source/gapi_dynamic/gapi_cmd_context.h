@@ -26,9 +26,9 @@ namespace nene
 		~gapi_cmd_context() override = default;
 	
 		// A render pass is a set of drawcalls shared same render targets.
-		void begin_render_pass(const std::vector<std::shared_ptr<gapi_texture>>& render_targets) const;
+		void begin_render_pass(const std::vector<std::shared_ptr<gapi_texture>>& render_targets, const std::shared_ptr<gapi_texture>& depth_stencil = nullptr) const;
 		void end_render_pass() const;
-		scoped_render_pass render_pass(const std::vector<std::shared_ptr<gapi_texture>>& render_targets);
+		scoped_render_pass render_pass(const std::vector<std::shared_ptr<gapi_texture>>& render_targets, const std::shared_ptr<gapi_texture>& depth_stencil = nullptr);
 
 		/** Reset current command list and it's allocator. Called at the start of a frame. */ 
 		void reset();
@@ -58,10 +58,15 @@ namespace nene
 		void bind_constant_buffer(const gapi_shader_stage& stage, uint32_t reg, const std::shared_ptr<gapi_buffer>& buffer);
 	
 	
-		/** Resource creation */
+		// Resource creation
+		/**
+		 * Create a buffer object and upload initial data
+		 * @param desc 
+		 * @param initial_data 
+		 */
 		std::shared_ptr<gapi_buffer> create_and_upload_buffer(const gapi_resource_desc& desc, const void* initial_data);
 		/**
-		 * 
+		 * Create a texture object and upload mipmap data with gpu copy 
 		 * @param desc 
 		 * @param initial_data mipmaps ( texture ) or slices ( texture array ) data, compactly packed row by row
 		 */
@@ -110,7 +115,7 @@ namespace nene
 	class NENE_API scoped_render_pass
 	{
 	public:
-		scoped_render_pass(gapi_cmd_context* context, const std::vector<std::shared_ptr<gapi_texture>>& render_targets);
+		scoped_render_pass(gapi_cmd_context* context, const std::vector<std::shared_ptr<gapi_texture>>& render_targets, const std::shared_ptr<gapi_texture>& depth_stencil = nullptr);
 		~scoped_render_pass();
 
 	private:

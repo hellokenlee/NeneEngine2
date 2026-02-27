@@ -14,6 +14,7 @@ namespace nene::r
 
 	void builtin_static_meshes::initialize(gapi_cmd_context& cmd_context)
 	{
+		// nene engine always use CCW as front face
 		{
 			std::vector<float3> positions = {
 				// +X
@@ -113,15 +114,14 @@ namespace nene::r
 			};
 			std::vector<uint32_t> indices =
 			{
-				0, 1, 2,  2, 3, 0,		// +X
-				4, 5, 6,  6, 7, 4,		// -X
-				8, 9,10,  10,11, 8,		// +Y
-				12,13,14, 14,15,12,		// -Y
-				16,17,18, 18,19,16,		// +Z
-				20,21,22, 22,23,20,		// -Z
+				0,  1,  2,   2,  3,  0,		// +X
+				4,  5,  6,   6,  7,  4,		// -X
+				8,  11, 10, 10,  9,  8,		// +Y
+				12, 15, 14, 14, 13, 12,		// -Y
+				16, 17, 18, 18, 19, 16,		// +Z
+				20, 21, 22, 22, 23, 20,		// -Z
 			};
 			m_cube = std::make_shared<static_mesh>(indices, positions, normals, uvs);
-			
 		}
 	}
 }

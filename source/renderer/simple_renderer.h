@@ -15,11 +15,14 @@ namespace nene::r
 	public:
 		simple_renderer();
 	
-		void render_view_family(const r::render_view& view, const r::render_texture& view_family_texture) override;
+		void render_view_family(const render_view& view, const render_texture& view_family_texture) override;
 
 	protected:
+		void ensure_valid_scene_textures(const render_texture& view_family_texture);
+		
 		std::shared_ptr<gapi_pipeline_state> m_base_pass_pipeline_state;
-
-		std::shared_ptr<r::render_texture> m_texture;
+		
+		std::shared_ptr<gapi_texture> m_scene_depth;
+		std::shared_ptr<gapi_texture> m_scene_color;
 	};
 }
