@@ -18,7 +18,7 @@ namespace nene::g
 	public:
 		void emit(const std::string& log_message) override
 		{
-			PYBIND11_OVERRIDE(void, log_handler, emit, log_message);
+			PYBIND11_OVERRIDE_PURE(void, log_handler, emit, log_message);
 		}
 	};
 

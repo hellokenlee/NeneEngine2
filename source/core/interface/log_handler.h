@@ -14,6 +14,6 @@ namespace nene
 	{
 	public:
 		virtual ~log_handler() = default;
-		virtual void emit(const std::string& log_message) {}
+		virtual void emit(const std::string& log_message) = 0;
 	};
 }

@@ -8,6 +8,7 @@ namespace nene::g
 {
 	void camera_control_system::update(std::chrono::milliseconds delta, entt::registry& registry) const
 	{
+		// TODO: 摄像机平滑
 		auto view = registry.view<camera_component, main_controling_camera_tag>();
 		for (auto [eid, cam] : view.each())
 		{

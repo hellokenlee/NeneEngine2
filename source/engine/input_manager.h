@@ -4,7 +4,8 @@
 
 #include <cstdint>
 #include "core/event_publish_subscribe.h"
-#include "core/core.h"
+#include "core/template/flag_enum_class.h"
+#include "core/math.h"
 #include "core/event_id.h"
 
 namespace nene
@@ -25,7 +26,7 @@ namespace nene
 		shift	= 0b00000100,
 		caps	= 0b00001000,
 		num		= 0b00010000,
-		os		= 0b00100000, // key `⌘` in mac; key `田` in windows;
+		os		= 0b00100000, // key `⌘` in Mac; key `田` in Windows;
 	};
 	DEFINE_FLAG_ENUM_CLASS_OPERATORS(key_modifier);
 
