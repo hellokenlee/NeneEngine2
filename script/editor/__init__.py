@@ -6,6 +6,12 @@
 def main():
 	# noinspection PyBroadException
 	try:
+		import pydevd_pycharm
+		pydevd_pycharm.settrace('localhost', port=6666, stdout_to_server=True, stderr_to_server=True)
+	except Exception:
+		print(r"failed to enable pydevd. try install pydevd in NeneEngine root via. ` .\.package\x64-windows\tools\python3\python.exe -m pip install pydevd-pycharm`")
+	# noinspection PyBroadException
+	try:
 		from script.editor.stub_generator import StubGenerator
 		#
 		StubGenerator.generate_pyside6_pyi()
