@@ -6,7 +6,6 @@
 
 #include "core/event_publish_subscribe.h"
 #include "core_render/render_view.h"
-#include "scene_component.h"
 
 
 namespace nene::g
@@ -39,5 +38,5 @@ namespace nene::g
 		entt::entity m_eid;
 	};
 	
-	struct main_controling_camera_tag {};
+	struct main_controlling_camera_tag {};
 }
