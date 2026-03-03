@@ -2,7 +2,6 @@
 
 #include "py.h"
 #include "object.h"
-#include "pybind11/pybind11.h"
 
 
 namespace nene::g

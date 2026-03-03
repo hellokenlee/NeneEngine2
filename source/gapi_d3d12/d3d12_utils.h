@@ -61,14 +61,14 @@ namespace nene
 		std::shared_ptr<t_gapi_dynamic_impl> gapi_cast(const std::shared_ptr<t_gapi_interface>& inst)
 		{
 			static_assert(std::is_base_of_v<t_gapi_interface, t_gapi_dynamic_impl> == true, "Invalid inheritance for `gapi_cast(...)`!");
-#if !GAPI_FORCE_DYNAMIC_CAST
+#if !NENE_GAPI_FORCE_DYNAMIC_CAST
 			// fallback to dynamic cast when it's a diamond inheritance
 			if constexpr (can_static_cast_v<t_gapi_dynamic_impl, t_gapi_interface>)
 			{
 				return std::static_pointer_cast<t_gapi_dynamic_impl>(inst);
 			}
 			else
-#endif  // GAPI_FORCE_DYNAMIC_CAST
+#endif  // NENE_GAPI_FORCE_DYNAMIC_CAST
 			{
 				return std::dynamic_pointer_cast<t_gapi_dynamic_impl>(inst);
 			}
@@ -80,14 +80,14 @@ namespace nene
 			static_assert(std::is_base_of_v<t_gapi_interface, t_gapi_dynamic_impl> == true, "Invalid inheritance for `gapi_pin(...)`!");
 			CHECK(inst != nullptr);
 			//
-#if !GAPI_FORCE_DYNAMIC_CAST
+#if !NENE_GAPI_FORCE_DYNAMIC_CAST
 			// fallback to dynamic cast when it's a diamond inheritance
 			if constexpr (can_static_cast_v<t_gapi_dynamic_impl, t_gapi_interface>)
 			{
 				return static_cast<t_gapi_dynamic_impl&>(*inst);
 			}
 			else
-#endif // GAPI_FORCE_DYNAMIC_CAST
+#endif // NENE_GAPI_FORCE_DYNAMIC_CAST
 			{
 				return dynamic_cast<t_gapi_dynamic_impl&>(*inst);
 			}

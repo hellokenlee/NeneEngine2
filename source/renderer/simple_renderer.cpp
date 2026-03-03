@@ -2,7 +2,6 @@
 
 #include "simple_renderer.h"
 #include "builtin_render_resource.h"
-#include "image_loader.h"
 #include "core_render/material_shader_map.h"
 #include "gapi_dynamic/gapi_pipeline_state_manager.h"
 #include "gapi_dynamic/gapi_dynamic.h"
@@ -52,7 +51,7 @@ namespace nene::r
 		*/
 
 		//
-		const auto& cube = builtin_static_meshes::get().m_cube;
+		const auto& cube = builtin_static_mesh_render_data::get().cube();
 		// TODO: Dynamic creation of PSO
 		if (m_base_pass_pipeline_state == nullptr)
 		{
