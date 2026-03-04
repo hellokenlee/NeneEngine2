@@ -12,17 +12,17 @@
 
 namespace nene::r
 {
+	/** handy basic vertex data in render thread */
 	class NENE_API builtin_static_mesh_render_data : public global_render_resource
 	{
 	public:
 		static const builtin_static_mesh_render_data& get();
 		void initialize(gapi_cmd_context& cmd_context) override;
-		const std::shared_ptr<const static_mesh_render_data>& cube() const { return m_const_cube; }
-		
-
+		const std::shared_ptr<const static_mesh_lod_render_data>& cube() const { return m_cube.get_const(); }
+	
 	protected:
 		builtin_static_mesh_render_data() = default;
-		std::shared_ptr<static_mesh_render_data> m_cube;
-		std::shared_ptr<const static_mesh_render_data> m_const_cube;
+		
+		t::dual_shared_ptr<static_mesh_lod_render_data> m_cube;
 	};
 }

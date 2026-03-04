@@ -19,5 +19,6 @@ namespace nene
 		virtual void serialize(const int& data) = 0;
 		virtual void serialize(const bool& data) = 0;
 		virtual void serialize(const std::string& data) = 0;
+		virtual void serialize(uint64_t data) = 0;
 	};
 }

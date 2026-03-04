@@ -10,6 +10,5 @@ namespace nene
 	{
 		Assimp::Importer importer;
 		
-		importer.ReadFile();
 	}
 }

@@ -3,12 +3,18 @@
 #pragma once
 
 #include "py.h"
+#include "core/uuid.h"
 #include "interface/serializable.h"
 
-namespace nene
+
+namespace nene::g
 {
-	class asset : public serializable
+	class NENE_API asset : public serializable
 	{
+	public:
+		asset();
+		void serialize(archive& ar) override;
 		
+		uuid m_uuid;
 	};
 }

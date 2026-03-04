@@ -19,7 +19,7 @@ namespace nene::g
 		}
 	}
 
-	std::shared_ptr<r::render_view> world::get_main_render_view()
+	const std::shared_ptr<r::render_view>& world::get_main_render_view() const
 	{
 		return m_current_scene->get_main_render_view();
 	}

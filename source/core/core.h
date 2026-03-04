@@ -9,5 +9,6 @@
 #include "pattern.h"
 #include "template.h"
 #include "console_var.h"
+#include "uuid.h"
 #include "utils.h"
 #include "event_publish_subscribe.h"

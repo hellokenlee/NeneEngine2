@@ -1,5 +1,6 @@
 {
   "dependencies": [
+    "boost-uuid",
     "boost-intrusive",
     "directx-dxc",
     "nlohmann-json",

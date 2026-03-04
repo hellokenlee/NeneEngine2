@@ -10,6 +10,7 @@ from xml.etree import ElementTree
 from extern.qtbase import QtBase
 from extern.python3 import Python3
 from extern.pyside import PySide
+from extern.assimp import Assimp
 from source.core import Core
 from source.core_object import CoreObject
 from source.engine import Engine
@@ -35,7 +36,7 @@ class Editor(NeneModule):
 			[Core, CoreObject, Engine]
 		)
 		self.external_dependencies.extend(
-			[QtBase, PySide, Python3]
+			[QtBase, PySide, Python3, Assimp]
 		)
 		pass
 

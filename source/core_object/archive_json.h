@@ -4,12 +4,14 @@
 
 #include "interface/archive.h"
 
+
 namespace nene::g
 {
 	class json_writer : public archive
 	{
 	
 	};
+	
 	class json_reader : public archive
 	{
 	

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "core_object/asset.h"
 #include "texture_asset.h"
 #include "static_mesh_asset.h"
 
@@ -19,9 +20,10 @@ namespace nene::t
 		
 		bool is_valid() const { return m_uuid != 0; }
 		
-		
 		bool operator==(const asset_handle& other) const { return m_uuid == other.m_uuid; }
 		bool operator!=(const asset_handle& other) const { return m_uuid != other.m_uuid; }
+		
+		static_assert(std::is_base_of_v<asset, asset_t>, "must be child class of `asset`!");
 	};
 }
 

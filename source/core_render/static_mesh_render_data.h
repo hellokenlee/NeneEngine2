@@ -9,15 +9,10 @@
 
 namespace nene::r
 {
-	class static_mesh_lod_render_data
-	{
-		
-	};
-	
-	class static_mesh_render_data
+	class NENE_API static_mesh_lod_render_data
 	{
 	public:
-		static_mesh_render_data(const std::vector<uint32_t>& indices, const std::vector<float3>& positions, const std::vector<float3>& normals={}, const std::vector<float2>& uvs={});
+		static_mesh_lod_render_data(const std::vector<uint32_t>& indices, const std::vector<float3>& positions, const std::vector<float3>& normals={}, const std::vector<float2>& uvs={});
 		//
 		const local_space_vertex_factory& get_vertex_factory() const { return m_vertex_factory; }
 		const gapi_vertices_declaration& get_vertices_declaration() const { return m_vertex_factory.get_vertices_declaration(); }
@@ -31,4 +26,19 @@ namespace nene::r
 		index_stream m_index_stream;
 		local_space_vertex_factory m_vertex_factory;
 	};
+	
+	
+	class NENE_API static_mesh_render_data
+	{
+	public:
+		static_mesh_render_data();
+		
+		const static_mesh_lod_render_data& get_lod(uint32_t lod) const { return m_lods[lod]; }
+		size_t num_lods() const { return m_lods.size(); }
+		
+		
+	private:
+		std::vector<static_mesh_lod_render_data> m_lods;
+	};
+	
 }

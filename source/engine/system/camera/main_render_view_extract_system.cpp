@@ -1,7 +1,7 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #include "main_render_view_extract_system.h"
-#include "components/camera_component.h"
+#include "component/camera_component.h"
 #include "core_render/render_thread.h"
 
 namespace nene::g

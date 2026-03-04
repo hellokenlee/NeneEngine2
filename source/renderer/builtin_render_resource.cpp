@@ -121,8 +121,7 @@ namespace nene::r
 				16, 17, 18, 18, 19, 16,		// +Z
 				20, 21, 22, 22, 23, 20,		// -Z
 			};
-			m_cube = std::make_shared<static_mesh_render_data>(indices, positions, normals, uvs);
-			m_const_cube = m_cube;
+			m_cube = std::make_shared<static_mesh_lod_render_data>(indices, positions, normals, uvs);
 		}
 	}
 }

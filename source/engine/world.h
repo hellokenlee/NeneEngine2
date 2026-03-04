@@ -16,7 +16,7 @@ namespace nene::g
 		
 		void update(std::chrono::milliseconds delta);
 		
-		std::shared_ptr<r::render_view> get_main_render_view();
+		const std::shared_ptr<r::render_view>& get_main_render_view() const;
 		
 	private:
 		std::shared_ptr<scene> m_current_scene = {};

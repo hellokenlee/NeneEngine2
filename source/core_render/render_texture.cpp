@@ -41,11 +41,11 @@ namespace nene::r
 
 	uint32_t render_texture::get_texture_width() const
 	{
-		return m_gapi_texture ? m_gapi_texture->get_resource_desc().m_width : 0;
+		return m_gapi_texture ? static_cast<uint32_t>(m_gapi_texture->get_resource_desc().m_width) : 0;
 	}
 
 	uint32_t render_texture::get_texture_height() const
 	{
-		return m_gapi_texture ? m_gapi_texture->get_resource_desc().m_height : 0;
+		return m_gapi_texture ? static_cast<uint32_t>(m_gapi_texture->get_resource_desc().m_height) : 0;
 	}
 }

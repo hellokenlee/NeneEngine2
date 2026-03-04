@@ -6,8 +6,8 @@
 #include <chrono>
 
 #include "core/core.h"
-#include "systems/camera/camera_control_system.h"
-#include "systems/camera/main_render_view_extract_system.h"
+#include "system/camera/camera_control_system.h"
+#include "system/camera/main_render_view_extract_system.h"
 
 namespace nene::g
 {
@@ -17,7 +17,7 @@ namespace nene::g
 	public:
 		scene();
 		void update(std::chrono::milliseconds delta);
-		std::shared_ptr<r::render_view> get_main_render_view();
+		const std::shared_ptr<r::render_view>& get_main_render_view() const;
 		
 	protected:
 		//

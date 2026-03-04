@@ -4,5 +4,5 @@
 
 from script.builder.common.vcpkg_package import VcpkgPackage
 
-class Sdl3(VcpkgPackage):
+class Assimp(VcpkgPackage):
 	pass
