@@ -5,7 +5,8 @@
 #include "core_object/asset.h"
 #include "core_render/render_texture.h"
 
-namespace nene
+
+namespace nene::g
 {
 	class texture_asset : public asset
 	{

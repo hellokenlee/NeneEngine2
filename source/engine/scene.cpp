@@ -6,6 +6,7 @@
 #include "component/static_mesh_component.h"
 #include "asset/asset_manager.h"
 #include "input_manager.h"
+#include "core_object/archive/archive_json.h"
 
 
 namespace nene::g
@@ -26,8 +27,11 @@ namespace nene::g
 			
 			//
 			auto test_static_mesh_entity = m_registery.create();
-			m_registery.emplace<static_mesh_component>(test_static_mesh_entity, 18578943759837ull);
+			m_registery.emplace<static_mesh_component>(test_static_mesh_entity);
 		}
+		
+		asset a;
+		a.serialize(json_writer("test.bjd"));
 		// temp test code
 		m_camera_control_system = std::make_shared<camera_control_system>();
 		input_manager::get().add_listener(m_camera_control_system);

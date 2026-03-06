@@ -5,7 +5,8 @@
 #include "core_object/asset.h"
 #include "core_render/static_mesh_render_data.h"
 
-namespace nene
+
+namespace nene::g
 {
 	/** the asset data of static mesh 
 	 * 

@@ -33,9 +33,9 @@ namespace nene::g
 		log(asset_manager_, info, "done building asset registery.");
 	}
 
-	const std::shared_ptr<asset>& asset_manager::internal_load(const uuid& uid)
+	std::shared_ptr<asset> asset_manager::internal_load(const uuid& uid)
 	{
 		// TODO: Async load supports
-		
+		return nullptr;
 	}
 }

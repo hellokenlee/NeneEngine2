@@ -2,10 +2,11 @@
 
 #pragma once
 
-#include "archive.h"
 #include "core/windll.h"
+#include "archive/archive.h"
 
-namespace nene
+
+namespace nene::g
 {
 	class NENE_API serializable
 	{
@@ -13,6 +14,6 @@ namespace nene
 		//
 		virtual ~serializable() = default;
 		//
-		virtual void serialize(archive& ar) = 0;
+		virtual void serialize(archive& ar) const;
 	};
 }

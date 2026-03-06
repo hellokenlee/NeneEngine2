@@ -14,7 +14,7 @@ namespace nene::g
 	public:
 		main_render_view_extract_system();
 		void update(std::chrono::milliseconds delta, entt::registry& registry);
-		std::shared_ptr<r::render_view> get_render_view() const { return m_render_view; }
+		const std::shared_ptr<r::render_view>& get_render_view() const { return m_render_view; }
 		
 	private:
 		std::shared_ptr<r::render_view> m_render_view = {};

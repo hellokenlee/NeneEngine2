@@ -6,22 +6,22 @@
 
 namespace nene::t
 {
-	template<typename t_class>
+	template<typename data_t>
 	struct numeric2
 	{
 		union
 		{
-			t_class x;
-			t_class w;
-			t_class r;
-			t_class begin;
+			data_t x;
+			data_t w;
+			data_t r;
+			data_t begin;
 		};
 		union
 		{
-			t_class y;
-			t_class h;
-			t_class g;
-			t_class end;
+			data_t y;
+			data_t h;
+			data_t g;
+			data_t end;
 		};
 
 		numeric2() = default;
@@ -29,7 +29,7 @@ namespace nene::t
 		numeric2& operator=(const numeric2&) = default;
 		numeric2(numeric2&&) = default;
 		numeric2& operator=(numeric2&&) = default;
-		constexpr numeric2(t_class _x, t_class _y) noexcept : x(_x), y(_y) {}
+		constexpr numeric2(data_t _x, data_t _y) noexcept : x(_x), y(_y) {}
 
 		bool operator==(const numeric2& other) const
 		{
@@ -43,7 +43,7 @@ namespace nene::t
 		
 		static constexpr numeric2 one()
 		{
-			return {static_cast<t_class>(1), static_cast<t_class>(1)};
+			return {static_cast<data_t>(1), static_cast<data_t>(1)};
 		}
 		
 		static constexpr numeric2 zero()
@@ -52,26 +52,26 @@ namespace nene::t
 		}
 	};
 
-	template<typename t_class>
+	template<typename data_t>
 	struct numeric3
 	{
 		union
 		{
-			t_class x;
-			t_class w;
-			t_class r;
+			data_t x;
+			data_t w;
+			data_t r;
 		};
 		union
 		{
-			t_class y;
-			t_class h;
-			t_class g;
+			data_t y;
+			data_t h;
+			data_t g;
 		};
 		union
 		{
-			t_class z;
-			t_class d;
-			t_class b;
+			data_t z;
+			data_t d;
+			data_t b;
 		};
 
 		numeric3() = default;
@@ -79,21 +79,21 @@ namespace nene::t
 		numeric3& operator=(const numeric3&) = default;
 		numeric3(numeric3&&) = default;
 		numeric3& operator=(numeric3&&) = default;
-		constexpr numeric3(t_class _x, t_class _y, uint32_t _z) noexcept : x(_x), y(_y), z(_z) {}
+		constexpr numeric3(data_t _x, data_t _y, uint32_t _z) noexcept : x(_x), y(_y), z(_z) {}
 
-		const numeric2<t_class>& xy() const
+		const numeric2<data_t>& xy() const
 		{
-			const numeric2<t_class>* casted_this = reinterpret_cast<const numeric2<t_class>*>(&this->x); 
+			const numeric2<data_t>* casted_this = reinterpret_cast<const numeric2<data_t>*>(&this->x); 
 			return *casted_this;
 		}
 
-		const numeric2<t_class>& yz() const
+		const numeric2<data_t>& yz() const
 		{
-			const numeric2<t_class>* casted_this = reinterpret_cast<const numeric2<t_class>*>(&this->y); 
+			const numeric2<data_t>* casted_this = reinterpret_cast<const numeric2<data_t>*>(&this->y); 
 			return *casted_this;
 		}
 
-		const numeric3<t_class>& xyz() const
+		const numeric3<data_t>& xyz() const
 		{
 			return *this;
 		}
@@ -110,7 +110,7 @@ namespace nene::t
 		
 		static constexpr numeric3 one()
 		{
-			return {static_cast<t_class>(1), static_cast<t_class>(1), static_cast<t_class>(1)};
+			return {static_cast<data_t>(1), static_cast<data_t>(1), static_cast<data_t>(1)};
 		}
 		
 		static constexpr numeric3 zero()

@@ -1,8 +1,10 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #include "py.h"
+#include <filesystem>
 #include <pybind11/embed.h>
 #include <pybind11/pybind11.h>
+
 
 namespace
 {
@@ -35,7 +37,7 @@ namespace nene::g
 
 	// Because the `py_class_init_functions` is appended via global variable auto initialization.
 	// The python initialization should be done after all global variables got initialized.
-	void binding::initialize() const
+	py::scoped_interpreter binding::initialize() const
 	{
 		if (Py_IsInitialized() != 0)
 		{
@@ -46,6 +48,14 @@ namespace nene::g
 		{
 			::py::pybind11_fail("Insufficient memory to add a new module");
 		}
+		
+		auto py_home = std::filesystem::path(NENE_PYTHON_HOME).wstring();
+		PyConfig config;
+		PyConfig_InitPythonConfig(&config);
+		PyConfig_SetString(&config, &config.home, py_home.c_str());
+		config.parse_argv = 0;
+		config.install_signal_handlers = true;
+		return py::scoped_interpreter(&config);
 	}
 
 	py::object reflection::get_class(const std::string& name)

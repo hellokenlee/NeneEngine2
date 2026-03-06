@@ -8,6 +8,7 @@ from source.core_render import CoreRender
 from extern.python3 import Python3
 from extern.pybind11 import Pybind11
 from extern.nlohmann_json import NlohmannJson
+from script.builder.common import utils
 
 
 class CoreObject(NeneModule):
@@ -21,3 +22,10 @@ class CoreObject(NeneModule):
             [Python3, Pybind11, NlohmannJson]
         )
         pass
+
+    def configure(self, build_config: BuildConfig) -> NeneModuleConfig:
+        module_config = super().configure(build_config)
+        module_config.compiler.preprocessor_definitions.extend(
+            ["NENE_PYTHON_HOME=\"%s\"" % utils.posix_path(Python3().get_python_home_abs_path())]
+        )
+        return module_config

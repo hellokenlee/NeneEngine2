@@ -3,11 +3,13 @@
 #pragma once
 
 #include "core/core.h"
+#include "core/uuid.py.h"
 #include <pybind11/pybind11.h>
 #include <pybind11/embed.h>
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
 #include <pybind11/complex.h>
+
 
 namespace py = pybind11;
 
@@ -46,21 +48,21 @@ namespace nene::g
 	{
 	public:
 		static constexpr const char* PY_NENE_MODULE_NAME = "nene";
-		using t_py_class_init_function = void(*)(const ::pybind11::module_& m);
+		using py_class_init_func_t = void(*)(const ::pybind11::module_& m);
 		
 		static binding& get();
 		
-		void initialize() const;
+		[[nodiscard]] py::scoped_interpreter initialize() const;
 
 		/** helpers for py class registeration */
-		void add_py_class_init_function(t_py_class_init_function func) { py_class_init_functions.push_back(func); }
-		const std::vector<t_py_class_init_function>& get_py_class_init_functions() const { return py_class_init_functions; }
+		void add_py_class_init_function(py_class_init_func_t func) { py_class_init_functions.push_back(func); }
+		const std::vector<py_class_init_func_t>& get_py_class_init_functions() const { return py_class_init_functions; }
 		
 	private:
 		binding() = default;
 		~binding() = default;
 
-		std::vector<t_py_class_init_function> py_class_init_functions;
+		std::vector<py_class_init_func_t> py_class_init_functions;
 	};
 
 	/** utilities for runtime reflection */
@@ -71,11 +73,17 @@ namespace nene::g
 		
 		type get_class(const std::string& name);
 		
-		template <typename ... t_args>
-		variant create(type cls, t_args&&... args);
+		template<typename cpp_t>
+		variant get_variant(const cpp_t* this_);
+		
+		template <typename ... arg_ts>
+		variant create(type cls, arg_ts&&... args);
 
-		template <typename ... t_args>
-		variant invoke(py::object self, const std::string& func, t_args&&... args);
+		template <typename ... arg_ts>
+		variant invoke(variant self, const std::string& func, arg_ts&&... args);
+		
+		template <typename func_t>
+		void iterate(variant self, func_t predicate) requires std::invocable<func_t, const std::string&, const variant&>;
 	}
 }
 

@@ -6,21 +6,14 @@
 #include "core/stdout_log_handler.h"
 #include "core_object/object.h"
 
+
 int main()
 {
 	//
 	logger::add_handler(std::make_shared<nene::stdout_log_handler>());
 	//
-	nene::g::binding::get().initialize();
 	nene::qt::binding::get().initialize();
-	//
-	auto py_home = std::filesystem::path(NENE_PYTHON_HOME).wstring();
-	PyConfig config;
-	PyConfig_InitPythonConfig(&config);
-	PyConfig_SetString(&config, &config.home, py_home.c_str());
-	config.parse_argv = 0;
-	config.install_signal_handlers = true;
-	py::scoped_interpreter guard{&config};
+	auto vm = nene::g::binding::get().initialize();
 	//
 	try
 	{

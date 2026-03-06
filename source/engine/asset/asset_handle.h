@@ -23,11 +23,11 @@ namespace nene::t
 		bool operator==(const asset_handle& other) const { return m_uuid == other.m_uuid; }
 		bool operator!=(const asset_handle& other) const { return m_uuid != other.m_uuid; }
 		
-		static_assert(std::is_base_of_v<asset, asset_t>, "must be child class of `asset`!");
+		static_assert(std::is_base_of_v<g::asset, asset_t>, "must be child class of `asset`!");
 	};
 }
 
-namespace nene
+namespace nene::g
 {
 	using texture_asset_handle = t::asset_handle<texture_asset>;
 	using static_mesh_asset_handle = t::asset_handle<static_mesh_asset>;

@@ -5,7 +5,8 @@
 #include "py.h"
 #include "interface/serializable.h"
 
-namespace nene
+
+namespace nene::g
 {
 	class prefab : public serializable
 	{

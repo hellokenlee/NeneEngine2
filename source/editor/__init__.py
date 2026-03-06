@@ -50,7 +50,7 @@ class Editor(NeneModule):
 			["/Zc:__cplusplus"]
 		)
 		module_config.compiler.preprocessor_definitions.extend(
-			["_WINDLL", "NENE_PYTHON_HOME=\"%s\"" % utils.posix_path(Python3().get_python_home_abs_path()), "NENE_EDITOR_MODULE_NAME=%s" % self._read_binding_module_name()]
+			["_WINDLL",  "NENE_EDITOR_MODULE_NAME=%s" % self._read_binding_module_name()]
 		)
 		return module_config
 

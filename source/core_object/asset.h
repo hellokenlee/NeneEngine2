@@ -4,7 +4,7 @@
 
 #include "py.h"
 #include "core/uuid.h"
-#include "interface/serializable.h"
+#include "serializable.h"
 
 
 namespace nene::g
@@ -13,8 +13,8 @@ namespace nene::g
 	{
 	public:
 		asset();
-		void serialize(archive& ar) override;
 		
-		uuid m_uuid;
+		uuid m_uuid = {};
+		std::string m_file_name;
 	};
 }

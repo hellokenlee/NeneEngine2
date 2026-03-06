@@ -3,7 +3,7 @@
 #pragma once
 
 #include "py.h"
-#include "interface/serializable.h"
+#include "serializable.h"
 
 
 namespace nene::g
