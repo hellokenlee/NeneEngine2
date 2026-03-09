@@ -36,7 +36,7 @@ namespace nene::g::reflection
 	}
 	
 	template <typename func_t>
-	void iterate(variant self, func_t predicate) requires std::invocable<func_t, const std::string&, const variant&>
+	void iterate_properties(variant self, func_t predicate) requires std::invocable<func_t, const std::string&, const variant&>
 	{
 		if (self)
 		{

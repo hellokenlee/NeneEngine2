@@ -31,7 +31,8 @@ namespace nene::g
 		}
 		
 		asset a;
-		a.serialize(json_writer("test.bjd"));
+		json_writer writer("test.bjd");
+		a.serialize(writer);
 		// temp test code
 		m_camera_control_system = std::make_shared<camera_control_system>();
 		input_manager::get().add_listener(m_camera_control_system);

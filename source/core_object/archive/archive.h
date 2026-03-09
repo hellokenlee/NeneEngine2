@@ -12,22 +12,16 @@ namespace nene
 	class NENE_API archive
 	{
 	public:
-		struct map 
-		{};
-		struct array
-		{
-			
-		};
 		//
 		virtual ~archive() = default;
+		
 		//
-		virtual map map() = 0;
-		virtual array array() = 0;
-		//
-		virtual void serialize(const std::string& name, nullptr_t) = 0;
-		virtual void serialize(const std::string& name, int32_t data) = 0;
-		virtual void serialize(const std::string& name, float data) = 0;
-		virtual void serialize(const std::string& name, const std::string& data) = 0;
-		virtual void serialize(const std::string& name, const uuid& data) = 0;
+		virtual std::shared_ptr<archive> emplace_map(const std::string& name) = 0;
+		virtual std::shared_ptr<archive> emplace_array(const std::string& name) = 0;
+		virtual void emplace(const std::string& name, nullptr_t) = 0;
+		virtual void emplace(const std::string& name, int32_t data) = 0;
+		virtual void emplace(const std::string& name, float data) = 0;
+		virtual void emplace(const std::string& name, const std::string_view& data) = 0;
+		virtual void emplace(const std::string& name, const uuid& data) = 0;
 	};
 }

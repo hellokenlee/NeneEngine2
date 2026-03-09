@@ -19,8 +19,6 @@ namespace nene::g
 		{}
 		~object() override = default;
 
-		void serialize(archive& ar) override;
-
 		void func0() const;
 
 		void func1(int a) const;

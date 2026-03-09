@@ -58,7 +58,7 @@ namespace nene::g
 		return py::scoped_interpreter(&config);
 	}
 
-	py::object reflection::get_class(const std::string& name)
+	reflection::type reflection::get_class(const std::string& name)
 	{
 		py::gil_scoped_acquire gil;
 		py::module_ m = py::module_::import(binding::PY_NENE_MODULE_NAME);

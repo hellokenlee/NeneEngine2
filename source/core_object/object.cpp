@@ -11,10 +11,6 @@ namespace nene::g
 	int object::s_data2 = 900;
 	int object::s_data3 = 888;
 
-	void object::serialize(archive& ar)
-	{
-	}
-
 	void object::func0() const
 	{
 		log(object_, info, "object::func0()");

@@ -83,7 +83,7 @@ namespace nene::g
 		variant invoke(variant self, const std::string& func, arg_ts&&... args);
 		
 		template <typename func_t>
-		void iterate(variant self, func_t predicate) requires std::invocable<func_t, const std::string&, const variant&>;
+		void iterate_properties(variant self, func_t predicate) requires std::invocable<func_t, const std::string&, const variant&>;
 	}
 }
 
