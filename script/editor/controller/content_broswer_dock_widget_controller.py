@@ -4,7 +4,7 @@
 
 import os
 
-from PySide6.QtCore import QEvent, QSize
+from PySide6.QtCore import QEvent, QSize, Qt
 from PySide6.QtWidgets import QPushButton, QWidget, QListWidget, QListWidgetItem, QApplication, QLabel, QLineEdit
 from script.editor.resource_set import IconSet, PixmapSet
 from script.editor.controller.dock_widget_controller import DockWidgetController
@@ -12,6 +12,7 @@ from script.editor.controller.dock_widget_controller import DockWidgetController
 
 class HistoryNavigator(object):
 	"""线性历史 + 指针模型"""
+
 	def __init__(self, start: str):
 		self._history: list[str] = [start]
 		self._i: int = 0
@@ -49,7 +50,6 @@ class HistoryNavigator(object):
 
 
 class ContentBroswerDockWidgetController(DockWidgetController):
-
 	UI_FILE = "content_browser_dock_widget.ui"
 
 	def __init__(self):
@@ -112,13 +112,13 @@ class ContentBroswerDockWidgetController(DockWidgetController):
 			button_path = os.path.join(button_path, directory)
 			self._path_button_to_path[path_button] = button_path
 			path_button.clicked.connect(lambda _, btn=path_button: self._on_path_button_clicked(btn))
-			path_button.setStyleSheet("font-size: 14px;")
+			path_button.setStyleSheet("QPushButton { font-size: 14px; border: none; background: transparent; }  QPushButton:hover { text-decoration: underline; }")
 			# 分隔符图标
 			if button_path:
 				sep_label = QLabel()
-				sep_label.setPixmap(PixmapSet().path_seperator)
-				sep_label.setScaledContents(True)
-				sep_label.setMaximumSize(QSize(14, 28))
+				sep_label.setPixmap(PixmapSet().path_seperator.scaled(14, 28))
+				sep_label.setFixedSize(QSize(18, 28))
+				sep_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 				self._path_widget.layout().addWidget(sep_label)
 
 		# 更新导航栏按钮可用状态
