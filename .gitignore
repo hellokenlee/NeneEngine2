@@ -1,5 +1,6 @@
 # Visual Studio Files
 .vs/*
+.vscode/*
 *.sln
 *.vcxproj
 *.vcxproj.user

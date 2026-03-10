@@ -3,7 +3,8 @@
 # __email__ = "hellokenlee@163.com"
 
 from PySide6 import QtCore
-from PySide6.QtWidgets import QMainWindow, QTabWidget, QTabBar, QDockWidget
+from PySide6.QtGui import QAction
+from PySide6.QtWidgets import QMainWindow, QTabWidget, QTabBar, QDockWidget, QMenu
 from script.editor.controller.base_controller import BaseController
 from script.editor.controller.console_dock_widget_controller import ConsoleDockWidgetController
 from script.editor.controller.content_broswer_dock_widget_controller import ContentBroswerDockWidgetController
@@ -30,6 +31,7 @@ class MainWindowController(BaseController[QMainWindow], QtCore.QObject):
 		#
 		self._dock_title_to_widget: dict[str, QDockWidget] = {}
 		self._dock_widget_controllers: dict[QDockWidget, DockWidgetController] = {}
+		self._window_menu: QMenu = self.ui.findChild(QMenu, "menuView")
 
 		# Console
 		self._console = self.add_dock_widget_controller(ConsoleDockWidgetController(), QtCore.Qt.DockWidgetArea.BottomDockWidgetArea)
@@ -48,7 +50,12 @@ class MainWindowController(BaseController[QMainWindow], QtCore.QObject):
 		self._dock_widget_controllers[controller.ui] = controller
 		self._dock_title_to_widget[controller.ui.windowTitle()] = controller.ui
 		self.ui.addDockWidget(area, controller.ui)
+		self._register_dock_toggle_action(controller.ui)
 		return controller
+
+	def _register_dock_toggle_action(self, dock_widget: QDockWidget):
+		action: QAction = dock_widget.toggleViewAction()
+		self._window_menu.addAction(action)
 
 	def _refresh_dock_widget_title_bar(self, controller: DockWidgetController):
 		b_in_tab_group = False
