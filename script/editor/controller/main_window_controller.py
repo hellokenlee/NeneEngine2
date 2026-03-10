@@ -3,7 +3,6 @@
 # __email__ = "hellokenlee@163.com"
 
 from PySide6 import QtCore
-from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QMainWindow, QTabWidget, QTabBar, QDockWidget
 from script.editor.controller.base_controller import BaseController
 from script.editor.controller.console_dock_widget_controller import ConsoleDockWidgetController
@@ -11,6 +10,7 @@ from script.editor.controller.content_broswer_dock_widget_controller import Cont
 
 from nene_editor import NeneViewportWidget
 
+from script.editor.resource_set import IconSet
 from script.editor.controller.dock_widget_controller import DockWidgetController
 
 
@@ -22,7 +22,7 @@ class MainWindowController(BaseController[QMainWindow], QtCore.QObject):
 		super().__init__()
 		self.ui.resize(1280, 720)
 		self.ui.setWindowTitle("NeneEngine")
-		self.ui.setWindowIcon(QIcon("content/engine/sakura.png"))
+		self.ui.setWindowIcon(IconSet().sakura)
 		self.ui.setCentralWidget(NeneViewportWidget(self.ui))
 		self.ui.setTabPosition(QtCore.Qt.DockWidgetArea.BottomDockWidgetArea, QTabWidget.TabPosition.North)
 		self.ui.setTabPosition(QtCore.Qt.DockWidgetArea.LeftDockWidgetArea, QTabWidget.TabPosition.North)
