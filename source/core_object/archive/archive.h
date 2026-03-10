@@ -16,12 +16,16 @@ namespace nene
 		virtual ~archive() = default;
 		
 		//
-		virtual std::shared_ptr<archive> emplace_map(const std::string& name) = 0;
-		virtual std::shared_ptr<archive> emplace_array(const std::string& name) = 0;
-		virtual void emplace(const std::string& name, nullptr_t) = 0;
-		virtual void emplace(const std::string& name, int32_t data) = 0;
-		virtual void emplace(const std::string& name, float data) = 0;
-		virtual void emplace(const std::string& name, const std::string_view& data) = 0;
-		virtual void emplace(const std::string& name, const uuid& data) = 0;
+		virtual void process(const std::string& name, nullptr_t) = 0;
+		virtual void process(const std::string& name, int32_t& data) = 0;
+		virtual void process(const std::string& name, float& data) = 0;
+		virtual void process(const std::string& name, std::string& data) = 0;
+		virtual void process(const std::string& name, uuid& data) = 0;
+		//
+		virtual bool is_loading() const = 0;
+		
+		//
+		virtual void enter_section(const std::string& name) = 0;
+		virtual void leave_section() = 0;
 	};
 }

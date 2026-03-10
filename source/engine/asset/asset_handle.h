@@ -11,6 +11,14 @@
 
 namespace nene::t
 {
+	/** the handle of an asset in game-thread
+	 * 
+	 * @see
+	 *		three levels of abstraction:
+	 *			Asset: owned by asset manager, referenced ( with asset_handle ) by component, the unserialized data in game-thread
+	 *			Component: owned by entity, the instance data in game-thread
+	 *			RenderData: owned by asset, the render proxy of an asset in render-thread 
+	 */
 	template<typename asset_t>
 	struct asset_handle
 	{

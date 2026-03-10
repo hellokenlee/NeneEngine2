@@ -13,34 +13,6 @@
 
 namespace py = pybind11;
 
-/*	
- *	Usage:
- *		// In `*.h`
- *		```c++
- *		namespace nene::g
- *		{
- *			class my_class
- *			{
- *			public:
- *				void func0();
- *			};
- *		}
- *		```
- *		
- *		// In `*.py.cpp`
- *		```c++
- *		namespace nene::g
- *		{
- *			META(m)
- *			{
- *				n::t::class_<my_class>("my_class", m)
- *					.method("func0", &my_class::func0)
- *				;
- *			}
- *		}
- *		```
- */
-
 namespace nene::g
 {
 	/** the singleton class for initializing reflections */
@@ -54,7 +26,7 @@ namespace nene::g
 		
 		[[nodiscard]] py::scoped_interpreter initialize() const;
 
-		/** helpers for py class registeration */
+		/** helpers for py class registration */
 		void add_py_class_init_function(py_class_init_func_t func) { py_class_init_functions.push_back(func); }
 		const std::vector<py_class_init_func_t>& get_py_class_init_functions() const { return py_class_init_functions; }
 		
@@ -69,7 +41,7 @@ namespace nene::g
 	namespace reflection
 	{
 		using type = py::object;
-		using variant = py::object;
+		using variant = py::handle;
 		
 		type get_class(const std::string& name);
 		
@@ -82,8 +54,7 @@ namespace nene::g
 		template <typename ... arg_ts>
 		variant invoke(variant self, const std::string& func, arg_ts&&... args);
 		
-		template <typename func_t>
-		void iterate_properties(variant self, func_t predicate) requires std::invocable<func_t, const std::string&, const variant&>;
+		std::vector<std::string> get_property_names(variant self);
 	}
 }
 

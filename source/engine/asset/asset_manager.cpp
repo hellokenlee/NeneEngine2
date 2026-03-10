@@ -16,7 +16,7 @@ namespace nene::g
 	asset_manager::asset_manager()
 	{
 		// scan `content` folder all assets and build uuid-path map
-		log(asset_manager_, info, "building asset registery...");
+		log(asset_manager_, info, "building asset registry...");
 		std::filesystem::path content_path = "content";
 		if (std::filesystem::exists(content_path) && std::filesystem::is_directory(content_path))
 		{
@@ -30,7 +30,7 @@ namespace nene::g
 				}
 			}
 		}
-		log(asset_manager_, info, "done building asset registery.");
+		log(asset_manager_, info, "done building asset registry.");
 	}
 
 	std::shared_ptr<asset> asset_manager::internal_load(const uuid& uid)

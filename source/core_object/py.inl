@@ -34,42 +34,4 @@ namespace nene::g::reflection
 		py::kwargs py_kwargs = py::kwargs();
 		return self.attr(func.c_str())(*py_args, **py_kwargs);
 	}
-	
-	template <typename func_t>
-	void iterate_properties(variant self, func_t predicate) requires std::invocable<func_t, const std::string&, const variant&>
-	{
-		if (self)
-		{
-			py::gil_scoped_acquire gil;
-			py::object py_callable_func = py::module_::import("builtins").attr("callable");
-			py::list dir_list = py::module_::import("builtins").attr("dir")(self);
-			for (auto py_prop_name : dir_list)
-			{
-				// skip internal props
-				std::string prop_name = py_prop_name.cast<std::string>();
-				if (prop_name.starts_with("__") && prop_name.ends_with("__"))
-				{
-					continue;
-				}
-				if (prop_name.starts_with("_pybind11_") && prop_name.ends_with("_"))
-				{
-					continue;
-				}
-				if (py_callable_func(py_prop_name).cast<bool>())
-				{
-					continue; 
-				}
-				//
-				try
-				{
-					py::object py_prop_value = self.attr(prop_name.c_str());
-					predicate(prop_name, py_prop_value);
-				}
-				catch (...)
-				{
-					// do nothing
-				}
-			}
-		}
-	}
 }

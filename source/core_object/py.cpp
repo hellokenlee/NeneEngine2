@@ -57,12 +57,49 @@ namespace nene::g
 		config.install_signal_handlers = true;
 		return py::scoped_interpreter(&config);
 	}
-
-	reflection::type reflection::get_class(const std::string& name)
+	
+	namespace reflection
 	{
-		py::gil_scoped_acquire gil;
-		py::module_ m = py::module_::import(binding::PY_NENE_MODULE_NAME);
-		py::object cls = m.attr(name.c_str());
-		return cls;
+		type get_class(const std::string& name)
+		{
+			py::gil_scoped_acquire gil;
+			py::module_ m = py::module_::import(binding::PY_NENE_MODULE_NAME);
+			py::object cls = m.attr(name.c_str());
+			return cls;
+		}
+		
+		std::vector<std::string> get_property_names(variant self) 
+		{
+			std::vector<std::string> result;
+			if (self)
+			{
+				py::gil_scoped_acquire gil;
+				py::object py_callable_func = py::module_::import("builtins").attr("callable");
+				py::list dir_list = py::module_::import("builtins").attr("dir")(self);
+				for (auto py_prop_name : dir_list)
+				{
+					// skip internal props
+					std::string prop_name = py_prop_name.cast<std::string>();
+					if (prop_name.starts_with("__") && prop_name.ends_with("__"))
+					{
+						continue;
+					}
+					if (prop_name.starts_with("_pybind11_") && prop_name.ends_with("_"))
+					{
+						continue;
+					}
+					if (py_callable_func(py_prop_name).cast<bool>())
+					{
+						continue; 
+					}
+					result.emplace_back(prop_name);
+				}
+			}
+			return result;
+		}
 	}
+
+	
+	
+	
 }
