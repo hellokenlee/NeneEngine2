@@ -38,9 +38,9 @@ class StubGenerator(object):
 		logger = logging.getLogger("generate_pyi")
 		options.logger = logger
 
-		import nene_editor
-		setattr(nene_editor, "__file__", __file__)
-		generate_pyi("nene_editor", options.outpath, options)
+		import NeneQtWidgets
+		setattr(NeneQtWidgets, "__file__", __file__)
+		generate_pyi("NeneQtWidgets", options.outpath, options)
 		pass
 
 	@classmethod

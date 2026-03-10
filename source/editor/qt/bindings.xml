@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<typesystem package="nene_editor">
+<typesystem package="NeneQtWidgets">
     <load-typesystem name="typesystem_widgets.xml" generate="no"/>
     <object-type name="WigglyWidget"/>
     <object-type name="NeneViewportWidget"/>

@@ -9,7 +9,7 @@ from script.editor.controller.base_controller import BaseController
 from script.editor.controller.console_dock_widget_controller import ConsoleDockWidgetController
 from script.editor.controller.content_broswer_dock_widget_controller import ContentBroswerDockWidgetController
 
-from nene_editor import NeneViewportWidget
+from NeneQtWidgets import NeneViewportWidget
 
 from script.editor.resource_set import IconSet
 from script.editor.controller.dock_widget_controller import DockWidgetController

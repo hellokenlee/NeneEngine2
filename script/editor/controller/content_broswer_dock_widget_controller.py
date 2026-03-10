@@ -5,9 +5,10 @@
 import os
 
 from PySide6.QtCore import QEvent, QSize, Qt
-from PySide6.QtWidgets import QPushButton, QWidget, QListWidget, QListWidgetItem, QApplication, QLabel, QLineEdit
+from PySide6.QtWidgets import QPushButton, QWidget, QListWidget, QListWidgetItem, QApplication, QLabel, QLineEdit, QFileDialog
 from script.editor.resource_set import IconSet, PixmapSet
 from script.editor.controller.dock_widget_controller import DockWidgetController
+from script.editor.common.log import log, INFO
 
 
 class HistoryNavigator(object):
@@ -55,12 +56,14 @@ class ContentBroswerDockWidgetController(DockWidgetController):
 	def __init__(self):
 		super(ContentBroswerDockWidgetController, self).__init__()
 		self._nav = HistoryNavigator(os.path.join("content", "engine"))
+		self._import_push_button: QPushButton = self.ui.findChild(QPushButton, "importPushButton")
 		self._back_push_button: QPushButton = self.ui.findChild(QPushButton, "backPushButton")
 		self._forward_push_button: QPushButton = self.ui.findChild(QPushButton, "forwardPushButton")
 		self._content_view_widget: QListWidget = self.ui.findChild(QListWidget, "contentListWidget")
 		self._path_widget: QWidget = self.ui.findChild(QWidget, "pathWidget")
 		self._serach_line_edit: QLineEdit = self.ui.findChild(QLineEdit, "searchLineEdit")
 		#
+		self._import_push_button.clicked.connect(self._on_import_push_button_clicked)
 		self._back_push_button.clicked.connect(self._on_back_push_button_clicked)
 		self._forward_push_button.clicked.connect(self._on_forward_push_button_clicked)
 		self._path_button_to_path: dict[QPushButton, str] = {}
@@ -69,6 +72,12 @@ class ContentBroswerDockWidgetController(DockWidgetController):
 		#
 		self._update_views()
 		#
+		pass
+
+	def _on_import_push_button_clicked(self):
+		file_path, _ = QFileDialog.getOpenFileName(self.ui, "Import Asset", "", "glTF Files (*.gltf *.glb)")
+		if file_path:
+			log(self, INFO, "Import: %s" % file_path)
 		pass
 
 	def _on_content_view_item_double_clicked(self, item: QListWidgetItem):
