@@ -161,7 +161,7 @@ class NeneModule(object, metaclass=Singleton):
 			module_config.linker.msvc_optimize_references = True
 		#
 		if build_config.platform == Platform.Windows:
-			module_config.add_defines(["NENE_PLATFORM_WINDOWS"])
+			module_config.add_defines(["NENE_PLATFORM_WINDOWS", "_CRT_SECURE_NO_WARNINGS"])
 		elif build_config.platform == Platform.Mac:
 			module_config.add_defines(["NENE_PLATFORM_MAC"])
 		elif build_config.platform == Platform.Ios:
