@@ -1,5 +1,0 @@
-<RCC>
-  <qresource prefix="/script/editor/_ui_">
-    <file>icon/folder.png</file>
-  </qresource>
-</RCC>
