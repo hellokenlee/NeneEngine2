@@ -8,15 +8,7 @@ namespace nene
 	PYBIND(m)
 	{
 		py::class_<editor_command_center>(m, "EditorCommandCenter")
-			.def(
-				py::init(
-					[]()
-					{
-						return &editor_command_center::get();
-					}
-				)
-				, py::return_value_policy::reference
-			)
+			.def_static("get", &editor_command_center::get, py::return_value_policy::reference)
 			.def("invoke", &editor_command_center::invoke)
 		;
 	}

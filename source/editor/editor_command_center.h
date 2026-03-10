@@ -13,6 +13,9 @@ namespace nene
 	public:
 		//
 		static editor_command_center& get();
+		//
+		editor_command_center(const editor_command_center&) = delete;
+		editor_command_center& operator=(const editor_command_center&) = delete;
 		
 		//
 		void invoke(editor_command& cmd);

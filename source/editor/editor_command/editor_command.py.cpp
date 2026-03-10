@@ -5,10 +5,10 @@
 
 namespace nene
 {
-	PYBIND(m, 1)
+	PYBIND(m)
 	{
-		py::class_<asset_import_command, editor_command>(m, "AssetImportCommand")
-			.def(py::init<const std::string&>())
+		py::class_<editor_command>(m, "EditorCommand")
+			.def(py::init<>())
 		;
 	}
 }
