@@ -11,10 +11,7 @@ namespace
 	PYBIND11_MODULE(nene, m)
 	{
 		// Do python class bindings initialization
-		for (const auto& py_init_function : nene::g::binding::get().get_py_class_init_functions())
-		{
-			py_init_function(m);
-		}
+		nene::g::binding::get().call_py_class_init_functions(m);
 	}
 }
 
@@ -57,7 +54,27 @@ namespace nene::g
 		config.install_signal_handlers = true;
 		return py::scoped_interpreter(&config);
 	}
-	
+
+	void binding::add_py_class_init_function(py_class_init_func_t func, uint32_t inheritance_level)
+	{
+		while (m_py_class_init_functions.size() <= inheritance_level)
+		{
+			m_py_class_init_functions.emplace_back();	
+		}
+		m_py_class_init_functions[inheritance_level].emplace_back(func);	
+	}
+
+	void binding::call_py_class_init_functions(const pybind11::module_& m)
+	{
+		for (const auto& level_init_funcs : m_py_class_init_functions)
+		{
+			for (const auto& func : level_init_funcs)
+			{
+				func(m);
+			}
+		}
+	}
+
 	namespace reflection
 	{
 		type get_class(const std::string& name)

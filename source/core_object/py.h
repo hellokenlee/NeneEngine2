@@ -27,14 +27,14 @@ namespace nene::g
 		[[nodiscard]] py::scoped_interpreter initialize() const;
 
 		/** helpers for py class registration */
-		void add_py_class_init_function(py_class_init_func_t func) { py_class_init_functions.push_back(func); }
-		const std::vector<py_class_init_func_t>& get_py_class_init_functions() const { return py_class_init_functions; }
+		void add_py_class_init_function(py_class_init_func_t func, uint32_t inheritance_level);
+		void call_py_class_init_functions(const ::pybind11::module_& m);
 		
 	private:
 		binding() = default;
 		~binding() = default;
-
-		std::vector<py_class_init_func_t> py_class_init_functions;
+		
+		std::vector<std::vector<py_class_init_func_t>> m_py_class_init_functions;
 	};
 
 	/** utilities for runtime reflection */
@@ -60,18 +60,29 @@ namespace nene::g
 
 #include "py.inl"
 
-#define PYBIND(pymodule)																								\
-static void __nene_auto_register_func(const ::pybind11::module_&);														\
-namespace																												\
-{																														\
-	struct __nene_auto_register																							\
-	{																													\
-		__nene_auto_register()																							\
-		{																												\
-			/* auto init for pybind11 (deferred call) */																\
-			::nene::g::binding::get().add_py_class_init_function(__nene_auto_register_func);							\
-		}																												\
-	};																													\
-}																														\
-[[maybe_unused]] static const __nene_auto_register NENE_CAT(__nene_auto_register_instance_, __LINE__);					\
-static void __nene_auto_register_func(const ::pybind11::module_& (pymodule))  // NOLINT(bugprone-macro-parentheses)
+/* static object auto binding */
+#define PYBIND_LEVEL(pymodule, inheritance_level)																							\
+static void NENE_CAT(__nene_auto_register_func, __LINE__)(const ::pybind11::module_&);														\
+namespace																																	\
+{																																			\
+	struct NENE_CAT(__nene_auto_register, __LINE__)																							\
+	{																																		\
+		NENE_CAT(__nene_auto_register, __LINE__)()																							\
+		{																																	\
+			/* auto init for pybind11 (deferred call) */																					\
+			::nene::g::binding::get().add_py_class_init_function(NENE_CAT(__nene_auto_register_func, __LINE__), inheritance_level);			\
+		}																																	\
+	};																																		\
+}																																			\
+[[maybe_unused]] static const NENE_CAT(__nene_auto_register, __LINE__) NENE_CAT(__nene_auto_register_instance_, __LINE__);					\
+static void NENE_CAT(__nene_auto_register_func, __LINE__)(const ::pybind11::module_& (pymodule))  // NOLINT(bugprone-macro-parentheses)
+
+/* default binding level: 0 */
+#define PYBIND_ZERO_LEVEL(pymodule) PYBIND_LEVEL(pymodule, 0)
+
+/* force MSVC to expand this macro */
+#define PYBIND_PREPROCESSOR_EXPAND(x) x
+
+/* if `len(__VA_ARGS__) == 1` call `PYBIND_ZERO_LEVEL(...)`, if `len(__VA_ARGS__) == 2` call `PYBIND_LEVEL(...)` */
+#define PYBIND_SELECTOR(_1, _2, FUNC, ...) FUNC
+#define PYBIND(...) PYBIND_PREPROCESSOR_EXPAND(PYBIND_SELECTOR(__VA_ARGS__, PYBIND_LEVEL, PYBIND_ZERO_LEVEL)(__VA_ARGS__))

@@ -29,10 +29,6 @@ namespace nene::g
 			auto test_static_mesh_entity = m_registery.create();
 			m_registery.emplace<static_mesh_component>(test_static_mesh_entity);
 		}
-		
-		asset a;
-		json_writer writer("test.bjd");
-		a.serialize(writer);
 		// temp test code
 		m_camera_control_system = std::make_shared<camera_control_system>();
 		input_manager::get().add_listener(m_camera_control_system);

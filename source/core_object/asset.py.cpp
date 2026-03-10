@@ -6,7 +6,7 @@
 
 namespace nene::g
 {
-	PYBIND(m)
+	PYBIND(m, 1)
 	{
 		py::class_<asset, serializable>(m, "Asset")
 			.def(py::init<>())
