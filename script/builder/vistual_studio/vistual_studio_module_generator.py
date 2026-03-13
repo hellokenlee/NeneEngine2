@@ -9,6 +9,7 @@ from extern.python3 import Python3
 
 from script.builder.common import utils
 from script.builder.common.nene_module import *
+from script.builder.common.external_library import ExternalLibrary
 from script.builder.common.build_configuration import BuildConfiguration
 from script.builder.common.module_generator import ModuleGenerator
 from script.builder.common.vcpkg_package import VcpkgPackage
@@ -303,29 +304,26 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 			# 环境变量重定向
 			if nene_module.build_target == BuildTarget.EXE:
 				#
-				exec_paths: set[str] = set()
-				nene_dependencies = nene_module.recursively_find_extern_libraries()
+				exec_prior_paths: set[str] = set()
+				exec_rear_paths: set[str] = set()
+				nene_dependencies: set[type[NeneDenepndency]] = nene_module.recursively_find_extern_libraries()
 				for dependency in nene_dependencies:
 					for directory in dependency().get_dynamic_library_directory_abs_paths(config.platform, config.architecture, config.configuration):
-						exec_paths.add(directory)
-				exec_paths_str = ";".join(exec_paths)
+						# 保证 PySide 的 dll 目录优先于 Qt6 的 dll 目录, 否则会出现 "no qt platform plugin could be initialized" 报错
+						if issubclass(dependency, ExternalLibrary):
+							exec_prior_paths.add(directory)
+						else:
+							exec_rear_paths.add(directory)
+				exec_paths_str = ";".join([*exec_prior_paths, *exec_rear_paths])
 				ElementTree.SubElement(property_group, VcTag.LocalDebuggerEnvironment).text = "PATH=%s;%%(PATH)" % exec_paths_str
 				ElementTree.SubElement(property_group, VcTag.LocalDebuggerWorkingDirectory).text = "$(SolutionDir)"
-				# 如果是 Rider 目前还不支持 `LocalDebuggerEnvironment` 手动写入 .env 文件
+
+				# 目前 Rider 还不支持读取 `LocalDebuggerEnvironment`, 也不支持读取指定的 `*.env` 文件, 只能 hack 配置文件
 				# refs: https://youtrack.jetbrains.com/issue/RIDER-101684/Respect-LocalDebuggerEnvironment-from-.vcxproj.user-file
-				target_exec_folder_abs_path = nene_module.target_exec_folder_abs_path(config.architecture, config.configuration)
-				if os.path.exists(target_exec_folder_abs_path):
-					target_env_abs_path = os.path.join(target_exec_folder_abs_path, ".env.%s" % nene_module.name)
-					with open(target_env_abs_path, "w") as fp:
-						envs = [
-							"PATH=%s;$PATH$" % exec_paths_str
-						]
-						fp.writelines("\n".join(envs))
-						log("Write: %s" % target_env_abs_path)
-						envs = {
-							"PATH": "%s;$PATH$" % exec_paths_str
-						}
-						self._rider_hack_envs.setdefault(nene_module.name, {})[config.configuration.name] = envs
+				envs = {
+					"PATH": "%s;$PATH$" % exec_paths_str
+				}
+				self._rider_hack_envs.setdefault(nene_module.name, {})[config.configuration.name] = envs
 		pass
 
 	@staticmethod

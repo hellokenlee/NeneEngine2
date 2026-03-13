@@ -13,6 +13,7 @@ from extern.pyside import PySide
 from extern.assimp import Assimp
 from source.core import Core
 from source.core_object import CoreObject
+from source.core_render import CoreRender
 from source.engine import Engine
 
 from script.builder.common.nene_module import *
@@ -33,7 +34,7 @@ class Editor(NeneModule):
 		super().__init__()
 		self.build_target = BuildTarget.EXE
 		self.module_dependencies.extend(
-			[Core, CoreObject, Engine]
+			[Core, CoreObject, CoreRender, Engine]
 		)
 		self.external_dependencies.extend(
 			[QtBase, PySide, Python3, Assimp]
