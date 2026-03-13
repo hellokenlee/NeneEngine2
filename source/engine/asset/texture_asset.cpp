@@ -1,10 +1,8 @@
 ﻿/* Copyright reserved by KenLee@hellokenlee@163.com */
 
-#include "asset.h"
+#include "texture_asset.h"
 
 
 namespace nene::g
 {
-	asset::asset()
-	{}
 }

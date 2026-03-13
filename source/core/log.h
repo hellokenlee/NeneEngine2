@@ -12,7 +12,7 @@
 #include <source_location>
 
 #include "platform.h"
-#include "interface/log_handler.h"
+#include "log_handler.h"
 
 /**
  * Level of each log

@@ -2,7 +2,7 @@
 
 #include "py.h"
 #include "core/log.h"
-#include "core/interface/log_handler.h"
+#include "core/log_handler.h"
 
 #ifdef _MSC_VER
 	#pragma warning(push)

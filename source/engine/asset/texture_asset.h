@@ -8,12 +8,18 @@
 
 namespace nene::g
 {
-	class texture_asset : public asset
+	struct NENE_API mip_data
 	{
-	public:	
-		
-		
-	protected:
+		uint3 m_extent;
+		gapi_pixel_format m_format;
+		std::vector<uint8_t> m_pixels;
+	};
+	
+	struct NENE_API texture_asset : asset
+	{
+		//
+		std::vector<mip_data> m_mip_maps;
+		//
 		std::unique_ptr<r::render_texture> m_render_texture;
 	};
 }

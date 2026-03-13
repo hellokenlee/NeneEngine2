@@ -8,20 +8,20 @@
 
 namespace nene
 {
-	std::vector<r::image_data> image_loader::load(const std::string& image_path) const
+	std::shared_ptr<g::asset> texture_importer::import_asset(const std::string& from_abs_path, const std::string& to_rel_path)
 	{
 		//
-		std::vector<r::image_data> result;
+		auto result = make_new_asset<g::texture_asset>(to_rel_path);
 	
 		// load image via. extensions
-		if (image_path.ends_with(".png"))
+		if (from_abs_path.ends_with(".png"))
 		{
 			// forced convert to 4 channel rgba data
 			int image_width, image_height, image_channels;
-			unsigned char* r8g8b8a8 = stbi_load(image_path.c_str(), &image_width, &image_height, &image_channels, 4);
+			unsigned char* r8g8b8a8 = stbi_load(from_abs_path.c_str(), &image_width, &image_height, &image_channels, 4);
 
 			// one, 2d, r8g8b8a8 data
-			auto& image = result.emplace_back();
+			auto& image = result->m_mip_maps.emplace_back();
 			image.m_extent.x = image_width;
 			image.m_extent.y = image_height;
 			image.m_extent.z = 1;
@@ -37,11 +37,16 @@ namespace nene
 		else
 		{
 			NOT_IMPLEMENTED();
+			return nullptr;
 		}
 
 
 		// TODO: mipmap generation
-
 		return result;
+	}
+
+	std::vector<std::string> texture_importer::get_supported_asset_extensions()
+	{
+		return {".png", ".bmp"};
 	}
 }

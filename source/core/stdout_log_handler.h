@@ -3,7 +3,7 @@
 #pragma once
 
 #include "log.h"
-#include "interface/log_handler.h"
+#include "log_handler.h"
 
 namespace nene
 {

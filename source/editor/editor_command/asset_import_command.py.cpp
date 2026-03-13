@@ -8,7 +8,7 @@ namespace nene
 	PYBIND(m, 1)
 	{
 		py::class_<asset_import_command, editor_command>(m, "AssetImportCommand")
-			.def(py::init<const std::string&>())
+			.def(py::init<const std::string&, const std::string&>())
 		;
 	}
 }

@@ -7,9 +7,9 @@
 
 namespace nene
 {
-	void import()
-	{
-		Assimp::Importer importer;
-		
-	}
+	// void import()
+	// {
+	// 	Assimp::Importer importer;
+	// 	
+	// }
 }

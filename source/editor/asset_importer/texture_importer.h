@@ -2,14 +2,17 @@
 
 #pragma once
 
-#include "core/core.h"
-#include "core_render/render_texture.h"
+#include "asset_importer.h"
+#include "engine/asset/texture_asset.h"
+
 
 namespace nene
 {
-	class image_loader
+	class texture_importer : public asset_importer
 	{
 	public:
-		std::vector<r::image_data> load(const std::string& image_path) const;
+		std::shared_ptr<g::asset> import_asset(const std::string& from_abs_path, const std::string& to_rel_path) override;
+		
+		std::vector<std::string> get_supported_asset_extensions() override;
 	};
 }
