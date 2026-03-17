@@ -2,7 +2,7 @@
 
 #include "asset_import_command.h"
 #include "asset_importer/asset_importer.h"
-#include "core_object/archive/archive_json.h"
+#include "core_object/archive/json_archive.h"
 
 #include <ranges>
 
@@ -32,8 +32,9 @@ namespace nene
 				// TODO: 单独的 Save 命令
 				if (new_asset != nullptr)
 				{
-					g::json_writer writer(m_target_content_rel_path);
-					new_asset->serialize(writer);
+					g::json_writer writer;
+					writer << (*new_asset);
+					writer.write(m_target_content_rel_path);
 				}
 			}
 			else

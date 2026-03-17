@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "utils/enum_utils.h"
 #include "utils/file_utils.h"
 #include "utils/string_utils.h"
 

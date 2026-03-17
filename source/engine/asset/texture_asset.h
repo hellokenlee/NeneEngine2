@@ -13,6 +13,8 @@ namespace nene::g
 		uint3 m_extent;
 		gapi_pixel_format m_format;
 		std::vector<uint8_t> m_pixels;
+		
+		friend archive& operator<<(archive& ar, mip_data& data);
 	};
 	
 	struct NENE_API texture_asset : asset
@@ -21,5 +23,7 @@ namespace nene::g
 		std::vector<mip_data> m_mip_maps;
 		//
 		std::unique_ptr<r::render_texture> m_render_texture;
+		
+		void serialize(archive& ar) override;
 	};
 }

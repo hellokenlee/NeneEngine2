@@ -4,12 +4,12 @@
 
 #include "py.h"
 #include "core/uuid.h"
-#include "serializable.h"
+#include "object.h"
 
 
 namespace nene::g
 {
-	class NENE_API asset : public serializable
+	class NENE_API asset : public object
 	{
 	public:
 		asset();

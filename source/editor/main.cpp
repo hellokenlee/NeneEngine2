@@ -4,7 +4,7 @@
 #include <iostream>
 #include "qt/qt.h"
 #include "core/stdout_log_handler.h"
-#include "core_object/object.h"
+#include "core_object/py.h"
 
 
 int main()

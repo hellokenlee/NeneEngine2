@@ -6,7 +6,6 @@
 #include "component/static_mesh_component.h"
 #include "asset/asset_manager.h"
 #include "input_manager.h"
-#include "core_object/archive/archive_json.h"
 
 
 namespace nene::g
@@ -15,13 +14,13 @@ namespace nene::g
 	{
 		// temp test code
 		{
-			// create main camera
+			// create the main camera
 			auto main_camera_entity = m_registery.create();
 			m_registery.emplace<transform_component>(main_camera_entity);
 			m_registery.emplace<camera_component>(main_camera_entity);
 			m_registery.emplace<main_controlling_camera_tag>(main_camera_entity);
 			
-			// mark as main camera
+			// mark as the main camera
 			m_registery.ctx().emplace<main_camera_entity_relation>(main_camera_entity);
 			
 			

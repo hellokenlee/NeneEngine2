@@ -2,34 +2,18 @@
 
 #pragma once
 
-#include "py.h"
-#include "serializable.h"
+#include "core/windll.h"
+#include "archive/archive.h"
 
 
 namespace nene::g
 {
-	/** Minimal base class for */
-	class NENE_API object: public serializable
+	class NENE_API object
 	{
 	public:
-		object()
-			: serializable()
-			, m_data0(456)
-			, m_data1(234)
-		{}
-		~object() override = default;
-
-		void func0() const;
-
-		void func1(int a) const;
-
-		static void test();
-
-	public:
-		int m_data0;
-		int m_data1;
-
-		static int s_data2;
-		static int s_data3;
+		//
+		virtual ~object() = default;
+		//
+		virtual void serialize(archive& ar);
 	};
 }
