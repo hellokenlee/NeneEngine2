@@ -4,7 +4,6 @@
 
 namespace nene::g::reflection
 {
-	
 	template<typename cpp_t>
 	variant get_variant(cpp_t& self)
 	{

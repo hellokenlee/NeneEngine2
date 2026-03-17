@@ -10,7 +10,12 @@
 namespace nene
 {
 	logger editor_("editor");
-	
+
+	std::vector<std::string> asset_import_command::supported_extensions()
+	{
+		return asset_importer_manager::get().get_supported_asset_extensions();
+	}
+
 	asset_import_command::asset_import_command(const std::string& origin_file_abs_path, const std::string& target_content_rel_path)
 		: m_origin_file_abs_path(origin_file_abs_path)
 		, m_target_content_rel_path(target_content_rel_path)

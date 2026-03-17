@@ -33,13 +33,15 @@ namespace nene
 	class NENE_API asset_importer_manager
 	{
 	public:
-		static asset_importer_manager& get(); 
+		static asset_importer_manager& get();
 		
-		static std::string sanitize_extension(const std::string_view& extension);
+		std::vector<std::string> get_supported_asset_extensions() const;
 	
 		std::shared_ptr<asset_importer> find_asset_importer_by_extension(const std::string_view& ext);
 		
 	private:
+		static std::string sanitize_extension(const std::string_view& extension);
+		
 		asset_importer_manager();
 		
 		void register_asset_importer(const std::shared_ptr<asset_importer>& importer);

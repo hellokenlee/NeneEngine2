@@ -75,9 +75,12 @@ class ContentBroswerDockWidgetController(DockWidgetController):
 		pass
 
 	def _on_import_push_button_clicked(self):
-		file_path, _ = QFileDialog.getOpenFileName(self.ui, "Import Asset", "", "glTF Files (*.gltf *.glb)")
+		from nene import EditorCommandCenter, AssetImportCommand
+
+		exts: list[str] = ["*" + ext for ext in AssetImportCommand.supported_extensions()]
+		file_path, _ = QFileDialog.getOpenFileName(self.ui, "Import Asset", "", "Asset Files (%s)" % " ".join(exts))
 		if file_path:
-			from nene import EditorCommandCenter, AssetImportCommand
+
 			file_rel = os.path.join(self._nav.current(), os.path.basename(file_path))
 			log(self, INFO, "Import: %s -> %s" % (file_path, file_rel))
 			EditorCommandCenter.get().invoke(AssetImportCommand(file_path, file_rel))

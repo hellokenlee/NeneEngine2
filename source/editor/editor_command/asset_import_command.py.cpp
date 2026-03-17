@@ -9,6 +9,7 @@ namespace nene
 	{
 		py::class_<asset_import_command, editor_command>(m, "AssetImportCommand")
 			.def(py::init<const std::string&, const std::string&>())
+			.def_static("supported_extensions", &asset_import_command::supported_extensions)
 		;
 	}
 }

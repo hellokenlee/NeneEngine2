@@ -1,6 +1,9 @@
 ﻿/* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #include "asset_importer.h"
+
+#include <ranges>
+
 #include "mesh_importer.h"
 #include "texture_importer.h"
 
@@ -13,6 +16,16 @@ namespace nene
 	{
 		static asset_importer_manager instance;
 		return instance;
+	}
+
+	std::vector<std::string> asset_importer_manager::get_supported_asset_extensions() const
+	{
+		std::vector<std::string> extensions;
+		for (const auto& ext : m_asset_importers | std::views::keys)
+		{
+			extensions.emplace_back(ext);
+		}
+		return extensions;
 	}
 
 	std::string asset_importer_manager::sanitize_extension(const std::string_view& extension)
