@@ -3,7 +3,7 @@
 #pragma once
 
 #include "core/core.h"
-
+#include <boost/pfr.hpp>
 
 namespace nene::g
 {
@@ -29,7 +29,6 @@ namespace nene
 	class NENE_API archive
 	{
 	public:
-		
 		//
 		enum class direction { write, read };
 		//
@@ -38,17 +37,65 @@ namespace nene
 		virtual void read(const std::string& file_path) = 0;
 		virtual void write(const std::string& file_path) const = 0;
 		
-		// entry
-		virtual archive& operator<<(g::object& obj);
-		
 		// basic types
 		virtual archive& operator<<(const nvp<uint8_t>& kv) = 0;
+		virtual archive& operator<<(const nvp<uint16_t>& kv) = 0;
+		virtual archive& operator<<(const nvp<uint32_t>& kv) = 0;
+		virtual archive& operator<<(const nvp<int8_t>& kv) = 0;
+		virtual archive& operator<<(const nvp<int16_t>& kv) = 0;
+		virtual archive& operator<<(const nvp<int32_t>& kv) = 0;
+		virtual archive& operator<<(const nvp<float>& kv) = 0;
+		
 		virtual archive& operator<<(const nvp<uint3>& kv) = 0;
+		virtual archive& operator<<(const nvp<float2>& kv) = 0;
+		
+		virtual archive& operator<<(const nvp<uuid>& kv) = 0;
+		
 		virtual archive& operator<<(const nvp<std::string>& kv) = 0;
 		
 		// native types
-		template<typename data_t>
-		archive& operator<<(const nvp<data_t>& kv)
+		/** enum specialization */
+		template<typename enum_t>
+		requires std::is_enum_v<enum_t>
+		archive& operator<<(const nvp<enum_t>& kv)
+		{
+			using integer_t = std::underlying_type_t<enum_t>;
+			if (direction() == direction::write)
+			{
+				integer_t temp = static_cast<integer_t>(kv.m_data);
+				*this << nvp<integer_t>(kv.m_name, temp);
+			} 
+			else 
+			{
+				integer_t temp{};
+				*this << nvp<integer_t>(kv.m_name, temp);
+				kv.m_data = static_cast<enum_t>(temp);
+			}
+			return *this;
+		}
+		
+		/** aggregate specialization */
+		template<typename struct_t>
+		requires std::is_aggregate_v<struct_t>
+		archive& operator<<(const nvp<struct_t>& kv)
+		{
+			enter_object(kv.m_name);
+			boost::pfr::for_each_field(
+				kv.m_data, 
+				[&](auto& field, auto index) 
+				{
+					constexpr auto field_name = boost::pfr::get_name<index, struct_t>();
+					*this << nvp(field_name.data(), field); 
+				}
+			);
+			leave_object();
+			return *this;
+		}
+		
+		/** adl ( friend operator ) fall back */
+		template<typename struct_t>
+		requires (!std::is_aggregate_v<struct_t>) && (!std::is_enum_v<struct_t>)
+		archive& operator<<(const nvp<struct_t>& kv)
 		{
 			enter_object(kv.m_name);
 			*this << kv.m_data;
@@ -57,6 +104,7 @@ namespace nene
 		}
 		
 		// stl's container types
+		/** std::vector<> specialization */
 		template<typename element_t>
 		archive& operator<<(const nvp<std::vector<element_t>>& kvs)
 		{
@@ -66,7 +114,7 @@ namespace nene
 			//
 			for (auto i = 0; i < len; ++i)
 			{
-				(*this) << nvp<element_t>(kvs.m_name, kvs.m_data[i]);
+				(*this) << nvp<element_t>(nullptr, kvs.m_data[i]);
 			}
 			leave_array();
 			//
@@ -82,5 +130,8 @@ namespace nene
 	};
 }
 
-/** auto nvp name get */
-#define NVP(member_name) ::nene::nvp{#member_name, this->member_name}
+/** auto nvp name constructor */
+#define MAKE_NVP(instance, attrib) ::nene::nvp{#attrib, instance.attrib}
+#define MAKE_THIS_NVP(attrib) ::nene::nvp{#attrib, this->attrib}
+
+#define AR(...) NENE_OVERLOAD_2_1(__VA_ARGS__, MAKE_NVP, MAKE_THIS_NVP)(__VA_ARGS__)

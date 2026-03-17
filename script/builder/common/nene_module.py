@@ -160,6 +160,8 @@ class NeneModule(object, metaclass=Singleton):
 			module_config.linker.msvc_com_dat_folding = True
 			module_config.linker.msvc_optimize_references = True
 		#
+		module_config.compiler.additional_compiler_flags.extend(["/Zc:preprocessor"])
+		#
 		if build_config.platform == Platform.Windows:
 			module_config.add_defines(["NENE_PLATFORM_WINDOWS", "_CRT_SECURE_NO_WARNINGS"])
 		elif build_config.platform == Platform.Mac:

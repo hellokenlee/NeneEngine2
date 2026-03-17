@@ -2,6 +2,7 @@
   "dependencies": [
     "boost-uuid",
     "boost-intrusive",
+    "boost-pfr",
     "directx-dxc",
     "nlohmann-json",
     "pybind11",

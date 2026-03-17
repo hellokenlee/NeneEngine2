@@ -33,7 +33,7 @@ namespace nene
 				if (new_asset != nullptr)
 				{
 					g::json_writer writer;
-					writer << (*new_asset);
+					new_asset->serialize(writer);
 					writer.write(m_target_content_rel_path);
 				}
 			}

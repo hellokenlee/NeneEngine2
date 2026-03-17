@@ -6,15 +6,18 @@
 
 namespace nene::g
 {
-	archive& operator<<(archive& ar, mip_data& data)
+	archive& operator<<(archive& ar, test_data& data)
 	{
-		ar << nvp{"m_extent", data.m_extent};
-		ar << nvp{"m_format", t::enum_underlying(data.m_format)};
+		ar << AR(data, m_some_attrib);
 		return ar;
 	}
 	
 	void texture_asset::serialize(archive& ar)
 	{
-		ar << NVP(m_mip_maps);
+		//
+		asset::serialize(ar);
+		//
+		ar << AR(m_test);
+		ar << AR(m_mip_maps);
 	}
 }
