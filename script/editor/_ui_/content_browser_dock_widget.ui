@@ -19,16 +19,16 @@
      <number>6</number>
     </property>
     <property name="leftMargin">
-     <number>6</number>
+     <number>9</number>
     </property>
     <property name="topMargin">
-     <number>0</number>
+     <number>3</number>
     </property>
     <property name="rightMargin">
-     <number>6</number>
+     <number>9</number>
     </property>
     <property name="bottomMargin">
-     <number>0</number>
+     <number>9</number>
     </property>
     <item>
      <widget class="QWidget" name="navigationWidget" native="true">
@@ -307,6 +307,9 @@ QPushButton:hover {
        </property>
        <item>
         <widget class="QListWidget" name="contentListWidget">
+         <property name="contextMenuPolicy">
+          <enum>Qt::ContextMenuPolicy::CustomContextMenu</enum>
+         </property>
          <property name="iconSize">
           <size>
            <width>80</width>
