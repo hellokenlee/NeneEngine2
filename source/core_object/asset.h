@@ -3,18 +3,27 @@
 #pragma once
 
 #include "py.h"
+#include "asset_header.h"
 #include "core/uuid.h"
-#include "object.h"
+#include "core/windll.h"
+#include "archive/archive.h"
 
 
 namespace nene::g
 {
-	class NENE_API asset : public object
+	/**
+	 *	base class for serialization
+	 */
+	class NENE_API asset
 	{
 	public:
 		asset();
+		virtual ~asset() = default;
+
+		virtual void serialize(archive& ar);
 		
-		uuid m_uuid = {};
-		std::string m_file_name;
+		asset_header m_header;
+		
+		std::string m_test_attrib;
 	};
 }

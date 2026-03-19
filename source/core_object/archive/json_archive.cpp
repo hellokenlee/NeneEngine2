@@ -211,6 +211,11 @@ namespace nene::g
 	// json_reader
 	// -------------------------------------------------------------------------
 
+	std::shared_ptr<asset_header> json_reader::peak(const std::string& file_path)
+	{
+		return nullptr;
+	}
+
 	void json_reader::read(const std::string& file_path)
 	{
 		m_root = nlohmann::json::object();

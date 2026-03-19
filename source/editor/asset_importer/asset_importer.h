@@ -24,9 +24,9 @@ namespace nene
 			auto file_name_and_ext = t::split(rel_path, '.');
 			auto result = std::make_shared<asset_t>();
 			
-			result->m_uuid = generate_random_uuid();
+			result->m_header.m_uuid = generate_random_uuid();
 			CHECK(file_name_and_ext.size() > 1);
-			result->m_file_name = std::string(file_name_and_ext[0]) + ".asset";
+			result->m_header.m_file_name = std::string(file_name_and_ext[0]) + ".asset";
 			
 			return result;
 		}

@@ -6,6 +6,8 @@
 
 #include <ranges>
 
+#include "engine/asset/asset_registry.h"
+
 
 namespace nene
 {
@@ -34,12 +36,12 @@ namespace nene
 			{
 				auto new_asset = importer->import_asset(m_origin_file_abs_path, m_target_content_rel_path);
 				
-				// TODO: 单独的 Save 命令
 				if (new_asset != nullptr)
 				{
-					g::json_writer writer;
-					new_asset->serialize(writer);
-					writer.write(new_asset->m_file_name);
+					// tell asset registry we have a new asset
+					g::asset_registry::get().add(new_asset);
+					// TODO: 单独的 Save 命令
+					g::asset_registry::get().save(*new_asset);
 				}
 			}
 			else

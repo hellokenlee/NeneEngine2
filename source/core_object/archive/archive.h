@@ -2,13 +2,10 @@
 
 #pragma once
 
+#include "asset_header.h"
 #include "core/core.h"
 #include <boost/pfr.hpp>
 
-namespace nene::g
-{
-	class object;
-}
 
 namespace nene
 {
@@ -17,7 +14,7 @@ namespace nene
 	struct nvp
 	{
 		const char* m_name;
-		data_t& m_data;
+		data_t& m_data;  // NOLINT(cppcoreguidelines-avoid-const-or-ref-data-members)
 	};
 	// CDAT
 	template<typename T>
@@ -30,10 +27,11 @@ namespace nene
 	{
 	public:
 		//
-		enum class direction { write, read };
+		enum class direction: uint8_t { write, read };
 		//
 		virtual ~archive() = default;
 		virtual direction direction() const = 0;
+		virtual std::shared_ptr<asset_header> peak(const std::string& file_path) = 0;
 		virtual void read(const std::string& file_path) = 0;
 		virtual void write(const std::string& file_path) const = 0;
 		
@@ -131,7 +129,7 @@ namespace nene
 }
 
 /** auto nvp name constructor */
-#define MAKE_NVP(instance, attrib) ::nene::nvp{#attrib, instance.attrib}
+#define MAKE_NVP(instance, attrib) ::nene::nvp{#attrib, (instance).attrib}
 #define MAKE_THIS_NVP(attrib) ::nene::nvp{#attrib, this->attrib}
 
 #define AR(...) NENE_OVERLOAD_2_1(__VA_ARGS__, MAKE_NVP, MAKE_THIS_NVP)(__VA_ARGS__)
