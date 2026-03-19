@@ -13,7 +13,7 @@ namespace nene::g
 		//
 		static py::object py_uuid_class = py::module_::import("uuid").attr("UUID");
 		//
-		py::handle py_prop_value = self.attr(prop_name.c_str());
+		py::object py_prop_value = self.attr(prop_name.c_str());
 
 		// immutable types
 		if (py::isinstance<py::none>(py_prop_value))
@@ -59,7 +59,7 @@ namespace nene::g
 	void object::serialize(archive& ar)
 	{
 		// bound attributes serialization 
-		reflection::variant var = reflection::get_variant(*this);
+		reflection::variant var = reflection::get_variant(this);
 		for (const auto& name : reflection::get_property_names(var))
 		{
 			serialize_property(ar, var, name);
