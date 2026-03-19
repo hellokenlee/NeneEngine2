@@ -41,12 +41,12 @@ namespace nene::g
 	namespace reflection
 	{
 		using type = py::object;
-		using variant = py::handle;
+		using variant = py::object;
 		
 		type get_class(const std::string& name);
 		
 		template<typename cpp_t>
-		variant get_variant(cpp_t& this_);
+		variant get_variant(const cpp_t& this_);
 		
 		template <typename ... arg_ts>
 		variant create(type cls, arg_ts&&... args);

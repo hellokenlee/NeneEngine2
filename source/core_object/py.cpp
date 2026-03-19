@@ -87,6 +87,7 @@ namespace nene::g
 		
 		std::vector<std::string> get_property_names(variant self) 
 		{
+			
 			std::vector<std::string> result;
 			if (self)
 			{
@@ -105,7 +106,8 @@ namespace nene::g
 					{
 						continue;
 					}
-					if (py_callable_func(py_prop_name).cast<bool>())
+					py::object prop_value = self.attr(py_prop_name);
+					if (py_callable_func(prop_value).cast<bool>())
 					{
 						continue; 
 					}
