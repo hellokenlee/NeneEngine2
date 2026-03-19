@@ -11,16 +11,18 @@ namespace nene::g
 	// json_writer
 	// -------------------------------------------------------------------------
 
+	using json = nlohmann::ordered_json;
+	
 	json_writer::json_writer()
 	{
 		// 初始化根节点为空 object，栈底指向根
-		m_root = nlohmann::json::object();
+		m_root = json::object();
 		m_stack.emplace_back(&m_root);
 	}
 
 	archive& json_writer::operator<<(const nvp<uint8_t>& kv)
 	{
-		nlohmann::json* parent = m_stack.back();
+		json* parent = m_stack.back();
 		if (parent->is_array())
 			parent->emplace_back(kv.m_data);
 		else
@@ -30,7 +32,7 @@ namespace nene::g
 
 	archive& json_writer::operator<<(const nvp<uint16_t>& kv)
 	{
-		nlohmann::json* parent = m_stack.back();
+		json* parent = m_stack.back();
 		if (parent->is_array())
 			parent->emplace_back(kv.m_data);
 		else
@@ -40,7 +42,7 @@ namespace nene::g
 
 	archive& json_writer::operator<<(const nvp<uint32_t>& kv)
 	{
-		nlohmann::json* parent = m_stack.back();
+		json* parent = m_stack.back();
 		if (parent->is_array())
 			parent->emplace_back(kv.m_data);
 		else
@@ -50,7 +52,7 @@ namespace nene::g
 
 	archive& json_writer::operator<<(const nvp<int8_t>& kv)
 	{
-		nlohmann::json* parent = m_stack.back();
+		json* parent = m_stack.back();
 		if (parent->is_array())
 			parent->emplace_back(kv.m_data);
 		else
@@ -60,7 +62,7 @@ namespace nene::g
 
 	archive& json_writer::operator<<(const nvp<int16_t>& kv)
 	{
-		nlohmann::json* parent = m_stack.back();
+		json* parent = m_stack.back();
 		if (parent->is_array())
 			parent->emplace_back(kv.m_data);
 		else
@@ -70,7 +72,7 @@ namespace nene::g
 
 	archive& json_writer::operator<<(const nvp<int32_t>& kv)
 	{
-		nlohmann::json* parent = m_stack.back();
+		json* parent = m_stack.back();
 		if (parent->is_array())
 			parent->emplace_back(kv.m_data);
 		else
@@ -80,7 +82,7 @@ namespace nene::g
 
 	archive& json_writer::operator<<(const nvp<float>& kv)
 	{
-		nlohmann::json* parent = m_stack.back();
+		json* parent = m_stack.back();
 		if (parent->is_array())
 			parent->emplace_back(kv.m_data);
 		else
@@ -90,8 +92,8 @@ namespace nene::g
 
 	archive& json_writer::operator<<(const nvp<uint3>& kv)
 	{
-		nlohmann::json* parent = m_stack.back();
-		auto arr = nlohmann::json::array({kv.m_data.x, kv.m_data.y, kv.m_data.z});
+		json* parent = m_stack.back();
+		auto arr = json::array({kv.m_data.x, kv.m_data.y, kv.m_data.z});
 		if (parent->is_array())
 			parent->emplace_back(std::move(arr));
 		else
@@ -101,8 +103,8 @@ namespace nene::g
 
 	archive& json_writer::operator<<(const nvp<float2>& kv)
 	{
-		nlohmann::json* parent = m_stack.back();
-		auto arr = nlohmann::json::array({kv.m_data.x, kv.m_data.y});
+		json* parent = m_stack.back();
+		auto arr = json::array({kv.m_data.x, kv.m_data.y});
 		if (parent->is_array())
 			parent->emplace_back(std::move(arr));
 		else
@@ -112,7 +114,7 @@ namespace nene::g
 
 	archive& json_writer::operator<<(const nvp<uuid>& kv)
 	{
-		nlohmann::json* parent = m_stack.back();
+		json* parent = m_stack.back();
 		auto str = uuid_to_string(kv.m_data);
 		if (parent->is_array())
 			parent->emplace_back(std::move(str));
@@ -123,7 +125,7 @@ namespace nene::g
 
 	archive& json_writer::operator<<(const nvp<std::string>& kv)
 	{
-		nlohmann::json* parent = m_stack.back();
+		json* parent = m_stack.back();
 		if (parent->is_array())
 			parent->emplace_back(kv.m_data);
 		else
@@ -133,15 +135,15 @@ namespace nene::g
 
 	void json_writer::enter_array(const char* name, size_t& size)
 	{
-		nlohmann::json* parent = m_stack.back();
+		json* parent = m_stack.back();
 		if (parent->is_array())
 		{
-			parent->emplace_back(nlohmann::json::array());
+			parent->emplace_back(json::array());
 			m_stack.emplace_back(&parent->back());
 		}
 		else
 		{
-			(*parent)[name] = nlohmann::json::array();
+			(*parent)[name] = json::array();
 			m_stack.emplace_back(&(*parent)[name]);
 		}
 	}
@@ -156,15 +158,15 @@ namespace nene::g
 	void json_writer::enter_object(const char* name)
 	{
 		// 进入子 object：若父是 array 则追加新 object；否则按 name 创建子 object
-		nlohmann::json* parent = m_stack.back();
+		json* parent = m_stack.back();
 		if (parent->is_array())
 		{
-			parent->emplace_back(nlohmann::json::object());
+			parent->emplace_back(json::object());
 			m_stack.emplace_back(&parent->back());
 		}
 		else
 		{
-			(*parent)[name] = nlohmann::json::object();
+			(*parent)[name] = json::object();
 			m_stack.emplace_back(&(*parent)[name]);
 		}
 	}
@@ -183,7 +185,7 @@ namespace nene::g
 			return;
 		}
 
-		std::vector<std::uint8_t> bjdata = nlohmann::json::to_bjdata(m_root);
+		std::vector<std::uint8_t> bjdata = json::to_bjdata(m_root);
 
 		const size_t compress_bound = ZSTD_compressBound(bjdata.size());
 		std::vector<std::uint8_t> compressed(compress_bound);

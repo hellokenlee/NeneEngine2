@@ -37,8 +37,8 @@ namespace nene::g
 		void leave_object() override;
 
 	private:
-		nlohmann::json m_root;
-		std::vector<nlohmann::json*> m_stack;
+		nlohmann::ordered_json m_root;
+		std::vector<nlohmann::ordered_json*> m_stack;
 	};
 
 	class NENE_API json_reader : public archive
