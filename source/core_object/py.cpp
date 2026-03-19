@@ -84,10 +84,32 @@ namespace nene::g
 			py::object cls = m.attr(name.c_str());
 			return cls;
 		}
-		
+
+		std::set<std::string> get_class_names()
+		{
+			std::set<std::string> result;
+			py::gil_scoped_acquire gil;
+			py::module_ m = py::module_::import(binding::PY_NENE_MODULE_NAME);
+			py::object inspect_isclass = py::module_::import("inspect").attr("isclass");
+			py::list dir_list = py::module_::import("builtins").attr("dir")(m);
+			for (auto py_name : dir_list)
+			{
+				std::string name = py_name.cast<std::string>();
+				if (name.starts_with("_"))
+				{
+					continue;
+				}
+				py::object attr = m.attr(py_name);
+				if (inspect_isclass(attr).cast<bool>())
+				{
+					result.emplace(name);
+				}
+			}
+			return result;
+		}
+
 		std::vector<std::string> get_property_names(variant self) 
 		{
-			
 			std::vector<std::string> result;
 			if (self)
 			{

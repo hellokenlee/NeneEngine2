@@ -43,7 +43,11 @@ namespace nene::g
 		using type = py::object;
 		using variant = py::object;
 		
+		/** get a class object by name */
 		NENE_API type get_class(const std::string& name);
+		
+		/** get all bound class names */
+		NENE_API std::set<std::string> get_class_names(); 
 		
 		template<typename cpp_t>
 		variant get_variant(const cpp_t* this_);

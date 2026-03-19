@@ -6,7 +6,7 @@
 
 namespace nene::g
 {
-	logger asset_manager_("asset_manager");
+	logger asset_registry_("asset_registry");
 	
 	asset_registry& asset_registry::get()
 	{
@@ -29,8 +29,10 @@ namespace nene::g
 	asset_registry::asset_registry()
 	{
 		// scan `content` folder all assets and build uuid-path map
-		log(asset_manager_, info, "building asset registry...");
+		log(asset_registry_, info, "building asset registry...");
 		std::filesystem::path content_path = "content";
+		//
+		auto type_names = reflection::get_class_names();
 		if (std::filesystem::exists(content_path) && std::filesystem::is_directory(content_path))
 		{
 			for (const auto& entry : std::filesystem::recursive_directory_iterator(content_path))
@@ -41,13 +43,26 @@ namespace nene::g
 					auto header = reader.peak(entry.path().string());
 					if (header != nullptr)
 					{
-						// TODO: type checks
-						m_asset_headers.emplace(header->m_uuid, header);	
+						//
+						if (!header->m_uuid.is_nil() && type_names.contains(header->m_type_name))
+						{
+							// fix up file name
+							if (entry.path() != header->m_file_name)
+							{
+								log(asset_registry_, warn, "fixed {} ({})", entry.path(), header->m_file_name);
+							}
+							
+							m_asset_headers.emplace(header->m_uuid, header);
+						}
+						else
+						{
+							log(asset_registry_, error, "invalid asset header: {}", entry.path());
+						}
 					}
 				}
 			}
 		}
-		log(asset_manager_, info, "done building asset registry.");
+		log(asset_registry_, info, "done building asset registry.");
 	}
 
 	std::shared_ptr<asset> asset_registry::internal_load(const uuid& uid)
