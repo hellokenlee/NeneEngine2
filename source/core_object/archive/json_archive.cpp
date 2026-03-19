@@ -14,89 +14,135 @@ namespace nene::g
 	{
 		// 初始化根节点为空 object，栈底指向根
 		m_root = nlohmann::json::object();
-		m_stack.push_back(&m_root);
+		m_stack.emplace_back(&m_root);
 	}
 
 	archive& json_writer::operator<<(const nvp<uint8_t>& kv)
 	{
-		// 将 uint8_t 以 name:value 写入当前节点
-		(*m_stack.back())[kv.m_name] = kv.m_data;
+		nlohmann::json* parent = m_stack.back();
+		if (parent->is_array())
+			parent->emplace_back(kv.m_data);
+		else
+			(*parent)[kv.m_name] = kv.m_data;
 		return *this;
 	}
 
 	archive& json_writer::operator<<(const nvp<uint16_t>& kv)
 	{
-		// 将 uint16_t 以 name:value 写入当前节点
-		(*m_stack.back())[kv.m_name] = kv.m_data;
+		nlohmann::json* parent = m_stack.back();
+		if (parent->is_array())
+			parent->emplace_back(kv.m_data);
+		else
+			(*parent)[kv.m_name] = kv.m_data;
 		return *this;
 	}
 
 	archive& json_writer::operator<<(const nvp<uint32_t>& kv)
 	{
-		// 将 uint32_t 以 name:value 写入当前节点
-		(*m_stack.back())[kv.m_name] = kv.m_data;
+		nlohmann::json* parent = m_stack.back();
+		if (parent->is_array())
+			parent->emplace_back(kv.m_data);
+		else
+			(*parent)[kv.m_name] = kv.m_data;
 		return *this;
 	}
 
 	archive& json_writer::operator<<(const nvp<int8_t>& kv)
 	{
-		// 将 int8_t 以 name:value 写入当前节点
-		(*m_stack.back())[kv.m_name] = kv.m_data;
+		nlohmann::json* parent = m_stack.back();
+		if (parent->is_array())
+			parent->emplace_back(kv.m_data);
+		else
+			(*parent)[kv.m_name] = kv.m_data;
 		return *this;
 	}
 
 	archive& json_writer::operator<<(const nvp<int16_t>& kv)
 	{
-		// 将 int16_t 以 name:value 写入当前节点
-		(*m_stack.back())[kv.m_name] = kv.m_data;
+		nlohmann::json* parent = m_stack.back();
+		if (parent->is_array())
+			parent->emplace_back(kv.m_data);
+		else
+			(*parent)[kv.m_name] = kv.m_data;
 		return *this;
 	}
 
 	archive& json_writer::operator<<(const nvp<int32_t>& kv)
 	{
-		// 将 int32_t 以 name:value 写入当前节点
-		(*m_stack.back())[kv.m_name] = kv.m_data;
+		nlohmann::json* parent = m_stack.back();
+		if (parent->is_array())
+			parent->emplace_back(kv.m_data);
+		else
+			(*parent)[kv.m_name] = kv.m_data;
 		return *this;
 	}
 
 	archive& json_writer::operator<<(const nvp<float>& kv)
 	{
-		// 将 float 以 name:value 写入当前节点
-		(*m_stack.back())[kv.m_name] = kv.m_data;
+		nlohmann::json* parent = m_stack.back();
+		if (parent->is_array())
+			parent->emplace_back(kv.m_data);
+		else
+			(*parent)[kv.m_name] = kv.m_data;
 		return *this;
 	}
 
 	archive& json_writer::operator<<(const nvp<uint3>& kv)
 	{
-		// 将 uint3 以 name:[x,y,z] 写入当前节点
-		(*m_stack.back())[kv.m_name] = nlohmann::json::array({kv.m_data.x, kv.m_data.y, kv.m_data.z});
+		nlohmann::json* parent = m_stack.back();
+		auto arr = nlohmann::json::array({kv.m_data.x, kv.m_data.y, kv.m_data.z});
+		if (parent->is_array())
+			parent->emplace_back(std::move(arr));
+		else
+			(*parent)[kv.m_name] = std::move(arr);
 		return *this;
 	}
 
 	archive& json_writer::operator<<(const nvp<float2>& kv)
 	{
-		// 将 float2 以 name:[x,y] 写入当前节点
-		(*m_stack.back())[kv.m_name] = nlohmann::json::array({kv.m_data.x, kv.m_data.y});
+		nlohmann::json* parent = m_stack.back();
+		auto arr = nlohmann::json::array({kv.m_data.x, kv.m_data.y});
+		if (parent->is_array())
+			parent->emplace_back(std::move(arr));
+		else
+			(*parent)[kv.m_name] = std::move(arr);
 		return *this;
 	}
 
 	archive& json_writer::operator<<(const nvp<uuid>& kv)
 	{
-		(*m_stack.back())[kv.m_name] = uuid_to_string(kv.m_data);
+		nlohmann::json* parent = m_stack.back();
+		auto str = uuid_to_string(kv.m_data);
+		if (parent->is_array())
+			parent->emplace_back(std::move(str));
+		else
+			(*parent)[kv.m_name] = std::move(str);
 		return *this;
 	}
 
 	archive& json_writer::operator<<(const nvp<std::string>& kv)
 	{
-		(*m_stack.back())[kv.m_name] = kv.m_data;
+		nlohmann::json* parent = m_stack.back();
+		if (parent->is_array())
+			parent->emplace_back(kv.m_data);
+		else
+			(*parent)[kv.m_name] = kv.m_data;
 		return *this;
 	}
 
 	void json_writer::enter_array(const char* name, size_t& size)
 	{
-		// 在当前节点下创建名为 name 的空数组，并将栈顶压入该数组
-		auto& arr = (*m_stack.back())[name] = nlohmann::json::array();
-		m_stack.push_back(&arr);
+		nlohmann::json* parent = m_stack.back();
+		if (parent->is_array())
+		{
+			parent->emplace_back(nlohmann::json::array());
+			m_stack.emplace_back(&parent->back());
+		}
+		else
+		{
+			(*parent)[name] = nlohmann::json::array();
+			m_stack.emplace_back(&(*parent)[name]);
+		}
 	}
 
 	void json_writer::leave_array()
@@ -112,13 +158,13 @@ namespace nene::g
 		nlohmann::json* parent = m_stack.back();
 		if (parent->is_array())
 		{
-			parent->push_back(nlohmann::json::object());
-			m_stack.push_back(&parent->back());
+			parent->emplace_back(nlohmann::json::object());
+			m_stack.emplace_back(&parent->back());
 		}
 		else
 		{
 			(*parent)[name] = nlohmann::json::object();
-			m_stack.push_back(&(*parent)[name]);
+			m_stack.emplace_back(&(*parent)[name]);
 		}
 	}
 
@@ -162,7 +208,7 @@ namespace nene::g
 
 		if (file_path.empty())
 		{
-			m_stack.push_back(&m_root);
+			m_stack.emplace_back(&m_root);
 			return;
 		}
 
@@ -170,7 +216,7 @@ namespace nene::g
 		FILE* fp = fopen(file_path.c_str(), "rb");
 		if (!fp)
 		{
-			m_stack.push_back(&m_root);
+			m_stack.emplace_back(&m_root);
 			return;
 		}
 
@@ -186,14 +232,19 @@ namespace nene::g
 		}
 
 		ENSURE(fclose(fp) != -1);
-		m_stack.push_back(&m_root);
+		m_stack.emplace_back(&m_root);
 	}
 
 	archive& json_reader::operator<<(const nvp<uint8_t>& kv)
 	{
-		// 从当前节点按 name 读取 uint8_t，类型不匹配则保持原值
 		const nlohmann::json* cur = m_stack.back();
-		if (cur->contains(kv.m_name) && (*cur)[kv.m_name].is_number_unsigned())
+		if (cur->is_array())
+		{
+			size_t idx = m_array_index_stack.back()++;
+			if (idx < cur->size() && (*cur)[idx].is_number_unsigned())
+				kv.m_data = (*cur)[idx].get<uint8_t>();
+		}
+		else if (cur->contains(kv.m_name) && (*cur)[kv.m_name].is_number_unsigned())
 		{
 			kv.m_data = (*cur)[kv.m_name].get<uint8_t>();
 		}
@@ -202,9 +253,14 @@ namespace nene::g
 
 	archive& json_reader::operator<<(const nvp<uint16_t>& kv)
 	{
-		// 从当前节点按 name 读取 uint16_t，类型不匹配则保持原值
 		const nlohmann::json* cur = m_stack.back();
-		if (cur->contains(kv.m_name) && (*cur)[kv.m_name].is_number_unsigned())
+		if (cur->is_array())
+		{
+			size_t idx = m_array_index_stack.back()++;
+			if (idx < cur->size() && (*cur)[idx].is_number_unsigned())
+				kv.m_data = (*cur)[idx].get<uint16_t>();
+		}
+		else if (cur->contains(kv.m_name) && (*cur)[kv.m_name].is_number_unsigned())
 		{
 			kv.m_data = (*cur)[kv.m_name].get<uint16_t>();
 		}
@@ -213,9 +269,14 @@ namespace nene::g
 
 	archive& json_reader::operator<<(const nvp<uint32_t>& kv)
 	{
-		// 从当前节点按 name 读取 uint32_t，类型不匹配则保持原值
 		const nlohmann::json* cur = m_stack.back();
-		if (cur->contains(kv.m_name) && (*cur)[kv.m_name].is_number_unsigned())
+		if (cur->is_array())
+		{
+			size_t idx = m_array_index_stack.back()++;
+			if (idx < cur->size() && (*cur)[idx].is_number_unsigned())
+				kv.m_data = (*cur)[idx].get<uint32_t>();
+		}
+		else if (cur->contains(kv.m_name) && (*cur)[kv.m_name].is_number_unsigned())
 		{
 			kv.m_data = (*cur)[kv.m_name].get<uint32_t>();
 		}
@@ -224,9 +285,14 @@ namespace nene::g
 
 	archive& json_reader::operator<<(const nvp<int8_t>& kv)
 	{
-		// 从当前节点按 name 读取 int8_t，类型不匹配则保持原值
 		const nlohmann::json* cur = m_stack.back();
-		if (cur->contains(kv.m_name) && (*cur)[kv.m_name].is_number_integer())
+		if (cur->is_array())
+		{
+			size_t idx = m_array_index_stack.back()++;
+			if (idx < cur->size() && (*cur)[idx].is_number_integer())
+				kv.m_data = (*cur)[idx].get<int8_t>();
+		}
+		else if (cur->contains(kv.m_name) && (*cur)[kv.m_name].is_number_integer())
 		{
 			kv.m_data = (*cur)[kv.m_name].get<int8_t>();
 		}
@@ -235,9 +301,14 @@ namespace nene::g
 
 	archive& json_reader::operator<<(const nvp<int16_t>& kv)
 	{
-		// 从当前节点按 name 读取 int16_t，类型不匹配则保持原值
 		const nlohmann::json* cur = m_stack.back();
-		if (cur->contains(kv.m_name) && (*cur)[kv.m_name].is_number_integer())
+		if (cur->is_array())
+		{
+			size_t idx = m_array_index_stack.back()++;
+			if (idx < cur->size() && (*cur)[idx].is_number_integer())
+				kv.m_data = (*cur)[idx].get<int16_t>();
+		}
+		else if (cur->contains(kv.m_name) && (*cur)[kv.m_name].is_number_integer())
 		{
 			kv.m_data = (*cur)[kv.m_name].get<int16_t>();
 		}
@@ -246,9 +317,14 @@ namespace nene::g
 
 	archive& json_reader::operator<<(const nvp<int32_t>& kv)
 	{
-		// 从当前节点按 name 读取 int32_t，类型不匹配则保持原值
 		const nlohmann::json* cur = m_stack.back();
-		if (cur->contains(kv.m_name) && (*cur)[kv.m_name].is_number_integer())
+		if (cur->is_array())
+		{
+			size_t idx = m_array_index_stack.back()++;
+			if (idx < cur->size() && (*cur)[idx].is_number_integer())
+				kv.m_data = (*cur)[idx].get<int32_t>();
+		}
+		else if (cur->contains(kv.m_name) && (*cur)[kv.m_name].is_number_integer())
 		{
 			kv.m_data = (*cur)[kv.m_name].get<int32_t>();
 		}
@@ -257,9 +333,14 @@ namespace nene::g
 
 	archive& json_reader::operator<<(const nvp<float>& kv)
 	{
-		// 从当前节点按 name 读取 float，类型不匹配则保持原值
 		const nlohmann::json* cur = m_stack.back();
-		if (cur->contains(kv.m_name) && (*cur)[kv.m_name].is_number())
+		if (cur->is_array())
+		{
+			size_t idx = m_array_index_stack.back()++;
+			if (idx < cur->size() && (*cur)[idx].is_number())
+				kv.m_data = (*cur)[idx].get<float>();
+		}
+		else if (cur->contains(kv.m_name) && (*cur)[kv.m_name].is_number())
 		{
 			kv.m_data = (*cur)[kv.m_name].get<float>();
 		}
@@ -268,9 +349,19 @@ namespace nene::g
 
 	archive& json_reader::operator<<(const nvp<uint3>& kv)
 	{
-		// 从当前节点按 name 读取 [x,y,z] 数组并还原为 uint3，长度不足则跳过
 		const nlohmann::json* cur = m_stack.back();
-		if (cur->contains(kv.m_name) && (*cur)[kv.m_name].is_array() && (*cur)[kv.m_name].size() >= 3)
+		if (cur->is_array())
+		{
+			size_t idx = m_array_index_stack.back()++;
+			if (idx < cur->size() && (*cur)[idx].is_array() && (*cur)[idx].size() >= 3)
+			{
+				const auto& arr = (*cur)[idx];
+				kv.m_data.x = arr[0].get<uint32_t>();
+				kv.m_data.y = arr[1].get<uint32_t>();
+				kv.m_data.z = arr[2].get<uint32_t>();
+			}
+		}
+		else if (cur->contains(kv.m_name) && (*cur)[kv.m_name].is_array() && (*cur)[kv.m_name].size() >= 3)
 		{
 			const auto& arr = (*cur)[kv.m_name];
 			kv.m_data.x = arr[0].get<uint32_t>();
@@ -282,9 +373,18 @@ namespace nene::g
 
 	archive& json_reader::operator<<(const nvp<float2>& kv)
 	{
-		// 从当前节点按 name 读取 [x,y] 数组并还原为 float2，长度不足则跳过
 		const nlohmann::json* cur = m_stack.back();
-		if (cur->contains(kv.m_name) && (*cur)[kv.m_name].is_array() && (*cur)[kv.m_name].size() >= 2)
+		if (cur->is_array())
+		{
+			size_t idx = m_array_index_stack.back()++;
+			if (idx < cur->size() && (*cur)[idx].is_array() && (*cur)[idx].size() >= 2)
+			{
+				const auto& arr = (*cur)[idx];
+				kv.m_data.x = arr[0].get<float>();
+				kv.m_data.y = arr[1].get<float>();
+			}
+		}
+		else if (cur->contains(kv.m_name) && (*cur)[kv.m_name].is_array() && (*cur)[kv.m_name].size() >= 2)
 		{
 			const auto& arr = (*cur)[kv.m_name];
 			kv.m_data.x = arr[0].get<float>();
@@ -296,7 +396,13 @@ namespace nene::g
 	archive& json_reader::operator<<(const nvp<uuid>& kv)
 	{
 		const nlohmann::json* cur = m_stack.back();
-		if (cur->contains(kv.m_name) && (*cur)[kv.m_name].is_string())
+		if (cur->is_array())
+		{
+			size_t idx = m_array_index_stack.back()++;
+			if (idx < cur->size() && (*cur)[idx].is_string())
+				kv.m_data = string_to_uuid((*cur)[idx].get<std::string>());
+		}
+		else if (cur->contains(kv.m_name) && (*cur)[kv.m_name].is_string())
 		{
 			kv.m_data = string_to_uuid((*cur)[kv.m_name].get<std::string>());
 		}
@@ -306,7 +412,13 @@ namespace nene::g
 	archive& json_reader::operator<<(const nvp<std::string>& kv)
 	{
 		const nlohmann::json* cur = m_stack.back();
-		if (cur->contains(kv.m_name) && (*cur)[kv.m_name].is_string())
+		if (cur->is_array())
+		{
+			size_t idx = m_array_index_stack.back()++;
+			if (idx < cur->size() && (*cur)[idx].is_string())
+				kv.m_data = (*cur)[idx].get<std::string>();
+		}
+		else if (cur->contains(kv.m_name) && (*cur)[kv.m_name].is_string())
 		{
 			kv.m_data = (*cur)[kv.m_name].get<std::string>();
 		}
@@ -315,12 +427,20 @@ namespace nene::g
 
 	void json_reader::enter_array(const char* name, size_t& size)
 	{
-		// 进入名为 name 的子数组，回写 size 供基类循环遍历，并初始化元素索引为 0
 		nlohmann::json* cur = m_stack.back();
-		CHECK(cur->contains(name) && (*cur)[name].is_array());
-		m_stack.push_back(&(*cur)[name]);
+		if (cur->is_array())
+		{
+			size_t idx = m_array_index_stack.back()++;
+			CHECK(idx < cur->size() && (*cur)[idx].is_array());
+			m_stack.emplace_back(&(*cur)[idx]);
+		}
+		else
+		{
+			CHECK(cur->contains(name) && (*cur)[name].is_array());
+			m_stack.emplace_back(&(*cur)[name]);
+		}
 		size = m_stack.back()->size();
-		m_array_index_stack.push_back(0);
+		m_array_index_stack.emplace_back(0);
 	}
 
 	void json_reader::leave_array()
@@ -339,12 +459,12 @@ namespace nene::g
 		{
 			size_t idx = m_array_index_stack.back()++;
 			CHECK(idx < cur->size());
-			m_stack.push_back(&(*cur)[idx]);
+			m_stack.emplace_back(&(*cur)[idx]);
 		}
 		else
 		{
 			CHECK(cur->contains(name) && (*cur)[name].is_object());
-			m_stack.push_back(&(*cur)[name]);
+			m_stack.emplace_back(&(*cur)[name]);
 		}
 	}
 
