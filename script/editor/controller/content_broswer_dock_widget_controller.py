@@ -84,6 +84,7 @@ class ContentBroswerDockWidgetController(DockWidgetController):
 			file_rel = os.path.join(self._nav.current(), os.path.basename(file_path))
 			log(self, INFO, "Import: %s -> %s" % (file_path, file_rel))
 			EditorCommandCenter.get().invoke(AssetImportCommand(file_path, file_rel))
+			self._update_views()
 		pass
 
 	def _on_content_view_item_double_clicked(self, item: QListWidgetItem):
@@ -152,6 +153,6 @@ class ContentBroswerDockWidgetController(DockWidgetController):
 			if os.path.isdir(os.path.join(self._nav.current(), filename)):
 				item = QListWidgetItem(IconSet().folder, filename)
 			else:
-				item = QListWidgetItem(IconSet().file, filename)
+				item = QListWidgetItem(IconSet().file, filename.split('.')[0])
 			self._content_view_widget.addItem(item)
 		pass

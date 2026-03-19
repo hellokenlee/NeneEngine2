@@ -21,10 +21,12 @@ namespace nene
 		std::shared_ptr<asset_t> make_new_asset(const std::string& rel_path)
 		{
 			static_assert(std::is_base_of_v<g::asset, asset_t>, "must be derived from asset");
+			auto file_name_and_ext = t::split(rel_path, '.');
 			auto result = std::make_shared<asset_t>();
 			
 			result->m_uuid = generate_random_uuid();
-			result->m_file_name = rel_path;
+			CHECK(file_name_and_ext.size() > 1);
+			result->m_file_name = std::string(file_name_and_ext[0]) + ".asset";
 			
 			return result;
 		}

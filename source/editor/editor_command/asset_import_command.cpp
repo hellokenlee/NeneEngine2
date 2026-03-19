@@ -39,7 +39,7 @@ namespace nene
 				{
 					g::json_writer writer;
 					new_asset->serialize(writer);
-					writer.write(m_target_content_rel_path);
+					writer.write(new_asset->m_file_name);
 				}
 			}
 			else

@@ -117,8 +117,4 @@ namespace nene::g
 			return result;
 		}
 	}
-
-	
-	
-	
 }
