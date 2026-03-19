@@ -4,5 +4,5 @@
 
 from script.builder.common.vcpkg_package import VcpkgPackage
 
-class Pybind11(VcpkgPackage):
+class Zstd(VcpkgPackage):
 	pass

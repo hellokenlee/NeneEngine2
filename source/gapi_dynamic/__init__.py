@@ -18,9 +18,6 @@ class GapiDynamic(NeneModule):
 		self.module_dependencies.extend(
 			[Core, Gapi]
 		)
-		self.external_dependencies.extend(
-			[BoostIntrusive]
-		)
 
 		if BuildConfiguration().platform == Platform.Windows:
 			self.module_dependencies.extend(

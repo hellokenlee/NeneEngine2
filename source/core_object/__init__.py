@@ -6,8 +6,7 @@ from source import *
 from source.core import Core
 from source.core_render import CoreRender
 from extern.python3 import Python3
-from extern.pybind11 import Pybind11
-from extern.nlohmann_json import NlohmannJson
+from extern.zstd import Zstd
 from script.builder.common import utils
 
 
@@ -19,7 +18,7 @@ class CoreObject(NeneModule):
             [Core, CoreRender]
         )
         self.external_dependencies.extend(
-            [Python3, Pybind11, NlohmannJson]
+            [Python3, Zstd]
         )
         pass
 

@@ -2,6 +2,7 @@
 
 #include "json_archive.h"
 #include <cstdio>
+#include <zstd.h>
 
 
 namespace nene::g
@@ -177,13 +178,18 @@ namespace nene::g
 
 	void json_writer::write(const std::string& file_path) const
 	{
-		// 将整棵 JSON 树序列化为 bjdata 二进制格式并写入文件
 		if (file_path.empty())
 		{
 			return;
 		}
 
 		std::vector<std::uint8_t> bjdata = nlohmann::json::to_bjdata(m_root);
+
+		const size_t compress_bound = ZSTD_compressBound(bjdata.size());
+		std::vector<std::uint8_t> compressed(compress_bound);
+		const size_t compressed_size = ZSTD_compress(compressed.data(), compress_bound, bjdata.data(), bjdata.size(), 19);
+		CHECK(!ZSTD_isError(compressed_size));
+
 		// ReSharper disable once CppDeprecatedEntity
 		FILE* fp = fopen(file_path.c_str(), "wb");
 		if (!fp)
@@ -191,8 +197,11 @@ namespace nene::g
 			return;
 		}
 
-		size_t written = fwrite(bjdata.data(), sizeof(uint8_t), bjdata.size(), fp);
-		CHECK(written == bjdata.size());
+		const uint64_t original_size = bjdata.size();
+		size_t written = fwrite(&original_size, sizeof(original_size), 1, fp);
+		CHECK(written == 1);
+		written = fwrite(compressed.data(), sizeof(uint8_t), compressed_size, fp);
+		CHECK(written == compressed_size);
 		ENSURE(fclose(fp) != -1);
 	}
 
@@ -202,7 +211,6 @@ namespace nene::g
 
 	void json_reader::read(const std::string& file_path)
 	{
-		// 从 bjdata 二进制文件读取并还原为 JSON 树，栈底指向根
 		m_root = nlohmann::json::object();
 		m_stack.clear();
 
@@ -221,13 +229,23 @@ namespace nene::g
 		}
 
 		(void)fseek(fp, 0, SEEK_END);
-		long size = ftell(fp);
+		long file_size = ftell(fp);
 		(void)fseek(fp, 0, SEEK_SET);
-		if (size > 0)
+		if (file_size > static_cast<long>(sizeof(uint64_t)))
 		{
-			std::vector<std::uint8_t> bjdata(static_cast<size_t>(size));
-			size_t read_count = fread(bjdata.data(), sizeof(std::uint8_t), bjdata.size(), fp);
-			CHECK(read_count == bjdata.size());
+			uint64_t original_size = 0;
+			size_t read_count = fread(&original_size, sizeof(original_size), 1, fp);
+			CHECK(read_count == 1);
+
+			const size_t compressed_size = static_cast<size_t>(file_size) - sizeof(uint64_t);
+			std::vector<std::uint8_t> compressed(compressed_size);
+			read_count = fread(compressed.data(), sizeof(std::uint8_t), compressed_size, fp);
+			CHECK(read_count == compressed_size);
+
+			std::vector<std::uint8_t> bjdata(static_cast<size_t>(original_size));
+			const size_t decompressed_size = ZSTD_decompress(bjdata.data(), bjdata.size(), compressed.data(), compressed_size);
+			CHECK(!ZSTD_isError(decompressed_size) && decompressed_size == original_size);
+
 			m_root = nlohmann::json::from_bjdata(bjdata);
 		}
 

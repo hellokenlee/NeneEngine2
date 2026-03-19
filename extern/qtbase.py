@@ -7,7 +7,6 @@ import os.path
 from script.builder.common.vcpkg_package import VcpkgPackage
 from script.builder.common.build_common import Platform, Architecture, Configuration
 
-
 class QtBase(VcpkgPackage):
 
 	def get_moc_abs_path(self):
