@@ -4,18 +4,19 @@
 #include "core_object/archive/json_archive.h"
 #include <cstdio>
 #include <zstd.h>
+#include <.package/x64-windows/tools/python3/Lib/site-packages/shiboken6_generator/include/sbkstaticstrings.h>
 
 
 namespace nene::g
 {
 	logger asset_registry_("asset_registry");
-	
+
 	asset_registry& asset_registry::get()
 	{
 		static asset_registry instance;
 		return instance;
 	}
-	
+
 	static asset_abstract make_asset_abstract(const asset& ast, const std::string& file_name)
 	{
 		auto var = reflection::get_variant(&ast);
@@ -26,9 +27,9 @@ namespace nene::g
 		};
 	}
 	
-	static asset_abstract read_asset_abstract(const std::filesystem::path& file_name)
+	static asset_abstract read_asset_abstract(const std::string& file_name)
 	{
-		FILE* fp = std::fopen(file_name.string().c_str(), "rb");
+		FILE* fp = std::fopen(file_name.c_str(), "rb");
 		if (fp == nullptr)
 		{
 			return {};
@@ -82,9 +83,9 @@ namespace nene::g
 		std::filesystem::path file_path = std::string(t::split(file_name, '.')[0]) + ".asset";
 		if (file_path.is_absolute())
 		{
-			file_path = std::filesystem::relative(file_path, root());
+			file_path = std::filesystem::relative(file_path);
 		}
-		
+
 		// mark down abstract
 		auto abstract = make_asset_abstract(*ast, file_path.string());
 		m_asset_abstracts.emplace(ast->m_uuid, abstract);
@@ -92,23 +93,55 @@ namespace nene::g
 		m_loaded_assets.emplace(ast->m_uuid, ast);
 	}
 
+	void asset_registry::remove(const uuid& uid)
+	{
+		auto it = m_asset_abstracts.find(uid);
+		if (it != m_asset_abstracts.end())
+		{
+			std::filesystem::remove(it->second.m_file_name);
+			m_asset_abstracts.erase(it);
+		}
+		m_loaded_assets.erase(uid);
+	}
+
+	void asset_registry::remove(const std::filesystem::path& file_path)
+	{
+		auto file_rel_path = file_path.is_absolute() ? std::filesystem::relative(file_path) : file_path;
+
+		std::vector<uuid> pending;
+		for (const auto& [uid, abstract] : m_asset_abstracts)
+		{
+			std::filesystem::path asset_file_path(abstract.m_file_name);
+			auto [prefix_end, _] = std::mismatch(file_rel_path.begin(), file_rel_path.end(), asset_file_path.begin(), asset_file_path.end());
+			if (prefix_end == file_rel_path.end())
+			{
+				pending.push_back(uid);
+			}
+		}
+		for (const auto& uid : pending)
+		{
+			remove(uid);
+		}
+		std::filesystem::remove_all(file_rel_path);
+	}
+
 	asset_registry::asset_registry()
 	{
 		//
-		m_root_abs_path = std::filesystem::absolute("content");
-		
+		m_content_abs_path = std::filesystem::absolute("content");
+
 		// scan `content` folder all assets and build uuid-path map
-		log(asset_registry_, info, "building asset registry, root: {}", root().string());
+		log(asset_registry_, info, "building asset registry, root: {}", content().generic_string());
 		//
 		auto type_names = reflection::all_class_names();
-		if (std::filesystem::exists(root()) && std::filesystem::is_directory(root()))
+		if (std::filesystem::exists(content()) && std::filesystem::is_directory(content()))
 		{
-			for (const auto& entry : std::filesystem::recursive_directory_iterator(root()))
+			for (const auto& entry : std::filesystem::recursive_directory_iterator(content()))
 			{
 				if (entry.is_regular_file())
 				{
-					auto file_path = std::filesystem::relative(entry.path(), root());
-					auto abstract = read_asset_abstract(file_path);
+					auto file_path = std::filesystem::relative(entry.path());
+					auto abstract = read_asset_abstract(file_path.generic_string());
 					if (abstract.valid())
 					{
 						if (type_names.contains(abstract.m_type_name))
@@ -123,13 +156,17 @@ namespace nene::g
 						}
 						else
 						{
-							log(asset_registry_, error, "invalid asset abstract: {}", file_path.string());
+							log(asset_registry_, warn, "unsupported asset type: {}, {}", abstract.m_type_name, file_path.string());
 						}
+					}
+					else
+					{
+						log(asset_registry_, error, "invalid asset abstract: {}", file_path.string());
 					}
 				}
 			}
 		}
-		log(asset_registry_, info, "done building asset registry.");
+		log(asset_registry_, info, "done building asset registry, total {} assets.", m_asset_abstracts.size());
 	}
 
 	std::shared_ptr<asset> asset_registry::internal_load(const uuid& uid)
@@ -174,7 +211,7 @@ namespace nene::g
 			json_reader reader;
 			reader.load(content);
 			ast->serialize(reader);
-			
+
 			return std::shared_ptr<asset>(ast);
 		}
 		return nullptr;

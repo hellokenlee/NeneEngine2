@@ -83,7 +83,8 @@ class ContentBroswerDockWidgetController(DockWidgetController):
 
 	def __init__(self):
 		super(ContentBroswerDockWidgetController, self).__init__()
-		self._nav = HistoryNavigator(os.path.join("content"))
+		# FIXME: Use AssetRegistry's root
+		self._nav = HistoryNavigator("content")
 		self._import_push_button: QPushButton = self.ui.findChild(QPushButton, "importPushButton")
 		self._back_push_button: QPushButton = self.ui.findChild(QPushButton, "backPushButton")
 		self._forward_push_button: QPushButton = self.ui.findChild(QPushButton, "forwardPushButton")
@@ -202,11 +203,8 @@ class ContentBroswerDockWidgetController(DockWidgetController):
 			QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
 		)
 		if reply == QMessageBox.StandardButton.Yes:
-			# TODO: 通知 AssetRegistry 已经删除
-			if os.path.isdir(full_path):
-				shutil.rmtree(full_path)
-			else:
-				os.remove(full_path)
+			from nene import AssetRegistry
+			AssetRegistry().remove(full_path)
 			log(self, INFO, "Deleted: %s" % full_path)
 			self._update_views()
 		pass
