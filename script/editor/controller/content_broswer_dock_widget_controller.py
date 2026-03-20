@@ -6,6 +6,7 @@ import os
 import shutil
 
 from PySide6.QtCore import QEvent, QObject, QSize, Qt
+from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import QPushButton, QWidget, QListWidget, QListWidgetItem, QApplication, QLabel, QLineEdit, QFileDialog, QMenu, QMessageBox, QStyledItemDelegate
 from script.editor.resource_set import IconSet, PixmapSet
 from script.editor.controller.dock_widget_controller import DockWidgetController
@@ -102,6 +103,9 @@ class ContentBroswerDockWidgetController(DockWidgetController):
 		self._content_view_widget.customContextMenuRequested.connect(self._on_content_view_context_menu)
 		self._content_view_widget.setItemDelegate(_ContentItemDelegate(self._content_view_widget))
 		self._content_view_widget.itemDelegate().closeEditor.connect(self._on_finish_editing_filename)
+		# Keyboard shortcut: Delete key deletes current selected item.
+		self._delete_shortcut = QShortcut(QKeySequence("Delete"), self._content_view_widget)
+		self._delete_shortcut.activated.connect(self._on_delete_shortcut_activated)
 		# 内联编辑状态：新建文件夹和重命名共用同一套 closeEditor 回调，通过 mode 区分
 		self._editing_item: QListWidgetItem | None = None
 		self._editing_mode: str | None = None  # "new_folder" | "rename"
@@ -119,7 +123,7 @@ class ContentBroswerDockWidgetController(DockWidgetController):
 		if file_path:
 			file_rel = os.path.join(self._nav.current(), os.path.basename(file_path))
 			log(self, INFO, "Import: %s -> %s" % (file_path, file_rel))
-			EditorCommandCenter.get().invoke(AssetImportCommand(file_path, file_rel))
+			EditorCommandCenter().invoke(AssetImportCommand(file_path, file_rel))
 			self._update_views()
 		pass
 
@@ -148,9 +152,10 @@ class ContentBroswerDockWidgetController(DockWidgetController):
 		pass
 
 	def _on_content_view_context_menu(self, pos):
-		"""右键菜单：空白区域仅显示新建文件夹，点击到具体项时额外显示重命名和删除"""
+		"""右键菜单：提供导入、以及（空白）新建文件夹/（具体项）重命名与删除"""
 		menu = QMenu(self._content_view_widget)
 		hit_item = self._content_view_widget.itemAt(pos)
+		import_action = menu.addAction("Import")
 		new_folder_action = menu.addAction(IconSet().folder, "New Folder")
 		rename_action = None
 		delete_action = None
@@ -158,10 +163,14 @@ class ContentBroswerDockWidgetController(DockWidgetController):
 			menu.addSeparator()
 			rename_action = menu.addAction("Rename")
 			delete_action = menu.addAction("Delete")
+			# Show shortcut hint in context menu.
+			delete_action.setShortcut(QKeySequence("Delete"))
 		action = menu.exec(self._content_view_widget.mapToGlobal(pos))
 		if action is None:
 			return
-		if action == new_folder_action:
+		if action == import_action:
+			self._on_import_push_button_clicked()
+		elif action == new_folder_action:
 			self._on_new_folder()
 		elif action == rename_action:
 			self._on_rename(hit_item)
@@ -169,9 +178,19 @@ class ContentBroswerDockWidgetController(DockWidgetController):
 			self._on_delete(hit_item)
 		pass
 
+	def _on_delete_shortcut_activated(self):
+		"""快捷键删除：使用当前选中项；避免内联编辑时误触发"""
+		if self._editing_item is not None:
+			return
+		item = self._content_view_widget.currentItem()
+		if item is None:
+			return
+		self._on_delete(item)
+		pass
+
 	def _on_new_folder(self):
 		"""插入一个临时的可编辑 item，用户在图标下方直接输入文件夹名称"""
-		item = QListWidgetItem(IconSet().folder, "New Folder")
+		item = QListWidgetItem(IconSet().folder, "new_folder")
 		item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEditable)
 		self._content_view_widget.insertItem(0, item)
 		self._content_view_widget.setCurrentItem(item)
