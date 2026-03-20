@@ -15,19 +15,14 @@ namespace nene
 		
 		virtual std::vector<std::string> get_supported_asset_extensions() = 0;
 		
-		virtual std::shared_ptr<g::asset> import_asset(const std::string& from_abs_path, const std::string& to_rel_path) = 0;
+		virtual std::shared_ptr<g::asset> import_asset(const std::string& from_abs_path) = 0;
 		
 		template<typename asset_t>
-		std::shared_ptr<asset_t> make_new_asset(const std::string& rel_path)
+		static std::shared_ptr<asset_t> make_asset()
 		{
 			static_assert(std::is_base_of_v<g::asset, asset_t>, "must be derived from asset");
-			auto file_name_and_ext = t::split(rel_path, '.');
 			auto result = std::make_shared<asset_t>();
-			
-			result->m_header.m_uuid = generate_random_uuid();
-			CHECK(file_name_and_ext.size() > 1);
-			result->m_header.m_file_name = std::string(file_name_and_ext[0]) + ".asset";
-			
+			result->m_uuid = generate_random_uuid();
 			return result;
 		}
 	};

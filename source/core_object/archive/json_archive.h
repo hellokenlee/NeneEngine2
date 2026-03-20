@@ -15,9 +15,8 @@ namespace nene::g
 		json_writer();
 
 		enum direction direction() const override { return direction::write; }
-		std::shared_ptr<asset_header> peak(const std::string& file_path) override { return nullptr; }
-		void read(const std::string& file_path) override {}
-		void write(const std::string& file_path) const override;
+		void load(const std::vector<uint8_t>& content) override { CHECK(false); }
+		std::vector<uint8_t> dump() const override;
 
 		archive& operator<<(const nvp<uint8_t>& kv) override;
 		archive& operator<<(const nvp<uint16_t>& kv) override;
@@ -48,9 +47,8 @@ namespace nene::g
 		json_reader() = default;
 
 		enum direction direction() const override { return direction::read; }
-		std::shared_ptr<asset_header> peak(const std::string& file_path) override;
-		void read(const std::string& file_path) override;
-		void write(const std::string& file_path) const override {}
+		void load(const std::vector<uint8_t>& content) override;
+		std::vector<uint8_t> dump() const override { CHECK(false); return {}; }
 
 		archive& operator<<(const nvp<uint8_t>& kv) override;
 		archive& operator<<(const nvp<uint16_t>& kv) override;

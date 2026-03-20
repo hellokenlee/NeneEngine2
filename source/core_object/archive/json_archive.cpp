@@ -1,7 +1,6 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #include "json_archive.h"
-#include <cstdio>
 
 
 namespace nene::g
@@ -177,68 +176,25 @@ namespace nene::g
 		m_stack.pop_back();
 	}
 
-	void json_writer::write(const std::string& file_path) const
+	std::vector<uint8_t> json_writer::dump() const
 	{
-		if (file_path.empty())
-		{
-			return;
-		}
-
-		std::vector<std::uint8_t> bjdata = json::to_bjdata(m_root);
-
-		// ReSharper disable once CppDeprecatedEntity
-		FILE* fp = fopen(file_path.c_str(), "wb");
-		if (!fp)
-		{
-			return;
-		}
-
-		size_t written = fwrite(bjdata.data(), sizeof(uint8_t), bjdata.size(), fp);
-		CHECK(written == bjdata.size());
-		ENSURE(fclose(fp) != -1);
+		return json::to_bjdata(m_root);
 	}
 
 	// -------------------------------------------------------------------------
 	// json_reader
 	// -------------------------------------------------------------------------
 
-	std::shared_ptr<asset_header> json_reader::peak(const std::string& file_path)
-	{
-		return nullptr;
-	}
-
-	void json_reader::read(const std::string& file_path)
+	void json_reader::load(const std::vector<uint8_t>& content)
 	{
 		m_root = nlohmann::json::object();
 		m_stack.clear();
 
-		if (file_path.empty())
+		if (!content.empty())
 		{
-			m_stack.emplace_back(&m_root);
-			return;
+			m_root = nlohmann::json::from_bjdata(content);
 		}
 
-		// ReSharper disable once CppDeprecatedEntity
-		FILE* fp = fopen(file_path.c_str(), "rb");
-		if (!fp)
-		{
-			m_stack.emplace_back(&m_root);
-			return;
-		}
-
-		(void)fseek(fp, 0, SEEK_END);
-		long file_size = ftell(fp);
-		(void)fseek(fp, 0, SEEK_SET);
-		if (file_size > 0)
-		{
-			std::vector<std::uint8_t> bjdata(static_cast<size_t>(file_size));
-			size_t read_count = fread(bjdata.data(), sizeof(std::uint8_t), bjdata.size(), fp);
-			CHECK(read_count == bjdata.size());
-
-			m_root = nlohmann::json::from_bjdata(bjdata);
-		}
-
-		ENSURE(fclose(fp) != -1);
 		m_stack.emplace_back(&m_root);
 	}
 

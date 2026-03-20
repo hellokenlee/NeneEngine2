@@ -4,6 +4,7 @@
 #include "engine.h"
 #include "core/core.h"
 #include "input_manager.h"
+#include "asset/asset_registry.h"
 #include "core_render/render_thread.h"
 
 

@@ -8,10 +8,10 @@
 
 namespace nene
 {
-	std::shared_ptr<g::asset> texture_importer::import_asset(const std::string& from_abs_path, const std::string& to_rel_path)
+	std::shared_ptr<g::asset> texture_importer::import_asset(const std::string& from_abs_path)
 	{
 		//
-		auto result = make_new_asset<g::texture_asset>(to_rel_path);
+		auto result = make_asset<g::texture_asset>();
 	
 		// load image via. extensions
 		if (from_abs_path.ends_with(".png"))

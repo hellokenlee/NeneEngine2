@@ -11,7 +11,7 @@ namespace nene
 	class texture_importer : public asset_importer
 	{
 	public:
-		std::shared_ptr<g::asset> import_asset(const std::string& from_abs_path, const std::string& to_rel_path) override;
+		std::shared_ptr<g::asset> import_asset(const std::string& from_abs_path) override;
 		
 		std::vector<std::string> get_supported_asset_extensions() override;
 	};

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "asset_header.h"
+#include "asset_abstract.h"
 #include "core/core.h"
 #include <boost/pfr.hpp>
 
@@ -31,9 +31,8 @@ namespace nene
 		//
 		virtual ~archive() = default;
 		virtual direction direction() const = 0;
-		virtual std::shared_ptr<asset_header> peak(const std::string& file_path) = 0;
-		virtual void read(const std::string& file_path) = 0;
-		virtual void write(const std::string& file_path) const = 0;
+		virtual void load(const std::vector<uint8_t>& content) = 0;
+		virtual std::vector<uint8_t> dump() const = 0;
 		
 		// basic types
 		virtual archive& operator<<(const nvp<uint8_t>& kv) = 0;

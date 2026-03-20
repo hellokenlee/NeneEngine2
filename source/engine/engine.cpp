@@ -2,8 +2,10 @@
 
 #include "engine.h"
 #include "input_manager.h"
+#include "asset/asset_registry.h"
 #include "renderer/simple_renderer.h"
 #include "core_render/render_thread.h"
+
 
 namespace nene
 {
@@ -11,6 +13,9 @@ namespace nene
 	{
 		m_world = std::make_unique<g::world>();
 		m_renderer = std::make_unique<r::simple_renderer>();
+		
+		// initialize asset registry
+		g::asset_registry::get();
 	}
 
 	void engine::update(std::chrono::milliseconds delta)

@@ -29,15 +29,18 @@ namespace nene::g
 			return std::static_pointer_cast<asset_t>(res);
 		}
 		
+		const std::filesystem::path& root() const { return m_root_abs_path; }
+		
 		void save(asset& ast) const;
 		
-		void add(const std::shared_ptr<asset>& ast);
+		void add(const std::shared_ptr<asset>& ast, const std::string& file_name);
 	
 	private:
 		asset_registry();
 		std::shared_ptr<asset> internal_load(const uuid& uid);
 		
+		std::filesystem::path m_root_abs_path;
+		std::unordered_map<uuid, asset_abstract> m_asset_abstracts;
 		std::unordered_map<uuid, std::shared_ptr<asset>> m_loaded_assets;
-		std::unordered_map<uuid, std::shared_ptr<asset_header>> m_asset_headers;
 	};
 }

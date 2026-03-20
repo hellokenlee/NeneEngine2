@@ -11,7 +11,14 @@ namespace nene::g::reflection
 		py::module_::import(binding::PY_NENE_MODULE_NAME);
 		return py::cast(this_, py::return_value_policy::reference);
 	}
-	
+
+	template <typename cpp_t>
+	cpp_t* get_raw(variant self)
+	{
+		py::gil_scoped_acquire gil;
+		return py::cast<cpp_t*>(self);
+	}
+
 	template <typename ... arg_ts>
 	variant create(type cls, arg_ts&&... args)
 	{

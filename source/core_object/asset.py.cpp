@@ -10,7 +10,7 @@ namespace nene::g
 	{
 		py::class_<asset>(m, "Asset")
 			.def(py::init<>())
-			.def_readwrite("m_test_attrib", &asset::m_test_attrib)
+			.def_readwrite("m_uuid", &asset::m_uuid)
 		;
 	}
 }

@@ -11,6 +11,7 @@ namespace nene::g
 	static void serialize_property(archive& ar, reflection::variant& self, const std::string& prop_name)
 	{
 		//
+		py::gil_scoped_acquire gil;
 		static py::object py_uuid_class = py::module_::import("uuid").attr("UUID");
 		//
 		py::object py_prop_value = self.attr(prop_name.c_str());
@@ -62,9 +63,6 @@ namespace nene::g
 	
 	void asset::serialize(archive& ar)
 	{
-		// the header must be first
-		ar << AR(m_header);
-		
 		// bound attributes serialization 
 		reflection::variant var = reflection::get_variant(this);
 		for (const auto& name : reflection::get_property_names(var))

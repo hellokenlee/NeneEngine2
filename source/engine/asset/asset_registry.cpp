@@ -1,7 +1,9 @@
-﻿/* Copyright reserved by KenLee@hellokenlee@163.com */
+/* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #include "asset_registry.h"
 #include "core_object/archive/json_archive.h"
+#include <cstdio>
+#include <zstd.h>
 
 
 namespace nene::g
@@ -13,50 +15,115 @@ namespace nene::g
 		static asset_registry instance;
 		return instance;
 	}
+	
+	static asset_abstract make_asset_abstract(const asset& ast, const std::string& file_name)
+	{
+		auto var = reflection::get_variant(&ast);
+		return asset_abstract{
+			.m_uuid = ast.m_uuid,
+			.m_type_name = reflection::get_class_name(var),
+			.m_file_name = file_name,
+		};
+	}
+	
+	static asset_abstract read_asset_abstract(const std::filesystem::path& file_name)
+	{
+		FILE* fp = std::fopen(file_name.string().c_str(), "rb");
+		if (fp == nullptr)
+		{
+			return {};
+		}
+		uint32_t header_size = 0;
+		if (fread(&header_size, sizeof(header_size), 1, fp) == 1)
+		{
+			std::vector<uint8_t> header(header_size);
+			if (fread(header.data(), 1, header_size, fp) == header_size)
+			{
+				asset_abstract abstract;
+				abstract.load(header);
+				ENSURE(fclose(fp) != -1);
+				return abstract;
+			}
+		}
+		ENSURE(fclose(fp) != -1);
+		return {};
+	}
 
 	void asset_registry::save(asset& ast) const
 	{
+		// find abstract
+		const auto& abstract = m_asset_abstracts.at(ast.m_uuid);
+		auto header = abstract.dump();
+		// 
 		json_writer writer;
 		ast.serialize(writer);
-		writer.write(ast.m_header.m_file_name);
+		auto content = writer.dump();
+		// zstd compress content
+		size_t compress_bound = ZSTD_compressBound(content.size());
+		std::vector<uint8_t> compressed(compress_bound);
+		size_t compressed_size = ZSTD_compress(compressed.data(), compress_bound, content.data(), content.size(), 19);
+		CHECK(!ZSTD_isError(compressed_size));
+		compressed.resize(compressed_size);
+		//
+		FILE* fp = std::fopen(abstract.m_file_name.c_str(), "wb");
+		CHECK(fp);
+		uint32_t header_size = static_cast<uint32_t>(header.size());
+		uint32_t original_size = static_cast<uint32_t>(content.size());
+		ENSURE(fwrite(&header_size, sizeof(header_size), 1, fp) == 1);
+		ENSURE(fwrite(header.data(), 1, header.size(), fp) == header.size());
+		ENSURE(fwrite(&original_size, sizeof(original_size), 1, fp) == 1);
+		ENSURE(fwrite(compressed.data(), 1, compressed.size(), fp) == compressed.size());
+		ENSURE(fclose(fp) != -1);
 	}
 
-	void asset_registry::add(const std::shared_ptr<asset>& ast)
+	void asset_registry::add(const std::shared_ptr<asset>& ast, const std::string& file_name)
 	{
-		m_loaded_assets.emplace(ast->m_header.m_uuid, ast);
+		// sanitize
+		std::filesystem::path file_path = std::string(t::split(file_name, '.')[0]) + ".asset";
+		if (file_path.is_absolute())
+		{
+			file_path = std::filesystem::relative(file_path, root());
+		}
+		
+		// mark down abstract
+		auto abstract = make_asset_abstract(*ast, file_path.string());
+		m_asset_abstracts.emplace(ast->m_uuid, abstract);
+		// mark down the asset itself
+		m_loaded_assets.emplace(ast->m_uuid, ast);
 	}
 
 	asset_registry::asset_registry()
 	{
-		// scan `content` folder all assets and build uuid-path map
-		log(asset_registry_, info, "building asset registry...");
-		std::filesystem::path content_path = "content";
 		//
-		auto type_names = reflection::get_class_names();
-		if (std::filesystem::exists(content_path) && std::filesystem::is_directory(content_path))
+		m_root_abs_path = std::filesystem::absolute("content");
+		
+		// scan `content` folder all assets and build uuid-path map
+		log(asset_registry_, info, "building asset registry, root: {}", root().string());
+		//
+		auto type_names = reflection::all_class_names();
+		if (std::filesystem::exists(root()) && std::filesystem::is_directory(root()))
 		{
-			for (const auto& entry : std::filesystem::recursive_directory_iterator(content_path))
+			for (const auto& entry : std::filesystem::recursive_directory_iterator(root()))
 			{
 				if (entry.is_regular_file())
 				{
-					json_reader reader;
-					auto header = reader.peak(entry.path().string());
-					if (header != nullptr)
+					auto file_path = std::filesystem::relative(entry.path(), root());
+					auto abstract = read_asset_abstract(file_path);
+					if (abstract.valid())
 					{
-						//
-						if (!header->m_uuid.is_nil() && type_names.contains(header->m_type_name))
+						if (type_names.contains(abstract.m_type_name))
 						{
 							// fix up file name
-							if (entry.path() != header->m_file_name)
+							if (file_path != abstract.m_file_name)
 							{
-								log(asset_registry_, warn, "fixed {} ({})", entry.path(), header->m_file_name);
+								log(asset_registry_, warn, "fixed {} ({})", file_path.string(), abstract.m_file_name);
 							}
-							
-							m_asset_headers.emplace(header->m_uuid, header);
+							// mark down abstract
+							m_asset_abstracts.emplace(abstract.m_uuid, abstract);
 						}
 						else
 						{
-							log(asset_registry_, error, "invalid asset header: {}", entry.path());
+							log(asset_registry_, error, "invalid asset abstract: {}", file_path.string());
 						}
 					}
 				}
@@ -73,17 +140,39 @@ namespace nene::g
 			return m_loaded_assets[uid];
 		}
 		// check if there exists its header
-		if (m_asset_headers.contains(uid))
+		if (m_asset_abstracts.contains(uid))
 		{
-			const auto& header = m_asset_headers.at(uid);
-			CHECK(header != nullptr);
-			
-			json_reader reader;
-			reader.read(header->m_file_name);
-			
-			auto py_type = reflection::get_class(header->m_type_name);
+			const auto& header = m_asset_abstracts.at(uid);
+			CHECK(header.valid());
+			//
+			auto py_type = reflection::get_class(header.m_type_name);
 			auto var = reflection::create(py_type);
-			asset* ast = py::cast<asset*>(var);
+			auto ast = reflection::get_raw<asset>(var);
+			//
+			FILE* fp = fopen(header.m_file_name.c_str(), "rb");
+			CHECK(fp);
+			// read header size & skip header
+			uint32_t header_size = 0;
+			ENSURE(fread(&header_size, sizeof(header_size), 1, fp) == 1);
+			ENSURE(fseek(fp, header_size, SEEK_CUR) == 0);
+			// read original content size
+			uint32_t original_size = 0;
+			ENSURE(fread(&original_size, sizeof(original_size), 1, fp) == 1);
+			// read compressed content
+			long compressed_begin = std::ftell(fp);
+			ENSURE(fseek(fp, 0, SEEK_END) == 0);
+			long compressed_size = std::ftell(fp) - compressed_begin;
+			ENSURE(fseek(fp, compressed_begin, SEEK_SET) == 0);
+			std::vector<uint8_t> compressed(compressed_size);
+			ENSURE(fread(compressed.data(), 1, compressed_size, fp) == static_cast<size_t>(compressed_size));
+			ENSURE(fclose(fp) != -1);
+			// zstd decompress
+			std::vector<uint8_t> content(original_size);
+			size_t decompressed_size = ZSTD_decompress(content.data(), original_size, compressed.data(), compressed_size);
+			CHECK(!ZSTD_isError(decompressed_size));
+			// unserialize the content
+			json_reader reader;
+			reader.load(content);
 			ast->serialize(reader);
 			
 			return std::shared_ptr<asset>(ast);

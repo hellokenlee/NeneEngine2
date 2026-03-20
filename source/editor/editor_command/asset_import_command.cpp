@@ -34,12 +34,12 @@ namespace nene
 			auto importer = asset_importer_manager::get().find_asset_importer_by_extension(ext);
 			if (importer != nullptr)
 			{
-				auto new_asset = importer->import_asset(m_origin_file_abs_path, m_target_content_rel_path);
+				auto new_asset = importer->import_asset(m_origin_file_abs_path);
 				
 				if (new_asset != nullptr)
 				{
-					// tell asset registry we have a new asset
-					g::asset_registry::get().add(new_asset);
+					// add a new asset to registry
+					g::asset_registry::get().add(new_asset, m_target_content_rel_path);
 					// TODO: 单独的 Save 命令
 					g::asset_registry::get().save(*new_asset);
 				}

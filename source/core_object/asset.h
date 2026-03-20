@@ -3,7 +3,7 @@
 #pragma once
 
 #include "py.h"
-#include "asset_header.h"
+#include "asset_abstract.h"
 #include "core/uuid.h"
 #include "core/windll.h"
 #include "archive/archive.h"
@@ -22,8 +22,6 @@ namespace nene::g
 
 		virtual void serialize(archive& ar);
 		
-		asset_header m_header;
-		
-		std::string m_test_attrib;
+		uuid m_uuid = {};
 	};
 }

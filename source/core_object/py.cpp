@@ -85,7 +85,7 @@ namespace nene::g
 			return cls;
 		}
 
-		std::set<std::string> get_class_names()
+		std::set<std::string> all_class_names()
 		{
 			std::set<std::string> result;
 			py::gil_scoped_acquire gil;
@@ -106,6 +106,13 @@ namespace nene::g
 				}
 			}
 			return result;
+		}
+
+		std::string get_class_name(variant self)
+		{
+			py::gil_scoped_acquire gil;
+			std::string py_class_name = py::type::of(self).attr("__name__").cast<std::string>();
+			return py_class_name;
 		}
 
 		std::vector<std::string> get_property_names(variant self) 

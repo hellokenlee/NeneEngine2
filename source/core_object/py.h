@@ -46,11 +46,22 @@ namespace nene::g
 		/** get a class object by name */
 		NENE_API type get_class(const std::string& name);
 		
-		/** get all bound class names */
-		NENE_API std::set<std::string> get_class_names(); 
+		/** get the name of a class object */
+		NENE_API std::string get_name(type cls);
 		
+		/** get all bound class names */
+		NENE_API std::set<std::string> all_class_names(); 
+		
+		/** get the variant of a c++ instance */
 		template<typename cpp_t>
 		variant get_variant(const cpp_t* this_);
+		
+		/** get the raw c++ pointer of a variant */
+		template<typename cpp_t>
+		cpp_t* get_raw(variant self);
+		
+		/** get the class name of a variant */
+		NENE_API std::string get_class_name(variant self);
 		
 		template <typename ... arg_ts>
 		variant create(type cls, arg_ts&&... args);
