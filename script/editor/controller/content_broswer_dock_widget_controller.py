@@ -155,7 +155,7 @@ class ContentBroswerDockWidgetController(DockWidgetController):
 		"""右键菜单：提供导入、以及（空白）新建文件夹/（具体项）重命名与删除"""
 		menu = QMenu(self._content_view_widget)
 		hit_item = self._content_view_widget.itemAt(pos)
-		import_action = menu.addAction("Import")
+		import_action = menu.addAction(IconSet().import_, "Import to Here")
 		new_folder_action = menu.addAction(IconSet().folder, "New Folder")
 		rename_action = None
 		delete_action = None

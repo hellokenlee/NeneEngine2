@@ -17,6 +17,9 @@ class IconSet(object, metaclass=Singleton):
 		self.sakura = QIcon(os.path.join(self.ICON_FOLDER_PATH, "sakura.png"))
 		self.file = QIcon(os.path.join(self.ICON_FOLDER_PATH, "file.png"))
 		self.folder = QIcon(os.path.join(self.ICON_FOLDER_PATH, "folder_content.png"))
+		self.import_ = QIcon(os.path.join(self.ICON_FOLDER_PATH, "import.png"))
+		self.mesh = QIcon(os.path.join(self.ICON_FOLDER_PATH, "mesh.png"))
+		self.texture = QIcon(os.path.join(self.ICON_FOLDER_PATH, "texture.png"))
 		pass
 
 
