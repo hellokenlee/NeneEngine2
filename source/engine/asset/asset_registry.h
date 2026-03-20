@@ -6,6 +6,7 @@
 #include "asset_handle.h"
 
 #include <filesystem>
+#include <tsl/htrie_map.h>
 
 
 namespace nene::g
@@ -53,5 +54,6 @@ namespace nene::g
 		std::filesystem::path m_content_abs_path;
 		std::unordered_map<uuid, asset_abstract> m_asset_abstracts;
 		std::unordered_map<uuid, std::shared_ptr<asset>> m_loaded_assets;
+		tsl::htrie_map<char, uuid> m_path_to_uuid;
 	};
 }

@@ -4,7 +4,6 @@
 #include "core_object/archive/json_archive.h"
 #include <cstdio>
 #include <zstd.h>
-#include <.package/x64-windows/tools/python3/Lib/site-packages/shiboken6_generator/include/sbkstaticstrings.h>
 
 
 namespace nene::g
@@ -87,8 +86,9 @@ namespace nene::g
 		}
 
 		// mark down abstract
-		auto abstract = make_asset_abstract(*ast, file_path.string());
+		auto abstract = make_asset_abstract(*ast, file_path.generic_string());
 		m_asset_abstracts.emplace(ast->m_uuid, abstract);
+		m_path_to_uuid.insert(file_path.generic_string(), ast->m_uuid);
 		// mark down the asset itself
 		m_loaded_assets.emplace(ast->m_uuid, ast);
 	}
@@ -99,6 +99,7 @@ namespace nene::g
 		if (it != m_asset_abstracts.end())
 		{
 			std::filesystem::remove(it->second.m_file_name);
+			m_path_to_uuid.erase(it->second.m_file_name);
 			m_asset_abstracts.erase(it);
 		}
 		m_loaded_assets.erase(uid);
@@ -106,23 +107,31 @@ namespace nene::g
 
 	void asset_registry::remove(const std::filesystem::path& file_path)
 	{
-		auto file_rel_path = file_path.is_absolute() ? std::filesystem::relative(file_path) : file_path;
+		auto rel = file_path.is_absolute() ? std::filesystem::relative(file_path) : file_path;
+		auto key = rel.string();
 
 		std::vector<uuid> pending;
-		for (const auto& [uid, abstract] : m_asset_abstracts)
+
+		// exact file match
+		auto it = m_path_to_uuid.find(key);
+		if (it != m_path_to_uuid.end())
 		{
-			std::filesystem::path asset_file_path(abstract.m_file_name);
-			auto [prefix_end, _] = std::mismatch(file_rel_path.begin(), file_rel_path.end(), asset_file_path.begin(), asset_file_path.end());
-			if (prefix_end == file_rel_path.end())
-			{
-				pending.push_back(uid);
-			}
+			pending.push_back(*it);
 		}
+
+		// directory prefix match (key + separator)
+		auto dir_key = key + '/';
+		auto [pbegin, pend] = m_path_to_uuid.equal_prefix_range(dir_key);
+		for (auto pit = pbegin; pit != pend; ++pit)
+		{
+			pending.push_back(*pit);
+		}
+
 		for (const auto& uid : pending)
 		{
 			remove(uid);
 		}
-		std::filesystem::remove_all(file_rel_path);
+		std::filesystem::remove_all(rel);
 	}
 
 	asset_registry::asset_registry()
@@ -153,6 +162,7 @@ namespace nene::g
 							}
 							// mark down abstract
 							m_asset_abstracts.emplace(abstract.m_uuid, abstract);
+							m_path_to_uuid.insert(abstract.m_file_name, abstract.m_uuid);
 						}
 						else
 						{
