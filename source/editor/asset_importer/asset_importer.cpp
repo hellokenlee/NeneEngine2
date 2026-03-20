@@ -52,7 +52,7 @@ namespace nene
 
 	asset_importer_manager::asset_importer_manager()
 	{
-		// register_asset_importer(std::make_shared<mesh_importer>());
+		register_asset_importer(std::make_shared<mesh_importer>());
 		register_asset_importer(std::make_shared<texture_importer>());
 	}
 

@@ -4,14 +4,15 @@
 
 #include "asset_importer.h"
 #include "core/core.h"
-#include "engine/asset/static_mesh_asset.h"
 
 
 namespace nene
 {
-	// class mesh_importer : public asset_importer
-	// {
-	// public:
-	// 	
-	// };
+	class mesh_importer : public asset_importer
+	{
+	public:
+		std::shared_ptr<g::asset> import_asset(const std::string& from_abs_path) override;
+		
+		std::vector<std::string> get_supported_asset_extensions() override;
+	};
 }
