@@ -11,6 +11,7 @@ from script.editor.resource_set import IconSet, PixmapSet, AssetFileIconSet
 from script.editor.controller.dock_widget_controller import DockWidgetController
 from script.editor.common.log import log, INFO
 from script.editor.controller.history_navigator import HistoryNavigator
+from script.editor.widget.content_broswer_view_widget import ContentBroswerViewWidget
 
 
 class _ClickEmptyToClearFilter(QObject):
@@ -52,7 +53,7 @@ class ContentBroswerDockWidgetController(DockWidgetController):
 		self._import_push_button: QPushButton = self.ui.findChild(QPushButton, "importPushButton")
 		self._back_push_button: QPushButton = self.ui.findChild(QPushButton, "backPushButton")
 		self._forward_push_button: QPushButton = self.ui.findChild(QPushButton, "forwardPushButton")
-		self._content_view_widget: QListWidget = self.ui.findChild(QListWidget, "contentListWidget")
+		self._content_view_widget: ContentBroswerViewWidget = self.ui.findChild(ContentBroswerViewWidget, "contentListWidget")
 		self._path_widget: QWidget = self.ui.findChild(QWidget, "pathWidget")
 		self._serach_line_edit: QLineEdit = self.ui.findChild(QLineEdit, "searchLineEdit")
 		#
@@ -263,6 +264,7 @@ class ContentBroswerDockWidgetController(DockWidgetController):
 
 		# 重绘当前路径的文件视图
 		from nene import AssetRegistry
+		self._content_view_widget.base_path = self._nav.current()
 		self._content_view_widget.clear()
 		filenames = os.listdir(self._nav.current())
 		filenames.reverse()

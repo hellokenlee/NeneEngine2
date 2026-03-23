@@ -10,6 +10,7 @@ from PySide6.QtCore import QDir, QFile, QIODevice
 from PySide6.QtUiTools import QUiLoader
 
 from script.editor.resource_set import IconSet
+from script.editor.widget.content_broswer_view_widget import ContentBroswerViewWidget
 
 T = TypeVar("T")
 
@@ -25,6 +26,7 @@ class BaseController(Generic[T], QtCore.QObject):
 		open_succeed = ui_file.open(QIODevice.OpenModeFlag.ReadOnly)
 		assert open_succeed, "Cannot open: %s!" % self.UI_FILE
 		loader = QUiLoader()
+		loader.registerCustomWidget(ContentBroswerViewWidget)
 		loader.setWorkingDirectory(QDir(IconSet.UI_FOLDER_PATH))
 		self.ui: T = loader.load(ui_file)
 		pass

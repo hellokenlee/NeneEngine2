@@ -3,16 +3,43 @@
 # __email__ = "hellokenlee@163.com"
 
 from PySide6 import QtCore
-from PySide6.QtGui import QAction
+from PySide6.QtCore import QEvent, QObject
+from PySide6.QtGui import QAction, QDragEnterEvent, QDropEvent
 from PySide6.QtWidgets import QMainWindow, QTabWidget, QTabBar, QDockWidget, QMenu
 from script.editor.controller.base_controller import BaseController
 from script.editor.controller.console_dock_widget_controller import ConsoleDockWidgetController
 from script.editor.controller.content_broswer_dock_widget_controller import ContentBroswerDockWidgetController
+from script.editor.widget.content_broswer_view_widget import ContentBroswerViewWidget
 
 from NeneQtWidgets import NeneViewportWidget
 
 from script.editor.resource_set import IconSet
+from script.editor.common.log import log, INFO
 from script.editor.controller.dock_widget_controller import DockWidgetController
+
+
+class _ViewportDropFilter(QObject):
+	"""事件过滤器：接受从内容浏览器拖入视口的资产"""
+
+	def __init__(self, callback, parent=None):
+		super().__init__(parent)
+		self._callback = callback
+
+	def eventFilter(self, obj, event):
+		if event.type() == QEvent.Type.DragEnter:
+			assert (isinstance(event, QDragEnterEvent))
+			if event.mimeData().hasFormat(ContentBroswerViewWidget.ASSET_MIME_TYPE):
+				event.acceptProposedAction()
+				return True
+		elif event.type() == QEvent.Type.Drop:
+			assert (isinstance(event, QDropEvent))
+			if event.mimeData().hasFormat(ContentBroswerViewWidget.ASSET_MIME_TYPE):
+				data = bytes(event.mimeData().data(ContentBroswerViewWidget.ASSET_MIME_TYPE).data()).decode("utf-8")
+				asset_paths = data.split("\n")
+				self._callback(asset_paths)
+				event.acceptProposedAction()
+				return True
+		return False
 
 
 class MainWindowController(BaseController[QMainWindow], QtCore.QObject):
@@ -40,6 +67,18 @@ class MainWindowController(BaseController[QMainWindow], QtCore.QObject):
 		# Content Broswer
 		self._content_broswer = self.add_dock_widget_controller(ContentBroswerDockWidgetController(), QtCore.Qt.DockWidgetArea.BottomDockWidgetArea)
 		self._content_broswer.on_top_level_changed.connect(self.on_dock_widget_top_level_changed)
+
+		# Viewport drop: accept assets dragged from content browser
+		viewport = self.ui.centralWidget()
+		viewport.setAcceptDrops(True)
+		self._viewport_drop_filter = _ViewportDropFilter(self._on_asset_dropped, viewport)
+		viewport.installEventFilter(self._viewport_drop_filter)
+		pass
+
+	def _on_asset_dropped(self, asset_paths: list[str]):
+		"""资产从内容浏览器拖入视口时调用；asset_paths 为完整文件路径列表"""
+		# TODO: 在此处实现拖入资产的处理逻辑
+		log(self, INFO, "drop: %s" % asset_paths)
 		pass
 
 	def on_dock_widget_top_level_changed(self, controller: DockWidgetController):
@@ -86,5 +125,3 @@ class MainWindowController(BaseController[QMainWindow], QtCore.QObject):
 			for sibling_tab_widget in self.ui.tabifiedDockWidgets(dock_widget):
 				self._refresh_dock_widget_title_bar(self._dock_widget_controllers[sibling_tab_widget])
 		pass
-
-
