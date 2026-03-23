@@ -8,6 +8,8 @@
 
 namespace nene::g
 {
+	// NOTE: 全部路径都是基于工作目录的相对路径
+	
 	logger asset_registry_("asset_registry");
 
 	asset_registry& asset_registry::get()
@@ -132,6 +134,22 @@ namespace nene::g
 			remove(uid);
 		}
 		std::filesystem::remove_all(rel);
+	}
+
+	const asset_abstract& asset_registry::find_abstract(const std::filesystem::path& file_path)
+	{
+		auto rel = file_path.is_absolute() ? std::filesystem::relative(file_path) : file_path;
+		rel = rel.lexically_normal();
+		const auto key = rel.generic_string();
+
+		const auto it = m_path_to_uuid.find(key);
+		if (it != m_path_to_uuid.end())
+		{
+			return m_asset_abstracts.at(*it);
+		}
+
+		static const asset_abstract invalid{};
+		return invalid;
 	}
 
 	asset_registry::asset_registry()

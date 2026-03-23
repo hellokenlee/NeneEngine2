@@ -46,6 +46,8 @@ namespace nene::g
 		
 		// Remove assets whose relative path matches or falls under the given path.
 		void remove(const std::filesystem::path& file_path);
+		
+		const asset_abstract& find_abstract(const std::filesystem::path& file_path);
 	
 	private:
 		asset_registry();

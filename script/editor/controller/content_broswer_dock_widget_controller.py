@@ -3,53 +3,14 @@
 # __email__ = "hellokenlee@163.com"
 
 import os
-import shutil
 
 from PySide6.QtCore import QEvent, QObject, QSize, Qt
-from PySide6.QtGui import QKeySequence, QShortcut
+from PySide6.QtGui import QKeySequence, QShortcut, QMouseEvent
 from PySide6.QtWidgets import QPushButton, QWidget, QListWidget, QListWidgetItem, QApplication, QLabel, QLineEdit, QFileDialog, QMenu, QMessageBox, QStyledItemDelegate
-from script.editor.resource_set import IconSet, PixmapSet
+from script.editor.resource_set import IconSet, PixmapSet, AssetFileIconSet
 from script.editor.controller.dock_widget_controller import DockWidgetController
 from script.editor.common.log import log, INFO
-
-
-class HistoryNavigator(object):
-	"""线性历史 + 指针模型"""
-
-	def __init__(self, start: str):
-		self._history: list[str] = [start]
-		self._i: int = 0
-
-	def current(self) -> str:
-		return self._history[self._i]
-
-	def split(self) -> list[str]:
-		return self.current().split(os.path.sep)
-
-	def can_back(self) -> bool:
-		return self._i > 0
-
-	def can_forward(self) -> bool:
-		return self._i < len(self._history) - 1
-
-	def push(self, path: str):
-		# 若指针不在末尾，截断右侧历史
-		if self._i < len(self._history) - 1:
-			self._history = self._history[: self._i + 1]
-		self._history.append(path)
-		self._i += 1
-
-	def back(self) -> str | None:
-		if not self.can_back():
-			return None
-		self._i -= 1
-		return self.current()
-
-	def forward(self) -> str | None:
-		if not self.can_forward():
-			return None
-		self._i += 1
-		return self.current()
+from script.editor.controller.history_navigator import HistoryNavigator
 
 
 class _ClickEmptyToClearFilter(QObject):
@@ -60,9 +21,11 @@ class _ClickEmptyToClearFilter(QObject):
 		self._list_widget = list_widget
 
 	def eventFilter(self, obj, event):
-		if event.type() == QEvent.Type.MouseButtonPress and event.button() == Qt.MouseButton.LeftButton:
-			if self._list_widget.itemAt(event.position().toPoint()) is None:
+		if event.type() == QEvent.Type.MouseButtonPress:
+			assert isinstance(event, QMouseEvent)
+			if event.button() == Qt.MouseButton.LeftButton and self._list_widget.itemAt(event.position().toPoint()) is None:
 				self._list_widget.clearSelection()
+				# noinspection PyTypeChecker
 				self._list_widget.setCurrentItem(None)
 		return False
 
@@ -299,14 +262,16 @@ class ContentBroswerDockWidgetController(DockWidgetController):
 		self._forward_push_button.setEnabled(self._nav.can_forward())
 
 		# 重绘当前路径的文件视图
+		from nene import AssetRegistry
 		self._content_view_widget.clear()
 		filenames = os.listdir(self._nav.current())
 		filenames.reverse()
 		for filename in filenames:
-			if os.path.isdir(os.path.join(self._nav.current(), filename)):
+			filepath = os.path.join(self._nav.current(), filename)
+			if os.path.isdir(filepath):
 				item = QListWidgetItem(IconSet().folder, filename)
 			else:
-				item = QListWidgetItem(IconSet().file, filename.split('.')[0])
+				item = QListWidgetItem(AssetFileIconSet().icon(AssetRegistry().find_abstract(filepath).m_type_name), filename.split('.')[0])
 			item.setData(Qt.ItemDataRole.UserRole, filename)  # 存储完整文件名，供重命名/删除使用
 			self._content_view_widget.addItem(item)
 		pass

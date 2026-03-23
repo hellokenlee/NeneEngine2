@@ -28,3 +28,17 @@ class PixmapSet(object, metaclass=Singleton):
 		super(PixmapSet, self).__init__()
 		self.path_seperator = QPixmap(os.path.join(IconSet.ICON_FOLDER_PATH, "path_seperator.png"))
 		pass
+
+
+class AssetFileIconSet(object, metaclass=Singleton):
+	def __init__(self):
+		super(AssetFileIconSet, self).__init__()
+		pass
+
+	def icon(self, type_name: str) -> QIcon:
+		from nene import TextureAsset, StaticMeshAsset
+		type_name_to_icon = {
+			TextureAsset.__name__: IconSet().texture,
+			StaticMeshAsset.__name__: IconSet().mesh,
+		}
+		return type_name_to_icon.get(type_name, IconSet().file)
