@@ -6,6 +6,8 @@
 #include "gapi_d3d12_resource_view.h"
 #include "d3d12_utils.h"
 
+#include <queue>
+
 
 namespace nene
 {

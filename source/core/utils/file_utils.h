@@ -8,7 +8,7 @@
 #include <vector>
 
 
-namespace utils
+namespace nene::utils
 {
 	NENE_API std::string load_file_to_string(const std::string& filepath);
 	
@@ -16,5 +16,5 @@ namespace utils
 	
 	NENE_API std::vector<uint8_t> load_file_to_bytes(const std::string& filepath);
 	
-	NENE_API void save_file_to_bytes(std::vector<uint8_t>, const std::string& filepath);
+	NENE_API void save_file_to_bytes(const std::vector<uint8_t>&, const std::string& filepath);
 }

@@ -25,24 +25,27 @@
 	#define ENSURE(expr) (void)(expr)
 #endif // NENE_DEVELOPMENT
 
-NENE_API void check_failed(const std::string& filename, uint32_t line, const std::string& expression);
-
-NENE_API void check_failed(const std::string& filename, uint32_t line, const std::string& expression, const std::string& hints);
-
-#define CHECK_IMPL(expr)									\
-	{														\
-		if (!(expr))										\
-		{													\
-			check_failed(__FILE__, __LINE__, #expr);		\
-			DEBUG_BREAK();									\
-		}													\
+#define CHECK_IMPL(expr)												\
+	{																	\
+		if (!(expr))													\
+		{																\
+			::nene::check_failed(__FILE__, __LINE__, #expr);			\
+			DEBUG_BREAK();												\
+		}																\
 	}
 
-#define CHECK_HINTS_IMPL(expr, hints)							\
-	{															\
-		if (!(expr))											\
-		{														\
-			check_failed(__FILE__, __LINE__, #expr, hints);		\
-			DEBUG_BREAK();										\
-		}														\
+#define CHECK_HINTS_IMPL(expr, hints)									\
+	{																	\
+		if (!(expr))													\
+		{																\
+			::nene::check_failed(__FILE__, __LINE__, #expr, hints);		\
+			DEBUG_BREAK();												\
+		}																\
 	}
+
+namespace nene
+{
+	NENE_API void check_failed(const std::string& filename, uint32_t line, const std::string& expression);
+
+	NENE_API void check_failed(const std::string& filename, uint32_t line, const std::string& expression, const std::string& hints);
+}

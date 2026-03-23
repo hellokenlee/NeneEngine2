@@ -2,18 +2,17 @@
 
 #pragma once
 
-#include "log.h"
-#include "log_handler.h"
+#include "event_id.h"
+#include "event_publish_subscribe.h"
 
 namespace nene
 {
 	/**
-	 *  Log handler log to stdout
+	 *  Writes log_message_event lines to stdout
 	 */
-	class NENE_API stdout_log_handler : public log_handler
+	class NENE_API stdout_log_handler final : public event_listener
 	{
 	public:
-		~stdout_log_handler() override = default;
-		void emit(const std::string& log_message) override;
+		void on_notify(const event& e) override;
 	};
 }

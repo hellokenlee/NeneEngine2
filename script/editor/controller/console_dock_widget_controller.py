@@ -4,12 +4,12 @@
 
 import logging
 
-from PySide6.QtWidgets import QDockWidget, QTextBrowser, QWidget, QMainWindow
+from PySide6.QtWidgets import QTextBrowser
 
 from script.editor.common.log import global_logger, global_log_formatter
 from script.editor.controller.dock_widget_controller import DockWidgetController
 
-from nene import LogHandler, Logger
+from nene import LogHandler, Logger, LogMessageEvent
 
 
 class EngineLogHandler(LogHandler):
@@ -23,8 +23,9 @@ class EngineLogHandler(LogHandler):
 		Logger.remove_handler(self)
 		pass
 
-	def emit(self, msg: str):
-		self.text_browser.append(msg)
+	def on_notify(self, e):
+		if isinstance(e, LogMessageEvent):
+			self.text_browser.append(e.m_message)
 		pass
 
 class PythonLogHandler(logging.Handler):

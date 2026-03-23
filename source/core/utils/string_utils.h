@@ -5,7 +5,8 @@
 #include <string>
 #include "core/windll.h"
 
-namespace utils
+
+namespace nene::utils
 {
 	NENE_API std::wstring string_to_wstring(const std::string& in_string);
 

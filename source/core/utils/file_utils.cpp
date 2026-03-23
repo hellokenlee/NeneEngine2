@@ -6,11 +6,11 @@
 #include "string_utils.h"
 #include "core/debug.h"
 
-static logger filehelper_("filehelper");
 
-
-namespace utils
+namespace nene::utils
 {
+	static logger filehelper_("filehelper");
+	
 	NENE_API std::string load_file_to_string(const std::string& filepath)
 	{
 		std::string content;
@@ -80,7 +80,7 @@ namespace utils
 		return content;
 	}
 
-	NENE_API void save_file_to_bytes(std::vector<uint8_t> data, const std::string& filepath)
+	NENE_API void save_file_to_bytes(const std::vector<uint8_t>& data, const std::string& filepath)
 	{
 		std::ofstream file_stream;
 		file_stream.exceptions(std::ofstream::failbit | std::ofstream::badbit);

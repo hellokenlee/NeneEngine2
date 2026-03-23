@@ -17,8 +17,25 @@ namespace nene
 		event(const event&) = default;
 		event& operator=(const event&) = default;
 		virtual ~event() = default;
+		
+		template<typename typed_event_t>
+		const typed_event_t* cast() const
+		{
+			if (this->m_id == typed_event_t::eid)
+			{
+				return static_cast<const typed_event_t*>(this);
+			}
+			return nullptr;
+		}
 
 		event_id m_id;
+	};
+	
+	template<event_id default_id>
+	struct NENE_API typed_event : event
+	{
+		constexpr static auto eid = default_id;
+		typed_event() : event(default_id) {}
 	};
 
 	/** Non-thread-safe observer pattern */
@@ -44,6 +61,8 @@ namespace nene
 		virtual void notify(const event& event);
 
 		virtual void add_listener(const std::shared_ptr<event_listener>& listener);
+
+		virtual void remove_listener(const std::shared_ptr<event_listener>& listener);
 
 	protected:
 		virtual void cleanup_expired_listeners();

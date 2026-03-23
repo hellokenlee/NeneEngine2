@@ -9,7 +9,7 @@
 #include <OleCtl.h>
 #endif // NENE_PLATFORM_WINDOWS
 
-namespace utils
+namespace nene::utils
 {
 	NENE_API std::wstring string_to_wstring(const std::string& in_string)
 	{

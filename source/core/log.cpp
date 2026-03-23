@@ -1,41 +1,31 @@
-﻿/* Copyright reserved by KenLee@hellokenlee@163.com */
+/* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #include "log.h"
 #include "debug.h"
-#include "stdout_log_handler.h"
 #include <chrono>
 #include <magic_enum/magic_enum.hpp>
 
-
-std::set<std::shared_ptr<nene::log_handler>> logger::s_handlers;
-
-logger::logger(const std::string_view& name)
-	: m_name(name)
+namespace nene
 {
-}
-
-void logger::log(const log_level& level, const std::string_view& message) const
-{
-	// FORMAT: 2025-09-18 04:58:10 info [object] message,message,message
-	std::chrono::zoned_time local_now(std::chrono::current_zone(), std::chrono::floor<std::chrono::seconds>(std::chrono::system_clock::now()));
-	auto now = std::format("{:%F %T}", local_now);
-	std::string log_message = std::format("{} {} [{}] {}", now,  magic_enum::enum_name(level), m_name, message);
-
-	// Notify observers
-	for (const auto& handler : s_handlers)
+	event_publisher& logger::publisher()
 	{
-	    handler->emit(log_message);
-    }
-}
+		static event_publisher s_instance;
+		return s_instance;
+	}
 
-void logger::add_handler(const std::shared_ptr<nene::log_handler>& handler)
-{
-    // TODO: 多线程锁
-    s_handlers.insert(handler);
-}
+	logger::logger(const std::string_view& name)
+		: m_name(name)
+	{
+	}
 
-void logger::remove_handler(const std::shared_ptr<nene::log_handler>& handler)
-{
-    // TODO: 多线程锁
-    s_handlers.erase(handler);
+	void logger::log(const log_level& level, const std::string_view& message) const
+	{
+		// FORMAT: 2025-09-18 04:58:10 info [object] message,message,message
+		std::chrono::zoned_time local_now(std::chrono::current_zone(), std::chrono::floor<std::chrono::seconds>(std::chrono::system_clock::now()));
+		auto now = std::format("{:%F %T}", local_now);
+		std::string log_message = std::format("{} {} [{}] {}", now,  magic_enum::enum_name(level), m_name, message);
+
+		log_message_event log_event(std::move(log_message));
+		publisher().notify(log_event);
+	}
 }
