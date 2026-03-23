@@ -42,7 +42,7 @@ namespace nene
 			return;
 		}
 		//
-		SDL_Surface* icon = SDL_LoadPNG("/script/editor/_ui_/icon/sakura.png");
+		SDL_Surface* icon = SDL_LoadPNG("script/editor/_ui_/icon/sakura.png");
 		if (icon != nullptr)
 		{
 			SDL_SetWindowIcon(m_window, icon);
