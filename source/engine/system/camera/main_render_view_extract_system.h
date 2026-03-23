@@ -2,9 +2,8 @@
 
 #pragma once
 
-#include <chrono>
-#include <entt/entt.hpp>
 #include "core_render/render_view.h"
+#include <flecs.h>
 
 
 namespace nene::g
@@ -12,8 +11,7 @@ namespace nene::g
 	class main_render_view_extract_system
 	{
 	public:
-		main_render_view_extract_system();
-		void update(std::chrono::milliseconds delta, entt::registry& registry);
+		main_render_view_extract_system(flecs::world& ecs);
 		const std::shared_ptr<r::render_view>& get_render_view() const { return m_render_view; }
 		
 	private:

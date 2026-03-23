@@ -13,7 +13,7 @@
     "directxmath",
     "magic-enum",
     "taskflow",
-    "entt",
+    "flecs",
     "assimp",
     "zstd",
     "tsl-hat-trie"

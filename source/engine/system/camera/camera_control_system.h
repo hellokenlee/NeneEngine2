@@ -2,9 +2,8 @@
 
 #pragma once
 
-#include <chrono>
-#include <entt/entt.hpp>
 #include "core/core.h"
+#include <flecs.h>
 
 
 namespace nene::g
@@ -12,7 +11,7 @@ namespace nene::g
 	class NENE_API camera_control_system final : public event_listener
 	{
 	public:
-		void update(std::chrono::milliseconds delta, entt::registry& registry) const;
+		camera_control_system(flecs::world& ecs);
 		void on_notify(const event& e) override;
 		
 	private:

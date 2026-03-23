@@ -2,8 +2,12 @@
 
 #pragma once
 
+#include "level.h"
+#include "system/camera/camera_control_system.h"
+#include "system/camera/main_render_view_extract_system.h"
+
 #include <memory>
-#include "scene.h"
+#include <flecs.h>
 
 
 namespace nene::g
@@ -19,6 +23,15 @@ namespace nene::g
 		const std::shared_ptr<r::render_view>& get_main_render_view() const;
 		
 	private:
-		std::shared_ptr<scene> m_current_scene = {};
+		// levels
+		std::shared_ptr<level> m_presistent_level;
+		std::vector<std::shared_ptr<level>> m_levels;
+		
+		// entities
+		flecs::world m_ecs;
+		
+		// systems
+		camera_control_system m_camera_control_system;
+		main_render_view_extract_system m_main_render_view_extract_system;
 	};
 }

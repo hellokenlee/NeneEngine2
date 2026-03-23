@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include <entt/entity/entity.hpp>
-
 #include "core/event_publish_subscribe.h"
 #include "core_render/render_view.h"
 #include "asset/asset_handle.h"

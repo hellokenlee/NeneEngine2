@@ -44,7 +44,7 @@ namespace nene
 		auto tock = std::chrono::high_resolution_clock::now();
 		auto delta = tock - tick;
 		tick = tock;
-		m_engine->update(std::chrono::duration_cast<std::chrono::milliseconds>(delta));
+		m_engine->update(std::chrono::duration_cast<std::chrono::seconds>(delta));
 	}
 
 	void engine_loop::resize(const uint2& new_window_size)

@@ -6,44 +6,44 @@
 
 namespace nene::g
 {
-	void camera_control_system::update(std::chrono::milliseconds delta, entt::registry& registry) const
+	camera_control_system::camera_control_system(flecs::world& ecs)
 	{
-		// TODO: 摄像机平滑
-		auto view = registry.view<camera_component, main_controlling_camera_tag>();
-		for (auto [eid, cam] : view.each())
-		{
-			// update rotation
-			cam.m_forward = float3::make_forward_vector(m_rotator);
-			cam.m_right = cam.m_up.cross(cam.m_forward);
-				
-			// update location 
-			if (m_b_operating)
+		ecs.system<camera_component, const main_controlling_camera_tag>().each(
+			[this](flecs::entity e, camera_component& cam, const main_controlling_camera_tag& _)
 			{
-				if (m_b_moving_forward)
+				// update rotation
+				cam.m_forward = float3::make_forward_vector(m_rotator);
+				cam.m_right = cam.m_up.cross(cam.m_forward);
+					
+				// update location 
+				if (m_b_operating)
 				{
-					cam.m_location += (cam.m_forward * m_move_speed);
+					if (m_b_moving_forward)
+					{
+						cam.m_location += (cam.m_forward * m_move_speed);
+					}
+					if (m_b_moving_back)
+					{
+						cam.m_location -= (cam.m_forward * m_move_speed);
+					}
+					if (m_b_moving_right)
+					{
+						cam.m_location += (cam.m_right * m_move_speed);
+					}
+					if (m_b_moving_left)
+					{
+						cam.m_location -= (cam.m_right * m_move_speed);
+					}
 				}
-				if (m_b_moving_back)
-				{
-					cam.m_location -= (cam.m_forward * m_move_speed);
-				}
-				if (m_b_moving_right)
-				{
-					cam.m_location += (cam.m_right * m_move_speed);
-				}
-				if (m_b_moving_left)
-				{
-					cam.m_location -= (cam.m_right * m_move_speed);
-				}
+				
+				// update aspect ratio
+				cam.m_ratio = static_cast<float>(m_window_size.w) / static_cast<float>(m_window_size.h);
+				cam.m_width = static_cast<float>(m_window_size.w);
+				cam.m_height = static_cast<float>(m_window_size.h);
 			}
-			
-			// update aspect ratio
-			cam.m_ratio = static_cast<float>(m_window_size.w) / static_cast<float>(m_window_size.h);
-			cam.m_width = static_cast<float>(m_window_size.w);
-			cam.m_height = static_cast<float>(m_window_size.h);
-		}
+		);
 	}
-
+	
 	void camera_control_system::on_notify(const event& e)
 	{
 		switch (e.m_id)

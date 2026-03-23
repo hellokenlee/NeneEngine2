@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include <entt/entity/entity.hpp>
-
 #include "core/event_publish_subscribe.h"
 #include "core_render/render_view.h"
 
@@ -33,10 +31,7 @@ namespace nene::g
 		float3 m_forward = float3::forward_vector();
 	};
 	
-	struct main_camera_entity_relation
-	{
-		entt::entity m_eid;
-	};
-	
 	struct main_controlling_camera_tag {};
+	
+	struct main_rendering_camera_tag {};
 }

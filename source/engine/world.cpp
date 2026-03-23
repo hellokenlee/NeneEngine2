@@ -1,26 +1,40 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #include "world.h"
-#include "scene.h"
+#include "level.h"
+#include "component/camera_component.h"
+#include "component/transform_component.h"
+
 
 namespace nene::g
 {
 	world::world()
+		: m_presistent_level(nullptr)
+		, m_camera_control_system(m_ecs)
+		, m_main_render_view_extract_system(m_ecs)
 	{
-		// TODO: create from asset
-		m_current_scene = std::make_shared<scene>();
+		// 
+		{
+			auto main_camera_entity = m_ecs.entity("EditorCameraEntity")
+				.set<transform_component>({})
+				.set<camera_component>({})
+				.add<main_rendering_camera_tag>()
+			;
+			
+			m_ecs.add<main_rendering_camera_tag>(main_camera_entity);
+		}
 	}
 
 	void world::update(std::chrono::milliseconds delta)
 	{
-		if (m_current_scene != nullptr)
-		{
-			m_current_scene->update(delta);
-		}
+		// TODO: level updates
+		
+		// system updates
+		m_ecs.progress(std::chrono::duration<float>(delta).count());
 	}
 
 	const std::shared_ptr<r::render_view>& world::get_main_render_view() const
 	{
-		return m_current_scene->get_main_render_view();
+		return m_main_render_view_extract_system.get_render_view();
 	}
 }
