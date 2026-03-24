@@ -32,6 +32,8 @@ script/editor/.idea/*
 script/stubs
 
 # Nene Immediates Files
+App.bat
+Editor.bat
 *.DotSettings
 .bin/*
 .package/*

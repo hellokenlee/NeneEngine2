@@ -99,8 +99,8 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 
 	def __init__(self):
 		self.nene_module_classes: list[type[NeneModule]] = []
-		# 修改 Rider 调试的 PATH 环境变量
-		self._rider_hack_envs: dict[str, dict[str, dict[str, str]]] = {}
+		# 修改 Rider / 启动 bat：各配置下需前置到 PATH 的目录（分号拼接），与 LocalDebuggerEnvironment 同源
+		self._exe_env_paths: dict[str, dict[Configuration, str]] = {}
 		pass
 
 	def generate(self, nene_module_classes: list[type[NeneModule]]):
@@ -108,7 +108,7 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 		for nene_module_class in nene_module_classes:
 			self._generate_vcxproj_file(nene_module_class())
 		#
-		self._hack_rider_environment_variables(self._rider_hack_envs)
+		self._hack_rider_environment_variables(self._exe_env_paths)
 		pass
 
 	def _generate_vcxproj_file(self, nene_module: NeneModule):
@@ -321,10 +321,57 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 
 				# 目前 Rider 还不支持读取 `LocalDebuggerEnvironment`, 也不支持读取指定的 `*.env` 文件, 只能 hack 配置文件
 				# refs: https://youtrack.jetbrains.com/issue/RIDER-101684/Respect-LocalDebuggerEnvironment-from-.vcxproj.user-file
-				envs = {
-					"PATH": "%s;$PATH$" % exec_paths_str
-				}
-				self._rider_hack_envs.setdefault(nene_module.name, {})[config.configuration.name] = envs
+				self._exe_env_paths.setdefault(nene_module.name, {})[config.configuration] = exec_paths_str
+			#
+		if nene_module.build_target == BuildTarget.EXE:
+			self._write_starup_bash(nene_module)
+		pass
+
+	def _write_starup_bash(self, nene_module: NeneModule):
+		work_dir = BuildConfiguration().engine_root_abs_path
+		debug_exe = os.path.join(
+			nene_module.target_exec_folder_abs_path(Architecture.x64, Configuration.Development),
+			nene_module.name + ".exe",
+		)
+		release_exe = os.path.join(
+			nene_module.target_exec_folder_abs_path(Architecture.x64, Configuration.Release),
+			nene_module.name + ".exe",
+		)
+		bat_stem = nene_module.name[0].upper() + nene_module.name[1:] if nene_module.name else nene_module.name
+		bat_abs_path = os.path.join(work_dir, bat_stem + ".bat")
+		debug_q = debug_exe.replace("/", "\\")
+		release_q = release_exe.replace("/", "\\")
+		mod_exec_paths = self._exe_env_paths.get(nene_module.name, {})
+		dev_raw = mod_exec_paths.get(Configuration.Development, "")
+		rel_raw = mod_exec_paths.get(Configuration.Release, "")
+		bat_body = (
+			"@echo off\r\n"
+			"setlocal\r\n"
+			"\r\n"
+			":: 检查第一个参数是否为 -D（不区分大小写）\r\n"
+			'if /I "%~1"=="-D" (\r\n'
+			+ (
+				'\tset "PATH=%s;%%PATH%%"\r\n'
+				% dev_raw.replace("/", "\\").replace('"', '^"')
+				if dev_raw
+				else ""
+			)
+			+ "\tshift\r\n"
+			+ '\t"%s" %%*\r\n' % debug_q
+			+ ") else (\r\n"
+			+ (
+				'\tset "PATH=%s;%%PATH%%"\r\n'
+				% rel_raw.replace("/", "\\").replace('"', '^"')
+				if rel_raw
+				else ""
+			)
+			+ '\t"%s" %%*\r\n' % release_q
+			+ ")\r\n"
+			+ "\r\n"
+			+ "endlocal\r\n"
+		)
+		with open(bat_abs_path, "w", encoding="utf-8", newline="") as fp:
+			fp.write(bat_body)
 		pass
 
 	@staticmethod
@@ -337,7 +384,7 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 		pass
 
 	@staticmethod
-	def _hack_rider_environment_variables(envs: dict[str, dict[str, dict[str, str]]]):
+	def _hack_rider_environment_variables(exec_paths_by_module: dict[str, dict[Configuration, str]]):
 		# 修改 [Run] - [Edit Configurations...] - [Environment variables] 的值
 		rider_workspace_abs_path = os.path.join(BuildConfiguration().engine_root_abs_path, ".idea", ".idea.NeneEngine2", ".idea", "workspace.xml")
 		if os.path.exists(rider_workspace_abs_path):
@@ -353,15 +400,24 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 					if comp.attrib["name"] == "RunManager":
 						for configuration in comp.findall("configuration"):
 							module_name = configuration.attrib["name"]
+							mod_paths = exec_paths_by_module.get(module_name)
+							if not mod_paths:
+								continue
 							for configuration_n in configuration:
 								if configuration_n.tag.startswith("configuration"):
 									debug_or_release = configuration_n.find("option").attrib["value"]
-									if module_name in envs and debug_or_release in envs[module_name]:
-										log("Hack rider module: %s-%s" % (module_name, debug_or_release))
-										element = configuration_n.find("envs")
-										if element is None:
-											element = ElementTree.SubElement(configuration_n, "envs")
-										VisualStudioModuleGenerator._hack_rider_add_envs(element, envs[module_name][debug_or_release])
+									exec_paths_str: str | None = None
+									for con in mod_paths:
+										if con.name == debug_or_release:
+											exec_paths_str = mod_paths[con]
+											break
+									if exec_paths_str is None:
+										continue
+									log("Hack rider module: %s-%s" % (module_name, debug_or_release))
+									element = configuration_n.find("envs")
+									if element is None:
+										element = ElementTree.SubElement(configuration_n, "envs")
+									VisualStudioModuleGenerator._hack_rider_add_envs(element, {"PATH": "%s;$PATH$" % exec_paths_str})
 			#
 			ElementTree.indent(tree, '  ')
 			content = ElementTree.tostring(tree.getroot(), encoding="unicode")
