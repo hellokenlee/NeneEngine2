@@ -10,6 +10,5 @@ namespace nene::g
 	class NENE_API prefab : public asset
 	{
 	public:
-		std::
 	};
 }

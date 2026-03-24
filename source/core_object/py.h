@@ -40,14 +40,20 @@ namespace nene::g
 	/** utilities for runtime reflection */
 	namespace reflection
 	{
-		using type = py::object;
+		using type = py::type;
 		using variant = py::object;
 		
-		/** get a class object by name */
+		template <typename cpp_t>
+		NENE_API type get_class();
+		
+		/** get the class object by name */
 		NENE_API type get_class(const std::string& name);
 		
 		/** get the name of a class object */
-		NENE_API std::string get_name(type cls);
+		NENE_API std::string get_class_name(type cls);
+		
+		/** get the class name of a variant */
+		NENE_API std::string get_class_name(variant self);
 		
 		/** get all bound class names */
 		NENE_API std::set<std::string> all_class_names(); 
@@ -59,9 +65,6 @@ namespace nene::g
 		/** get the raw c++ pointer of a variant */
 		template<typename cpp_t>
 		cpp_t* get_raw(variant self);
-		
-		/** get the class name of a variant */
-		NENE_API std::string get_class_name(variant self);
 		
 		template <typename ... arg_ts>
 		variant create(type cls, arg_ts&&... args);

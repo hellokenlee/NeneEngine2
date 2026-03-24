@@ -17,11 +17,16 @@ namespace nene::g
 	class NENE_API asset
 	{
 	public:
-		asset();
 		virtual ~asset() = default;
 
 		virtual void serialize(archive& ar);
 		
 		uuid m_uuid = {};
+		
+	protected:
+		// dont use `std::make_shared<asset_t>` directly
+		// use `asset_importer::make_asset<asset_t>` instead
+		asset();
+		friend class asset_importer;
 	};
 }

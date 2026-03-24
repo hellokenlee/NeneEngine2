@@ -12,9 +12,12 @@ namespace nene::g
 {
 	world::world()
 		: m_presistent_level(nullptr)
+		, m_prefab_factory(m_ecs)
 		, m_camera_control_system(std::make_shared<camera_control_system>(m_ecs))
 		, m_main_render_view_extract_system(m_ecs)
 	{
+		//
+		m_ecs.component<main_rendering_camera_tag>().add(flecs::Exclusive);
 		// 
 		{
 			auto main_camera_entity = m_ecs.entity("EditorCameraEntity")
@@ -35,6 +38,11 @@ namespace nene::g
 		
 		// system updates
 		m_ecs.progress(std::chrono::duration<float>(delta).count());
+	}
+
+	flecs::entity world::spawn_entity(flecs::entity prefab) const
+	{
+		return m_ecs.entity().is_a(prefab);
 	}
 
 	const std::shared_ptr<r::render_view>& world::get_main_render_view() const

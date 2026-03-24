@@ -11,10 +11,12 @@ from extern.qtbase import QtBase
 from extern.python3 import Python3
 from extern.pyside import PySide
 from extern.assimp import Assimp
+from extern.flecs import Flecs
 from source.core import Core
 from source.core_object import CoreObject
 from source.core_render import CoreRender
 from source.engine import Engine
+from source.gapi_dynamic import GapiDynamic
 
 from script.builder.common.nene_module import *
 from script.builder.common import utils
@@ -34,10 +36,10 @@ class Editor(NeneModule):
 		super().__init__()
 		self.build_target = BuildTarget.EXE
 		self.module_dependencies.extend(
-			[Core, CoreObject, CoreRender, Engine]
+			[Core, CoreObject, CoreRender, Engine, GapiDynamic]
 		)
 		self.external_dependencies.extend(
-			[QtBase, PySide, Python3, Assimp]
+			[QtBase, PySide, Python3, Assimp, Flecs]
 		)
 		pass
 

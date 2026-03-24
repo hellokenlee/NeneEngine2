@@ -112,6 +112,7 @@ graph TD
   CoreObject --> Editor
   CoreRender --> Editor
   Engine --> Editor
+  GapiDynamic --> Editor
   Core --> Engine
   CoreObject --> Engine
   CoreRender --> Engine

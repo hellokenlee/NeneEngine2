@@ -4,6 +4,12 @@
 
 namespace nene::g::reflection
 {
+	template <typename cpp_t>
+	type get_class()
+	{
+		return py::type::of<cpp_t>();
+	}
+
 	template<typename cpp_t>
 	variant get_variant(const cpp_t* this_)
 	{

@@ -22,6 +22,8 @@ namespace nene
 
 		virtual void update(std::chrono::milliseconds delta);
 		
+		virtual const std::unique_ptr<g::world>& get_world() const;
+		
 	protected:
 		std::unique_ptr<g::world> m_world;
 		std::unique_ptr<r::renderer> m_renderer;

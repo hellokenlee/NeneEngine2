@@ -22,11 +22,11 @@ namespace nene::t
 	template<typename asset_t>
 	struct asset_handle
 	{
-		uint64_t m_uuid = 0;
+		uuid m_uuid = {};
 		asset_handle() = default;
-		explicit asset_handle(uint64_t uuid) : m_uuid(uuid) {}
+		explicit asset_handle(const uuid& uuid) : m_uuid(uuid) {}
 		
-		bool is_valid() const { return m_uuid != 0; }
+		bool is_valid() const { return !(m_uuid.is_nil()); }
 		
 		bool operator==(const asset_handle& other) const { return m_uuid == other.m_uuid; }
 		bool operator!=(const asset_handle& other) const { return m_uuid != other.m_uuid; }

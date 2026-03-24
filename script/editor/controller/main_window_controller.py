@@ -77,8 +77,10 @@ class MainWindowController(BaseController[QMainWindow], QtCore.QObject):
 
 	def _on_asset_dropped(self, asset_paths: list[str]):
 		"""资产从内容浏览器拖入视口时调用；asset_paths 为完整文件路径列表"""
-		# TODO: 在此处实现拖入资产的处理逻辑
 		log(self, INFO, "drop: %s" % asset_paths)
+		for asset_path in asset_paths:
+			from nene import EditorCommandCenter, SpawnEntityCommand
+			EditorCommandCenter().invoke(SpawnEntityCommand(asset_path))
 		pass
 
 	def on_dock_widget_top_level_changed(self, controller: DockWidgetController):

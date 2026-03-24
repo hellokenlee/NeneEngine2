@@ -9,6 +9,11 @@
 
 namespace nene
 {
+	namespace g
+	{
+		class world;
+	}
+	
 	class NENE_API engine_loop
 	{
 	public:
@@ -27,6 +32,8 @@ namespace nene
 		static void shutdown();
 
 		static bool is_initialized();
+	
+		static const std::unique_ptr<g::world>& get_world();
 
 	protected:
 		static std::unique_ptr<class engine> m_engine;

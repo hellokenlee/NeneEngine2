@@ -32,6 +32,20 @@ namespace nene::g
 			return std::static_pointer_cast<asset_t>(res);
 		}
 		
+		template<typename asset_t>
+		t::asset_handle<asset_t> make_handle(const uuid& uid) const
+		{
+			auto py_type = reflection::get_class<asset_t>();
+			if (is_valid_type(uid, py_type))
+			{
+				return t::asset_handle<asset_t>(uid);
+			}
+			else
+			{
+				return t::asset_handle<asset_t>();
+			}
+		}
+		
 		// Get the absolute path of the asset registry root directory.
 		const std::filesystem::path& content() const { return m_content_abs_path; }
 		
@@ -52,6 +66,7 @@ namespace nene::g
 	private:
 		asset_registry();
 		std::shared_ptr<asset> internal_load(const uuid& uid);
+		bool is_valid_type(const uuid& uid, const reflection::type& py_type) const;
 		
 		std::filesystem::path m_content_abs_path;
 		std::unordered_map<uuid, asset_abstract> m_asset_abstracts;

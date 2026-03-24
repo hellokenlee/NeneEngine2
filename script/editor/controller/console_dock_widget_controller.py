@@ -9,10 +9,10 @@ from PySide6.QtWidgets import QTextBrowser
 from script.editor.common.log import global_logger, global_log_formatter
 from script.editor.controller.dock_widget_controller import DockWidgetController
 
-from nene import LogHandler, Logger, LogMessageEvent
+from nene import EventListener, Logger, LogMessageEvent
 
 
-class EngineLogHandler(LogHandler):
+class EngineLogHandler(EventListener):
 	def __init__(self, text_browser: QTextBrowser):
 		super().__init__()
 		self.text_browser = text_browser

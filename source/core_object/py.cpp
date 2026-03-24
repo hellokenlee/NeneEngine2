@@ -85,6 +85,13 @@ namespace nene::g
 			return cls;
 		}
 
+		std::string get_class_name(type cls)
+		{
+			py::gil_scoped_acquire gil;
+			std::string py_class_name = cls.attr("__name__").cast<std::string>();
+			return py_class_name;
+		}
+
 		std::set<std::string> all_class_names()
 		{
 			std::set<std::string> result;

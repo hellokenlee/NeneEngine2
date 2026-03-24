@@ -12,6 +12,7 @@ namespace nene
 	engine::engine()
 	{
 		m_world = std::make_unique<g::world>();
+		//
 		m_renderer = std::make_unique<r::simple_renderer>();
 		
 		// initialize asset registry
@@ -48,5 +49,10 @@ namespace nene
 				}
 			}
 		);
+	}
+
+	const std::unique_ptr<g::world>& engine::get_world() const
+	{
+		return m_world;
 	}
 }

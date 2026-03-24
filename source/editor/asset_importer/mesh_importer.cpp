@@ -61,7 +61,7 @@ namespace nene
 		for (unsigned int i = 0; i < node->mNumMeshes; i++)
 		{
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-			out_static_mesh_assets.emplace_back(std::make_shared<g::static_mesh_asset>());
+			out_static_mesh_assets.emplace_back(asset_importer::make_asset<g::static_mesh_asset>());
 			parse_assimp_mesh_node(mesh, *(out_static_mesh_assets.back()));
 		}
 
@@ -85,6 +85,11 @@ namespace nene
 		
 		std::vector<std::shared_ptr<g::static_mesh_asset>> result;
 		process_assimp_scene_node(scene->mRootNode, scene, result);
+		// TODO: multi asset import
+		if (result.size() > 1)
+		{
+			log(mesh_importer_, warn, "multiple mesh ({}) found in file, only imported first mesh!", result.size());
+		}
 		return result.size() > 0 ? result[0] : nullptr;
 	}
 
