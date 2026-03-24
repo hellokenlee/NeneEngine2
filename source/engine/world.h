@@ -31,7 +31,7 @@ namespace nene::g
 		flecs::world m_ecs;
 		
 		// systems
-		camera_control_system m_camera_control_system;
+		std::shared_ptr<camera_control_system> m_camera_control_system;
 		main_render_view_extract_system m_main_render_view_extract_system;
 	};
 }
