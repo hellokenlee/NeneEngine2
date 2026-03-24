@@ -32,7 +32,7 @@ namespace nene
 		}
 		m_num_existing_client.fetch_add(1);
 		
-		// create window
+		// create a window
 		constexpr auto DEFAULT_WINDOW_WIDTH = 800u;
 		constexpr auto DEFAULT_WINDOW_HEIGHT = 600u;
 		m_window = SDL_CreateWindow("NeneEngine", DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE);
@@ -45,6 +45,7 @@ namespace nene
 		SDL_Surface* icon = SDL_LoadPNG("script/editor/_ui_/icon/sakura.png");
 		if (icon != nullptr)
 		{
+			//
 			SDL_SetWindowIcon(m_window, icon);
 			SDL_DestroySurface(icon);
 		}

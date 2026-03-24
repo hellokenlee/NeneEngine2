@@ -44,6 +44,7 @@ class VcTag(object):
 	WholeProgramOptimization = "WholeProgramOptimization"
 	ClCompile = "ClCompile"
 	ClInclude = "ClInclude"
+	ResourceCompile = "ResourceCompile"
 	Content = "Content"
 	Link = "Link"
 	PreBuildEvent = "PreBuildEvent"
@@ -454,6 +455,7 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 		#
 		cpp_header_paths = []
 		cpp_source_paths = []
+		resource_paths = []
 		other_content_paths = []
 		#
 		module_root_abs_path = os.path.join(BuildConfiguration().source_root_abs_path, nene_module.name)
@@ -469,6 +471,8 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 						cpp_source_paths.append(file_path)
 					elif filename.endswith(".h") or filename.endswith(".inl") or filename.endswith(".hpp"):
 						cpp_header_paths.append(file_path)
+					elif filename.endswith(".rc"):
+						resource_paths.append(file_path)
 					elif filename == "__init__.py" or filename.endswith(".xml"):
 						other_content_paths.append(file_path)
 		# C++ Includes
@@ -479,6 +483,10 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 		item_group_sources = ElementTree.SubElement(vcproj_tree.getroot(), VcTag.ItemGroup)
 		for source_path in cpp_source_paths:
 			ElementTree.SubElement(item_group_sources, VcTag.ClCompile).attrib["Include"] = source_path
+		# Resource Files
+		item_group_sources = ElementTree.SubElement(vcproj_tree.getroot(), VcTag.ItemGroup)
+		for resource_path in resource_paths:
+			ElementTree.SubElement(item_group_sources, VcTag.ResourceCompile).attrib["Include"] = resource_path
 		# Other Contents ( Won't Compile )
 		item_group_sources = ElementTree.SubElement(vcproj_tree.getroot(), VcTag.ItemGroup)
 		for content_path in other_content_paths:
