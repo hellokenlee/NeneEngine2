@@ -66,13 +66,13 @@ class MainWindowController(BaseController[QMainWindow], QtCore.QObject):
 		self._console.on_top_level_changed.connect(self.on_dock_widget_top_level_changed)
 
 		# Content Broswer
-		self._content_broswer = self.add_dock_widget_controller(ContentBroswerDockWidgetController(), QtCore.Qt.DockWidgetArea.BottomDockWidgetArea)
-		self._content_broswer.on_top_level_changed.connect(self.on_dock_widget_top_level_changed)
+		self._content_browser = self.add_dock_widget_controller(ContentBroswerDockWidgetController(), QtCore.Qt.DockWidgetArea.BottomDockWidgetArea)
+		self._content_browser.on_top_level_changed.connect(self.on_dock_widget_top_level_changed)
 
 		# Outliner
 		self._outliner = self.add_dock_widget_controller(OutlinerDockWidgetController(), QtCore.Qt.DockWidgetArea.RightDockWidgetArea)
 
-		# Viewport drop: accept assets dragged from content browser
+		# Viewport drop: accept assets dragged from the content browser
 		viewport = self.ui.centralWidget()
 		viewport.setAcceptDrops(True)
 		self._viewport_drop_filter = _ViewportDropFilter(self._on_asset_dropped, viewport)

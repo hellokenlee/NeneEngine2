@@ -65,11 +65,7 @@ void NeneViewportWidget::resizeEvent(QResizeEvent* event)
 {
 	//
 	QWidget::resizeEvent(event);
-	// tell engine to resize the swap chain
-	if (nene::engine_loop::is_initialized())
-	{
-		nene::engine_loop::resize(nene::uint2(static_cast<uint32_t>(event->size().width()), static_cast<uint32_t>(event->size().height())));
-	}
+	nene::engine_loop::resize(nene::uint2(static_cast<uint32_t>(event->size().width()), static_cast<uint32_t>(event->size().height())));
 }
 
 bool NeneViewportWidget::nativeEvent(const QByteArray& eventType, void* message, qintptr* result)
