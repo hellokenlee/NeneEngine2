@@ -15,7 +15,7 @@ namespace nene
 
 	void event_publisher::notify(const event& event)
 	{
-		for (const auto& subscribed : m_listeners)
+		for (const auto& subscribed : m_subscribers)
 		{
 			auto subscribed_ = subscribed.lock();
 			if (subscribed_)
@@ -25,47 +25,32 @@ namespace nene
 		}
 	}
 
-	void event_publisher::add_listener(const std::shared_ptr<event_listener>& listener)
+	void event_publisher::add_subscriber(const std::shared_ptr<event_subscriber>& subscriber)
 	{
 		//
-		cleanup_expired_listeners();
+		cleanup_expired_subscribers();
 		// 去重
-		for (const auto& subscribed : m_listeners)
+		for (const auto& subscribed : m_subscribers)
 		{
-			if (subscribed.lock() == listener)
+			if (subscribed.lock() == subscriber)
 			{
 				return;	
 			}
 		}
 
-		m_listeners.emplace_back(listener);
+		m_subscribers.emplace_back(subscriber);
 	}
 
-	void event_publisher::remove_listener(const std::shared_ptr<event_listener>& listener)
+	void event_publisher::cleanup_expired_subscribers()
 	{
-		std::vector<std::weak_ptr<event_listener>> remain_listeners;
-		remain_listeners.reserve(m_listeners.size());
-		for (const auto& subscribed : m_listeners)
+		std::vector<std::weak_ptr<event_subscriber>> remain_subscribers;
+		for (const auto& subscribed : m_subscribers)
 		{
-			const auto locked = subscribed.lock();
-			if (locked && locked != listener)
+			if (!subscribed.expired())
 			{
-				remain_listeners.emplace_back(subscribed);
+				remain_subscribers.emplace_back(subscribed);
 			}
 		}
-		m_listeners = std::move(remain_listeners);
-	}
-
-	void event_publisher::cleanup_expired_listeners()
-	{
-		std::vector<std::weak_ptr<event_listener>> remain_listeners;
-		for (const auto& listener : m_listeners)
-		{
-			if (!listener.expired())
-			{
-				remain_listeners.emplace_back(listener);
-			}
-		}
-		m_listeners = remain_listeners;
+		m_subscribers = remain_subscribers;
 	}
 }

@@ -9,18 +9,14 @@ from PySide6.QtWidgets import QTextBrowser
 from script.editor.common.log import global_logger, global_log_formatter
 from script.editor.controller.dock_widget_controller import DockWidgetController
 
-from nene import EventListener, Logger, LogMessageEvent
+from nene import EventSubscriber, Logger, LogMessageEvent
 
 
-class EngineLogHandler(EventListener):
+class EngineLogHandler(EventSubscriber):
 	def __init__(self, text_browser: QTextBrowser):
 		super().__init__()
 		self.text_browser = text_browser
-		Logger.add_handler(self)
-		pass
-
-	def __del__(self):
-		Logger.remove_handler(self)
+		Logger.publisher().add_subscriber(self)
 		pass
 
 	def on_notify(self, e):

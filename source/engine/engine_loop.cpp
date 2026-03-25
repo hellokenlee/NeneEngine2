@@ -79,7 +79,7 @@ namespace nene
 		return m_engine != nullptr;
 	}
 
-	const std::unique_ptr<g::world>& engine_loop::get_world()
+	const std::shared_ptr<g::world>& engine_loop::get_world()
 	{
 		return m_engine->get_world();
 	}

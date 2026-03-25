@@ -26,7 +26,7 @@ namespace nene::g::reflection
 	}
 
 	template <typename ... arg_ts>
-	variant create(type cls, arg_ts&&... args)
+	variant make_variant(type cls, arg_ts&&... args)
 	{
 		py::gil_scoped_acquire gil;
 		if (!PyType_Check(cls.ptr()))
@@ -39,7 +39,7 @@ namespace nene::g::reflection
 	}
 
 	template <typename ... arg_ts>
-	variant invoke(variant self, const std::string& func, arg_ts&&... args)
+	variant call(variant self, const std::string& func, arg_ts&&... args)
 	{
 		py::gil_scoped_acquire gil;
 		py::args py_args = py::make_tuple(args...);

@@ -4,6 +4,7 @@
 
 #include "level.h"
 #include "prefab_factory.h"
+#include "core/event_id.h"
 #include "system/camera/camera_control_system.h"
 #include "system/camera/main_render_view_extract_system.h"
 
@@ -13,15 +14,22 @@
 
 namespace nene::g
 {
-	/** singleton to hold all scenes */
-	class NENE_API world final
+	/** world related events */
+	struct entity_spawn_event : typed_event<event_id::entity_spawn_event>
+	{
+		uint64_t m_id;
+		std::string m_name;
+	};
+	
+	/** world holds all levels */
+	class NENE_API world final : public event_publisher
 	{
 	public:
 		world();
 		
 		void update(std::chrono::milliseconds delta);
 		
-		flecs::entity spawn_entity(flecs::entity prefab) const;
+		flecs::entity spawn_entity(flecs::entity prefab);
 		
 		const prefab_factory& get_prefab_factory() const { return m_prefab_factory; }
 		

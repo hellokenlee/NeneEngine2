@@ -29,8 +29,8 @@ namespace nene
 	{
 		if (!m_asset_uuid.is_nil())
 		{
-			auto handle = g::asset_registry::get().make_handle<g::static_mesh_asset>(m_asset_uuid);
-			if (handle.is_valid())
+			// statci mesh
+			if (auto handle = g::asset_registry::get().make_handle<g::static_mesh_asset>(m_asset_uuid); handle.is_valid())
 			{
 				const auto& w = engine_loop::get_world();
 				auto factory = w->get_prefab_factory();
@@ -38,7 +38,8 @@ namespace nene
 				instance.get_mut<g::static_mesh_component>().m_asset = handle;
 				return;
 			}
-			log(editor_, error, "failed to spawn entity: {}", uuid_to_string(m_asset_uuid));
+			// other spawnable assets
 		}
+		log(editor_, error, "failed to spawn entity: {}", uuid_to_string(m_asset_uuid));
 	}
 }

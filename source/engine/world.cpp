@@ -29,7 +29,7 @@ namespace nene::g
 			m_ecs.add<main_rendering_camera_tag>(main_camera_entity);
 		}
 		//
-		input_manager::get().add_listener(m_camera_control_system);
+		input_manager::get().add_subscriber(m_camera_control_system);
 	}
 
 	void world::update(std::chrono::milliseconds delta)
@@ -40,9 +40,19 @@ namespace nene::g
 		m_ecs.progress(std::chrono::duration<float>(delta).count());
 	}
 
-	flecs::entity world::spawn_entity(flecs::entity prefab) const
+	flecs::entity world::spawn_entity(flecs::entity prefab)
 	{
-		return m_ecs.entity().is_a(prefab);
+		auto result = m_ecs.entity().is_a(prefab);
+		
+		// maybe it's editor only code
+		{
+			entity_spawn_event e;
+			e.m_id = result.id();
+			e.m_name = result.name();
+			notify(e);
+		}
+		
+		return result;
 	}
 
 	const std::shared_ptr<r::render_view>& world::get_main_render_view() const

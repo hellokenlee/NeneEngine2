@@ -5,7 +5,7 @@
 
 namespace nene
 {
-	PYBIND(m)
+	PYBIND(m, 1)
 	{
 		py::class_<editor_command_center, std::unique_ptr<editor_command_center, py::nodelete>>(m, "EditorCommandCenter")
 			.def(py::init([]() { return &editor_command_center::get(); }))

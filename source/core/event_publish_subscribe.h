@@ -38,14 +38,14 @@ namespace nene
 		typed_event() : event(default_id) {}
 	};
 
-	/** Non-thread-safe observer pattern */
-	class NENE_API event_listener : public std::enable_shared_from_this<event_listener>
+	/** auto expired observer pattern ( thread unsafe ) */
+	class NENE_API event_subscriber : public std::enable_shared_from_this<event_subscriber>
 	{
 	public:
-		event_listener() = default;
-		virtual ~event_listener() = default;
-		event_listener(const event_listener&) = default;
-		event_listener& operator=(const event_listener&) = default;
+		event_subscriber() = default;
+		virtual ~event_subscriber() = default;
+		event_subscriber(const event_subscriber&) = default;
+		event_subscriber& operator=(const event_subscriber&) = default;
 		
 		virtual void on_notify(const event& e) = 0;
 	};
@@ -60,13 +60,11 @@ namespace nene
 	
 		virtual void notify(const event& event);
 
-		virtual void add_listener(const std::shared_ptr<event_listener>& listener);
-
-		virtual void remove_listener(const std::shared_ptr<event_listener>& listener);
+		virtual void add_subscriber(const std::shared_ptr<event_subscriber>& subscriber);
 
 	protected:
-		virtual void cleanup_expired_listeners();
+		virtual void cleanup_expired_subscribers();
 		
-		std::vector<std::weak_ptr<event_listener>> m_listeners;
+		std::vector<std::weak_ptr<event_subscriber>> m_subscribers;
 	};
 }

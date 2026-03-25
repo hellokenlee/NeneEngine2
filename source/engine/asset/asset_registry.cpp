@@ -211,7 +211,7 @@ namespace nene::g
 			CHECK(header.valid());
 			//
 			auto py_type = reflection::get_class(header.m_type_name);
-			auto var = reflection::create(py_type);
+			auto var = reflection::make_variant(py_type);
 			auto ast = reflection::get_raw<asset>(var);
 			//
 			FILE* fp = fopen(header.m_file_name.c_str(), "rb");

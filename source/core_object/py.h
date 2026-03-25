@@ -43,8 +43,9 @@ namespace nene::g
 		using type = py::type;
 		using variant = py::object;
 		
+		/** get the class object of c++ */
 		template <typename cpp_t>
-		NENE_API type get_class();
+		type get_class();
 		
 		/** get the class object by name */
 		NENE_API type get_class(const std::string& name);
@@ -66,12 +67,15 @@ namespace nene::g
 		template<typename cpp_t>
 		cpp_t* get_raw(variant self);
 		
+		/** create a variant of the class object */
 		template <typename ... arg_ts>
-		variant create(type cls, arg_ts&&... args);
+		variant make_variant(type cls, arg_ts&&... args);
 
+		/** call a method of a variant */
 		template <typename ... arg_ts>
-		variant invoke(variant self, const std::string& func, arg_ts&&... args);
+		variant call(variant self, const std::string& func, arg_ts&&... args);
 		
+		/** get all properties' names from a variant */
 		NENE_API std::vector<std::string> get_property_names(variant self);
 	}
 }

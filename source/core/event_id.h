@@ -12,7 +12,10 @@ namespace nene
 		keyboard_event,
 		mouse_event,
 		window_resize_event,
+		
 		log_message_event,
+		
+		entity_spawn_event,
 
 		/** ... add new event here ... */
 	};	

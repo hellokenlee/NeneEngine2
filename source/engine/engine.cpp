@@ -11,7 +11,7 @@ namespace nene
 {
 	engine::engine()
 	{
-		m_world = std::make_unique<g::world>();
+		m_world = std::make_shared<g::world>();
 		//
 		m_renderer = std::make_unique<r::simple_renderer>();
 		
@@ -51,7 +51,7 @@ namespace nene
 		);
 	}
 
-	const std::unique_ptr<g::world>& engine::get_world() const
+	const std::shared_ptr<g::world>& engine::get_world() const
 	{
 		return m_world;
 	}

@@ -7,8 +7,6 @@ from PySide6.QtCore import QEvent, QObject
 from PySide6.QtGui import QAction, QDragEnterEvent, QDropEvent
 from PySide6.QtWidgets import QMainWindow, QTabWidget, QTabBar, QDockWidget, QMenu
 from script.editor.controller.base_controller import BaseController
-from script.editor.controller.console_dock_widget_controller import ConsoleDockWidgetController
-from script.editor.controller.content_broswer_dock_widget_controller import ContentBroswerDockWidgetController
 from script.editor.widget.content_broswer_view_widget import ContentBroswerViewWidget
 
 from NeneQtWidgets import NeneViewportWidget
@@ -16,6 +14,9 @@ from NeneQtWidgets import NeneViewportWidget
 from script.editor.resource_set import IconSet
 from script.editor.common.log import log, INFO
 from script.editor.controller.dock_widget_controller import DockWidgetController
+from script.editor.controller.console_dock_widget_controller import ConsoleDockWidgetController
+from script.editor.controller.content_broswer_dock_widget_controller import ContentBroswerDockWidgetController
+from script.editor.controller.outliner_dock_widget_controller import OutlinerDockWidgetController
 
 
 class _ViewportDropFilter(QObject):
@@ -67,6 +68,9 @@ class MainWindowController(BaseController[QMainWindow], QtCore.QObject):
 		# Content Broswer
 		self._content_broswer = self.add_dock_widget_controller(ContentBroswerDockWidgetController(), QtCore.Qt.DockWidgetArea.BottomDockWidgetArea)
 		self._content_broswer.on_top_level_changed.connect(self.on_dock_widget_top_level_changed)
+
+		# Outliner
+		self._outliner = self.add_dock_widget_controller(OutlinerDockWidgetController(), QtCore.Qt.DockWidgetArea.RightDockWidgetArea)
 
 		# Viewport drop: accept assets dragged from content browser
 		viewport = self.ui.centralWidget()

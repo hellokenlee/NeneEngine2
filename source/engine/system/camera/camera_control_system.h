@@ -8,7 +8,7 @@
 
 namespace nene::g
 {
-	class NENE_API camera_control_system final : public event_listener
+	class NENE_API camera_control_system final : public event_subscriber
 	{
 	public:
 		camera_control_system(flecs::world& ecs);

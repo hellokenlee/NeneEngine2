@@ -28,6 +28,14 @@ NeneViewportWidget::NeneViewportWidget(QWidget* parent)
 	// tell qt don't fill the background color for us
 	setAttribute(Qt::WA_NoSystemBackground);
 	setAttribute(Qt::WA_OpaquePaintEvent);
+	
+	//
+	if (!nene::engine_loop::is_initialized())
+	{
+		nene::engine_loop::initialize(reinterpret_cast<void*>(winId()), nene::uint2(static_cast<uint32_t>(size().width()), static_cast<uint32_t>(size().height())));  // NOLINT(performance-no-int-to-ptr)
+		connect(&m_engine_tick_timer, &QTimer::timeout, &nene::engine_loop::tick);
+		m_engine_tick_timer.start(EDITOR_MILLISECOND_PER_FRAME);
+	}
 }
 
 NeneViewportWidget::~NeneViewportWidget() = default;
@@ -39,13 +47,6 @@ bool NeneViewportWidget::event(QEvent* e)
 
 void NeneViewportWidget::showEvent(QShowEvent* event)
 {
-	if (!nene::engine_loop::is_initialized())
-	{
-		nene::engine_loop::initialize(reinterpret_cast<void*>(winId()), nene::uint2(static_cast<uint32_t>(size().width()), static_cast<uint32_t>(size().height())));  // NOLINT(performance-no-int-to-ptr)
-		connect(&m_engine_tick_timer, &QTimer::timeout, &nene::engine_loop::tick);
-		m_engine_tick_timer.start(EDITOR_MILLISECOND_PER_FRAME);
-	}
-	
 	QWidget::showEvent(event);
 }
 

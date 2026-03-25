@@ -10,7 +10,7 @@ namespace nene
 	/**
 	 *  Writes log_message_event lines to stdout
 	 */
-	class NENE_API stdout_log_handler final : public event_listener
+	class NENE_API stdout_log_handler final : public event_subscriber
 	{
 	public:
 		void on_notify(const event& e) override;

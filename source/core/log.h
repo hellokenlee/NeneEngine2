@@ -53,7 +53,7 @@ namespace nene
 		void set_level(const log_level& level) { m_enabled_level = level; }
 		bool should_log(const log_level& level) const { return m_enabled_level >= level; }
 
-		/** Handlers are event_listener; on_notify receives nene::log_message_event */
+		/** Publisher for logs handling */
 		static event_publisher& publisher();
 
 	protected:
