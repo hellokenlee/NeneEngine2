@@ -1,4 +1,4 @@
-﻿/* Copyright reserved by KenLee@hellokenlee@163.com */
+/* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #include "py.h"
 #include "core/log.h"
@@ -14,7 +14,7 @@
 
 namespace nene::g
 {
-	class py_event_subscriber : public event_subscriber, public py::trampoline_self_life_support
+	class py_event_subscriber : public event_subscriber
 	{
 	public:
 		void on_notify(const event& e) override
@@ -28,12 +28,13 @@ namespace nene::g
 		py::class_<event>(m, "Event")
 		;
 		
-		py::class_<event_subscriber, py_event_subscriber, py::smart_holder>(m, "EventSubscriber")
+		py::class_<event_subscriber, py_event_subscriber, std::shared_ptr<event_subscriber>>(m, "EventSubscriber")
 			.def(py::init<>())
 			.def("on_notify", &event_subscriber::on_notify)
 		;
 		
-		py::class_<event_publisher>(m, "EventPublisher")
+		// Use a shared_ptr holder, so derived types (e.g. g::world) can also use shared_ptr.
+		py::class_<event_publisher, std::shared_ptr<event_publisher>>(m, "EventPublisher")
 			.def(py::init<>())
 			.def("add_subscriber", &event_publisher::add_subscriber)
 		;

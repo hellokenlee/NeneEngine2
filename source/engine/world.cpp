@@ -44,7 +44,7 @@ namespace nene::g
 	{
 		auto result = m_ecs.entity().is_a(prefab);
 		
-		// maybe it's editor only code
+		// maybe it's editor-only code
 		{
 			entity_spawn_event e;
 			e.m_id = result.id();

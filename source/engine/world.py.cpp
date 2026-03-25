@@ -1,4 +1,4 @@
-﻿/* Copyright reserved by KenLee@hellokenlee@163.com */
+/* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #include "world.h"
 #include "core_object/py.h"
@@ -12,7 +12,8 @@ namespace nene::g
 			.def_readonly("m_name", &entity_spawn_event::m_name)
 		;
 		
-		py::class_<world, event_publisher>(m, "World")
+		// EngineLoop.get_world() returns std::shared_ptr<world>, so bind World with a shared_ptr holder.
+		py::class_<world, event_publisher, std::shared_ptr<world>>(m, "World")
 		;
 	}
 }

@@ -12,11 +12,12 @@ from nene import EventSubscriber, EntitySpawnEvent, EngineLoop
 class EntityEventSubscriber(EventSubscriber):
 	def __init__(self):
 		super(EntityEventSubscriber, self).__init__()
-		# 此时 engine 还未初始化
-		# EngineLoop.get_world().add_subscriber(self)
+		EngineLoop.get_world().add_subscriber(self)
+		log(self, INFO, "init")
 		pass
 
-	def on_event(self, e):
+	def on_notify(self, e):
+		log(self, INFO, "on_notify : %s" % e)
 		if isinstance(e, EntitySpawnEvent):
 			log(self, INFO, "spawn : %s" % e.m_id)
 		pass
