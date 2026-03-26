@@ -4,7 +4,7 @@
 
 from PySide6.QtCore import Qt, QModelIndex
 from PySide6.QtGui import QKeySequence, QShortcut
-from PySide6.QtWidgets import QTreeWidget, QTreeWidgetItem, QMenu, QAbstractItemView
+from PySide6.QtWidgets import QTreeWidget, QTreeWidgetItem, QMenu, QAbstractItemView, QHeaderView
 
 from script.editor.controller.dock_widget_controller import DockWidgetController
 from script.editor.common.log import log, INFO
@@ -39,6 +39,10 @@ class OutlinerDockWidgetController(DockWidgetController):
 		assert tree_widget is not None
 		self._tree_widget: QTreeWidget = tree_widget
 		self._tree_widget.clear()
+		header = self._tree_widget.header()
+		header.setStretchLastSection(False)
+		header.setSectionResizeMode(self.TREE_COL_NAME, QHeaderView.ResizeMode.Stretch)
+		header.setSectionResizeMode(self.TREE_COL_ID, QHeaderView.ResizeMode.ResizeToContents)
 		self._tree_widget.setDragEnabled(True)
 		self._tree_widget.setAcceptDrops(True)
 		self._tree_widget.setDropIndicatorShown(True)
