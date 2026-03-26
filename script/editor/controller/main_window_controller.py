@@ -12,6 +12,7 @@ from script.editor.widget.content_broswer_view_widget import ContentBroswerViewW
 from NeneQtWidgets import NeneViewportWidget
 
 from script.editor.resource_set import IconSet
+from script.editor.common.reload import reload
 from script.editor.common.log import log, INFO
 from script.editor.controller.dock_widget_controller import DockWidgetController
 from script.editor.controller.console_dock_widget_controller import ConsoleDockWidgetController
@@ -59,7 +60,15 @@ class MainWindowController(BaseController[QMainWindow], QtCore.QObject):
 		#
 		self._dock_title_to_widget: dict[str, QDockWidget] = {}
 		self._dock_widget_controllers: dict[QDockWidget, DockWidgetController] = {}
-		self._window_menu: QMenu = self.ui.findChild(QMenu, "menuView")
+		window_menu = self.ui.findChild(QMenu, "menuView")
+		assert window_menu is not None
+		self._window_menu: QMenu = window_menu
+		self._help_menu: QMenu | None = self.ui.findChild(QMenu, "menuHelp")
+		if self._help_menu:
+			debug_menu = self._help_menu.addMenu("Debug")
+			reload_action = QAction("Reload", self.ui)
+			reload_action.triggered.connect(self._on_help_debug_reload)
+			debug_menu.addAction(reload_action)
 
 		# Console
 		self._console = self.add_dock_widget_controller(ConsoleDockWidgetController(), QtCore.Qt.DockWidgetArea.BottomDockWidgetArea)
@@ -77,6 +86,10 @@ class MainWindowController(BaseController[QMainWindow], QtCore.QObject):
 		viewport.setAcceptDrops(True)
 		self._viewport_drop_filter = _ViewportDropFilter(self._on_asset_dropped, viewport)
 		viewport.installEventFilter(self._viewport_drop_filter)
+		pass
+
+	def _on_help_debug_reload(self):
+		reload()
 		pass
 
 	def _on_asset_dropped(self, asset_paths: list[str]):

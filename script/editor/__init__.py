@@ -18,6 +18,8 @@ def main():
 		StubGenerator.generate_pybind11_pyi()
 		#
 		from script.editor.editor_app import EditorApp
+		from script.editor.common.log import hijack_print
+		hijack_print()
 		EditorApp().run()
 		#
 	except Exception:
