@@ -31,6 +31,8 @@ namespace nene::g
 		
 		flecs::entity spawn_entity(flecs::entity prefab);
 		
+		bool remove_entity(const uint64_t& eid);
+		
 		const prefab_factory& get_prefab_factory() const { return m_prefab_factory; }
 		
 		const std::shared_ptr<r::render_view>& get_main_render_view() const;

@@ -48,11 +48,36 @@ namespace nene::g
 		{
 			entity_spawn_event e;
 			e.m_id = result.id();
-			e.m_name = result.name();
+			const char* entity_name = result.name();
+			if (entity_name != nullptr)
+			{
+				e.m_name = entity_name;
+			}
+			else
+			{
+				e.m_name = "Entity" + std::to_string(e.m_id);
+			}
 			notify(e);
 		}
 		
 		return result;
+	}
+
+	bool world::remove_entity(const uint64_t& eid)
+	{
+		if (eid == 0)
+		{
+			return false;
+		}
+		
+		flecs::entity entity = m_ecs.entity(static_cast<flecs::entity_t>(eid));
+		if (!entity.is_alive())
+		{
+			return false;
+		}
+		
+		entity.destruct();
+		return true;
 	}
 
 	const std::shared_ptr<r::render_view>& world::get_main_render_view() const

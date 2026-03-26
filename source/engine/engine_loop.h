@@ -33,7 +33,7 @@ namespace nene
 
 		static bool is_initialized();
 	
-		static std::shared_ptr<g::world> get_world();
+		static const std::shared_ptr<g::world>& get_world();
 
 	protected:
 		static std::unique_ptr<class engine> m_engine;
