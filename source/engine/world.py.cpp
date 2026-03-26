@@ -12,7 +12,6 @@ namespace nene::g
 			.def_readonly("m_name", &entity_spawn_event::m_name)
 		;
 		
-		// EngineLoop.get_world() returns std::shared_ptr<world>, so bind World with a shared_ptr holder.
 		py::class_<world, event_publisher, std::shared_ptr<world>>(m, "World")
 		;
 	}

@@ -17,6 +17,7 @@ namespace nene::g
 	/** world related events */
 	struct entity_spawn_event : typed_event<event_id::entity_spawn_event>
 	{
+		entity_spawn_event(uint64_t id, std::string name) : m_id(id), m_name(std::move(name)) {}
 		uint64_t m_id;
 		std::string m_name;
 	};
@@ -32,6 +33,8 @@ namespace nene::g
 		flecs::entity spawn_entity(flecs::entity prefab);
 		
 		bool remove_entity(const uint64_t& eid);
+		
+		bool parent_entity(const uint64_t& parent_eid, const uint64_t& child_eid);
 		
 		const prefab_factory& get_prefab_factory() const { return m_prefab_factory; }
 		

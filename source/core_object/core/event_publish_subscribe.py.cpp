@@ -19,7 +19,13 @@ namespace nene::g
 	public:
 		void on_notify(const event& e) override
 		{
-			PYBIND11_OVERRIDE_PURE(void, event_subscriber, on_notify, e);
+			py::gil_scoped_acquire gil;
+			if (auto override_fn = py::get_override(static_cast<const event_subscriber*>(this), "on_notify"))
+			{
+				override_fn(py::cast(e, py::return_value_policy::reference));
+				return;
+			}
+			py::pybind11_fail("Tried to call pure virtual function \"event_subscriber::on_notify\"");
 		}
 	};
 
@@ -33,7 +39,6 @@ namespace nene::g
 			.def("on_notify", &event_subscriber::on_notify)
 		;
 		
-		// Use a shared_ptr holder, so derived types (e.g. g::world) can also use shared_ptr.
 		py::class_<event_publisher, std::shared_ptr<event_publisher>>(m, "EventPublisher")
 			.def(py::init<>())
 			.def("add_subscriber", &event_publisher::add_subscriber)

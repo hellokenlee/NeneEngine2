@@ -4,12 +4,15 @@
 
 #include "input_manager.h"
 #include "level.h"
+#include "component/editor_component.h"
 #include "component/camera_component.h"
 #include "component/transform_component.h"
 
 
 namespace nene::g
 {
+	logger world_("world");
+	
 	world::world()
 		: m_presistent_level(nullptr)
 		, m_prefab_factory(m_ecs)
@@ -42,21 +45,26 @@ namespace nene::g
 
 	flecs::entity world::spawn_entity(flecs::entity prefab)
 	{
-		auto result = m_ecs.entity().is_a(prefab);
+		// maybe it's editor-only code
+		std::string entity_name = {};
+		{
+			if (!prefab.has<spawn_name_counter_component>())
+			{
+				prefab.set<spawn_name_counter_component>({1});
+			}
+			const auto& count = prefab.get<spawn_name_counter_component>().m_count;
+			entity_name = std::string(prefab.name()) + "_" + std::to_string(count);
+			prefab.set<spawn_name_counter_component>({count + 1});
+		}
+		
+		
+		// 
+		auto result = m_ecs.entity(entity_name.c_str()).is_a(prefab);
 		
 		// maybe it's editor-only code
 		{
-			entity_spawn_event e;
-			e.m_id = result.id();
-			const char* entity_name = result.name();
-			if (entity_name != nullptr)
-			{
-				e.m_name = entity_name;
-			}
-			else
-			{
-				e.m_name = "Entity" + std::to_string(e.m_id);
-			}
+			log(world_, info, "spawn entity: {}", result.id());
+			entity_spawn_event e(result.id(), std::string(result.name()));
 			notify(e);
 		}
 		
@@ -77,6 +85,18 @@ namespace nene::g
 		}
 		
 		entity.destruct();
+		return true;
+	}
+	
+	bool world::parent_entity(const uint64_t& parent_eid, const uint64_t& child_eid)
+	{
+		if (parent_eid == 0 || child_eid == 0)
+		{
+			return false;
+		}
+		flecs::entity parent = m_ecs.entity(static_cast<flecs::entity_t>(parent_eid));
+		flecs::entity child = m_ecs.entity(static_cast<flecs::entity_t>(child_eid));
+		child.child_of(parent);
 		return true;
 	}
 

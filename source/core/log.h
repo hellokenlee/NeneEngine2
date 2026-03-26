@@ -54,7 +54,7 @@ namespace nene
 		bool should_log(const log_level& level) const { return m_enabled_level >= level; }
 
 		/** Publisher for logs handling */
-		static event_publisher& publisher();
+		static const std::shared_ptr<event_publisher>& publisher();
 
 	protected:
 		//

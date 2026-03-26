@@ -7,10 +7,10 @@
 
 namespace nene
 {
-	event_publisher& logger::publisher()
+	const std::shared_ptr<event_publisher>& logger::publisher()
 	{
-		static event_publisher s_instance;
-		return s_instance;
+		static auto instance = std::make_shared<event_publisher>();
+		return instance;
 	}
 
 	logger::logger(const std::string_view& name)
@@ -20,12 +20,12 @@ namespace nene
 
 	void logger::log(const log_level& level, const std::string_view& message) const
 	{
-		// FORMAT: 2025-09-18 04:58:10 info [object] message,message,message
+		// FORMAT: 2025-09-18 04:58:10 info [object] message
 		std::chrono::zoned_time local_now(std::chrono::current_zone(), std::chrono::floor<std::chrono::seconds>(std::chrono::system_clock::now()));
 		auto now = std::format("{:%F %T}", local_now);
 		std::string log_message = std::format("{} {} [{}] {}", now,  magic_enum::enum_name(level), m_name, message);
 
 		log_message_event log_event(std::move(log_message));
-		publisher().notify(log_event);
+		publisher()->notify(log_event);
 	}
 }

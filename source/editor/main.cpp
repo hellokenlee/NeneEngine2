@@ -11,7 +11,7 @@ int main()
 {
 	//
 	auto handler = std::make_shared<nene::stdout_log_handler>();
-	nene::logger::publisher().add_subscriber(handler);
+	nene::logger::publisher()->add_subscriber(handler);
 	//
 	nene::qt::binding::get().initialize();
 	auto vm = nene::g::binding::get().initialize();

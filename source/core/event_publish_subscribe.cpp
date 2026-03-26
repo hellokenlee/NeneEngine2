@@ -50,6 +50,10 @@ namespace nene
 			{
 				remain_subscribers.emplace_back(subscribed);
 			}
+			else
+			{
+				auto a = 1;
+			}
 		}
 		m_subscribers = remain_subscribers;
 	}
