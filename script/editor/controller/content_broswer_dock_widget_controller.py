@@ -273,9 +273,7 @@ class ContentBroswerDockWidgetController(DockWidgetController):
 			if os.path.isdir(filepath):
 				item = QListWidgetItem(IconSet().folder, filename)
 			else:
-				# item = QListWidgetItem(IconSet().folder, filename)
 				item = QListWidgetItem(AssetFileIconSet().icon(AssetRegistry().find_abstract(filepath).m_type_name), filename.split('.')[0])
-				log(self, WARNING, "asdjsajdlasjdas")
 			item.setData(Qt.ItemDataRole.UserRole, filename)  # 存储完整文件名，供重命名/删除使用
 			self._content_view_widget.addItem(item)
 		pass
