@@ -12,11 +12,14 @@ import sys
 import time
 import inspect
 import importlib
+import importlib.util
 
 _module_timestamps = {}
 _previous_scan_time = time.time()
 
 _white_list_module_prefix = ["PySide6.Qt"]
+
+
 
 def _is_code_module(module):
     """
@@ -42,8 +45,6 @@ def modified(path=None):
 
     default_time = (_previous_scan_time, False)
 
-    pyc_ext = ".pyc" or ".pyo"
-
     if path is None:
 
         for name, module in sys.modules.items():
@@ -56,13 +57,14 @@ def modified(path=None):
             prev_time, prev_scan = _module_timestamps.setdefault(name, default_time)
 
             # Get timestamp of .pyc if this is first time checking this module
-            # if not prev_scan:
-            #     pyc_name = os.path.splitext(filename)[0] + pyc_ext
-            #     try:
-            #         prev_time = os.path.getmtime(pyc_name)
-            #     except OSError:
-            #         pass
-            #     _module_timestamps[name] = (prev_time, True)
+            if not prev_scan:
+                pyc_name = importlib.util.cache_from_source(filename)
+                if pyc_name:
+                    try:
+                        prev_time = os.path.getmtime(pyc_name)
+                    except OSError:
+                        pass
+                _module_timestamps[name] = (prev_time, True)
 
             # Get timestamp of source file
             try:
@@ -80,8 +82,10 @@ def modified(path=None):
 
         prev_time, prev_scan = _module_timestamps.setdefault(name, default_time)
 
+        source_path = os.path.join(sys.path[0], filename + ".py")
+        pyc_name = importlib.util.cache_from_source(source_path)
         try:
-            disk_time = os.path.getmtime(sys.path[0] + "/" + filename + pyc_ext)
+            disk_time = os.path.getmtime(pyc_name) if pyc_name else None
         except OSError:
             disk_time = None
 
