@@ -20,7 +20,6 @@ _previous_scan_time = time.time()
 _white_list_module_prefix = ["PySide6.Qt"]
 
 
-
 def _is_code_module(module):
     """
     """
@@ -34,7 +33,6 @@ def _is_code_module(module):
         return src_path
     except TypeError:
         return ""
-    pass
 
 
 def modified(path=None):
@@ -111,6 +109,7 @@ def _function_reloader(oldfunc, newfunc, depth):
         b_dirty = True
     #
     if b_dirty:
+        print_current_class_log_and_clear()
         print("  " * depth + "[U] %s : %s" % (oldfunc.__name__, str(oldfunc)))
     pass
 
@@ -126,18 +125,29 @@ def _class_reloader(oldclass, newclass, depth):
         #
         if key not in oldclass.__dict__:
             setattr(oldclass, key, val)
+            print_current_class_log_and_clear()
             print("  " * depth + "[A] %s : %s" % (key, str(val)))
             continue
         #
         oldval = oldclass.__dict__[key]
         #
-        if type(oldval) != type(val):
+        if type(oldval) is not type(val):
             continue
         #
         reloader = find_reloader(oldval)
         #
         if reloader:
             reloader(oldval, val, depth)
+    pass
+
+
+_current_class_log = ""
+
+def print_current_class_log_and_clear():
+    global _current_class_log
+    if _current_class_log:
+        print(_current_class_log)
+        _current_class_log = ""
     pass
 
 
@@ -160,7 +170,6 @@ def reload():
     modnames = modified()
     if len(modnames) > 0:
         print(">" * 10 + " Reload " + ">" * 10)
-        print("modified: %s" % modnames)
         for modname in modnames:
             if modname in sys.modules:
                 #
@@ -178,13 +187,14 @@ def reload():
                         print("  [A] %s : %s" % (key, str(newobj)))
                         continue
                     oldobj = old_module[key]
-                    if type(newobj) != type(oldobj):
+                    if type(newobj) is not type(oldobj):
                         new_module.__dict__[key] = oldobj
                         print("  [C] %s : %s" % (key, str(oldobj)))
                         continue
                     reloader = find_reloader(oldobj)
                     if reloader:
-                        print("  [U] %s : %s" % (key, str(oldobj)))
+                        global _current_class_log
+                        _current_class_log = "  [U] %s : %s" % (key, str(oldobj))
                         reloader(oldobj, newobj, 2)
                     new_module.__dict__[key] = oldobj
         print("<" * 10 + " Reload " + "<" * 10)
