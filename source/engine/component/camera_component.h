@@ -8,6 +8,7 @@
 
 namespace nene::g
 {
+	/** game thread camera info */
 	struct camera_component
 	{
 		// perspective
@@ -31,7 +32,6 @@ namespace nene::g
 		float3 m_forward = float3::forward_vector();
 	};
 	
-	struct main_controlling_camera_tag {};
-	
-	struct main_rendering_camera_tag {};
+	/** the choose a camera to control & render */
+	struct main_camera_tag {};
 }

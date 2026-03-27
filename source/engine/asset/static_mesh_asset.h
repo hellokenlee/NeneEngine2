@@ -12,13 +12,16 @@ namespace nene::g
 	{
 	public:
 		//
-		std::vector<uint32_t> m_face_vertex_indices;
+		const std::shared_ptr<r::static_mesh_render_data>& get_or_create_render_data();
+		
+		//
+		std::vector<uint32_t> m_triangle_faces;
 		//
 		std::vector<float3> m_vertex_positions;
 		std::vector<float3> m_vertex_normals;
 		std::vector<std::vector<float2>> m_vertex_uvs;
 		
 	protected:
-		std::unique_ptr<r::static_mesh_lod_render_data> m_render_data;
+		std::shared_ptr<r::static_mesh_render_data> m_render_data;
 	};
 }

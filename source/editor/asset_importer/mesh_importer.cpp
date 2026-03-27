@@ -50,7 +50,7 @@ namespace nene
 			CHECK(face.mNumIndices == 3);
 			for (unsigned int j = 0; j < face.mNumIndices; j++)
 			{
-				out_static_mesh.m_face_vertex_indices.emplace_back(face.mIndices[j]);
+				out_static_mesh.m_triangle_faces.emplace_back(face.mIndices[j]);
 			}
 		}
 	}

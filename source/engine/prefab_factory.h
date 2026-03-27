@@ -12,5 +12,6 @@ namespace nene::g
 		prefab_factory(flecs::world& ecs);
 		
 		flecs::entity m_static_mesh_prefab;
+		flecs::entity m_camera_prefab;
 	};
 }

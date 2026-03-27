@@ -5,6 +5,7 @@
 #include "level.h"
 #include "prefab_factory.h"
 #include "core/event_id.h"
+#include "core_render/render_scene.h"
 #include "system/camera/camera_control_system.h"
 #include "system/camera/main_render_view_extract_system.h"
 
@@ -30,6 +31,8 @@ namespace nene::g
 		
 		void update(std::chrono::milliseconds delta);
 		
+		const flecs::world& get_ecs() const { return m_ecs; };
+		
 		flecs::entity spawn_entity(flecs::entity prefab);
 		
 		bool remove_entity(const uint64_t& eid);
@@ -38,7 +41,9 @@ namespace nene::g
 		
 		const prefab_factory& get_prefab_factory() const { return m_prefab_factory; }
 		
+		const std::shared_ptr<r::render_scene>& get_render_scene() const;
 		const std::shared_ptr<r::render_view>& get_main_render_view() const;
+		
 		
 	private:
 		// levels
@@ -48,11 +53,14 @@ namespace nene::g
 		// entities
 		flecs::world m_ecs;
 		
-		//
+		// prefabs
 		prefab_factory m_prefab_factory;
 		
 		// systems
 		std::shared_ptr<camera_control_system> m_camera_control_system;
 		main_render_view_extract_system m_main_render_view_extract_system;
+		
+		//
+		std::shared_ptr<r::render_scene> m_render_scene;
 	};
 }

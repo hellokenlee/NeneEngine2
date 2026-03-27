@@ -1,0 +1,18 @@
+/* Copyright reserved by KenLee@hellokenlee@163.com */
+
+#include "static_mesh_asset.h"
+#include "asset/asset_registry.h"
+
+
+namespace nene::g
+{
+	const std::shared_ptr<r::static_mesh_render_data>& static_mesh_asset::get_or_create_render_data()
+	{
+		if (m_render_data == nullptr)
+		{
+			m_render_data = std::make_shared<r::static_mesh_render_data>();
+			m_render_data->add_lod(r::static_mesh_lod_render_data(m_triangle_faces, m_vertex_positions, m_vertex_normals));
+		}
+		return m_render_data;
+	}
+}

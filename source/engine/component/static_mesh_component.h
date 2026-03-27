@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include "core/event_publish_subscribe.h"
-#include "core_render/render_view.h"
 #include "engine/asset/asset_handle.h"
 
 

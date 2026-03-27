@@ -19,19 +19,6 @@ namespace nene::g
 		, m_camera_control_system(std::make_shared<camera_control_system>(m_ecs))
 		, m_main_render_view_extract_system(m_ecs)
 	{
-		//
-		m_ecs.component<main_rendering_camera_tag>().add(flecs::Exclusive);
-		// 
-		{
-			auto main_camera_entity = m_ecs.entity("EditorCameraEntity")
-				.set<transform_component>({})
-				.set<camera_component>({})
-				.add<main_controlling_camera_tag>()
-			;
-			
-			m_ecs.add<main_rendering_camera_tag>(main_camera_entity);
-		}
-		//
 		input_manager::get().add_subscriber(m_camera_control_system);
 	}
 
@@ -98,6 +85,11 @@ namespace nene::g
 		flecs::entity child = m_ecs.entity(static_cast<flecs::entity_t>(child_eid));
 		child.child_of(parent);
 		return true;
+	}
+
+	const std::shared_ptr<r::render_scene>& world::get_render_scene() const
+	{
+		return m_render_scene;
 	}
 
 	const std::shared_ptr<r::render_view>& world::get_main_render_view() const

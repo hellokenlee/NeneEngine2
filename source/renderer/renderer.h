@@ -4,6 +4,7 @@
 
 #include "core_render/render_view.h"
 #include "core_render/render_texture.h"
+#include "core_render/render_scene.h"
 
 
 namespace nene::r
@@ -14,7 +15,12 @@ namespace nene::r
 		renderer() = default;
 		
 		virtual ~renderer() = default;
-
-		virtual void render_view_family(const r::render_view& view, const r::render_texture& view_family_texture) = 0;
+		
+		virtual void render_view_family(const render_view& view, const render_texture& view_family_texture) = 0;
+		
+		void set_rendering_scene(const std::shared_ptr<render_scene>& scene) { m_rendering_scene = scene; }
+		
+	protected:
+		std::shared_ptr<render_scene> m_rendering_scene;
 	};
 }

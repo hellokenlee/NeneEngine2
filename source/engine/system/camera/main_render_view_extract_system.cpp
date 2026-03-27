@@ -14,12 +14,12 @@ namespace nene::g
 			[this](flecs::iter& it)
 			{
 				flecs::world ecs = it.world();
-				auto main_camera_entity = ecs.target<main_rendering_camera_tag>();
+				auto main_camera_entity = ecs.target<main_camera_tag>();
 				const auto& cam = main_camera_entity.get<camera_component>();
 				if (main_camera_entity.is_valid())
 				{
 					// TODO: 置脏判断
-					enqueue_render_command<"main_render_view_extract_system::update">(
+					enqueue_render_command<"MainRenderView::Update">(
 						[render_view = m_render_view, view_location = cam.m_location, view_direction = cam.m_forward, fov = cam.m_fov, ratio = cam.m_ratio, near = cam.m_near, far = cam.m_far]()
 						{
 							render_view->update_view_matrix(view_location, view_direction);

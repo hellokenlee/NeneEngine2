@@ -6,6 +6,7 @@
 #include <core/windll.h>
 #include "world.h"
 #include "renderer/renderer.h"
+#include "observer/render_observer.h"
 
 namespace nene
 {
@@ -27,5 +28,6 @@ namespace nene
 	protected:
 		std::shared_ptr<g::world> m_world;
 		std::unique_ptr<r::renderer> m_renderer;
+		std::unique_ptr<g::render_observer> m_render_observer;
 	};
 }
