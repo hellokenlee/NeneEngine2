@@ -17,7 +17,7 @@ class StubGenerator(object):
 		engine_root: str = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 		stub_abs_path: str = os.path.join(engine_root, cls.NENE_EDITOR_STUB_PATH)
 		os.makedirs(stub_abs_path, exist_ok=True)
-		log("Editor", INFO, "Generating editor stubs into: %s" % os.path.join(stub_abs_path, "nene_editor.pyi"))
+		log("Editor", INFO, "Generating editor stubs into: %s" % os.path.join(cls.NENE_EDITOR_STUB_PATH, "nene_editor.pyi"))
 		from argparse import ArgumentParser
 		global PySide6, inspect, typing, HintingEnumerator, build_brace_pattern
 		import PySide6
@@ -48,7 +48,7 @@ class StubGenerator(object):
 		# TODO: timestamp check and skip
 		engine_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 		stub_abs_path = os.path.join(engine_root, cls.NENE_EDITOR_STUB_PATH)
-		log("Editor", INFO, "Generating engine stubs into: %s" % os.path.join(stub_abs_path, "nene.pyi"))
+		log("Editor", INFO, "Generating engine stubs into: %s" % os.path.join(cls.NENE_EDITOR_STUB_PATH, "nene.pyi"))
 		from pybind11_stubgen import main
 		main(["nene", "-o", stub_abs_path])
 		pass

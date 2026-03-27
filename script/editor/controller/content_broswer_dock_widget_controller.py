@@ -9,7 +9,7 @@ from PySide6.QtGui import QKeySequence, QShortcut, QMouseEvent
 from PySide6.QtWidgets import QPushButton, QWidget, QListWidget, QListWidgetItem, QApplication, QLabel, QLineEdit, QFileDialog, QMenu, QMessageBox, QStyledItemDelegate
 from script.editor.resource_set import IconSet, PixmapSet, AssetFileIconSet
 from script.editor.controller.dock_widget_controller import DockWidgetController
-from script.editor.common.log import log, INFO
+from script.editor.common.log import log, INFO, WARNING
 from script.editor.controller.history_navigator import HistoryNavigator
 from script.editor.widget.content_broswer_view_widget import ContentBroswerViewWidget
 
@@ -275,6 +275,7 @@ class ContentBroswerDockWidgetController(DockWidgetController):
 			else:
 				# item = QListWidgetItem(IconSet().folder, filename)
 				item = QListWidgetItem(AssetFileIconSet().icon(AssetRegistry().find_abstract(filepath).m_type_name), filename.split('.')[0])
+				log(self, WARNING, "asdjsajdlasjdas")
 			item.setData(Qt.ItemDataRole.UserRole, filename)  # 存储完整文件名，供重命名/删除使用
 			self._content_view_widget.addItem(item)
 		pass

@@ -41,7 +41,7 @@ def log(cat: object, level: int, message: str):
 		INFO: "info",
 		DEBUG: "debug",
 		ERROR: "error",
-		WARNING: "warning",
+		WARNING: "warn",
 	}
 
 	if not global_logger.hasHandlers():
