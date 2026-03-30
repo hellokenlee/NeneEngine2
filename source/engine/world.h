@@ -41,6 +41,8 @@ namespace nene::g
 		
 		const prefab_factory& get_prefab_factory() const { return m_prefab_factory; }
 		
+		void set_main_camera_entity(const flecs::entity& e);
+		
 		const std::shared_ptr<r::render_scene>& get_render_scene() const;
 		const std::shared_ptr<r::render_view>& get_main_render_view() const;
 		

@@ -14,7 +14,7 @@ namespace nene::g
 			[this](flecs::iter& it)
 			{
 				flecs::world ecs = it.world();
-				auto main_camera_entity = ecs.target<main_camera_tag>();
+				auto main_camera_entity = ecs.target<main_camera_relation>();
 				const auto& cam = main_camera_entity.get<camera_component>();
 				if (main_camera_entity.is_valid())
 				{

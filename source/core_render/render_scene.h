@@ -15,6 +15,7 @@ namespace nene::r
 	{
 	public:
 		void add_render_proxy(const std::shared_ptr<render_proxy>& proxy);
+		const std::vector<std::shared_ptr<render_proxy>>& get_render_proxies() const { return m_render_proxies; }
 		
 	protected:
 		// TODO: scene management

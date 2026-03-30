@@ -35,7 +35,7 @@ namespace nene::r
 		
 		const static_mesh_lod_render_data& get_lod(uint32_t lod) const { return m_lods[lod]; }
 		size_t num_lods() const { return m_lods.size(); }
-		void add_lod(static_mesh_lod_render_data&& lod) { m_lods.emplace_back(std::move(lod)); }
+		void add_lod(static_mesh_lod_render_data lod) { m_lods.emplace_back(std::move(lod)); }
 		
 	private:
 		std::vector<static_mesh_lod_render_data> m_lods;

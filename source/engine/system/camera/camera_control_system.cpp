@@ -8,8 +8,8 @@ namespace nene::g
 {
 	camera_control_system::camera_control_system(flecs::world& ecs)
 	{
-		ecs.system<camera_component, const main_camera_tag>().each(
-			[this](flecs::entity e, camera_component& cam, const main_camera_tag& _)
+		ecs.system<camera_component, const controlling_camer_tag>().each(
+			[this](flecs::entity e, camera_component& cam, const controlling_camer_tag& _)
 			{
 				// update rotation
 				cam.m_forward = float3::make_forward_vector(m_rotator);

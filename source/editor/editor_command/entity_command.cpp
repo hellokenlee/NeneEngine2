@@ -30,7 +30,7 @@ namespace nene
 				const auto& w = engine_loop::get_world();
 				auto factory = w->get_prefab_factory();
 				auto instance = w->spawn_entity(factory.m_static_mesh_prefab);
-				instance.get_mut<g::static_mesh_component>().m_asset = handle;
+				instance.set<g::static_mesh_component>({handle});
 				return;
 			}
 			// other spawnable assets

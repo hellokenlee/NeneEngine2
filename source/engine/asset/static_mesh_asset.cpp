@@ -6,6 +6,16 @@
 
 namespace nene::g
 {
+	void static_mesh_asset::serialize(archive& ar)
+	{
+		asset::serialize(ar);
+		
+		ar << AR(m_triangle_faces);
+		ar << AR(m_vertex_positions);
+		ar << AR(m_vertex_normals);
+		ar << AR(m_vertex_uvs);
+	}
+
 	const std::shared_ptr<r::static_mesh_render_data>& static_mesh_asset::get_or_create_render_data()
 	{
 		if (m_render_data == nullptr)

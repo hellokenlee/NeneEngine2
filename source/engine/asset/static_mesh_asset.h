@@ -12,6 +12,7 @@ namespace nene::g
 	{
 	public:
 		//
+		void serialize(archive& ar) override;
 		const std::shared_ptr<r::static_mesh_render_data>& get_or_create_render_data();
 		
 		//

@@ -63,6 +63,12 @@ namespace nene::g
 	
 	void asset::serialize(archive& ar)
 	{
+		// uuid must valid if writing
+		if (ar.direction() == archive::direction::write)
+		{
+			CHECK(m_uuid.is_nil() == false);	
+		}
+		
 		// bound attributes serialization 
 		reflection::variant var = reflection::get_variant(this);
 		for (const auto& name : reflection::get_property_names(var))

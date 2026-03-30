@@ -199,6 +199,7 @@ namespace nene::g
 
 	std::shared_ptr<asset> asset_registry::internal_load(const uuid& uid)
 	{
+		auto a = static_mesh_asset();
 		// check if already loaded
 		if (m_loaded_assets.contains(uid))
 		{

@@ -17,8 +17,13 @@ def main():
 		StubGenerator.generate_pyside6_pyi()
 		StubGenerator.generate_pybind11_pyi()
 		#
+		import os.path
+		if not os.path.exists("content"):
+			os.makedirs("content", exist_ok=True)
+		#
 		from script.editor.editor_app import EditorApp
 		from script.editor.common.log import hijack_print
+		#
 		hijack_print()
 		EditorApp().run()
 		#

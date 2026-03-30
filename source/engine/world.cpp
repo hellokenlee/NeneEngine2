@@ -18,6 +18,7 @@ namespace nene::g
 		, m_prefab_factory(m_ecs)
 		, m_camera_control_system(std::make_shared<camera_control_system>(m_ecs))
 		, m_main_render_view_extract_system(m_ecs)
+		, m_render_scene(std::make_shared<r::render_scene>())
 	{
 		input_manager::get().add_subscriber(m_camera_control_system);
 	}
@@ -85,6 +86,12 @@ namespace nene::g
 		flecs::entity child = m_ecs.entity(static_cast<flecs::entity_t>(child_eid));
 		child.child_of(parent);
 		return true;
+	}
+
+	void world::set_main_camera_entity(const flecs::entity& e)
+	{
+		CHECK(e.has<camera_component>());
+		m_ecs.add<main_camera_relation>(e);
 	}
 
 	const std::shared_ptr<r::render_scene>& world::get_render_scene() const

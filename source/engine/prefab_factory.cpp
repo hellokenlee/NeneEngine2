@@ -12,9 +12,6 @@ namespace nene::g
 	prefab_factory::prefab_factory(flecs::world& ecs)
 	{
 		// 
-		ecs.component<main_camera_tag>().add(flecs::Exclusive);
-		
-		// 
 		m_static_mesh_prefab = ecs.prefab("StaticMeshEntity")
 			.set<transform_component>({})
 			.set<static_mesh_component>({})
@@ -24,7 +21,11 @@ namespace nene::g
 		m_camera_prefab = ecs.prefab("CameraEntity")
 			.set<transform_component>({})
 			.set<camera_component>({})
-			.add<main_camera_tag>()
+			.add<controlling_camer_tag>()
 		;
+		
+		//
+		(void)ecs.component<main_camera_relation>().add(flecs::Exclusive);
+		ecs.add<main_camera_relation>(m_camera_prefab); 
 	}
 }

@@ -12,7 +12,8 @@ namespace nene::r
 	 */
 	class NENE_API render_proxy
 	{
-		
+	public:
+		virtual ~render_proxy() = default;
 		float4x4 m_world_matrix = {};
 	};
 }

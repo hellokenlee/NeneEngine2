@@ -3,6 +3,7 @@
 #include "simple_renderer.h"
 #include "builtin_render_resource.h"
 #include "core_render/material_shader_map.h"
+#include "core_render/static_mesh_render_proxy.h"
 #include "gapi_dynamic/gapi_pipeline_state_manager.h"
 #include "gapi_dynamic/gapi_dynamic.h"
 #include "shader/cppshared/view_uniform_buffer.h"
@@ -78,16 +79,41 @@ namespace nene::r
 
 			// TODO: dynamic creation of mesh draw commands
 			// 发起一次绘制的流程
+			// {
+			// 	// 1. 设置 PSO
+			// 	context.set_pipeline_state(m_base_pass_pipeline_state);
+			// 	// 2. 设置 IB 和 VB
+			// 	context.set_index_buffer(cube->get_index_buffer());
+			// 	context.set_vertex_buffers(cube->get_vertex_buffers());
+			// 	// 3. 设置 Resource Binding
+			// 	context.bind_constant_buffer(gapi_shader_stage::vertex_shader, 0, view.get_constant_buffer());
+			// 	// 4. 发起绘制指令
+			// 	context.draw_indexed(cube->num_index(), 1);
+			// }
+			
+			if (m_rendering_scene != nullptr)
 			{
-				// 1. 设置 PSO
-				context.set_pipeline_state(m_base_pass_pipeline_state);
-				// 2. 设置 IB 和 VB
-				context.set_index_buffer(cube->get_index_buffer());
-				context.set_vertex_buffers(cube->get_vertex_buffers());
-				// 3. 设置 Resource Binding
-				context.bind_constant_buffer(gapi_shader_stage::vertex_shader, 0, view.get_constant_buffer());
-				// 4. 发起绘制指令
-				context.draw_indexed(cube->num_index(), 1);
+				// TODO: `render_proxy` -> `mesh_draw_command` and caching
+				const auto& proxies = m_rendering_scene->get_render_proxies();
+				for (const auto& proxy : proxies)
+				{
+					if (const auto& smp = std::dynamic_pointer_cast<static_mesh_render_proxy>(proxy); smp != nullptr)
+					{
+						for ( auto i = 0; i < smp->m_render_data->num_lods(); ++i)
+						{
+							const auto& lod = smp->m_render_data->get_lod(i);
+							// 1. 设置 PSO
+							context.set_pipeline_state(m_base_pass_pipeline_state);
+							// 2. 设置 IB 和 VB
+							context.set_index_buffer(lod.get_index_buffer());
+							context.set_vertex_buffers(lod.get_vertex_buffers());
+							// 3. 设置 Resource Binding
+							context.bind_constant_buffer(gapi_shader_stage::vertex_shader, 0, view.get_constant_buffer());
+							// 4. 发起绘制指令
+							context.draw_indexed(lod.num_index(), 1);
+						}
+					}
+				}
 			}
 		}
 	}

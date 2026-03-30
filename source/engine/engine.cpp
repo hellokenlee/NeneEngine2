@@ -14,8 +14,8 @@ namespace nene
 		//
 		m_world = std::make_shared<g::world>();
 		// default camera
-		m_world->spawn_entity(m_world->get_prefab_factory().m_camera_prefab);
-		
+		auto e = m_world->spawn_entity(m_world->get_prefab_factory().m_camera_prefab);
+		m_world->set_main_camera_entity(e);
 		//
 		m_render_observer = std::make_unique<g::render_observer>(*m_world);
 		//

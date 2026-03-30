@@ -15,6 +15,7 @@ namespace nene::r
 	{
 	public:
 		static_mesh_render_proxy(const std::shared_ptr<static_mesh_render_data>& data);
+		~static_mesh_render_proxy() override = default;
 		float4x4 m_world_matrix = {};
 		std::shared_ptr<static_mesh_render_data> m_render_data = {};
 	};

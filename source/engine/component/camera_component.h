@@ -32,6 +32,9 @@ namespace nene::g
 		float3 m_forward = float3::forward_vector();
 	};
 	
-	/** the choose a camera to control & render */
-	struct main_camera_tag {};
+	/** the camera to render */
+	struct main_camera_relation {};
+	
+	/** camera(s) to control */
+	struct controlling_camer_tag {};
 }

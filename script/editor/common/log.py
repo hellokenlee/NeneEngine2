@@ -27,6 +27,7 @@ _print_level = INFO
 class BufferHandler(logging.Handler):
 	def __init__(self):
 		super().__init__()
+		# noinspection PyAbstractClass
 		self.buffer = io.StringIO()
 		self.setFormatter(global_log_formatter)
 		pass
@@ -34,6 +35,15 @@ class BufferHandler(logging.Handler):
 	def emit(self, record):
 		self.buffer.write(self.format(record) + "\n")
 		pass
+
+
+class _StdoutPlainFormatter(logging.Formatter):
+	def format(self, record):
+		raw = getattr(record, "raw_message", None)
+		if raw is not None:
+			# StreamHandler 会再追加 terminator；去掉 raw 末尾换行，避免多出一行空行
+			return str(raw).rstrip("\r\n")
+		return record.getMessage().rstrip("\r\n")
 
 
 def log(cat: object, level: int, message: str):
@@ -47,15 +57,19 @@ def log(cat: object, level: int, message: str):
 	if not global_logger.hasHandlers():
 		global_logger.setLevel(logging.DEBUG)
 		global_logger.addHandler(BufferHandler())
+		stdout_handler = logging.StreamHandler(sys.stdout)
+		stdout_handler.setFormatter(_StdoutPlainFormatter())
+		global_logger.addHandler(stdout_handler)
 
+	extra = {"raw_message": message}
 	if cat is None:
-		global_logger.log(level, message)
+		global_logger.log(level, message, extra=extra)
 	elif isinstance(cat, str):
-		global_logger.log(level, "%s [%s] %s" % (level_strs[level], cat, message))
+		global_logger.log(level, "%s [%s] %s" % (level_strs[level], cat, message), extra=extra)
 	elif isinstance(cat, type):
-		global_logger.log(level, "%s [%s] %s" % (level_strs[level], cat.__name__, message))
+		global_logger.log(level, "%s [%s] %s" % (level_strs[level], cat.__name__, message), extra=extra)
 	else:
-		global_logger.log(level, "%s [%s] %s" % (level_strs[level], cat.__class__.__name__, message))
+		global_logger.log(level, "%s [%s] %s" % (level_strs[level], cat.__class__.__name__, message), extra=extra)
 	pass
 
 
@@ -68,6 +82,7 @@ def _print_proxy(*values, sep=' ', end='\n', file=None, flush=False):
 	if end and end != '\n':
 		message += end
 	level = ERROR if target_stream is sys.stderr else _print_level
+	# noinspection PyBroadException
 	try:
 		log(_print_cat, level, message)
 	except Exception:

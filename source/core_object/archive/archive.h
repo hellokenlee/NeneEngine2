@@ -43,8 +43,10 @@ namespace nene
 		virtual archive& operator<<(const nvp<int32_t>& kv) = 0;
 		virtual archive& operator<<(const nvp<float>& kv) = 0;
 		
+		virtual archive& operator<<(const nvp<uint2>& kv) = 0;
 		virtual archive& operator<<(const nvp<uint3>& kv) = 0;
 		virtual archive& operator<<(const nvp<float2>& kv) = 0;
+		virtual archive& operator<<(const nvp<float3>& kv) = 0;
 		
 		virtual archive& operator<<(const nvp<uuid>& kv) = 0;
 		

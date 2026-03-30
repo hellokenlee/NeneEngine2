@@ -8,4 +8,8 @@ namespace nene::r
 		: m_index_stream(indices)
 		, m_vertex_factory(positions, normals, uvs)
 	{}
+
+	static_mesh_render_data::static_mesh_render_data()
+	{
+	}
 }
