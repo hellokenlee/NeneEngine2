@@ -88,6 +88,17 @@ namespace nene::g
 		return *this;
 	}
 
+	archive& json_writer::operator<<(const nvp<uint2>& kv)
+	{
+		json* parent = m_stack.back();
+		auto arr = json::array({kv.m_data.x, kv.m_data.y});
+		if (parent->is_array())
+			parent->emplace_back(std::move(arr));
+		else
+			(*parent)[kv.m_name] = std::move(arr);
+		return *this;
+	}
+
 	archive& json_writer::operator<<(const nvp<uint3>& kv)
 	{
 		json* parent = m_stack.back();
@@ -103,6 +114,17 @@ namespace nene::g
 	{
 		json* parent = m_stack.back();
 		auto arr = json::array({kv.m_data.x, kv.m_data.y});
+		if (parent->is_array())
+			parent->emplace_back(std::move(arr));
+		else
+			(*parent)[kv.m_name] = std::move(arr);
+		return *this;
+	}
+
+	archive& json_writer::operator<<(const nvp<float3>& kv)
+	{
+		json* parent = m_stack.back();
+		auto arr = json::array({kv.m_data.x, kv.m_data.y, kv.m_data.z});
 		if (parent->is_array())
 			parent->emplace_back(std::move(arr));
 		else
@@ -310,6 +332,28 @@ namespace nene::g
 		return *this;
 	}
 
+	archive& json_reader::operator<<(const nvp<uint2>& kv)
+	{
+		const nlohmann::json* cur = m_stack.back();
+		if (cur->is_array())
+		{
+			size_t idx = m_array_index_stack.back()++;
+			if (idx < cur->size() && (*cur)[idx].is_array() && (*cur)[idx].size() >= 2)
+			{
+				const auto& arr = (*cur)[idx];
+				kv.m_data.x = arr[0].get<uint32_t>();
+				kv.m_data.y = arr[1].get<uint32_t>();
+			}
+		}
+		else if (cur->contains(kv.m_name) && (*cur)[kv.m_name].is_array() && (*cur)[kv.m_name].size() >= 2)
+		{
+			const auto& arr = (*cur)[kv.m_name];
+			kv.m_data.x = arr[0].get<uint32_t>();
+			kv.m_data.y = arr[1].get<uint32_t>();
+		}
+		return *this;
+	}
+
 	archive& json_reader::operator<<(const nvp<uint3>& kv)
 	{
 		const nlohmann::json* cur = m_stack.back();
@@ -352,6 +396,30 @@ namespace nene::g
 			const auto& arr = (*cur)[kv.m_name];
 			kv.m_data.x = arr[0].get<float>();
 			kv.m_data.y = arr[1].get<float>();
+		}
+		return *this;
+	}
+
+	archive& json_reader::operator<<(const nvp<float3>& kv)
+	{
+		const nlohmann::json* cur = m_stack.back();
+		if (cur->is_array())
+		{
+			size_t idx = m_array_index_stack.back()++;
+			if (idx < cur->size() && (*cur)[idx].is_array() && (*cur)[idx].size() >= 3)
+			{
+				const auto& arr = (*cur)[idx];
+				kv.m_data.x = arr[0].get<float>();
+				kv.m_data.y = arr[1].get<float>();
+				kv.m_data.z = arr[2].get<float>();
+			}
+		}
+		else if (cur->contains(kv.m_name) && (*cur)[kv.m_name].is_array() && (*cur)[kv.m_name].size() >= 3)
+		{
+			const auto& arr = (*cur)[kv.m_name];
+			kv.m_data.x = arr[0].get<float>();
+			kv.m_data.y = arr[1].get<float>();
+			kv.m_data.z = arr[2].get<float>();
 		}
 		return *this;
 	}

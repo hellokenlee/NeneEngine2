@@ -25,8 +25,10 @@ namespace nene::g
 		archive& operator<<(const nvp<int16_t>& kv) override;
 		archive& operator<<(const nvp<int32_t>& kv) override;
 		archive& operator<<(const nvp<float>& kv) override;
+		archive& operator<<(const nvp<uint2>& kv) override;
 		archive& operator<<(const nvp<uint3>& kv) override;
 		archive& operator<<(const nvp<float2>& kv) override;
+		archive& operator<<(const nvp<float3>& kv) override;
 		archive& operator<<(const nvp<uuid>& kv) override;
 		archive& operator<<(const nvp<std::string>& kv) override;
 
@@ -57,8 +59,10 @@ namespace nene::g
 		archive& operator<<(const nvp<int16_t>& kv) override;
 		archive& operator<<(const nvp<int32_t>& kv) override;
 		archive& operator<<(const nvp<float>& kv) override;
+		archive& operator<<(const nvp<uint2>& kv) override;
 		archive& operator<<(const nvp<uint3>& kv) override;
 		archive& operator<<(const nvp<float2>& kv) override;
+		archive& operator<<(const nvp<float3>& kv) override;
 		archive& operator<<(const nvp<uuid>& kv) override;
 		archive& operator<<(const nvp<std::string>& kv) override;
 

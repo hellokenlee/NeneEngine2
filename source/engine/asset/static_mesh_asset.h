@@ -8,7 +8,7 @@
 
 namespace nene::g
 {
-	class static_mesh_asset : public asset
+	class NENE_API static_mesh_asset : public asset
 	{
 	public:
 		//

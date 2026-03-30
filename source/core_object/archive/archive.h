@@ -110,6 +110,10 @@ namespace nene
 			//
 			size_t len = kvs.m_data.size();
 			enter_array(kvs.m_name, len);
+			if (direction() == direction::read)
+			{
+				kvs.m_data.resize(len);
+			}
 			//
 			for (auto i = 0; i < len; ++i)
 			{
