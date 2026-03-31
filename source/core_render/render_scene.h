@@ -3,7 +3,7 @@
 #pragma once
 
 #include "render_proxy.h"
-#include <vector>
+#include <set>
 
 
 namespace nene::r
@@ -15,10 +15,11 @@ namespace nene::r
 	{
 	public:
 		void add_render_proxy(const std::shared_ptr<render_proxy>& proxy);
-		const std::vector<std::shared_ptr<render_proxy>>& get_render_proxies() const { return m_render_proxies; }
+		void remove_render_proxy(const std::shared_ptr<render_proxy>& proxy);
+		const std::set<std::shared_ptr<render_proxy>>& get_render_proxies() const { return m_render_proxies; }
 		
 	protected:
 		// TODO: scene management
-		std::vector<std::shared_ptr<render_proxy>> m_render_proxies;
+		std::set<std::shared_ptr<render_proxy>> m_render_proxies;
 	};
 }

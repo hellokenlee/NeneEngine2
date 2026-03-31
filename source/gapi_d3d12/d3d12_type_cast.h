@@ -405,10 +405,17 @@ namespace nene
 			return D3D12_RESOURCE_STATE_RENDER_TARGET;
 		case gapi_resource_state::shader_resource:
 			return D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
+			
 		case gapi_resource_state::copy_source:
 			return D3D12_RESOURCE_STATE_COPY_SOURCE;
 		case gapi_resource_state::copy_destination:
 			return D3D12_RESOURCE_STATE_COPY_DEST;
+			
+		case gapi_resource_state::index_buffer:
+			return D3D12_RESOURCE_STATE_INDEX_BUFFER;
+		case gapi_resource_state::vertex_buffer:
+		case gapi_resource_state::constant_buffer:
+			return D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
 		}
 		CHECK(false);
 		return D3D12_RESOURCE_STATE_COMMON;

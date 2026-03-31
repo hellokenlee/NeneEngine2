@@ -7,6 +7,11 @@ namespace nene::r
 {
 	void render_scene::add_render_proxy(const std::shared_ptr<render_proxy>& proxy)
 	{
-		m_render_proxies.emplace_back(proxy);
+		m_render_proxies.emplace(proxy);
+	}
+
+	void render_scene::remove_render_proxy(const std::shared_ptr<render_proxy>& proxy)
+	{
+		m_render_proxies.erase(proxy);
 	}
 }

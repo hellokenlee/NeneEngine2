@@ -76,20 +76,6 @@ namespace nene::r
 			auto _ = context.render_pass({view_family_texture.get_texture()}, m_scene_depth);
 		
 			view.update();
-
-			// TODO: dynamic creation of mesh draw commands
-			// 发起一次绘制的流程
-			{
-				// 1. 设置 PSO
-				context.set_pipeline_state(m_base_pass_pipeline_state);
-				// 2. 设置 IB 和 VB
-				context.set_index_buffer(cube->get_index_buffer());
-				context.set_vertex_buffers(cube->get_vertex_buffers());
-				// 3. 设置 Resource Binding
-				context.bind_constant_buffer(gapi_shader_stage::vertex_shader, 0, view.get_constant_buffer());
-				// 4. 发起绘制指令
-				context.draw_indexed(cube->num_index(), 1);
-			}
 			
 			if (m_rendering_scene != nullptr)
 			{

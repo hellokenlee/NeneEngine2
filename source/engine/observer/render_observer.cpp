@@ -45,13 +45,14 @@ namespace nene::g
 		w.get_ecs().observer<render_component>()
 			.event(flecs::OnRemove)
 			.each(
-				[](flecs::entity e, render_component& c) 
+				[&w](flecs::entity e, render_component& c) 
 				{
 					if (c.m_render_proxy != nullptr)
 					{
 						enqueue_render_command<"RemoveRenderProxy">(
-							[proxy = std::move(c.m_render_proxy)]() mutable
+							[proxy = std::move(c.m_render_proxy), scene = w.get_render_scene()]() mutable
 							{
+								scene->remove_render_proxy(proxy);
 								proxy.reset();
 							}
 						);

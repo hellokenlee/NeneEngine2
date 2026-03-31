@@ -18,6 +18,10 @@ namespace nene
 
 		copy_source,
 		copy_destination,
+		
+		index_buffer,
+		vertex_buffer,
+		constant_buffer,
 	};
 	
 	/**
