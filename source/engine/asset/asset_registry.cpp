@@ -199,7 +199,6 @@ namespace nene::g
 
 	std::shared_ptr<asset> asset_registry::internal_load(const uuid& uid)
 	{
-		auto a = static_mesh_asset();
 		// check if already loaded
 		if (m_loaded_assets.contains(uid))
 		{
@@ -213,7 +212,7 @@ namespace nene::g
 			//
 			auto py_type = reflection::get_class(header.m_type_name);
 			auto var = reflection::make_variant(py_type);
-			auto ast = reflection::get_raw<asset>(var);
+			auto ast = reflection::shared<asset>(var);
 			//
 			FILE* fp = fopen(header.m_file_name.c_str(), "rb");
 			CHECK(fp);
@@ -241,7 +240,7 @@ namespace nene::g
 			reader.load(content);
 			ast->serialize(reader);
 
-			return std::shared_ptr<asset>(ast);
+			return ast;
 		}
 		return nullptr;
 	}

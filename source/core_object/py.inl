@@ -19,10 +19,19 @@ namespace nene::g::reflection
 	}
 
 	template <typename cpp_t>
-	cpp_t* get_raw(variant self)
+	std::unique_ptr<cpp_t> unique(variant self)
 	{
+		// refs: https://pybind11.readthedocs.io/en/stable/advanced/smart_ptrs.html
 		py::gil_scoped_acquire gil;
-		return py::cast<cpp_t*>(self);
+		return std::move(py::cast<std::unique_ptr<cpp_t>>(self));
+	}
+
+	template <typename cpp_t>
+	std::shared_ptr<cpp_t> shared(variant self)
+	{
+		// refs: https://pybind11.readthedocs.io/en/stable/advanced/smart_ptrs.html
+		py::gil_scoped_acquire gil;
+		return std::move(py::cast<std::shared_ptr<cpp_t>>(self));
 	}
 
 	template <typename ... arg_ts>

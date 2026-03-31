@@ -9,7 +9,7 @@ namespace nene::g
 {
 	PYBIND(m, 2)
 	{
-		py::class_<static_mesh_asset, asset>(m, "StaticMeshAsset")
+		py::class_<static_mesh_asset, asset, py::smart_holder>(m, "StaticMeshAsset")
 			.def(py::init<>())
 		;
 	}

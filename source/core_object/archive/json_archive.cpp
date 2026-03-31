@@ -226,10 +226,10 @@ namespace nene::g
 		if (cur->is_array())
 		{
 			size_t idx = m_array_index_stack.back()++;
-			if (idx < cur->size() && (*cur)[idx].is_number_unsigned())
+			if (idx < cur->size() && (*cur)[idx].is_number_integer())
 				kv.m_data = (*cur)[idx].get<uint8_t>();
 		}
-		else if (cur->contains(kv.m_name) && (*cur)[kv.m_name].is_number_unsigned())
+		else if (cur->contains(kv.m_name) && (*cur)[kv.m_name].is_number_integer())
 		{
 			kv.m_data = (*cur)[kv.m_name].get<uint8_t>();
 		}
@@ -242,10 +242,10 @@ namespace nene::g
 		if (cur->is_array())
 		{
 			size_t idx = m_array_index_stack.back()++;
-			if (idx < cur->size() && (*cur)[idx].is_number_unsigned())
+			if (idx < cur->size() && (*cur)[idx].is_number_integer())
 				kv.m_data = (*cur)[idx].get<uint16_t>();
 		}
-		else if (cur->contains(kv.m_name) && (*cur)[kv.m_name].is_number_unsigned())
+		else if (cur->contains(kv.m_name) && (*cur)[kv.m_name].is_number_integer())
 		{
 			kv.m_data = (*cur)[kv.m_name].get<uint16_t>();
 		}
@@ -258,10 +258,10 @@ namespace nene::g
 		if (cur->is_array())
 		{
 			size_t idx = m_array_index_stack.back()++;
-			if (idx < cur->size() && (*cur)[idx].is_number_unsigned())
+			if (idx < cur->size() && (*cur)[idx].is_number_integer())
 				kv.m_data = (*cur)[idx].get<uint32_t>();
 		}
-		else if (cur->contains(kv.m_name) && (*cur)[kv.m_name].is_number_unsigned())
+		else if (cur->contains(kv.m_name) && (*cur)[kv.m_name].is_number_integer())
 		{
 			kv.m_data = (*cur)[kv.m_name].get<uint32_t>();
 		}

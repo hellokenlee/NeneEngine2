@@ -9,7 +9,7 @@ namespace nene::g
 {
 	PYBIND(m, 2)
 	{
-		py::class_<texture_asset, asset>(m, "TextureAsset")
+		py::class_<texture_asset, asset, py::smart_holder>(m, "TextureAsset")
 		;
 	}
 }

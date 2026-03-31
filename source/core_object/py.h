@@ -63,9 +63,13 @@ namespace nene::g
 		template<typename cpp_t>
 		variant get_variant(const cpp_t* this_);
 		
-		/** get the raw c++ pointer of a variant */
+		/** take ownership of a variant */
 		template<typename cpp_t>
-		cpp_t* get_raw(variant self);
+		std::unique_ptr<cpp_t> unique(variant self);
+		
+		/** share ownership of a variant with script */
+		template<typename cpp_t>
+		std::shared_ptr<cpp_t> shared(variant self);
 		
 		/** create a variant of the class object */
 		template <typename ... arg_ts>
