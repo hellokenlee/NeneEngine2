@@ -46,10 +46,6 @@ namespace nene
 
 		/** Engine helpers. */
 		void flush() const;
-	
-		void start_frame() const;
-
-		void finish_frame() const;
 
 		void present_frame();
 	

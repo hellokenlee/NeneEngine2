@@ -45,13 +45,11 @@ namespace nene
 						auto& back_buffer_texture = gai.get_swap_chain()->get_back_buffer();
 					
 						//
-						gai.start_frame();
 						context.transition_resource(back_buffer_texture, gapi_resource_state::render_target);
 						{
 							m_renderer->render_view_family(*main_render_view, r::render_texture(back_buffer_texture));
 						}
 						context.transition_resource(back_buffer_texture, gapi_resource_state::present);
-						gai.finish_frame();
 					
 						//
 						gai.present_frame();

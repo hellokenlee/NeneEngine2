@@ -12,7 +12,7 @@ namespace nene
 	t::console_var<uint32_t> cvar_gapi_platform("gapi.platform", 0u, "The graphics api that engine use: 0: d3d12; 1: vulkan; 2:metal;");
 	t::console_var<uint32_t> cvar_gapi_num_context_thread("gapi.num_context_thread", 1u, "How many cmd contexts to create;", console_var_flag::read_only);
 	t::console_var<uint32_t> cvar_gapi_shader_feature_level("gapi.shader.feature_level", 0u, "Select the platform that engine use: 0: shading model 5.0;1: shading model 6.0;");
-	t::console_var<uint32_t> cvar_gapi_num_swap_chain_buffer("gapi.num_swap_chain_buffer", 2u, "How many buffers should create in swap-chain; Default is 2 for double buffering.", console_var_flag::read_only);
+	t::console_var<uint32_t> cvar_gapi_num_buffering("gapi.num_buffering", 2u, "The num of N-Buffering; Default is 2 for double buffering.", console_var_flag::read_only);
 
 	gapi_dynamic::gapi_dynamic(const gapi_platform& platform, void* window, const uint2& window_size)
 		: m_factory(nullptr)
@@ -32,7 +32,7 @@ namespace nene
 			break;
 		}
 		//
-		const auto num_multi_buffer = cvar_gapi_num_swap_chain_buffer.value();
+		const auto num_multi_buffer = cvar_gapi_num_buffering.value();
 		// TODO: multi gpu support
 		m_gpu = m_factory->create_gpu();
 		m_device = m_gpu->create_device();
@@ -62,6 +62,11 @@ namespace nene
 		for (auto& fence_values : m_cmd_queue_fence_values)
 		{
 			fence_values.resize(num_multi_buffer, 0);
+		}
+		// open the command list for initialization
+		for (auto& context : m_cmd_contexts)
+		{
+			context->reset();
 		}
 	}
 
@@ -162,41 +167,43 @@ namespace nene
 		m_device->get_cmd_queue(gapi_cmd_type::copy)->flush();
 	}
 
-	void gapi_dynamic::start_frame() const
-	{
-		for (auto& context : m_cmd_contexts)
-		{
-			context->reset();
-		}
-	}
-
-	void gapi_dynamic::finish_frame() const
-	{
-		// TODO: early execution and flush 
-		for (auto& context : m_cmd_contexts)
-		{
-			// TODO: multi command queue supports
-			const auto& cmd_list_to_execute = context->close();
-			m_device->get_cmd_queue(gapi_cmd_type::graphics)->execute_cmd_list(cmd_list_to_execute);
-		}
-	}
-
 	void gapi_dynamic::present_frame()
 	{
 		// TODO: multi command queue supports
+		
+		// checks
+		/*
+		for (auto& context : m_cmd_contexts)
+		{
+			CHECK(context->get_current_index() == m_swap_chain->get_current_back_buffer_index());
+		}
+		//*/
+		
+		// execute current frame commands
+		for (auto& context : m_cmd_contexts)
+		{
+			const auto& current_frame_cmd_list = context->close();
+			m_device->get_cmd_queue(gapi_cmd_type::graphics)->execute_cmd_list(current_frame_cmd_list);
+		}
 		
 		// mark current frame fence value
 		const auto current_frame_index = m_swap_chain->get_current_back_buffer_index();
 		const auto current_frame_fence_value = m_device->get_cmd_queue(gapi_cmd_type::graphics)->signal();
 		m_cmd_queue_fence_values[static_cast<uint32_t>(gapi_cmd_type::graphics)][current_frame_index] = current_frame_fence_value;
 
-		// present and move to next frame
+		// present and move to the next frame
 		m_swap_chain->present();
 
-		// wait for previous frame's fence
+		// wait for the previous frame's fence
 		const auto previous_frame_index = m_swap_chain->get_current_back_buffer_index();
 		const auto previous_frame_fence_value = m_cmd_queue_fence_values[static_cast<uint32_t>(gapi_cmd_type::graphics)][previous_frame_index];
 		m_device->get_cmd_queue(gapi_cmd_type::graphics)->wait_for_fence_value(previous_frame_fence_value);
+		
+		// reset the context for the next frame
+		for (auto& context : m_cmd_contexts)
+		{
+			context->reset();
+		}
 	}
 
 	const std::shared_ptr<gapi_swap_chain>& gapi_dynamic::get_swap_chain() const

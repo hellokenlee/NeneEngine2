@@ -26,10 +26,9 @@ namespace nene
 		enqueue_render_command<"RenderThreadInit">(
 			[]()
 			{
-				auto& gai = gapi_dynamic::get();
-				gai.start_frame();
-				r::global_render_resource::initialize_global_render_resources(gai.get_cmd_context());
-				gai.finish_frame();
+				auto& gapi = gapi_dynamic::get();
+				r::global_render_resource::initialize_global_render_resources(gapi.get_cmd_context());
+				gapi.present_frame();
 			}
 		);
 		
@@ -63,8 +62,6 @@ namespace nene
 		flush_render_commands();
 		
 		// wait for executing all commands
-		gapi_dynamic::get().start_frame();
-		gapi_dynamic::get().finish_frame();
 		gapi_dynamic::get().flush();
 		
 		//

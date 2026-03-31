@@ -74,6 +74,9 @@ namespace nene
 	
 		// Specify resource state
 		void transition_resource(const std::shared_ptr<gapi_resource>& resource, const gapi_resource_state& to_state) const;
+		
+		/** Get the current command allocator index */
+		uint32_t get_current_index() const { return m_current_index; }
 	
 	protected:
 		//
