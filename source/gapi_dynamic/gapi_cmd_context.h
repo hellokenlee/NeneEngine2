@@ -74,6 +74,7 @@ namespace nene
 	
 		// Specify resource state
 		void transition_resource(const std::shared_ptr<gapi_resource>& resource, const gapi_resource_state& to_state) const;
+		void deferred_release(const std::shared_ptr<gapi_resource>& resource);
 	
 	protected:
 		//
@@ -89,7 +90,6 @@ namespace nene
 		const std::shared_ptr<gapi_cmd_allocator>& get_cmd_allocator() const { return m_frame_contexts[m_frame_index].m_cmd_allocator; }
 		
 		//
-		void deferred_release(const std::shared_ptr<gapi_resource>& resource);
 		void release_deferred_resources();
 		
 		// the command list

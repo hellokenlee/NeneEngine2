@@ -20,6 +20,7 @@ namespace nene::r
 	{
 	public:
 		index_stream(const std::vector<uint32_t>& indices, const std::string& debug_name = "");
+		~index_stream() override;
 		const uint32_t& num_index() const { return m_num_index; }
 		const std::shared_ptr<gapi_buffer>& get_index_buffer() const { return m_index_buffer; }
 		
@@ -37,6 +38,7 @@ namespace nene::r
 	{
 	public:
 		vertex_stream(const void* data, size_t size, gapi_vertex_element_type element_type, const std::string& debug_name = "");
+		~vertex_stream() override;
 		gapi_vertex_element_type get_element_type() const { return m_element_type; }
 		const std::shared_ptr<gapi_buffer>& get_vertex_buffer() const { return m_vertex_buffer; }
 

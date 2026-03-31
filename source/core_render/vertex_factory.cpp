@@ -4,6 +4,7 @@
 
 #include "gapi_dynamic/gapi_dynamic.h"
 
+
 namespace nene::r
 {
 	index_stream::index_stream(const std::vector<uint32_t>& indices, const std::string& debug_name)
@@ -17,6 +18,12 @@ namespace nene::r
 		context.transition_resource(m_index_buffer, gapi_resource_state::index_buffer);
 	}
 
+	index_stream::~index_stream()
+	{
+		auto& context = gapi_dynamic::get().get_cmd_context();
+		context.deferred_release(m_index_buffer);
+	}
+
 	vertex_stream::vertex_stream(const void* data, size_t size, gapi_vertex_element_type element_type, const std::string& debug_name)
 		: render_resource()
 		, m_debug_name(debug_name)
@@ -26,6 +33,12 @@ namespace nene::r
 		auto desc = gapi_buffer_desc::create(static_cast<uint32_t>(size), gapi_buffer_usage_flag::usage_vertex_buffer, size_of_gapi_vertex_element_type(element_type), m_debug_name);
 		m_vertex_buffer = context.create_and_upload_buffer(desc, data);
 		context.transition_resource(m_vertex_buffer, gapi_resource_state::vertex_buffer);
+	}
+
+	vertex_stream::~vertex_stream()
+	{
+		auto& context = gapi_dynamic::get().get_cmd_context();
+		context.deferred_release(m_vertex_buffer);
 	}
 
 	void vertex_factory::modify_shader_translate_environment(shader_translate_environment& inout_shader_translate_environment) const

@@ -13,6 +13,7 @@ namespace nene::r
 	{
 	public:
 		render_resource();
+		virtual ~render_resource() = default;
 	};
 	
 	/** Global Render Resource */
