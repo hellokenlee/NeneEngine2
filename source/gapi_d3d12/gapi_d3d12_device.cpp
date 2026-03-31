@@ -138,6 +138,8 @@ namespace nene
 	{
 		WinComPtr<ID3D12GraphicsCommandList> d3d_cmd_list;
 		VERIFY(m_d3d_device->CreateCommandList(0, d3d_cast(type), t::gapi_pin<gapi_d3d12_cmd_allocator>(allocator).get_d3d_allocator(), nullptr, IID_PPV_ARGS(&d3d_cmd_list)));
+		// 默认是关闭状态
+		d3d_cmd_list->Close();
 		return std::make_shared<gapi_d3d12_cmd_list>(d3d_cmd_list);
 	}
 

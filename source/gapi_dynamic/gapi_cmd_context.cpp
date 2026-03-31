@@ -10,8 +10,7 @@ namespace nene
 	gapi_cmd_context::gapi_cmd_context(const std::shared_ptr<gapi_device>& device, uint32_t num_frame_context, uint32_t debug_context_id)
 		: m_device(device)
 		, m_debug_id(debug_context_id)
-		, m_current_index(0)
-		, m_previous_index(num_frame_context - 1)
+		, m_frame_index(0)
 		, m_online_resource_view_cache(device)
 	{
 		for (uint32_t i = 0; i < num_frame_context; i++)
@@ -23,7 +22,7 @@ namespace nene
 		}
 		
 		// create and reset to allocator 0
-		m_cmd_list = m_device->create_cmd_list(gapi_cmd_type::graphics, get_current_cmd_allocator());
+		m_cmd_list = m_device->create_cmd_list(gapi_cmd_type::graphics, get_cmd_allocator());
 		m_cmd_list->set_debug_name(std::format(L"Context#{}::CommandList", m_debug_id));
 	}
 
@@ -51,11 +50,13 @@ namespace nene
 		return render_pass;
 	}
 
-	void gapi_cmd_context::reset()
+	void gapi_cmd_context::reset(uint32_t frame_index)
 	{
 		//
-		get_current_cmd_allocator()->reset();
-		m_cmd_list->reset(get_current_cmd_allocator(), nullptr);
+		m_frame_index = frame_index;
+		//
+		get_cmd_allocator()->reset();
+		m_cmd_list->reset(get_cmd_allocator(), nullptr);
 		//
 		release_deferred_resources();
 		// Default to triangle
@@ -68,9 +69,6 @@ namespace nene
 	{
 		//
 		m_cmd_list->close();
-		//
-		m_previous_index = m_current_index;
-		m_current_index = (m_current_index + 1) % m_frame_contexts.size();
 		// return the closed command list
 		return m_cmd_list;
 	}
@@ -259,12 +257,12 @@ namespace nene
 
 	void gapi_cmd_context::deferred_release(const std::shared_ptr<gapi_resource>& resource)
 	{
-		m_frame_contexts[m_current_index].m_tracked_resources.emplace_back(resource);
+		m_frame_contexts[m_frame_index].m_tracked_resources.emplace_back(resource);
 	}
 
 	void gapi_cmd_context::release_deferred_resources()
 	{
-		m_frame_contexts[m_current_index].m_tracked_resources.clear();
+		m_frame_contexts[m_frame_index].m_tracked_resources.clear();
 	}
 
 	scoped_render_pass::scoped_render_pass(gapi_cmd_context* context, const std::vector<std::shared_ptr<gapi_texture>>& render_targets, const std::shared_ptr<gapi_texture>& depth_stencil)

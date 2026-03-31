@@ -31,10 +31,10 @@ namespace nene
 		scoped_render_pass render_pass(const std::vector<std::shared_ptr<gapi_texture>>& render_targets, const std::shared_ptr<gapi_texture>& depth_stencil = nullptr);
 
 		/** Reset current command list and it's allocator. Called at the start of a frame. */ 
-		void reset();
-		/** Close current command list. Do ping-pong swap with previous one. */
+		void reset(uint32_t frame_index);
+		/** Close current command list. Return the command list that need to be executed. */
 		const std::shared_ptr<gapi_cmd_list>& close();
-
+		/** Apply the resolution change from swapchain. */
 		void set_resolution(const uint2& resolution);
 
 		//
@@ -86,7 +86,7 @@ namespace nene
 		};
 
 		//
-		const std::shared_ptr<gapi_cmd_allocator>& get_current_cmd_allocator() const { return m_frame_contexts[m_current_index].m_cmd_allocator; }
+		const std::shared_ptr<gapi_cmd_allocator>& get_cmd_allocator() const { return m_frame_contexts[m_frame_index].m_cmd_allocator; }
 		
 		//
 		void deferred_release(const std::shared_ptr<gapi_resource>& resource);
@@ -96,10 +96,9 @@ namespace nene
 		std::shared_ptr<gapi_cmd_list> m_cmd_list;
 		
 		std::shared_ptr<gapi_device> m_device;
-	
+		
 		uint32_t m_debug_id;
-		uint32_t m_current_index;
-		uint32_t m_previous_index;
+		uint32_t m_frame_index;
 
 		std::vector<one_frame_context_data> m_frame_contexts;
 

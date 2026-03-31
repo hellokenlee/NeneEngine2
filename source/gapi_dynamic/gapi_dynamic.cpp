@@ -57,6 +57,7 @@ namespace nene
 		for (auto& context : m_cmd_contexts)
 		{
 			context->set_resolution(window_size);
+			context->reset(m_swap_chain->get_current_back_buffer_index());
 		}
 		//
 		for (auto& fence_values : m_cmd_queue_fence_values)
@@ -169,7 +170,6 @@ namespace nene
 		// execute current frame commands
 		for (auto& context : m_cmd_contexts)
 		{
-			// close and move the context to the next frame
 			const auto& current_frame_cmd_list = context->close();
 			m_device->get_cmd_queue(gapi_cmd_type::graphics)->execute_cmd_list(current_frame_cmd_list);
 		}
@@ -190,7 +190,7 @@ namespace nene
 		// reset the context for the next frame's commands
 		for (auto& context : m_cmd_contexts)
 		{
-			context->reset();
+			context->reset(next_frame_index);
 		}
 	}
 
@@ -203,22 +203,32 @@ namespace nene
 	{
 		if (m_swap_chain->get_back_buffer_size() != new_size)
 		{
+			// execute recorded commands
+			for (auto& context : m_cmd_contexts)
+			{
+				const auto& current_frame_cmd_list = context->close();
+				m_device->get_cmd_queue(gapi_cmd_type::graphics)->execute_cmd_list(current_frame_cmd_list);
+			}
+			// wait for execution
 			flush();
-			//
+			
+			// do resize the back buffer
 			m_swap_chain->resize_back_buffer(new_size);
 			for (size_t index = 0; index < m_swap_chain->num_back_buffers(); ++index)
 			{
 				create_texture_views(m_swap_chain->get_back_buffer(index));
 			}
-
-			//
 			for (auto& context : m_cmd_contexts)
 			{
 				context->set_resolution(new_size);
 			}
-			
+
 			// align the timeline of every frame's fence value ( as if they are all 0 at the beginning, now they are all set to current frame's value ) 
 			const auto current_frame_index = m_swap_chain->get_current_back_buffer_index();
+			for (auto& context : m_cmd_contexts)
+			{
+				context->reset(current_frame_index);
+			}
 			const auto current_frame_fence_value = m_cmd_queue_fence_values[static_cast<uint32_t>(gapi_cmd_type::graphics)][current_frame_index];
 			for (auto& fence_value : m_cmd_queue_fence_values[static_cast<uint32_t>(gapi_cmd_type::graphics)])
 			{
