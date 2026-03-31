@@ -58,7 +58,7 @@ namespace nene
 		void end_query() override;
 		void resolve_query() override;
 
-		void set_debug_name(const std::wstring& debug_name) override { d3d_set_debug_name(*get_d3d_cmd_list(), debug_name); }
+		void set_debug_name(const std::string& debug_name) override { d3d_set_debug_name(*get_d3d_cmd_list(), debug_name); }
 
 	public:
 		ID3D12CommandList* get_d3d_cmd_list() const { return m_d3d_list.Get(); }

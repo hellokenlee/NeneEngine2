@@ -17,13 +17,13 @@ namespace nene
 		{
 			one_frame_context_data context_data;
 			context_data.m_cmd_allocator = m_device->create_cmd_allocator(gapi_cmd_type::graphics);
-			context_data.m_cmd_allocator->set_debug_name(std::format(L"Context#{}::CommandAllocator#{}", m_debug_id, i));
+			context_data.m_cmd_allocator->set_debug_name(std::format("Context#{}::CommandAllocator#{}", m_debug_id, i));
 			m_frame_contexts.emplace_back(std::move(context_data));
 		}
 		
 		// create and reset to allocator 0
 		m_cmd_list = m_device->create_cmd_list(gapi_cmd_type::graphics, get_cmd_allocator());
-		m_cmd_list->set_debug_name(std::format(L"Context#{}::CommandList", m_debug_id));
+		m_cmd_list->set_debug_name(std::format("Context#{}::CommandList", m_debug_id));
 	}
 
 	void gapi_cmd_context::begin_render_pass(const std::vector<std::shared_ptr<gapi_texture>>& render_targets, const std::shared_ptr<gapi_texture>& depth_stencil) const

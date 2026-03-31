@@ -55,7 +55,7 @@ namespace nene
 		const auto& get_shader_resource_view() const { return m_shader_resource_view; }
 		void set_shader_resource_view(const std::shared_ptr<gapi_resource_view>& shader_resource_view) { m_shader_resource_view = shader_resource_view; }
 		//
-		virtual void set_debug_name(const std::wstring& debug_name) = 0;
+		virtual void set_debug_name(const std::string& debug_name) = 0;
 		
 	protected:
 		gapi_resource_desc m_desc;

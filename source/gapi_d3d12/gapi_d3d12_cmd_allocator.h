@@ -15,7 +15,7 @@ namespace nene
 
 		void reset() override;
 		
-		void set_debug_name(const std::wstring& debug_name) override { d3d_set_debug_name(*get_d3d_allocator(), debug_name); }
+		void set_debug_name(const std::string& debug_name) override { d3d_set_debug_name(*get_d3d_allocator(), debug_name); }
 		
 	public:
 		gapi_d3d12_cmd_allocator(const WinComPtr<ID3D12CommandAllocator>& allocator);

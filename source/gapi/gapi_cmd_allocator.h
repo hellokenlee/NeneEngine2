@@ -23,6 +23,6 @@ namespace nene
 
 		virtual void reset() = 0;
 		
-		virtual void set_debug_name(const std::wstring& debug_name) {}
+		virtual void set_debug_name(const std::string& debug_name) {}
 	};
 }

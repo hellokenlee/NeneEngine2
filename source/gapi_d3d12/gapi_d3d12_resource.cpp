@@ -30,7 +30,7 @@ namespace nene
 		m_d3d_resource->Unmap(0, nullptr);
 	}
 
-	void gapi_d3d12_resource::set_debug_name(const std::wstring& debug_name)
+	void gapi_d3d12_resource::set_debug_name(const std::string& debug_name)
 	{
 		d3d_set_debug_name(*m_d3d_resource.Get(), debug_name);
 	}
@@ -55,7 +55,7 @@ namespace nene
 		, gapi_d3d12_resource(resource, desc)
 		, gapi_texture(desc)
 	{
-		gapi_d3d12_resource::set_debug_name(utils::string_to_wstring(desc.m_debug_name));
+		gapi_d3d12_resource::set_debug_name(desc.m_debug_name);
 	}
 
 	gapi_d3d12_buffer::gapi_d3d12_buffer(const WinComPtr<ID3D12Resource>& resource, const gapi_resource_desc& desc)
@@ -83,6 +83,6 @@ namespace nene
 			m_optional_vertex_buffer_view.StrideInBytes = desc.m_vertex_buffer_stride;
 		}
 		//
-		gapi_d3d12_resource::set_debug_name(utils::string_to_wstring(desc.m_debug_name));
+		gapi_d3d12_resource::set_debug_name(desc.m_debug_name);
 	}
 }

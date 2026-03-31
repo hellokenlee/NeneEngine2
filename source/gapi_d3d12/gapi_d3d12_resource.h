@@ -18,7 +18,7 @@ namespace nene
 		
 		void map(const ulonglong2& read_range, std::function<void(void*)> vram_operator) override;
 
-		void set_debug_name(const std::wstring& debug_name) override;
+		void set_debug_name(const std::string& debug_name) override;
 
 	public:
 		std::optional<CD3DX12_RESOURCE_BARRIER> d3d_transition(const gapi_resource_state& to_state);
