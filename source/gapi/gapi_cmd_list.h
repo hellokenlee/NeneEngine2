@@ -83,6 +83,6 @@ namespace nene
 		virtual void resolve_query() = 0;
 
 		// Debug Methods
-		virtual void set_debug_name(const std::wstring& debug_name) {};
+		virtual void set_debug_name(const std::wstring& debug_name) {}
 	};
 }

@@ -134,11 +134,10 @@ namespace nene
 		return std::make_shared<gapi_d3d12_cmd_allocator>(allocator);
 	}
 
-	std::shared_ptr<gapi_cmd_list> gapi_d3d12_device::create_cmd_list(gapi_cmd_type type, std::shared_ptr<gapi_cmd_allocator>& allocator)
+	std::shared_ptr<gapi_cmd_list> gapi_d3d12_device::create_cmd_list(gapi_cmd_type type, const std::shared_ptr<gapi_cmd_allocator>& allocator)
 	{
 		WinComPtr<ID3D12GraphicsCommandList> d3d_cmd_list;
 		VERIFY(m_d3d_device->CreateCommandList(0, d3d_cast(type), t::gapi_pin<gapi_d3d12_cmd_allocator>(allocator).get_d3d_allocator(), nullptr, IID_PPV_ARGS(&d3d_cmd_list)));
-		d3d_cmd_list->Close();
 		return std::make_shared<gapi_d3d12_cmd_list>(d3d_cmd_list);
 	}
 

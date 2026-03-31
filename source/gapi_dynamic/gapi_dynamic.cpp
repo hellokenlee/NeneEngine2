@@ -32,7 +32,7 @@ namespace nene
 			break;
 		}
 		//
-		const auto num_multi_buffer = cvar_gapi_num_buffering.value();
+		const auto num_back_buffer = cvar_gapi_num_buffering.value();
 		// TODO: multi gpu support
 		m_gpu = m_factory->create_gpu();
 		m_device = m_gpu->create_device();
@@ -42,11 +42,11 @@ namespace nene
 		m_sampler_allocator = m_device->create_resource_view_allocator(gapi_resource_view_type::texture_sampler, gapi_resource_view_allocator_type::offline);
 		m_cbv_srv_uav_allocator = m_device->create_resource_view_allocator(gapi_resource_view_type::shader_resource_view, gapi_resource_view_allocator_type::offline);
 		//
-		m_swap_chain = m_factory->create_swap_chain(window, m_device->get_cmd_queue(gapi_cmd_type::graphics), window_size, num_multi_buffer);
+		m_swap_chain = m_factory->create_swap_chain(window, m_device->get_cmd_queue(gapi_cmd_type::graphics), window_size, num_back_buffer);
 		//
 		for (uint32_t context_id = 0; context_id < cvar_gapi_num_context_thread.get_value_thread_unsafe(); ++context_id)
 		{
-			m_cmd_contexts.push_back(std::make_unique<gapi_cmd_context>(m_device, num_multi_buffer, context_id));
+			m_cmd_contexts.push_back(std::make_unique<gapi_cmd_context>(m_device, num_back_buffer, context_id));
 		}
 		
 		// 
@@ -61,12 +61,7 @@ namespace nene
 		//
 		for (auto& fence_values : m_cmd_queue_fence_values)
 		{
-			fence_values.resize(num_multi_buffer, 0);
-		}
-		// open the command list for initialization
-		for (auto& context : m_cmd_contexts)
-		{
-			context->reset();
+			fence_values.resize(num_back_buffer, 0);
 		}
 	}
 
@@ -171,17 +166,10 @@ namespace nene
 	{
 		// TODO: multi command queue supports
 		
-		// checks
-		/*
-		for (auto& context : m_cmd_contexts)
-		{
-			CHECK(context->get_current_index() == m_swap_chain->get_current_back_buffer_index());
-		}
-		//*/
-		
 		// execute current frame commands
 		for (auto& context : m_cmd_contexts)
 		{
+			// close and move the context to the next frame
 			const auto& current_frame_cmd_list = context->close();
 			m_device->get_cmd_queue(gapi_cmd_type::graphics)->execute_cmd_list(current_frame_cmd_list);
 		}
@@ -191,15 +179,15 @@ namespace nene
 		const auto current_frame_fence_value = m_device->get_cmd_queue(gapi_cmd_type::graphics)->signal();
 		m_cmd_queue_fence_values[static_cast<uint32_t>(gapi_cmd_type::graphics)][current_frame_index] = current_frame_fence_value;
 
-		// present and move to the next frame
+		// present and move the swapchain to the next frame
 		m_swap_chain->present();
-
-		// wait for the previous frame's fence
-		const auto previous_frame_index = m_swap_chain->get_current_back_buffer_index();
-		const auto previous_frame_fence_value = m_cmd_queue_fence_values[static_cast<uint32_t>(gapi_cmd_type::graphics)][previous_frame_index];
-		m_device->get_cmd_queue(gapi_cmd_type::graphics)->wait_for_fence_value(previous_frame_fence_value);
 		
-		// reset the context for the next frame
+		// wait for the next frame's last cycle fence
+		const auto next_frame_index = m_swap_chain->get_current_back_buffer_index();
+		const auto next_frame_last_cycle_fence_value = m_cmd_queue_fence_values[static_cast<uint32_t>(gapi_cmd_type::graphics)][next_frame_index];
+		m_device->get_cmd_queue(gapi_cmd_type::graphics)->wait_for_fence_value(next_frame_last_cycle_fence_value);
+		
+		// reset the context for the next frame's commands
 		for (auto& context : m_cmd_contexts)
 		{
 			context->reset();
@@ -216,14 +204,6 @@ namespace nene
 		if (m_swap_chain->get_back_buffer_size() != new_size)
 		{
 			flush();
-			// invalidate in-flight command lists:
-			// since all previous frame's fence value must smaller than current's.
-			// reset all fence values to current's to ensure that the fence value is at least the value that was last signaled on the command queue.
-			const auto current_frame_index = m_swap_chain->get_current_back_buffer_index();
-			for (auto& fence_value : m_cmd_queue_fence_values[static_cast<uint32_t>(gapi_cmd_type::graphics)])
-			{
-				fence_value = m_cmd_queue_fence_values[static_cast<uint32_t>(gapi_cmd_type::graphics)][current_frame_index];
-			}
 			//
 			m_swap_chain->resize_back_buffer(new_size);
 			for (size_t index = 0; index < m_swap_chain->num_back_buffers(); ++index)
@@ -235,6 +215,14 @@ namespace nene
 			for (auto& context : m_cmd_contexts)
 			{
 				context->set_resolution(new_size);
+			}
+			
+			// align the timeline of every frame's fence value ( as if they are all 0 at the beginning, now they are all set to current frame's value ) 
+			const auto current_frame_index = m_swap_chain->get_current_back_buffer_index();
+			const auto current_frame_fence_value = m_cmd_queue_fence_values[static_cast<uint32_t>(gapi_cmd_type::graphics)][current_frame_index];
+			for (auto& fence_value : m_cmd_queue_fence_values[static_cast<uint32_t>(gapi_cmd_type::graphics)])
+			{
+				fence_value = current_frame_fence_value;
 			}
 		}
 	}

@@ -7,21 +7,24 @@ namespace nene
 {
 	extern t::console_var<uint32_t> cvar_gapi_num_multi_buffer;
 
-	gapi_cmd_context::gapi_cmd_context(const std::shared_ptr<gapi_device>& device, uint32_t num_cmd_list, uint32_t debug_context_id)
+	gapi_cmd_context::gapi_cmd_context(const std::shared_ptr<gapi_device>& device, uint32_t num_frame_context, uint32_t debug_context_id)
 		: m_device(device)
 		, m_debug_id(debug_context_id)
 		, m_current_index(0)
-		, m_previous_index(num_cmd_list - 1)
+		, m_previous_index(num_frame_context - 1)
 		, m_online_resource_view_cache(device)
 	{
-		for (uint32_t i = 0; i < num_cmd_list; i++)
+		for (uint32_t i = 0; i < num_frame_context; i++)
 		{
 			one_frame_context_data context_data;
 			context_data.m_cmd_allocator = m_device->create_cmd_allocator(gapi_cmd_type::graphics);
-			context_data.m_cmd_list = m_device->create_cmd_list(gapi_cmd_type::graphics, context_data.m_cmd_allocator);
-			context_data.m_cmd_list->set_debug_name(std::format(L"Context#{}::CommandList#{}", m_debug_id, i));
+			context_data.m_cmd_allocator->set_debug_name(std::format(L"Context#{}::CommandAllocator#{}", m_debug_id, i));
 			m_frame_contexts.emplace_back(std::move(context_data));
 		}
+		
+		// create and reset to allocator 0
+		m_cmd_list = m_device->create_cmd_list(gapi_cmd_type::graphics, get_current_cmd_allocator());
+		m_cmd_list->set_debug_name(std::format(L"Context#{}::CommandList", m_debug_id));
 	}
 
 	void gapi_cmd_context::begin_render_pass(const std::vector<std::shared_ptr<gapi_texture>>& render_targets, const std::shared_ptr<gapi_texture>& depth_stencil) const
@@ -29,12 +32,12 @@ namespace nene
 		std::vector<std::shared_ptr<gapi_resource_view>> rtvs;
 		for (auto& render_target: render_targets)
 		{
-			get_current_cmd_list()->transition_resource(render_target, gapi_resource_state::render_target);
+			m_cmd_list->transition_resource(render_target, gapi_resource_state::render_target);
 			rtvs.emplace_back(render_target->get_render_target_view());
 		}
-		get_current_cmd_list()->set_viewports(m_viewports);
-		get_current_cmd_list()->set_scissor_rects(m_scissors);
-		get_current_cmd_list()->set_render_targets(rtvs, depth_stencil ? depth_stencil->get_depth_stencil_view() : nullptr);
+		m_cmd_list->set_viewports(m_viewports);
+		m_cmd_list->set_scissor_rects(m_scissors);
+		m_cmd_list->set_render_targets(rtvs, depth_stencil ? depth_stencil->get_depth_stencil_view() : nullptr);
 	}
 
 	void gapi_cmd_context::end_render_pass() const
@@ -52,7 +55,7 @@ namespace nene
 	{
 		//
 		get_current_cmd_allocator()->reset();
-		get_current_cmd_list()->reset(get_current_cmd_allocator(), nullptr);
+		m_cmd_list->reset(get_current_cmd_allocator(), nullptr);
 		//
 		release_deferred_resources();
 		// Default to triangle
@@ -64,12 +67,12 @@ namespace nene
 	const std::shared_ptr<gapi_cmd_list>& gapi_cmd_context::close()
 	{
 		//
-		get_current_cmd_list()->close();
+		m_cmd_list->close();
 		//
 		m_previous_index = m_current_index;
 		m_current_index = (m_current_index + 1) % m_frame_contexts.size();
 		// return the closed command list
-		return get_previous_cmd_list();
+		return m_cmd_list;
 	}
 
 	void gapi_cmd_context::set_resolution(const uint2& resolution)
@@ -94,19 +97,19 @@ namespace nene
 	void gapi_cmd_context::clear_render_target(const std::shared_ptr<gapi_texture>& render_target, const color::rgba<float>& clear_color) const
 	{
 		CHECK(render_target->get_render_target_view() != nullptr);
-		get_current_cmd_list()->clear_render_target_view(render_target->get_render_target_view(), clear_color);
+		m_cmd_list->clear_render_target_view(render_target->get_render_target_view(), clear_color);
 	}
 
 	void gapi_cmd_context::draw(uint32_t num_vertices, uint32_t num_instances, uint32_t vertex_offset, uint32_t instance_offset)
 	{
-		m_online_resource_view_cache.commit_staged_resource_views(get_current_cmd_list(), m_device);
-		get_current_cmd_list()->draw(num_vertices, num_instances, vertex_offset, instance_offset);
+		m_online_resource_view_cache.commit_staged_resource_views(m_cmd_list, m_device);
+		m_cmd_list->draw(num_vertices, num_instances, vertex_offset, instance_offset);
 	}
 
 	void gapi_cmd_context::draw_indexed(uint32_t num_indices, uint32_t num_instances, uint32_t index_offset, uint32_t vertex_offset, uint32_t instance_offset)
 	{
-		m_online_resource_view_cache.commit_staged_resource_views(get_current_cmd_list(), m_device);
-		get_current_cmd_list()->draw_indexed(num_indices, num_instances, index_offset, vertex_offset, instance_offset);
+		m_online_resource_view_cache.commit_staged_resource_views(m_cmd_list, m_device);
+		m_cmd_list->draw_indexed(num_indices, num_instances, index_offset, vertex_offset, instance_offset);
 	}
 
 	void gapi_cmd_context::set_pipeline_state(const std::shared_ptr<gapi_pipeline_state>& pipeline_state)
@@ -114,22 +117,22 @@ namespace nene
 		//
 		m_online_resource_view_cache.initialize(pipeline_state->get_shader_resource_tables());
 		//
-		get_current_cmd_list()->set_pipeline_state(pipeline_state);
+		m_cmd_list->set_pipeline_state(pipeline_state);
 	}
 
 	void gapi_cmd_context::set_index_buffer(const std::shared_ptr<gapi_buffer>& index_buffer) const
 	{
-		get_current_cmd_list()->set_index_buffer(index_buffer);
+		m_cmd_list->set_index_buffer(index_buffer);
 	}
 
 	void gapi_cmd_context::set_vertex_buffers(const std::vector<std::shared_ptr<gapi_buffer>>& vertex_buffers) const
 	{
-		get_current_cmd_list()->set_vertex_buffers(vertex_buffers);
+		m_cmd_list->set_vertex_buffers(vertex_buffers);
 	}
 
 	void gapi_cmd_context::set_primitive_type(const gapi_primitive_type& ptype) const
 	{
-		get_current_cmd_list()->set_primitive_topology(ptype);
+		m_cmd_list->set_primitive_topology(ptype);
 	}
 
 	void gapi_cmd_context::bind_shader_resource(const gapi_shader_stage& stage, uint32_t reg, const std::shared_ptr<gapi_resource>& resource)
@@ -182,7 +185,7 @@ namespace nene
 				}
 			);
 			// 插入一个从 VRAM -> VRAM 的拷贝指令
-			get_current_cmd_list()->copy_buffer_region(target_buffer, 0, intermediate_buffer, 0, initial_data_size);
+			m_cmd_list->copy_buffer_region(target_buffer, 0, intermediate_buffer, 0, initial_data_size);
 			// 延迟删除 ( 帧末删除 )
 			deferred_release(intermediate_buffer);
 		}
@@ -240,7 +243,7 @@ namespace nene
 			// 逐个 subtexture 插入从 VRAM -> VRAM 的拷贝指令
 			for (size_t subindex = 0; subindex < initial_data.size(); ++subindex)
 			{
-				get_current_cmd_list()->copy_buffer_region(target_texture, static_cast<uint32_t>(subindex), intermediate_buffer, intermediate_buffer_sublayouts[subindex]);
+				m_cmd_list->copy_buffer_region(target_texture, static_cast<uint32_t>(subindex), intermediate_buffer, intermediate_buffer_sublayouts[subindex]);
 			}
 			// 延迟删除 ( 帧末删除 )
 			deferred_release(intermediate_buffer);
@@ -251,7 +254,7 @@ namespace nene
 	void gapi_cmd_context::transition_resource(const std::shared_ptr<gapi_resource>& resource, const gapi_resource_state& to_state) const
 	{
 		// TODO: from state check and skip
-		get_current_cmd_list()->transition_resource(resource, to_state);
+		m_cmd_list->transition_resource(resource, to_state);
 	}
 
 	void gapi_cmd_context::deferred_release(const std::shared_ptr<gapi_resource>& resource)

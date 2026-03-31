@@ -22,7 +22,7 @@ namespace nene
 	{
 	public:
 		//
-		gapi_cmd_context(const std::shared_ptr<gapi_device>& device, uint32_t num_cmd_list, uint32_t debug_context_id);
+		gapi_cmd_context(const std::shared_ptr<gapi_device>& device, uint32_t num_frame_context, uint32_t debug_context_id);
 		~gapi_cmd_context() override = default;
 	
 		// A render pass is a set of drawcalls shared same render targets.
@@ -74,16 +74,11 @@ namespace nene
 	
 		// Specify resource state
 		void transition_resource(const std::shared_ptr<gapi_resource>& resource, const gapi_resource_state& to_state) const;
-		
-		/** Get the current command allocator index */
-		uint32_t get_current_index() const { return m_current_index; }
 	
 	protected:
 		//
 		struct one_frame_context_data 
 		{
-			// the command list
-			std::shared_ptr<gapi_cmd_list> m_cmd_list;
 			// the command list's allocator
 			std::shared_ptr<gapi_cmd_allocator> m_cmd_allocator;
 			// the resources that would release after this command list get executed
@@ -91,15 +86,15 @@ namespace nene
 		};
 
 		//
+		const std::shared_ptr<gapi_cmd_allocator>& get_current_cmd_allocator() const { return m_frame_contexts[m_current_index].m_cmd_allocator; }
+		
+		//
 		void deferred_release(const std::shared_ptr<gapi_resource>& resource);
 		void release_deferred_resources();
-
-		//
-		const std::shared_ptr<gapi_cmd_list>& get_current_cmd_list() const { return m_frame_contexts[m_current_index].m_cmd_list; }
-		const std::shared_ptr<gapi_cmd_list>& get_previous_cmd_list() const { return m_frame_contexts[m_previous_index].m_cmd_list; }
-		const std::shared_ptr<gapi_cmd_allocator>& get_current_cmd_allocator() const { return m_frame_contexts[m_current_index].m_cmd_allocator; }
-		const std::shared_ptr<gapi_cmd_allocator>& get_previous_cmd_allocator() const { return m_frame_contexts[m_previous_index].m_cmd_allocator; }
-	
+		
+		// the command list
+		std::shared_ptr<gapi_cmd_list> m_cmd_list;
+		
 		std::shared_ptr<gapi_device> m_device;
 	
 		uint32_t m_debug_id;

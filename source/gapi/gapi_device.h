@@ -41,7 +41,7 @@ namespace nene
 		// Command
 		virtual std::shared_ptr<gapi_cmd_queue> create_cmd_queue(gapi_cmd_type type) = 0;
 		virtual std::shared_ptr<gapi_cmd_allocator> create_cmd_allocator(gapi_cmd_type type) = 0;
-		virtual std::shared_ptr<gapi_cmd_list> create_cmd_list(gapi_cmd_type type, std::shared_ptr<gapi_cmd_allocator>& allocator) = 0;
+		virtual std::shared_ptr<gapi_cmd_list> create_cmd_list(gapi_cmd_type type, const std::shared_ptr<gapi_cmd_allocator>& allocator) = 0;
 		virtual std::shared_ptr<gapi_cmd_queue> get_cmd_queue(gapi_cmd_type type) = 0;
 
 		// Pipeline

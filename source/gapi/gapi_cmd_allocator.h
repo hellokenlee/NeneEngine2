@@ -22,5 +22,7 @@ namespace nene
 		~gapi_cmd_allocator() override = default;
 
 		virtual void reset() = 0;
+		
+		virtual void set_debug_name(const std::wstring& debug_name) {}
 	};
 }
