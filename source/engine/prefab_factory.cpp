@@ -13,13 +13,15 @@ namespace nene::g
 	{
 		// 
 		m_static_mesh_prefab = ecs.prefab("StaticMeshEntity")
-			.set<transform_component>({})
+			.set<local_transform_component>({})
+			.set<world_transform_component>({})
 			.set<static_mesh_component>({})
 		;
 		
 		//
 		m_camera_prefab = ecs.prefab("CameraEntity")
-			.set<transform_component>({})
+			.set<local_transform_component>({})
+			.set<world_transform_component>({})
 			.set<camera_component>({})
 			.add<controlling_camer_tag>()
 		;

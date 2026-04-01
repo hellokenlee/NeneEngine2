@@ -6,6 +6,7 @@
 #include "rotator.h"
 #include "floats.h"
 
+
 namespace nene
 {
 	/** simd accelerated 4x4 float matrix */ 
@@ -18,7 +19,22 @@ namespace nene
 		{}
 	
 		// factory methods
-		static matrix make_rotation_matrix(const nene::rotator& rot)
+		static constexpr matrix identity()
+		{
+			return {
+				DirectX::FXMVECTOR{1.0f, 0.0f, 0.0f, 0.0f},
+				DirectX::FXMVECTOR{0.0f, 1.0f, 0.0f, 0.0f},
+				DirectX::FXMVECTOR{0.0f, 0.0f, 1.0f, 0.0f},
+				DirectX::FXMVECTOR{0.0f, 0.0f, 0.0f, 1.0f},
+			};
+		}
+		
+		static matrix make_scale_matrix(const float3& scale)
+		{
+			return DirectX::XMMatrixScaling(scale.x, scale.y, scale.z); 
+		}
+		
+		static matrix make_rotation_matrix(const rotator& rot)
 		{
 			return DirectX::XMMatrixRotationRollPitchYaw(rot.pitch, rot.yaw, rot.roll); 
 		}
@@ -62,10 +78,22 @@ namespace nene
 /** raw 4x4 float matrix: should only used in cross cpu-gpu data */
 struct float4x4 : DirectX::XMFLOAT4X4
 {
+	using DirectX::XMFLOAT4X4::XMFLOAT4X4;
+	
 	float4x4& operator=(const nene::matrix& rhs)
 	{
 		DirectX::XMStoreFloat4x4(this, rhs);
 		return *this;
+	}
+	
+	static constexpr float4x4 identity()
+	{
+		return {
+			1.0f, 0.0f, 0.0f, 0.0f,
+			0.0f, 1.0f, 0.0f, 0.0f,
+			0.0f, 0.0f, 1.0f, 0.0f,
+			0.0f, 0.0f, 0.0f, 1.0f
+		};
 	}
 };
 static_assert(sizeof(float4x4) == sizeof(DirectX::XMFLOAT4X4), "cross cpu-gpu data type must have same size!");

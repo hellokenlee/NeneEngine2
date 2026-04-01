@@ -13,6 +13,11 @@ namespace nene::t
 		t_class yaw;
 		t_class pitch;
 		t_class roll;
+		
+		static constexpr rotator zero()
+		{
+			return {0.0, 0.0, 0.0};
+		}
 	};
 }
 

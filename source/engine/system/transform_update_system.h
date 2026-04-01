@@ -8,9 +8,9 @@
 
 namespace nene::g
 {
-	class NENE_API static_mesh_render_data_create_system
+	class NENE_API transform_update_system
 	{
 	public:
-		static_mesh_render_data_create_system(flecs::world& world);
+		transform_update_system(flecs::world& ecs);
 	};
 }
