@@ -10,9 +10,9 @@ namespace nene::t
 	template<typename t_class>
 	struct rotator
 	{
-		t_class yaw;
-		t_class pitch;
 		t_class roll;
+		t_class pitch;
+		t_class yaw;
 		
 		static constexpr rotator zero()
 		{

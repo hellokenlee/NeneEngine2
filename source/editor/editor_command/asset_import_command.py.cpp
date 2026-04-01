@@ -3,6 +3,7 @@
 #include "asset_import_command.h"
 #include "core_object/py.h"
 
+
 namespace nene
 {
 	PYBIND(m, 1)

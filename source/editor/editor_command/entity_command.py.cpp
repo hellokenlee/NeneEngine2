@@ -20,5 +20,9 @@ namespace nene
 		py::class_<parent_entity_command, editor_command, std::shared_ptr<parent_entity_command>>(m, "ParentEntityCommand")
 			.def(py::init<uint64_t, uint64_t>())
 		;
+
+		py::class_<inspect_entity_command, editor_command, std::shared_ptr<inspect_entity_command>>(m, "InspectEntityCommand")
+			.def(py::init<uint64_t>())
+		;
 	}
 }

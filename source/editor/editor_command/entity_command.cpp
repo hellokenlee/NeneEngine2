@@ -67,4 +67,20 @@ namespace nene
 			log(editor_, error, "failed to parent entity {} to {}", m_child_eid, m_parent_eid);
 		}
 	}
+
+	void inspect_entity_command::execute()
+	{
+		const auto& w = engine_loop::get_world();
+		flecs::entity e = w->get_ecs().entity(static_cast<flecs::entity_t>(m_eid));
+		e.each(
+			[](flecs::id id)
+			{
+				if (id.is_entity())
+				{
+					auto name = id.entity().name();
+					log(editor_, info, "inspect comp: {}", name.c_str());
+				}
+			}
+		);
+	}
 }
