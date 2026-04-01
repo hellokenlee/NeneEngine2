@@ -54,6 +54,7 @@ class OutlinerDockWidgetController(DockWidgetController):
 		model.rowsAboutToBeMoved.connect(self._on_rows_about_to_be_moved)
 		model.rowsMoved.connect(self._on_rows_moved)
 		self._delete_shortcut = QShortcut(QKeySequence("Delete"), self._tree_widget)
+		self._delete_shortcut.setContext(Qt.ShortcutContext.WidgetWithChildrenShortcut)
 		self._delete_shortcut.activated.connect(self._on_delete_shortcut_activated)
 		self._moving_entity_id = None
 		self._moving_old_parent_id = None

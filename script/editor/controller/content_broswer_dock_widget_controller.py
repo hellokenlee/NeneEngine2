@@ -69,6 +69,7 @@ class ContentBroswerDockWidgetController(DockWidgetController):
 		self._content_view_widget.itemDelegate().closeEditor.connect(self._on_finish_editing_filename)
 		# Keyboard shortcut: Delete key deletes current selected item.
 		self._delete_shortcut = QShortcut(QKeySequence("Delete"), self._content_view_widget)
+		self._delete_shortcut.setContext(Qt.ShortcutContext.WidgetWithChildrenShortcut)
 		self._delete_shortcut.activated.connect(self._on_delete_shortcut_activated)
 		# 内联编辑状态：新建文件夹和重命名共用同一套 closeEditor 回调，通过 mode 区分
 		self._editing_item: QListWidgetItem | None = None
