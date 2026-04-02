@@ -7,6 +7,8 @@ from source.core import Core
 from source.core_render import CoreRender
 from extern.python3 import Python3
 from extern.zstd import Zstd
+from extern.flecs import Flecs
+
 from script.builder.common import utils
 
 
@@ -18,7 +20,7 @@ class CoreObject(NeneModule):
             [Core, CoreRender]
         )
         self.external_dependencies.extend(
-            [Python3, Zstd]
+            [Python3, Zstd, Flecs]
         )
         pass
 

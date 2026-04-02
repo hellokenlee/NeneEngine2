@@ -3,15 +3,18 @@
 #pragma once
 
 #include "core/core.h"
-#include "core/uuid.py.h"
 #include <pybind11/pybind11.h>
 #include <pybind11/embed.h>
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
-#include <pybind11/complex.h>
 
 
 namespace py = pybind11;
+
+namespace flecs
+{
+	struct world;
+}
 
 namespace nene::g
 {
@@ -20,7 +23,8 @@ namespace nene::g
 	{
 	public:
 		static constexpr const char* PY_NENE_MODULE_NAME = "nene";
-		using py_class_init_func_t = void(*)(const ::pybind11::module_& m);
+		using py_class_init_func_t = void(*)(const ::py::module_& m);
+		using py_ecs_register_func_t = void(*)(const ::flecs::world& ecs);
 		
 		static binding& get();
 		
@@ -28,13 +32,18 @@ namespace nene::g
 
 		/** helpers for py class registration */
 		void add_py_class_init_function(py_class_init_func_t func, uint32_t inheritance_level);
-		void call_py_class_init_functions(const ::pybind11::module_& m);
+		void call_py_class_init_functions(const ::py::module_& m);
+		
+		/** helpers for ecs registration */
+		void add_ecs_register_function(std::function<void(const flecs::world& ecs)>&& func);
+		void call_ecs_register_functions(const flecs::world& ecs);
 		
 	private:
 		binding() = default;
 		~binding() = default;
 		
 		std::vector<std::vector<py_class_init_func_t>> m_py_class_init_functions;
+		std::vector<std::function<void(const ::flecs::world& ecs)>> m_ecs_register_functions;
 	};
 
 	/** utilities for runtime reflection */
@@ -70,6 +79,9 @@ namespace nene::g
 		/** share ownership of a variant with script */
 		template<typename cpp_t>
 		std::shared_ptr<cpp_t> shared(variant self);
+		
+		/** build a variant uses dynamic typing */
+		NENE_API variant component(uint64_t cid, void* ptr);
 		
 		/** create a variant of the class object */
 		template <typename ... arg_ts>

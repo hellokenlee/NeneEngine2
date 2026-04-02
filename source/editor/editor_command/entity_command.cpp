@@ -78,7 +78,7 @@ namespace nene
 				if (id.is_entity())
 				{
 					auto name = id.entity().name();
-					log(editor_, info, "inspect comp: {}", name.c_str());
+					log(editor_, info, "inspect comp: {}, {}", name.c_str(), id.entity().id());
 				}
 			}
 		);

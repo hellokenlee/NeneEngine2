@@ -1,6 +1,7 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #include "py.h"
+#include <flecs.h>
 #include <filesystem>
 #include <pybind11/embed.h>
 #include <pybind11/pybind11.h>
@@ -17,6 +18,8 @@ namespace
 
 namespace nene::g
 {
+	logger binding_("binding");
+	
 	binding& binding::get()
 	{
 		// refs: https://sillycross.github.io/2022/10/02/2022-10-02/
@@ -72,6 +75,19 @@ namespace nene::g
 			{
 				func(m);
 			}
+		}
+	}
+
+	void binding::add_ecs_register_function(std::function<void(const flecs::world& ecs)>&& func)
+	{
+		m_ecs_register_functions.emplace_back(std::move(func));
+	}
+
+	void binding::call_ecs_register_functions(const flecs::world& ecs)
+	{
+		for (const auto& func : m_ecs_register_functions)
+		{
+			func(ecs);
 		}
 	}
 
@@ -151,6 +167,51 @@ namespace nene::g
 				}
 			}
 			return result;
+		}
+		
+		variant component(uint64_t cid, void* ptr)
+		{
+			if (ptr == nullptr || cid == 0ull)
+			{
+				return py::none();
+			}
+			// py::type cls = binding::get().get_ecs_component_type(cid);
+			py::type cls = py::none();
+			if (cls.is_none())
+			{
+				return py::none();
+			}
+
+			// 1. 获取底层 Python 的类型对象指针 (PyTypeObject*)
+			auto* py_type = reinterpret_cast<PyTypeObject*>(cls.ptr());
+
+			// 2. 从 PyTypeObject 获取 pybind11 内部的类型元数据 (type_info)
+			const py::detail::type_info* tinfo = py::detail::get_type_info(py_type);
+			if (!tinfo)
+			{
+				log(binding_, error, "this py::type is unregistered, cast failed.");
+				return py::none();
+			}
+
+			// 3. 调用 pybind11 内部的 generic 转换函数
+			py::handle h = py::detail::type_caster_generic::cast(
+				ptr,
+				py::return_value_policy::reference,		// the ptr is managed by c++ side
+				py::handle(),							// no parent object
+				tinfo,									// type_info
+				nullptr,								// copy_constructor
+				nullptr,								// move_constructor
+				nullptr									// existing_holder
+			);
+
+			if (!h)
+			{
+				throw py::cast_error("转换失败：无法将该 void* 映射为 py::object");
+			}
+
+			// 4. cast 成功后会返回一个新的 Python 引用 (New Reference)
+			// 因此使用 reinterpret_steal 接管引用计数，避免内存泄漏
+			return py::reinterpret_steal<py::object>(h);
 		}
 	}
 }

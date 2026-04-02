@@ -8,7 +8,7 @@ from PySide6.QtWidgets import QTreeWidget, QTreeWidgetItem, QMenu, QAbstractItem
 
 from script.editor.controller.dock_widget_controller import DockWidgetController
 from script.editor.common.log import log, INFO
-from nene import EventSubscriber, EntitySpawnEvent, EngineLoop, EditorCommandCenter, RemoveEntityCommand, ParentEntityCommand
+from nene import EventSubscriber, EntitySpawnEvent, EngineLoop, EditorCommandCenter, RemoveEntityCommand, ParentEntityCommand, InspectEntityCommand
 
 
 class EntityEventSubscriber(EventSubscriber):
@@ -56,9 +56,17 @@ class OutlinerDockWidgetController(DockWidgetController):
 		self._delete_shortcut = QShortcut(QKeySequence("Delete"), self._tree_widget)
 		self._delete_shortcut.setContext(Qt.ShortcutContext.WidgetWithChildrenShortcut)
 		self._delete_shortcut.activated.connect(self._on_delete_shortcut_activated)
+		self._tree_widget.currentItemChanged.connect(self._on_current_item_changed)
 		self._moving_entity_id = None
 		self._moving_old_parent_id = None
 		self.entity_subscriber = EntityEventSubscriber(self._on_entity_spawned)
+		pass
+
+	def _on_current_item_changed(self, current: QTreeWidgetItem, previous: QTreeWidgetItem):
+		eid = self._item_to_entity_id(current)
+		if eid is None:
+			return
+		EditorCommandCenter().invoke(InspectEntityCommand(eid))
 		pass
 
 	def _on_entity_spawned(self, name: str, entity_id: int):

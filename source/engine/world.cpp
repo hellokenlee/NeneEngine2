@@ -6,7 +6,7 @@
 #include "level.h"
 #include "component/editor_component.h"
 #include "component/camera_component.h"
-#include "component/transform_component.h"
+#include "core_object/py.h"
 
 
 namespace nene::g
@@ -20,6 +20,7 @@ namespace nene::g
 		, m_main_render_view_extract_system(m_ecs)
 		, m_render_scene(std::make_shared<r::render_scene>())
 	{
+		binding::get().call_ecs_register_functions(m_ecs);
 		input_manager::get().add_subscriber(m_camera_control_system);
 	}
 

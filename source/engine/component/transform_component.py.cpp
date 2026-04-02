@@ -1,7 +1,7 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #include "transform_component.h"
-#include "core_object/py.h"
+#include "core_object/py_ecs.h"
 
 
 namespace nene::g
@@ -14,5 +14,7 @@ namespace nene::g
 			.def_readwrite("m_rotation", &local_transform_component::m_rotation)
 			.def_readwrite("m_scale", &local_transform_component::m_scale)
 		;
+		
+		ecs::register_component_type<local_transform_component>();
 	}
 }
