@@ -5,6 +5,8 @@
 from PySide6 import QtCore
 from PySide6.QtWidgets import QWidget, QLabel, QHBoxLayout, QDoubleSpinBox, QSizePolicy
 
+from nene import Float3, Rotator
+
 
 class _AxisSpinBox(QDoubleSpinBox):
 	def __init__(self, color_hex: str, parent=None):
@@ -42,35 +44,66 @@ class _AxisSpinBox(QDoubleSpinBox):
 		pass
 
 
-class Float3Widget(QWidget):
-	value_changed = QtCore.Signal(float, float, float)
+class RGBWidget(QWidget):
 
-	def __init__(self, parent=None):
-		super().__init__(parent)
+	def __init__(self):
+		super().__init__()
+		#
 		layout = QHBoxLayout(self)
 		layout.setContentsMargins(4, 0, 0, 0)
 		layout.setSpacing(4)
-
+		#
 		self._r_spin = _AxisSpinBox("#df5a4f", self)
 		self._g_spin = _AxisSpinBox("#6dbb4a", self)
 		self._b_spin = _AxisSpinBox("#4a84d8", self)
 		layout.addWidget(self._r_spin)
 		layout.addWidget(self._g_spin)
 		layout.addWidget(self._b_spin)
-		layout.addStretch(1)
-
-		self._r_spin.valueChanged.connect(self._emit_value_changed)
-		self._g_spin.valueChanged.connect(self._emit_value_changed)
-		self._b_spin.valueChanged.connect(self._emit_value_changed)
+		#
+		self._r_spin.valueChanged.connect(self._on_value_changed)
+		self._g_spin.valueChanged.connect(self._on_value_changed)
+		self._b_spin.valueChanged.connect(self._on_value_changed)
 		pass
 
-	def set_value(self, x: float, y: float, z: float):
-		for spin, val in ((self._r_spin, x), (self._g_spin, y), (self._b_spin, z)):
+	def _on_value_changed(self):
+		pass
+
+
+class Float3Widget(RGBWidget):
+
+	def __init__(self, data: Float3):
+		super().__init__()
+		#
+		self.data = data
+		#
+		for spin, val in ((self._r_spin, self.data.x), (self._g_spin, self.data.y), (self._b_spin, self.data.z)):
 			spin.blockSignals(True)
 			spin.setValue(float(val))
 			spin.blockSignals(False)
 		pass
 
-	def _emit_value_changed(self):
-		self.value_changed.emit(self._r_spin.value(), self._g_spin.value(), self._b_spin.value())
+	def _on_value_changed(self):
+		self.data.x = self._r_spin.value()
+		self.data.y = self._g_spin.value()
+		self.data.z = self._b_spin.value()
+		pass
+
+
+class RotatorWidget(RGBWidget):
+
+	def __init__(self, data: Rotator):
+		super().__init__()
+		#
+		self.data = data
+		#
+		for spin, val in ((self._r_spin, self.data.pitch), (self._g_spin, self.data.roll), (self._b_spin, self.data.yaw)):
+			spin.blockSignals(True)
+			spin.setValue(float(val))
+			spin.blockSignals(False)
+		pass
+
+	def _on_value_changed(self):
+		self.data.pitch = self._r_spin.value()
+		self.data.roll = self._g_spin.value()
+		self.data.yaw = self._b_spin.value()
 		pass

@@ -2,7 +2,6 @@
 # __author__ = "KenLee"
 # __email__ = "hellokenlee@163.com"
 
-from PySide6.QtWidgets import QTreeWidget
 
 from script.editor.controller.dock_widget_controller import DockWidgetController
 from script.editor.common.log import log, INFO
