@@ -35,7 +35,7 @@
      </widget>
     </item>
     <item>
-     <widget class="QTreeWidget" name="treeWidget">
+     <widget class="OutlinerTreeWidget" name="treeWidget">
       <column>
        <property name="text">
         <string>Name</string>
@@ -43,7 +43,7 @@
       </column>
       <column>
        <property name="text">
-        <string>Id</string>
+        <string>ID</string>
        </property>
       </column>
       <item>
@@ -78,6 +78,13 @@
    </layout>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>OutlinerTreeWidget</class>
+   <extends>QTreeWidget</extends>
+   <header>outliner_tree_widget.py</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

@@ -3,10 +3,13 @@
 # __email__ = "hellokenlee@163.com"
 
 from typing import cast
-from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout
 
+from PySide6.QtWidgets import QLabel
+
+from script.editor.common.util import *
 from script.editor.controller.dock_widget_controller import DockWidgetController
-from script.editor.widget.inspector_widgets import ComponentDetailWidget, Float3Widget
+from script.editor.widget.inspector_property_widgets import Float3Widget
+from script.editor.widget.inspector_property_table_widget import InspectorPropertyTableWidget
 
 from nene import EventSubscriber, EntityInspectEvent, EntityInspector, Float3, Rotator
 
@@ -28,81 +31,60 @@ class EntityInspectEventHandler(EventSubscriber):
 class InspectorDockWidgetController(DockWidgetController):
 	UI_FILE = "inspector_dock_widget.ui"
 
-	PROPERTY_WIDGET_CLASS: dict[type, type] = {
-		Float3: Float3Widget,
-		Rotator: Float3Widget,
-	}
-
 	def __init__(self):
 		super(InspectorDockWidgetController, self).__init__()
-
 		self._placeholder_label = self.ui.findChild(QLabel, "PlaceholderLabel")
-		self._scroll_area_content = self.ui.findChild(QWidget, "ScrollAreaContent")
-		self._scroll_area_content_layout: QVBoxLayout = cast(QVBoxLayout, self._scroll_area_content.layout())
-		self._compoent_detail_widgets: list[ComponentDetailWidget] = []
+		self._component_property_table = self.ui.findChild(InspectorPropertyTableWidget, "ComponentTable")
+		self._component_property_table.setVisible(False)
 		#
 		self._event_hander = EntityInspectEventHandler(self._on_entity_inspect)
 		pass
 
-	def _clear_component_widgets(self):
-		while self._scroll_area_content_layout.count() > 0:
-			item = self._scroll_area_content_layout.takeAt(0)
-			w = item.widget()
-			if w is not None:
-				w.deleteLater()
-		self._compoent_detail_widgets.clear()
-		pass
-
-	@staticmethod
-	def sanitize(comp_name: str):
-		if comp_name.endswith("Component"):
-			comp_name = comp_name[:-9]
-		return comp_name
-
-	@staticmethod
-	def _sanitize_property_name(prop_name: str):
-		if prop_name.startswith("m_"):
-			prop_name = prop_name[2:]
-		parts = [p for p in prop_name.split("_") if len(p) > 0]
-		if len(parts) == 0:
-			return prop_name
-		return " ".join([parts[0].capitalize()] + parts[1:])
-
-	@staticmethod
-	def _iter_component_properties(comp: object):
-		# 优先处理组件常见字段：m_xxx
-		for attr_name in dir(comp):
-			if attr_name.startswith("m_"):
-				# noinspection PyBroadException
-				try:
-					yield attr_name, getattr(comp, attr_name)
-				except Exception:
-					continue
-		pass
-
-	def _create_property_widget(self, prop_name: str, prop_value: object):
-		property_widget_cls = self.PROPERTY_WIDGET_CLASS.get(type(prop_value))
-		if property_widget_cls is None:
-			return None
-		display_name = self._sanitize_property_name(prop_name)
-		widget = property_widget_cls(display_name)
-		return widget
-
 	def _on_entity_inspect(self, components: list[object]):
-		self._clear_component_widgets()
-		self._placeholder_label.setVisible(len(components) == 0)
+		#
+		b_valid_entity = len(components) > 0
+		#
+		self._placeholder_label.setVisible(not b_valid_entity)
+		self._component_property_table.setVisible(b_valid_entity)
+		self._component_property_table.clear_component_rows()
 
-		if len(components) == 0:
+		if not b_valid_entity:
 			return
 
 		for comp in components:
-			component_detail_widget = ComponentDetailWidget(self.sanitize(type(comp).__name__), self._scroll_area_content, collapsed=False)
-			for prop_name, prop_value in self._iter_component_properties(comp):
-				prop_widget = self._create_property_widget(prop_name, prop_value)
-				if prop_widget is not None:
-					component_detail_widget.add_property_widget(prop_widget)
-			self._compoent_detail_widgets.append(component_detail_widget)
-			self._scroll_area_content_layout.addWidget(component_detail_widget)
+			comp_title = sanitize_component_name(type(comp).__name__)
+			comp_row = self._component_property_table.add_component_title_row(comp_title)
 
-		self._scroll_area_content_layout.addStretch(1)
+			for prop_name, prop_value in iter_component_properties(comp):
+				display_name = sanitize_property_name(prop_name)
+				if isinstance(prop_value, Float3):
+					widget = Float3Widget()
+					widget.set_value(prop_value.x, prop_value.y, prop_value.z)
+					widget.value_changed.connect(lambda x, y, z, c=comp, n=prop_name: self._on_float3_changed(c, n, x, y, z))
+					self._component_property_table.add_property_row(comp_row, display_name, widget)
+				elif isinstance(prop_value, Rotator):
+					widget = Float3Widget()
+					widget.set_value(prop_value.roll, prop_value.pitch, prop_value.yaw)
+					widget.value_changed.connect(lambda r, p, y, c=comp, n=prop_name: self._on_rotator_changed(c, n, r, p, y))
+					self._component_property_table.add_property_row(comp_row, display_name, widget)
+				else:
+					self._component_property_table.add_property_row(comp_row, display_name, value_text=str(prop_value))
+		pass
+
+	@staticmethod
+	def _on_float3_changed(comp: object, prop_name: str, x: float, y: float, z: float):
+		v = cast(Float3, getattr(comp, prop_name))
+		v.x = x
+		v.y = y
+		v.z = z
+		setattr(comp, prop_name, v)
+		pass
+
+	@staticmethod
+	def _on_rotator_changed(comp: object, prop_name: str, roll: float, pitch: float, yaw: float):
+		v = cast(Rotator, getattr(comp, prop_name))
+		v.roll = roll
+		v.pitch = pitch
+		v.yaw = yaw
+		setattr(comp, prop_name, v)
 		pass

@@ -343,7 +343,7 @@ QPushButton:hover {
   <customwidget>
    <class>ContentBroswerViewWidget</class>
    <extends>QListWidget</extends>
-   <header>content_broswer_view_widget</header>
+   <header>content_broswer_view_widget.py</header>
   </customwidget>
  </customwidgets>
  <resources/>
