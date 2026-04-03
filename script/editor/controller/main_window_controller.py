@@ -107,6 +107,9 @@ class MainWindowController(BaseController[QMainWindow], QtCore.QObject):
 		# Inspector
 		self._inspector = self.add_dock_widget_controller(InspectorDockWidgetController(), QtCore.Qt.DockWidgetArea.RightDockWidgetArea)
 		self._inspector.on_top_level_changed.connect(self.on_dock_widget_top_level_changed)
+		self.ui.splitDockWidget(self._outliner.ui, self._inspector.ui, QtCore.Qt.Orientation.Vertical)
+		self.ui.resizeDocks([self._outliner.ui], [350], QtCore.Qt.Orientation.Horizontal)
+		self.ui.resizeDocks([self._outliner.ui, self._inspector.ui], [4, 6], QtCore.Qt.Orientation.Vertical)
 
 		# Viewport drop: accept assets dragged from the content browser
 		viewport = self.ui.centralWidget()
