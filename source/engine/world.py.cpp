@@ -3,6 +3,7 @@
 #include "world.h"
 #include "core_object/py.h"
 
+
 namespace nene::g
 {
 	PYBIND(m, 1)

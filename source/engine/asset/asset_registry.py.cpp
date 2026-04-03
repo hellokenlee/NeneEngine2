@@ -2,6 +2,7 @@
 
 #include "asset_registry.h"
 
+
 namespace nene::g
 {
 	PYBIND(m, 1)

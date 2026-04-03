@@ -20,6 +20,8 @@ class IconSet(object, metaclass=Singleton):
 		self.import_ = QIcon(os.path.join(self.ICON_FOLDER_PATH, "import.png"))
 		self.mesh = QIcon(os.path.join(self.ICON_FOLDER_PATH, "mesh.png"))
 		self.texture = QIcon(os.path.join(self.ICON_FOLDER_PATH, "texture.png"))
+		self.down_triangle = QIcon(os.path.join(self.ICON_FOLDER_PATH, "down_triangle.png"))
+		self.right_triangle = QIcon(os.path.join(self.ICON_FOLDER_PATH, "right_triangle.png"))
 		pass
 
 

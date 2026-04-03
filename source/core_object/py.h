@@ -8,6 +8,8 @@
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
 
+#include "core/uuid.py.h"
+
 
 namespace py = pybind11;
 
@@ -37,12 +39,16 @@ namespace nene::g
 		/** helpers for ecs registration */
 		void add_ecs_register_function(std::function<void(const flecs::world& ecs)>&& func);
 		void call_ecs_register_functions(const flecs::world& ecs);
+		void set_ecs_component_type(uint64_t cid, py::type cls);
+		py::type get_ecs_component_type(uint64_t cid);
 		
 	private:
 		binding() = default;
 		~binding() = default;
 		
 		std::vector<std::vector<py_class_init_func_t>> m_py_class_init_functions;
+		
+		std::unordered_map<uint64_t, py::type> m_ecs_py_type_map;
 		std::vector<std::function<void(const ::flecs::world& ecs)>> m_ecs_register_functions;
 	};
 
@@ -51,6 +57,9 @@ namespace nene::g
 	{
 		using type = py::type;
 		using variant = py::object;
+		
+		/** get the class none */
+		NENE_API type none_type();
 		
 		/** get the class object of c++ */
 		template <typename cpp_t>

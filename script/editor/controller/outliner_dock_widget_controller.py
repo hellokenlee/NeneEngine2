@@ -8,7 +8,7 @@ from PySide6.QtWidgets import QTreeWidget, QTreeWidgetItem, QMenu, QAbstractItem
 
 from script.editor.controller.dock_widget_controller import DockWidgetController
 from script.editor.common.log import log, INFO
-from nene import EventSubscriber, EntitySpawnEvent, EngineLoop, EditorCommandCenter, RemoveEntityCommand, ParentEntityCommand, InspectEntityCommand
+from nene import EventSubscriber, EntitySpawnEvent, EngineLoop, EditorCommandCenter, RemoveEntityCommand, ParentEntityCommand, EntityInspector
 
 
 class EntityEventSubscriber(EventSubscriber):
@@ -65,8 +65,8 @@ class OutlinerDockWidgetController(DockWidgetController):
 	def _on_current_item_changed(self, current: QTreeWidgetItem, previous: QTreeWidgetItem):
 		eid = self._item_to_entity_id(current)
 		if eid is None:
-			return
-		EditorCommandCenter().invoke(InspectEntityCommand(eid))
+			eid = 0
+		EntityInspector().inspect(eid)
 		pass
 
 	def _on_entity_spawned(self, name: str, entity_id: int):

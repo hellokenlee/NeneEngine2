@@ -7,6 +7,7 @@ import html
 import re
 import traceback
 
+from PySide6.QtGui import QKeyEvent
 from PySide6.QtCore import QObject, QEvent, Qt
 from PySide6.QtWidgets import QTextBrowser, QLineEdit
 
@@ -117,11 +118,12 @@ class _CommandLineHistoryFilter(QObject):
 
 	def eventFilter(self, watched, event):
 		if event.type() == QEvent.Type.KeyPress:
+			assert (isinstance(event, QKeyEvent))
 			if event.key() == Qt.Key.Key_Up:
-				self._controller._restore_prev_command()
+				self._controller.restore_prev_command()
 				return True
 			if event.key() == Qt.Key.Key_Down:
-				self._controller._restore_next_command()
+				self._controller.restore_next_command()
 				return True
 		return False
 
@@ -156,7 +158,7 @@ class ConsoleDockWidgetController(DockWidgetController):
 			self._history_draft = self.command_line_edit.text()
 		pass
 
-	def _restore_prev_command(self):
+	def restore_prev_command(self):
 		if self.command_line_edit is None or not self._command_history:
 			return
 		if self._history_cursor == len(self._command_history):
@@ -168,7 +170,7 @@ class ConsoleDockWidgetController(DockWidgetController):
 		self.command_line_edit.setCursorPosition(len(command))
 		pass
 
-	def _restore_next_command(self):
+	def restore_next_command(self):
 		if self.command_line_edit is None or not self._command_history:
 			return
 		last_index = len(self._command_history) - 1

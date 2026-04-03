@@ -91,8 +91,28 @@ namespace nene::g
 		}
 	}
 
+	void binding::set_ecs_component_type(uint64_t cid, py::type cls)
+	{
+		m_ecs_py_type_map.emplace(cid, cls);
+	}
+
+	py::type binding::get_ecs_component_type(uint64_t cid)
+	{
+		if (m_ecs_py_type_map.contains(cid))
+		{
+			return m_ecs_py_type_map.at(cid);
+		}
+		return reflection::none_type();
+	}
+
 	namespace reflection
 	{
+		type none_type()
+		{
+			static py::type py_none_type = py::type::of(py::none());
+			return py_none_type;
+		}
+
 		type get_class(const std::string& name)
 		{
 			py::gil_scoped_acquire gil;
@@ -175,12 +195,13 @@ namespace nene::g
 			{
 				return py::none();
 			}
-			// py::type cls = binding::get().get_ecs_component_type(cid);
-			py::type cls = py::none();
-			if (cls.is_none())
+			py::type cls = binding::get().get_ecs_component_type(cid);
+			if (cls.is(none_type()))
 			{
 				return py::none();
 			}
+			
+			py::gil_scoped_acquire gil;
 
 			// 1. 获取底层 Python 的类型对象指针 (PyTypeObject*)
 			auto* py_type = reinterpret_cast<PyTypeObject*>(cls.ptr());

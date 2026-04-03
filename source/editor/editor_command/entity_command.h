@@ -9,7 +9,6 @@ namespace nene
 {
 	struct NENE_API spawn_entity_command : editor_command
 	{
-		spawn_entity_command(uuid uid) : m_asset_uuid(uid) {}
 		spawn_entity_command(const std::string& asset_path);
 		
 		void execute() override;
@@ -32,13 +31,5 @@ namespace nene
 		
 		uint64_t m_parent_eid = {};
 		uint64_t m_child_eid = {};
-	};
-	
-	struct NENE_API inspect_entity_command : editor_command
-	{
-		inspect_entity_command(uint64_t eid) : m_eid(eid) {}
-		void execute() override;
-		
-		uint64_t m_eid = {};
 	};
 }

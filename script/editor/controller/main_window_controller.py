@@ -18,6 +18,7 @@ from script.editor.controller.dock_widget_controller import DockWidgetController
 from script.editor.controller.console_dock_widget_controller import ConsoleDockWidgetController
 from script.editor.controller.content_broswer_dock_widget_controller import ContentBroswerDockWidgetController
 from script.editor.controller.outliner_dock_widget_controller import OutlinerDockWidgetController
+from script.editor.controller.inspector_dock_widget_controller import InspectorDockWidgetController
 
 from nene import EditorCommandCenter, SpawnEntityCommand
 
@@ -52,7 +53,7 @@ class MainWindowController(BaseController[QMainWindow], QtCore.QObject):
 
 	def __init__(self):
 		super().__init__()
-		self.ui.resize(1280, 720)
+		self.ui.resize(1920, 1080)
 		self.ui.setWindowTitle("NeneEngine")
 		self.ui.setWindowIcon(IconSet().sakura)
 		self.ui.setCentralWidget(NeneViewportWidget(self.ui))
@@ -101,6 +102,11 @@ class MainWindowController(BaseController[QMainWindow], QtCore.QObject):
 
 		# Outliner
 		self._outliner = self.add_dock_widget_controller(OutlinerDockWidgetController(), QtCore.Qt.DockWidgetArea.RightDockWidgetArea)
+		self._outliner.on_top_level_changed.connect(self.on_dock_widget_top_level_changed)
+
+		# Inspector
+		self._inspector = self.add_dock_widget_controller(InspectorDockWidgetController(), QtCore.Qt.DockWidgetArea.RightDockWidgetArea)
+		self._inspector.on_top_level_changed.connect(self.on_dock_widget_top_level_changed)
 
 		# Viewport drop: accept assets dragged from the content browser
 		viewport = self.ui.centralWidget()
@@ -141,7 +147,8 @@ class MainWindowController(BaseController[QMainWindow], QtCore.QObject):
 		"""资产从内容浏览器拖入视口时调用；asset_paths 为完整文件路径列表"""
 		log(self, INFO, "drop: %s" % asset_paths)
 		for asset_path in asset_paths:
-			EditorCommandCenter().invoke(SpawnEntityCommand(asset_path))
+			cmd = SpawnEntityCommand(asset_path)
+			EditorCommandCenter().invoke(cmd)
 		self._refresh_edit_menu_actions()
 		pass
 

@@ -16,6 +16,7 @@ namespace nene
 		log_message_event,
 		
 		entity_spawn_event,
+		entity_inspect_event,
 
 		/** ... add new event here ... */
 	};	
