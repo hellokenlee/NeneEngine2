@@ -29,6 +29,7 @@ namespace nene
 		CHECK(view->get_type() == gapi_resource_view_type::constant_buffer_view || view->get_type() == gapi_resource_view_type::shader_resource_view || view->get_type() == gapi_resource_view_type::unordered_access_view);
 		//
 		uint32_t parameter_index = m_shader_resource_tables.get_parameter_index(stage, vtype, reg);
+		CHECK(m_staged_resource_views.size() > parameter_index)
 		m_staged_resource_views[parameter_index] = view;
 	}
 

@@ -37,13 +37,21 @@ namespace  nene
 			switch (stype)
 			{
 			case gapi_resource_view_type::constant_buffer_view:
-				return m_shader_stage_register_tables[magic_enum::enum_underlying(stage)].m_cbv_register_table[reg];
+				const auto& cbv_table = m_shader_stage_register_tables[magic_enum::enum_underlying(stage)].m_cbv_register_table;
+				CHECK(cbv_table.size() > reg);
+				return cbv_table[reg];
 			case gapi_resource_view_type::shader_resource_view:
-				return m_shader_stage_register_tables[magic_enum::enum_underlying(stage)].m_srv_register_table[reg];
+				const auto& srv_table = m_shader_stage_register_tables[magic_enum::enum_underlying(stage)].m_srv_register_table;
+				CHECK(srv_table.size() > reg);
+				return srv_table[reg];
 			case gapi_resource_view_type::unordered_access_view:
-				return m_shader_stage_register_tables[magic_enum::enum_underlying(stage)].m_uav_register_table[reg];
+				const auto& uav_table = m_shader_stage_register_tables[magic_enum::enum_underlying(stage)].m_uav_register_table;
+				CHECK(uav_table.size() > reg);
+				return uav_table[reg];
 			case gapi_resource_view_type::texture_sampler:
-				return m_shader_stage_register_tables[magic_enum::enum_underlying(stage)].m_dynamic_sampler_register_table[reg];
+				const auto& sampler_table = m_shader_stage_register_tables[magic_enum::enum_underlying(stage)].m_dynamic_sampler_register_table;
+				CHECK(sampler_table.size() > reg);
+				return sampler_table[reg];
 			default:
 				CHECK(false);
 			}
