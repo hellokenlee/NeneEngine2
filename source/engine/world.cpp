@@ -18,6 +18,7 @@ namespace nene::g
 		, m_prefab_factory(m_ecs)
 		, m_camera_control_system(std::make_shared<camera_control_system>(m_ecs))
 		, m_main_render_view_extract_system(m_ecs)
+		, m_transform_update_system(m_ecs)
 		, m_render_scene(std::make_shared<r::render_scene>())
 	{
 		binding::get().call_ecs_register_functions(m_ecs);

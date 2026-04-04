@@ -37,6 +37,6 @@ namespace nene
 
 		virtual void resize_back_buffer(const uint2& resolution) = 0;
 
-		virtual void set_debug_name(const std::string& debug_name) {};
+		virtual void set_debug_name(const std::string& debug_name) {}
 	};
 }

@@ -194,7 +194,7 @@ namespace nene
 		m_d3d_list->SetGraphicsRootUnorderedAccessView(parameter_index, d3d_resource.get_d3d_resource()->GetGPUVirtualAddress());
 	}
 
-	void gapi_d3d12_cmd_list::bind_ranged_resource_views(uint32_t parameter_index, const std::shared_ptr<gapi_resource_view>& resource_view, const std::shared_ptr<gapi_resource_view_allocator>& allocator)
+	void gapi_d3d12_cmd_list::bind_ranged_resource_views(uint32_t parameter_index, const std::shared_ptr<gapi_resource_view>& base_resource_view, const std::shared_ptr<gapi_resource_view_allocator>& allocator)
 	{
 		// 置脏并更新当前使用的堆
 		bool heap_dirty = false;
@@ -221,7 +221,7 @@ namespace nene
 		}
 	
 		// 设置绑定所需的
-		const auto& online_resource_view = t::gapi_pin<gapi_d3d12_online_resource_view>(resource_view);
+		const auto& online_resource_view = t::gapi_pin<gapi_d3d12_online_resource_view>(base_resource_view);
 		m_d3d_list->SetGraphicsRootDescriptorTable(parameter_index, online_resource_view.get_d3d_gpu_handle());
 	}
 

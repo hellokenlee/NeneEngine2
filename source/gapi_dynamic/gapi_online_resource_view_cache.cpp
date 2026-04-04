@@ -30,21 +30,32 @@ namespace nene
 		//
 		uint32_t parameter_index = m_shader_resource_tables.get_parameter_index(stage, vtype, reg);
 		CHECK(m_staged_resource_views.size() > parameter_index)
-		m_staged_resource_views[parameter_index] = view;
+		m_staged_resource_views[parameter_index].emplace_back(view);
 	}
 
 	void gapi_online_resource_view_cache::commit_staged_resource_views(const std::shared_ptr<gapi_cmd_list>& cmd_list, const std::shared_ptr<gapi_device>& device)
 	{
 		// TODO: 减少拷贝, 只拷贝变化的
+		// TODO: 检查绑定的数量和初始化的数量是否一致
 		for (size_t parameter_index = 0; parameter_index < m_staged_resource_views.size(); parameter_index++)
 		{
+			// the resource views shared same type ( cbv, srv ... ) and same stage
+			const auto& offline_resource_views = m_staged_resource_views[parameter_index];
+			// copy them to online heap
+			std::shared_ptr<gapi_resource_view> base_online_resource_view = nullptr; 
+			for (const auto& offline_resource_view : offline_resource_views)
+			{
+				auto online_resource_view = m_online_resource_view_allocator->allocate_resource_view(offline_resource_view->get_type());
+				device->copy_resource_view(online_resource_view, offline_resource_view);
+				// mark the base one
+				if (base_online_resource_view == nullptr)
+				{
+					base_online_resource_view = online_resource_view;
+				}
+			}
+			CHECK(base_online_resource_view != nullptr);
 			//
-			const auto& offline_resource_view = m_staged_resource_views[parameter_index];
-			auto online_resource_view = m_online_resource_view_allocator->allocate_resource_view(offline_resource_view->get_type());
-			//
-			device->copy_resource_view(online_resource_view, offline_resource_view);
-			//
-			cmd_list->bind_ranged_resource_views(static_cast<uint32_t>(parameter_index), online_resource_view, m_online_resource_view_allocator);
+			cmd_list->bind_ranged_resource_views(static_cast<uint32_t>(parameter_index), base_online_resource_view, m_online_resource_view_allocator);
 		}
 	}
 }

@@ -74,7 +74,7 @@ namespace nene::r
 		{
 			auto _ = context.render_pass({view_family_texture.get_texture()}, m_scene_depth);
 		
-			view.update();
+			view.update_constant_buffer();
 			
 			if (m_rendering_scene != nullptr)
 			{
@@ -82,7 +82,7 @@ namespace nene::r
 				const auto& proxies = m_rendering_scene->get_render_proxies();
 				for (const auto& proxy : proxies)
 				{
-					proxy->update();
+					proxy->update_constant_buffer();
 					if (const auto& smp = std::dynamic_pointer_cast<static_mesh_render_proxy>(proxy); smp != nullptr)
 					{
 						for ( auto i = 0; i < smp->m_render_data->num_lods(); ++i)

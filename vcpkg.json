@@ -3,6 +3,7 @@
     "boost-uuid",
     "boost-intrusive",
     "boost-pfr",
+    "boost-type-index",
     "directx-dxc",
     "nlohmann-json",
     "pybind11",

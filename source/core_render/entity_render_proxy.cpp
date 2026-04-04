@@ -13,6 +13,6 @@ namespace nene::r
 	void entity_render_proxy::update_world_matrix(const float4x4& world_matrix)
 	{
 		m_data.WorldMatrix = world_matrix;
-		mark_dirty();
+		mark_constant_buffer_dirty();
 	}
 }

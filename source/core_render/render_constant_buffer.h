@@ -6,6 +6,8 @@
 #include "gapi/gapi_resource.h"
 #include "gapi_dynamic/gapi_dynamic.h"
 
+#include <boost/type_index.hpp>
+
 
 namespace nene::r
 {
@@ -20,9 +22,10 @@ namespace nene::r
 			//
 			auto desc = gapi_buffer_desc::create(sizeof(t_shader_struct), gapi_buffer_usage_flag::dynamic_buffer | gapi_buffer_usage_flag::constant_buffer);
 			m_gapi_buffer = gapi_dynamic::get().create_buffer(desc);
+			m_gapi_buffer->set_debug_name(std::format("ConstantBuffer<{}>", boost::typeindex::type_id_with_cvr<t_shader_struct>().pretty_name()));
 		}
 
-		void update() const
+		void update_constant_buffer() const
 		{
 			if (m_is_dirty)
 			{
@@ -36,7 +39,7 @@ namespace nene::r
 			}
 		}
 		
-		void mark_dirty() const
+		void mark_constant_buffer_dirty() const
 		{
 			m_is_dirty = true;
 		}

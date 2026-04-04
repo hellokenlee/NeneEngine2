@@ -22,20 +22,20 @@ namespace nene::r
 		m_data.ViewMatrix = view_translation_matrix * view_rotation_matrix;
 		*/
 		m_data.ViewMatrix = matrix::make_view_matrix(view_location, view_direction);
-		mark_dirty();
+		mark_constant_buffer_dirty();
 	}
 
 	void render_view::set_perspective_projection_matrix(float fov_angle, float ratio, float near, float far)
 	{
 		m_data.ProjectionMatrix = matrix::make_perspective_projection_matrix(fov_angle, ratio, near, far);
 		
-		mark_dirty();
+		mark_constant_buffer_dirty();
 	}
 
 	void render_view::set_orthographic_projection_matrix(float width, float height, float near, float far)
 	{
 		m_data.ProjectionMatrix = matrix::make_orthographic_projection_matrix(width, height, near, far);
 		
-		mark_dirty();
+		mark_constant_buffer_dirty();
 	}
 }

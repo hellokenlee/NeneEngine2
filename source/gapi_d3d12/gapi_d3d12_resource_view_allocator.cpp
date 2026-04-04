@@ -43,7 +43,7 @@ namespace nene
 		cpu_handle.Offset(index.m_index_in_heap, m_resource_view_size);
 		//
 		auto view = std::shared_ptr<gapi_d3d12_offline_resource_view>{ new gapi_d3d12_offline_resource_view(index, cpu_handle), [this](gapi_d3d12_offline_resource_view* p){ free_resource_view(p); } };
-		initialize_resource_view(*view, vtype);
+		set_resource_view_type(*view, vtype);
 		return view;
 	}
 
@@ -83,11 +83,11 @@ namespace nene
 		CD3DX12_CPU_DESCRIPTOR_HANDLE cpu_handle(m_d3d_heap->GetCPUDescriptorHandleForHeapStart());
 		cpu_handle.Offset(m_next_index, m_resource_view_size);
 		CD3DX12_GPU_DESCRIPTOR_HANDLE gpu_handle(m_d3d_heap->GetGPUDescriptorHandleForHeapStart());
-		cpu_handle.Offset(m_next_index, m_resource_view_size);
+		gpu_handle.Offset(m_next_index, m_resource_view_size);
 	
 		++m_next_index;
 		auto view = std::make_shared<gapi_d3d12_online_resource_view>(cpu_handle, gpu_handle);
-		initialize_resource_view(*view, vtype);
+		set_resource_view_type(*view, vtype);
 		return view;
 	}
 }

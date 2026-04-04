@@ -12,6 +12,8 @@
 #include <memory>
 #include <flecs.h>
 
+#include "system/transform_update_system.h"
+
 
 namespace nene::g
 {
@@ -61,6 +63,7 @@ namespace nene::g
 		// systems
 		std::shared_ptr<camera_control_system> m_camera_control_system;
 		main_render_view_extract_system m_main_render_view_extract_system;
+		transform_update_system m_transform_update_system;
 		
 		//
 		std::shared_ptr<r::render_scene> m_render_scene;

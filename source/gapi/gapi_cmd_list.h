@@ -61,7 +61,7 @@ namespace nene
 		virtual void bind_root_constant_buffer(uint32_t parameter_index, const std::shared_ptr<gapi_buffer>& buffer) = 0;
 		virtual void bind_root_shader_resource(uint32_t parameter_index, const std::shared_ptr<gapi_resource>& resource) = 0;
 		virtual void bind_root_unordered_access(uint32_t parameter_index, const std::shared_ptr<gapi_resource>& resource) = 0;
-		virtual void bind_ranged_resource_views(uint32_t parameter_index, const std::shared_ptr<gapi_resource_view>& resource_view,const std::shared_ptr<gapi_resource_view_allocator>& allocator) = 0;
+		virtual void bind_ranged_resource_views(uint32_t parameter_index, const std::shared_ptr<gapi_resource_view>& base_resource_view,const std::shared_ptr<gapi_resource_view_allocator>& allocator) = 0;
 
 		// Input Assemble Settings
 		virtual void set_index_buffer(const std::shared_ptr<gapi_buffer>& index_buffer) = 0;

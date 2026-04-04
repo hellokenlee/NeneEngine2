@@ -40,7 +40,7 @@ namespace nene
 		void bind_root_constant_buffer(uint32_t parameter_index, const std::shared_ptr<gapi_buffer>& buffer) override;
 		void bind_root_shader_resource(uint32_t parameter_index, const std::shared_ptr<gapi_resource>& resource) override;
 		void bind_root_unordered_access(uint32_t parameter_index, const std::shared_ptr<gapi_resource>& resource) override;
-		void bind_ranged_resource_views(uint32_t parameter_index, const std::shared_ptr<gapi_resource_view>& resource_view, const std::shared_ptr<gapi_resource_view_allocator>& allocator) override;
+		void bind_ranged_resource_views(uint32_t parameter_index, const std::shared_ptr<gapi_resource_view>& base_resource_view, const std::shared_ptr<gapi_resource_view_allocator>& allocator) override;
 		
 		void set_index_buffer(const std::shared_ptr<gapi_buffer>& index_buffer) override;
 		void set_vertex_buffers(const std::vector<std::shared_ptr<gapi_buffer>>& vertex_buffers) override;

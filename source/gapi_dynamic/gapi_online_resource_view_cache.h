@@ -26,8 +26,11 @@ namespace nene
 		void commit_staged_resource_views(const std::shared_ptr<gapi_cmd_list>& cmd_list, const std::shared_ptr<gapi_device>& device);
 		
 	protected:
+		//
 		gapi_shader_resource_tables m_shader_resource_tables;
-		std::vector<std::shared_ptr<gapi_resource_view>> m_staged_resource_views;
+		// map parameter index to resource views of same type
+		std::vector<std::vector<std::shared_ptr<gapi_resource_view>>> m_staged_resource_views;
+		//
 		std::shared_ptr<gapi_resource_view_allocator> m_online_resource_view_allocator;
 	};
 }

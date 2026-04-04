@@ -30,6 +30,6 @@ namespace nene
 		virtual std::shared_ptr<gapi_resource_view> allocate_resource_view(gapi_resource_view_type vtype) = 0;
 		
 	protected:
-		virtual void initialize_resource_view(gapi_resource_view& view, gapi_resource_view_type vtype) { view.set_type(vtype); } 
+		void set_resource_view_type(gapi_resource_view& view, gapi_resource_view_type vtype) const { view.set_type(vtype); } 
 	};
 }
