@@ -134,8 +134,6 @@ class OutlinerTreeWidget(QTreeWidget):
 
 	def __init__(self, parent=None):
 		super().__init__(parent)
-		self._moving_entity_id = None
-		self._moving_old_parent_id = None
 
 		header = self.header()
 		header.setStretchLastSection(False)
@@ -155,10 +153,6 @@ class OutlinerTreeWidget(QTreeWidget):
 
 		self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
 		self.customContextMenuRequested.connect(self._on_context_menu)
-
-		model = self.model()
-		model.rowsAboutToBeMoved.connect(self._on_rows_about_to_be_moved)
-		model.rowsMoved.connect(self._on_rows_moved)
 
 		self._delete_shortcut = QShortcut(QKeySequence("Delete"), self)
 		self._delete_shortcut.setContext(Qt.ShortcutContext.WidgetWithChildrenShortcut)
@@ -240,34 +234,25 @@ class OutlinerTreeWidget(QTreeWidget):
 				stack.append(item.child(idx))
 		return None
 
-	def _on_rows_about_to_be_moved(self, source_parent: QModelIndex, source_start: int, source_end: int, destination_parent: QModelIndex, destination_row: int):
-		if source_start != source_end:
-			self._moving_entity_id = None
-			self._moving_old_parent_id = None
-			return
-		self._moving_entity_id = self._entity_id_of_row(source_parent, source_start)
-		if source_parent.isValid():
-			source_parent_item = self.itemFromIndex(source_parent)
-			self._moving_old_parent_id = self._item_to_entity_id(source_parent_item)
-		else:
-			self._moving_old_parent_id = 0
-		pass
+	def dropEvent(self, event):
+		# 记录移动前的信息
+		selected_items = self.selectedItems()
+		moving_info = []
+		for item in selected_items:
+			eid = self._item_to_entity_id(item)
+			if eid is not None:
+				parent_item = item.parent()
+				old_parent_id = self._item_to_entity_id(parent_item) if parent_item else 0
+				moving_info.append((eid, old_parent_id))
 
-	def _on_rows_moved(self, source_parent: QModelIndex, source_start: int, source_end: int, destination_parent: QModelIndex, destination_row: int):
-		if self._moving_entity_id is None:
-			return
-		child_item = self._find_item_by_entity_id(self._moving_entity_id)
-		if child_item is None:
-			self._moving_entity_id = None
-			self._moving_old_parent_id = None
-			return
-		new_parent_item = child_item.parent()
-		new_parent_id = self._item_to_entity_id(new_parent_item)
-		if new_parent_id is None:
-			new_parent_id = 0
-		old_parent_id = self._moving_old_parent_id if self._moving_old_parent_id is not None else 0
-		if new_parent_id != old_parent_id:
-			self.entity_parent_changed.emit(new_parent_id, self._moving_entity_id)
-		self._moving_entity_id = None
-		self._moving_old_parent_id = None
+		super().dropEvent(event)
+
+		# 检查移动后的信息
+		for eid, old_parent_id in moving_info:
+			new_item = self._find_item_by_entity_id(eid)
+			if new_item:
+				new_parent_item = new_item.parent()
+				new_parent_id = self._item_to_entity_id(new_parent_item) if new_parent_item else 0
+				if new_parent_id != old_parent_id:
+					self.entity_parent_changed.emit(new_parent_id, eid)
 		pass
