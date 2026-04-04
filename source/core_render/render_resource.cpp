@@ -7,9 +7,6 @@ namespace nene::r
 {
 	std::vector<global_render_resource*> global_render_resource::s_global_render_resources;
 
-	render_resource::render_resource()
-	{}
-
 	global_render_resource::global_render_resource()
 	{
 		s_global_render_resources.emplace_back(this);

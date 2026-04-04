@@ -23,7 +23,7 @@ namespace nene::g
 			.set<local_transform_component>({})
 			.set<world_transform_component>({})
 			.set<camera_component>({})
-			.add<controlling_camer_tag>()
+			.add<controlling_camera_tag>()
 		;
 		
 		//

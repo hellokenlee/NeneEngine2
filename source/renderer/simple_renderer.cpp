@@ -6,7 +6,6 @@
 #include "core_render/static_mesh_render_proxy.h"
 #include "gapi_dynamic/gapi_pipeline_state_manager.h"
 #include "gapi_dynamic/gapi_dynamic.h"
-#include "shader/cppshared/view_uniform_buffer.h"
 
 
 namespace nene::r
@@ -83,6 +82,7 @@ namespace nene::r
 				const auto& proxies = m_rendering_scene->get_render_proxies();
 				for (const auto& proxy : proxies)
 				{
+					proxy->update();
 					if (const auto& smp = std::dynamic_pointer_cast<static_mesh_render_proxy>(proxy); smp != nullptr)
 					{
 						for ( auto i = 0; i < smp->m_render_data->num_lods(); ++i)
@@ -95,6 +95,7 @@ namespace nene::r
 							context.set_vertex_buffers(lod.get_vertex_buffers());
 							// 3. 设置 Resource Binding
 							context.bind_constant_buffer(gapi_shader_stage::vertex_shader, 0, view.get_constant_buffer());
+							context.bind_constant_buffer(gapi_shader_stage::vertex_shader, 1, proxy->get_constant_buffer());
 							// 4. 发起绘制指令
 							context.draw_indexed(lod.num_index(), 1);
 						}

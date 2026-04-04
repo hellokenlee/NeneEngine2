@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "render_proxy.h"
+#include "entity_render_proxy.h"
 #include <set>
 
 
@@ -14,12 +14,12 @@ namespace nene::r
 	class NENE_API render_scene
 	{
 	public:
-		void add_render_proxy(const std::shared_ptr<render_proxy>& proxy);
-		void remove_render_proxy(const std::shared_ptr<render_proxy>& proxy);
-		const std::set<std::shared_ptr<render_proxy>>& get_render_proxies() const { return m_render_proxies; }
+		void add_render_proxy(const std::shared_ptr<entity_render_proxy>& proxy);
+		void remove_render_proxy(const std::shared_ptr<entity_render_proxy>& proxy);
+		const std::set<std::shared_ptr<entity_render_proxy>>& get_render_proxies() const { return m_render_proxies; }
 		
 	protected:
 		// TODO: scene management
-		std::set<std::shared_ptr<render_proxy>> m_render_proxies;
+		std::set<std::shared_ptr<entity_render_proxy>> m_render_proxies;
 	};
 }

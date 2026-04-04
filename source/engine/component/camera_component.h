@@ -36,5 +36,5 @@ namespace nene::g
 	struct main_camera_relation {};
 	
 	/** camera(s) to control */
-	struct controlling_camer_tag {};
+	struct controlling_camera_tag {};
 }

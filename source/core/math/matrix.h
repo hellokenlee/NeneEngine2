@@ -80,6 +80,11 @@ struct float4x4 : DirectX::XMFLOAT4X4
 {
 	using DirectX::XMFLOAT4X4::XMFLOAT4X4;
 	
+	float4x4(const nene::matrix& m)
+	{
+		DirectX::XMStoreFloat4x4(this, m);
+	}
+	
 	float4x4& operator=(const nene::matrix& rhs)
 	{
 		DirectX::XMStoreFloat4x4(this, rhs);

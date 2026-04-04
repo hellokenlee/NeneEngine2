@@ -3,7 +3,7 @@
 #pragma once
 
 #include "render_constant_buffer.h"
-#include "shader/cppshared/view_uniform_buffer.h"
+#include "shader/cppshared/view_info.h"
 
 
 namespace nene::r

@@ -16,7 +16,7 @@ namespace nene::g
 		ar << AR(m_vertex_uvs);
 	}
 
-	const std::shared_ptr<r::static_mesh_render_data>& static_mesh_asset::get_or_create_render_data()
+	const std::shared_ptr<r::static_mesh_render_data>& static_mesh_asset:: get_or_create_render_data()
 	{
 		if (m_render_data == nullptr)
 		{

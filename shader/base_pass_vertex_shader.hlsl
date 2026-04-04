@@ -3,7 +3,7 @@
 #include "/engine/generated/vertex_factory.h"
 #include "/vertex_factory/vertex_factory_common.h"
 #include "/base_pass_common.h"
-#include "/cppshared/view_uniform_buffer.h"
+#include "/cppshared/view_info.h"
 
 cbuffer ViewInfoConstantBuffer : register(b0, SPACE_VS) { SViewInfo ViewInfo; };
 

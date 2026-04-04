@@ -12,7 +12,6 @@ namespace nene::r
 	class NENE_API render_resource
 	{
 	public:
-		render_resource();
 		virtual ~render_resource() = default;
 	};
 	
