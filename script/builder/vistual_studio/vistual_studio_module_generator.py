@@ -453,7 +453,7 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 			disabled_warnings = list(map(str, compiler.disabled_warnings))
 			disabled_warnings.append("%(DisableSpecificWarnings)")
 			ElementTree.SubElement(cl_compile, "DisableSpecificWarnings").text = ";".join(disabled_warnings)
-			ElementTree.SubElement(cl_compile, "Optimization").text = compiler.optimazation.value
+			ElementTree.SubElement(cl_compile, "Optimization").text = compiler.optimization.value
 			if nene_module_config.linker.generate_debug_info:
 				ElementTree.SubElement(cl_compile, "DebugInformationFormat").text = "ProgramDatabase"
 			else:

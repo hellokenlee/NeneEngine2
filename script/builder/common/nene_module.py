@@ -49,7 +49,7 @@ class Compiler(object):
 		self.preprocessor_definitions: list[str] = []
 		self.additional_compiler_flags: list[str] = []
 		#
-		self.optimazation: CppOptimazation = CppOptimazation.Full
+		self.optimization: CppOptimazation = CppOptimazation.Full
 		# MSVC
 		self.msvc_conformance_mode: bool = True
 		self.msvc_security_development_lifecycle: bool = True
@@ -144,7 +144,7 @@ class NeneModule(object, metaclass=Singleton):
 		if build_config.configuration == Configuration.Development:
 			#
 			module_config.add_defines(["NENE_DEVELOPMENT", "_CONSOLE", "NOMINMAX"])
-			module_config.compiler.optimazation = CppOptimazation.Disabled
+			module_config.compiler.optimization = CppOptimazation.Disabled
 			module_config.compiler.msvc_conformance_mode = False
 			#
 			module_config.linker.generate_debug_info = True
