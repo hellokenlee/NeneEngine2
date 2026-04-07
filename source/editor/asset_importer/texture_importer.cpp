@@ -1,6 +1,7 @@
-﻿/* Copyright reserved by KenLee@hellokenlee@163.com */
+/* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #include "texture_importer.h"
+#include <filesystem>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -8,9 +9,8 @@
 
 namespace nene
 {
-	std::shared_ptr<g::asset> texture_importer::import_asset(const std::string& from_abs_path)
+	std::map<std::string, std::shared_ptr<g::asset>> texture_importer::import_asset(const std::string& from_abs_path)
 	{
-		//
 		auto result = make_asset<g::texture_asset>();
 	
 		// load image via. extensions
@@ -37,12 +37,11 @@ namespace nene
 		else
 		{
 			NOT_IMPLEMENTED();
-			return nullptr;
+			return {};
 		}
 
-
 		// TODO: mipmap generation
-		return result;
+		return {{std::filesystem::path(from_abs_path).filename().string(), result}};
 	}
 
 	std::vector<std::string> texture_importer::get_supported_asset_extensions()

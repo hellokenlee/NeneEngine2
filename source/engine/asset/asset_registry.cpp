@@ -110,7 +110,7 @@ namespace nene::g
 	void asset_registry::remove(const std::filesystem::path& file_path)
 	{
 		auto rel = file_path.is_absolute() ? std::filesystem::relative(file_path) : file_path;
-		auto key = rel.string();
+		auto key = rel.generic_string();
 
 		std::vector<uuid> pending;
 
@@ -176,7 +176,7 @@ namespace nene::g
 							// fix up file name
 							if (file_path != abstract.m_file_name)
 							{
-								log(asset_registry_, warn, "fixed {} ({})", file_path.string(), abstract.m_file_name);
+								log(asset_registry_, warn, "fixed {} ({})", file_path.generic_string(), abstract.m_file_name);
 							}
 							// mark down abstract
 							m_asset_abstracts.emplace(abstract.m_uuid, abstract);
@@ -184,12 +184,12 @@ namespace nene::g
 						}
 						else
 						{
-							log(asset_registry_, warn, "unsupported asset type: {}, {}", abstract.m_type_name, file_path.string());
+							log(asset_registry_, warn, "unsupported asset type: {}, {}", abstract.m_type_name, file_path.generic_string());
 						}
 					}
 					else
 					{
-						log(asset_registry_, error, "invalid asset abstract: {}", file_path.string());
+						log(asset_registry_, error, "invalid asset abstract: {}", file_path.generic_string());
 					}
 				}
 			}

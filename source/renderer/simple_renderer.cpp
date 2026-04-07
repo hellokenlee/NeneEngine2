@@ -37,18 +37,7 @@ namespace nene::r
 		//
 		ensure_valid_scene_textures(view_family_texture);
 		//
-		
 		context.clear_render_target(view_family_texture.get_texture(), color::rgba<float>({0.0f, 0.0f, 0.0f, 0.0f}));
-		
-	
-		/*
-		if (m_texture == nullptr)
-		{
-			image_loader loader;
-			auto data = loader.load("content/engine/sakura.png");
-			m_texture = std::make_shared<r::render_texture>(data);
-		}
-		*/
 
 		//
 		const auto& cube = builtin_static_mesh_render_data::get().cube();

@@ -1,6 +1,8 @@
-﻿/* Copyright reserved by KenLee@hellokenlee@163.com */
+/* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #pragma once
+
+#include <map>
 
 #include "core/core.h"
 #include "core_object/asset.h"
@@ -15,7 +17,7 @@ namespace nene
 		
 		virtual std::vector<std::string> get_supported_asset_extensions() = 0;
 		
-		virtual std::shared_ptr<g::asset> import_asset(const std::string& from_abs_path) = 0;
+		virtual std::map<std::string, std::shared_ptr<g::asset>> import_asset(const std::string& from_abs_path) = 0;
 		
 		template<typename asset_t>
 		static std::shared_ptr<asset_t> make_asset()

@@ -1,4 +1,4 @@
-﻿/* Copyright reserved by KenLee@hellokenlee@163.com */
+/* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #pragma once
 
@@ -11,7 +11,7 @@ namespace nene
 	class texture_importer : public asset_importer
 	{
 	public:
-		std::shared_ptr<g::asset> import_asset(const std::string& from_abs_path) override;
+		std::map<std::string, std::shared_ptr<g::asset>> import_asset(const std::string& from_abs_path) override;
 		
 		std::vector<std::string> get_supported_asset_extensions() override;
 	};

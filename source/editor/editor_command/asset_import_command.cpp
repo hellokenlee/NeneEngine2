@@ -1,10 +1,10 @@
-﻿/* Copyright reserved by KenLee@hellokenlee@163.com */
+/* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #include "asset_import_command.h"
 #include "asset_importer/asset_importer.h"
 #include "core_object/archive/json_archive.h"
 
-#include <ranges>
+#include <filesystem>
 
 #include "engine/asset/asset_registry.h"
 
@@ -34,12 +34,26 @@ namespace nene
 			auto importer = asset_importer_manager::get().find_asset_importer_by_extension(ext);
 			if (importer != nullptr)
 			{
-				auto new_asset = importer->import_asset(m_origin_file_abs_path);
+				auto new_assets = importer->import_asset(m_origin_file_abs_path);
 				
-				if (new_asset != nullptr)
+				std::filesystem::path target_foldere_rel_path;
+				if (new_assets.size() > 1)
 				{
-					// add a new asset to registry
-					g::asset_registry::get().add(new_asset, m_target_content_rel_path);
+					target_foldere_rel_path = std::filesystem::path(m_target_content_rel_path).parent_path() / std::filesystem::path(m_origin_file_abs_path).stem();
+					std::filesystem::create_directory(target_foldere_rel_path);
+				}
+				
+				for (auto& [filename, new_asset] : new_assets)
+				{
+					if (target_foldere_rel_path.empty())
+					{
+						g::asset_registry::get().add(new_asset, m_target_content_rel_path);	
+					}
+					else
+					{
+						g::asset_registry::get().add(new_asset, (target_foldere_rel_path / filename).generic_string());
+					}
+					
 					// TODO: 单独的 Save 命令
 					g::asset_registry::get().save(*new_asset);
 				}
