@@ -9,6 +9,7 @@
 # Jetbrain Rider Files
 .idea/*
 script/editor/.idea/*
+shader/.idea/*
 
 # C++ Immediate Files
 *.tlog
