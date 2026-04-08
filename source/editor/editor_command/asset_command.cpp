@@ -1,6 +1,6 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
-#include "asset_import_command.h"
+#include "asset_command.h"
 #include "asset_importer/asset_importer.h"
 #include "core_object/archive/json_archive.h"
 
@@ -67,5 +67,36 @@ namespace nene
 		{
 			log(editor_, error, "invalid path: {}", m_origin_file_abs_path);
 		}
+	}
+
+	asset_new_command::asset_new_command(const std::string& asset_type_name, const std::string& target_content_rel_path)
+		: m_asset_type_name(asset_type_name)
+		, m_target_content_rel_path(target_content_rel_path)
+	{
+	}
+
+	void asset_new_command::execute()
+	{
+		auto type = g::reflection::get_class(m_asset_type_name);
+		if (type.ptr() == nullptr)
+		{
+			log(editor_, error, "cannot find type: {}", m_asset_type_name);
+			return;
+		}
+
+		auto variant = g::reflection::make_variant(type);
+		auto ast = g::reflection::shared<g::asset>(variant);
+		if (ast == nullptr)
+		{
+			log(editor_, error, "cannot create asset for type: {}", m_asset_type_name);
+			return;
+		}
+
+		ast->m_uuid = generate_random_uuid();
+
+		g::asset_registry::get().add(ast, m_target_content_rel_path);
+		g::asset_registry::get().save(*ast);
+		
+		log(editor_, info, "new asset created: {} -> {}", m_asset_type_name, m_target_content_rel_path);
 	}
 }

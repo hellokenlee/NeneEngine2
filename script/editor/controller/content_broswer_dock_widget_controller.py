@@ -57,7 +57,7 @@ class ContentBroswerDockWidgetController(DockWidgetController):
 		self._path_widget: QWidget = self.ui.findChild(QWidget, "pathWidget")
 		self._serach_line_edit: QLineEdit = self.ui.findChild(QLineEdit, "searchLineEdit")
 		#
-		self._import_push_button.clicked.connect(self._on_import_push_button_clicked)
+		self._import_push_button.clicked.connect(self._on_import_asset)
 		self._back_push_button.clicked.connect(self._on_back_push_button_clicked)
 		self._forward_push_button.clicked.connect(self._on_forward_push_button_clicked)
 		self._path_button_to_path: dict[QPushButton, str] = {}
@@ -80,7 +80,7 @@ class ContentBroswerDockWidgetController(DockWidgetController):
 		#
 		pass
 
-	def _on_import_push_button_clicked(self):
+	def _on_import_asset(self):
 		from nene import EditorCommandCenter, AssetImportCommand
 
 		exts: list[str] = ["*" + ext for ext in AssetImportCommand.supported_extensions()]
@@ -90,6 +90,14 @@ class ContentBroswerDockWidgetController(DockWidgetController):
 			log(self, INFO, "Import: %s -> %s" % (file_path, file_rel))
 			EditorCommandCenter().invoke(AssetImportCommand(file_path, file_rel))
 			self._update_views()
+		pass
+
+	def _on_new_asset(self, type_name: str):
+		from nene import EditorCommandCenter, AssetNewCommand
+		file_rel = os.path.join(self._nav.current(), "New%s" % type_name)
+		log(self, INFO, "New Asset: %s" % file_rel)
+		EditorCommandCenter().invoke(AssetNewCommand(type_name + "Asset", file_rel))
+		self._update_views()
 		pass
 
 	def _on_content_view_item_double_clicked(self, item: QListWidgetItem):
@@ -130,17 +138,22 @@ class ContentBroswerDockWidgetController(DockWidgetController):
 			delete_action = menu.addAction("Delete")
 			# Show shortcut hint in context menu.
 			delete_action.setShortcut(QKeySequence("Delete"))
+		# 子菜单：New Asset
+		new_asset_menu = menu.addMenu(IconSet().file, "New Asset")
+		new_material_action = new_asset_menu.addAction(IconSet().material, "Material")
 		action = menu.exec(self._content_view_widget.mapToGlobal(pos))
 		if action is None:
 			return
 		if action == import_action:
-			self._on_import_push_button_clicked()
+			self._on_import_asset()
 		elif action == new_folder_action:
 			self._on_new_folder()
 		elif action == rename_action:
 			self._on_rename(hit_item)
 		elif action == delete_action:
 			self._on_delete(hit_item)
+		elif action == new_material_action:
+			self._on_new_asset("Material")
 		pass
 
 	def _on_delete_shortcut_activated(self):

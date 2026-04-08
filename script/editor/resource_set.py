@@ -20,6 +20,7 @@ class IconSet(object, metaclass=Singleton):
 		self.import_ = QIcon(os.path.join(self.ICON_FOLDER_PATH, "import.png"))
 		self.mesh = QIcon(os.path.join(self.ICON_FOLDER_PATH, "mesh.png"))
 		self.texture = QIcon(os.path.join(self.ICON_FOLDER_PATH, "texture.png"))
+		self.material = QIcon(os.path.join(self.ICON_FOLDER_PATH, "material.png"))
 		self.down_triangle = QIcon(os.path.join(self.ICON_FOLDER_PATH, "down_triangle.png"))
 		self.right_triangle = QIcon(os.path.join(self.ICON_FOLDER_PATH, "right_triangle.png"))
 		pass
@@ -38,9 +39,10 @@ class AssetFileIconSet(object, metaclass=Singleton):
 		pass
 
 	def icon(self, type_name: str) -> QIcon:
-		from nene import TextureAsset, StaticMeshAsset
+		from nene import TextureAsset, StaticMeshAsset, MaterialAsset
 		type_name_to_icon = {
 			TextureAsset.__name__: IconSet().texture,
 			StaticMeshAsset.__name__: IconSet().mesh,
+			MaterialAsset.__name__: IconSet().material,
 		}
 		return type_name_to_icon.get(type_name, IconSet().file)
