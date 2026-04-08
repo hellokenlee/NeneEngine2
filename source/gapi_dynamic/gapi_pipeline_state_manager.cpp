@@ -9,18 +9,22 @@ namespace nene
 
 	const std::shared_ptr<gapi_pipeline_state>& gapi_pipeline_state_manager::find_or_create_pipeline_state(const gapi_compute_pipeline_state_desc& desc)
 	{
-		// TODO: Hashing and Caching
-		auto result = gapi_dynamic::get().create_compute_pipeline_state(desc);
-		m_compute_pipeline_states.emplace_back(result);
-		return m_compute_pipeline_states.back();
+		size_t hash = desc.hash();
+		if (!m_compute_pipeline_states.contains(hash))
+		{
+			m_compute_pipeline_states[hash] = gapi_dynamic::get().create_compute_pipeline_state(desc);
+		}
+		return m_compute_pipeline_states[hash];
 	}
 
 	const std::shared_ptr<gapi_pipeline_state>& gapi_pipeline_state_manager::find_or_create_pipeline_state(const gapi_graphics_pipeline_state_desc& desc)
 	{
-		// TODO: Hashing and Caching
-		auto result = gapi_dynamic::get().create_graphics_pipeline_state(desc);
-		m_graphics_pipeline_states.emplace_back(result);
-		return m_graphics_pipeline_states.back();
+		size_t hash = desc.hash();
+		if (!m_graphics_pipeline_states.contains(hash))
+		{
+			m_graphics_pipeline_states[hash] = gapi_dynamic::get().create_graphics_pipeline_state(desc);
+		}
+		return m_graphics_pipeline_states[hash];
 	}
 
 	gapi_pipeline_state_manager& gapi_pipeline_state_manager::get()

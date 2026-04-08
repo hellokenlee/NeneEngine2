@@ -21,7 +21,8 @@ namespace nene::g
 		if (m_render_data == nullptr)
 		{
 			m_render_data = std::make_shared<r::static_mesh_render_data>();
-			m_render_data->add_lod(r::static_mesh_lod_render_data(m_triangle_faces, m_vertex_positions, m_vertex_normals));
+			CHECK(m_vertex_uvs.size() > 0)
+			m_render_data->add_lod(r::static_mesh_lod_render_data(m_triangle_faces, m_vertex_positions, m_vertex_normals, m_vertex_uvs[0]));
 		}
 		return m_render_data;
 	}

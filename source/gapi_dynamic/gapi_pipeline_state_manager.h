@@ -5,6 +5,7 @@
 #include "core/core.h"
 #include "gapi/gapi_pipeline_state.h"
 #include "gapi/gapi_pipeline_state_desc.h"
+#include <unordered_map>
 
 
 namespace nene
@@ -20,7 +21,7 @@ namespace nene
 	protected:
 		gapi_pipeline_state_manager();
 
-		std::vector<std::shared_ptr<gapi_pipeline_state>> m_compute_pipeline_states;
-		std::vector<std::shared_ptr<gapi_pipeline_state>> m_graphics_pipeline_states;
+		std::unordered_map<size_t, std::shared_ptr<gapi_pipeline_state>> m_compute_pipeline_states;
+		std::unordered_map<size_t, std::shared_ptr<gapi_pipeline_state>> m_graphics_pipeline_states;
 	};
 }

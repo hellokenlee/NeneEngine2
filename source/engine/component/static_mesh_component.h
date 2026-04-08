@@ -12,6 +12,7 @@ namespace nene::g
 	 */
 	struct static_mesh_component
 	{
-		static_mesh_asset_handle m_asset;
+		static_mesh_asset_handle m_mesh;
+		material_asset_handle m_material;
 	};
 }

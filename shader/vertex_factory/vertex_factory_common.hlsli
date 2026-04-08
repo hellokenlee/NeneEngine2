@@ -15,3 +15,9 @@ float4 VertexFactoryGetWorldPosition(SVertexFactoryInput VertexFactoryInput, SVe
 {
 	return VertexShaderInput.GetWorldPosition();
 }
+
+template<typename SVertexFactoryInput, typename SVertexShaderInput>
+float2 VertexFactoryGetUV(SVertexFactoryInput VertexFactoryInput, SVertexShaderInput VertexShaderInput)
+{
+	return VertexShaderInput.GetUV();
+}

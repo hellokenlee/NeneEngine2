@@ -5,6 +5,7 @@
 #include "core_object/asset.h"
 #include "texture_asset.h"
 #include "static_mesh_asset.h"
+#include "material_asset.h"
 
 #include <cstdint>
 
@@ -39,4 +40,5 @@ namespace nene::g
 {
 	using texture_asset_handle = t::asset_handle<texture_asset>;
 	using static_mesh_asset_handle = t::asset_handle<static_mesh_asset>;
+	using material_asset_handle = t::asset_handle<material_asset>;
 }

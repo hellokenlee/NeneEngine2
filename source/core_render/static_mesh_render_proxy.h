@@ -4,6 +4,7 @@
 
 #include "entity_render_proxy.h"
 #include "static_mesh_render_data.h"
+#include "render_material.h"
 
 
 namespace nene::r
@@ -14,8 +15,12 @@ namespace nene::r
 	class NENE_API static_mesh_render_proxy : public entity_render_proxy
 	{
 	public:
-		static_mesh_render_proxy(const std::shared_ptr<static_mesh_render_data>& data);
+		static_mesh_render_proxy(const std::shared_ptr<static_mesh_render_data>& data, const std::shared_ptr<render_material>& material);
 		~static_mesh_render_proxy() override = default;
+		
+		bool is_ready() const { return m_render_data != nullptr && m_render_material != nullptr; }
+		
 		std::shared_ptr<static_mesh_render_data> m_render_data = {};
+		std::shared_ptr<render_material> m_render_material = {};
 	};
 }

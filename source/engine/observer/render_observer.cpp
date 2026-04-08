@@ -22,12 +22,19 @@ namespace nene::g
 					{
 						return;
 					}
-					if (sm.m_asset.is_valid())
+					if (sm.m_mesh.is_valid())
 					{
 						//
-						auto asset = asset_registry::get().load(sm.m_asset);
-						const auto& render_data = asset->get_or_create_render_data();
-						auto proxy = std::make_shared<r::static_mesh_render_proxy>(render_data);
+						auto mesh = asset_registry::get().load(sm.m_mesh);
+						const auto& mesh_render_data = mesh->get_or_create_render_data();
+						//
+						auto mat = asset_registry::get().load(sm.m_material);
+						if (mat == nullptr)
+						{
+							mat = material_asset::get_default_material();
+						}
+						const auto& render_mat = mat->get_or_create_render_material();
+						auto proxy = std::make_shared<r::static_mesh_render_proxy>(mesh_render_data, render_mat);
 						e.set<render_component>({ proxy });
 						//
 						CHECK(w.get_render_scene() != nullptr);

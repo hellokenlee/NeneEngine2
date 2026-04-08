@@ -6,6 +6,7 @@
 #include "gapi_shader.h"
 #include "gapi_resource_desc.h"
 
+
 namespace nene
 {
 	constexpr uint32_t MAX_RENDER_TARGET_COUNT = 8;
@@ -38,6 +39,17 @@ namespace nene
 		// 
 		bool m_use_instance_index : 1;
 		uint16_t m_stride;
+
+		bool operator==(const gapi_vertex_element_desc& other) const
+		{
+			return m_semantic_name == other.m_semantic_name &&
+				   m_semantic_index == other.m_semantic_index &&
+				   m_element_type == other.m_element_type &&
+				   m_stream_index == other.m_stream_index &&
+				   m_offset == other.m_offset &&
+				   m_use_instance_index == other.m_use_instance_index &&
+				   m_stride == other.m_stride;
+		}
 	};
 	typedef std::vector<gapi_vertex_element_desc> gapi_vertices_declaration;
 
@@ -71,6 +83,11 @@ namespace nene
 		}
 		//
 		const auto& get_vertices_declaration() const { return m_vertices_declaration; }
+
+		bool operator==(const gapi_bound_shader_state_desc& other) const
+		{
+			return m_vertices_declaration == other.m_vertices_declaration && m_stage_shaders == other.m_stage_shaders;
+		}
 
 	protected:
 		void sanity_check() const;
@@ -129,7 +146,7 @@ namespace nene
 		rg	= r | g,
 		ba	= b | a,
 	};
-	DEFINE_FLAG_ENUM_CLASS_OPERATORS(gapi_color_write_mask)
+	DEFINE_FLAG_ENUM_CLASS_OPERATORS(gapi_color_write_mask);
 
 	struct gapi_blend_state_desc
 	{
@@ -144,6 +161,17 @@ namespace nene
 			gapi_color_write_mask color_write_mask;
 			
 			gapi_render_target_blend_desc();
+
+			bool operator==(const gapi_render_target_blend_desc& other) const
+			{
+				return color_blend_op == other.color_blend_op &&
+					   color_src_blend == other.color_src_blend &&
+					   color_dest_blend == other.color_dest_blend &&
+					   alpha_blend_op == other.alpha_blend_op &&
+					   alpha_src_blend == other.alpha_src_blend &&
+					   alpha_dest_blend == other.alpha_dest_blend &&
+					   color_write_mask == other.color_write_mask;
+			}
 		};
 
 		gapi_blend_state_desc() = default;
@@ -166,6 +194,13 @@ namespace nene
 		bool m_use_alpha_to_coverage = false;
 		bool m_use_independent_blend = false;
 		std::array<gapi_render_target_blend_desc, MAX_RENDER_TARGET_COUNT> m_render_target_blend_descs;
+
+		bool operator==(const gapi_blend_state_desc& other) const
+		{
+			return m_use_alpha_to_coverage == other.m_use_alpha_to_coverage &&
+				   m_use_independent_blend == other.m_use_independent_blend &&
+				   m_render_target_blend_descs == other.m_render_target_blend_descs;
+		}
 	};
 
 
@@ -184,7 +219,7 @@ namespace nene
 		cull_none,
 		// cull back face ( clock wise )
 		cull_back,
-		// cull front face ( counter clock wise )
+		// cull front face ( counter-clock wise )
 		cull_front,
 	};
 
@@ -208,6 +243,17 @@ namespace nene
 
 		// Default Constructor
 		gapi_rasterizer_state_desc();
+
+		bool operator==(const gapi_rasterizer_state_desc& other) const
+		{
+			return m_fill_mode == other.m_fill_mode &&
+				   m_cull_mode == other.m_cull_mode &&
+				   m_depth_clip_mode == other.m_depth_clip_mode &&
+				   m_depth_bias == other.m_depth_bias &&
+				   m_slope_scale_depth_bias == other.m_slope_scale_depth_bias &&
+				   m_use_msaa == other.m_use_msaa &&
+				   m_use_line_aa == other.m_use_line_aa;
+		}
 	};
 
 
@@ -252,6 +298,15 @@ namespace nene
 			gapi_stencil_op m_stencil_fail_op;		// Stencil: x; Depth: -;
 			gapi_stencil_op m_depth_fail_op;		// Stencil: v; Depth: x;
 			gapi_stencil_op m_pass_op;				// Stencil: v; Depth: v;
+
+			bool operator==(const gapi_stencil_state_desc& other) const
+			{
+				return m_use_stencil == other.m_use_stencil &&
+					   m_stencil_func == other.m_stencil_func &&
+					   m_stencil_fail_op == other.m_stencil_fail_op &&
+					   m_depth_fail_op == other.m_depth_fail_op &&
+					   m_pass_op == other.m_pass_op;
+			}
 		};
 		gapi_stencil_state_desc m_front_stencil_test;
 		gapi_stencil_state_desc m_back_stencil_test;
@@ -260,6 +315,16 @@ namespace nene
 
 		// Default Constructor
 		gapi_depth_stencil_state_desc();
+
+		bool operator==(const gapi_depth_stencil_state_desc& other) const
+		{
+			return m_use_depth_write == other.m_use_depth_write &&
+				   m_depth_func == other.m_depth_func &&
+				   m_front_stencil_test == other.m_front_stencil_test &&
+				   m_back_stencil_test == other.m_back_stencil_test &&
+				   m_stencil_read_mask == other.m_stencil_read_mask &&
+				   m_stencil_write_mask == other.m_stencil_write_mask;
+		}
 	};
 
 	/**
@@ -270,6 +335,13 @@ namespace nene
 		gapi_bound_shader_state_desc m_bound_shader_state;
 
 		gapi_compute_pipeline_state_desc(const gapi_bound_shader_state_desc& bound_shader_state);
+
+		bool operator==(const gapi_compute_pipeline_state_desc& other) const
+		{
+			return m_bound_shader_state == other.m_bound_shader_state;
+		}
+
+		size_t hash() const;
 	};
 
 	struct NENE_API gapi_graphics_pipeline_state_desc
@@ -288,5 +360,34 @@ namespace nene
 
 		// Minimal Constructor
 		gapi_graphics_pipeline_state_desc(const gapi_bound_shader_state_desc& bound_shader_state);
+
+		bool operator==(const gapi_graphics_pipeline_state_desc& other) const
+		{
+			return m_bound_shader_state == other.m_bound_shader_state &&
+				   m_rasterizer_state == other.m_rasterizer_state &&
+				   m_primitive_type == other.m_primitive_type &&
+				   m_num_samples == other.m_num_samples &&
+				   m_blend_state == other.m_blend_state &&
+				   m_depth_stencil_state == other.m_depth_stencil_state &&
+				   m_depth_stencil_format == other.m_depth_stencil_format &&
+				   m_render_target_formats == other.m_render_target_formats;
+		}
+
+		size_t hash() const;
 	};
+}
+
+#include "gapi_pipeline_state_desc.inl"
+
+namespace nene
+{
+	inline size_t gapi_compute_pipeline_state_desc::hash() const
+	{
+		return std::hash<gapi_compute_pipeline_state_desc>{}(*this);
+	}
+
+	inline size_t gapi_graphics_pipeline_state_desc::hash() const
+	{
+		return std::hash<gapi_graphics_pipeline_state_desc>{}(*this);
+	}
 }
