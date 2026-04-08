@@ -3,7 +3,7 @@
 #include "d3d12_root_signature_manager.h"
 
 #include "dx/d3dx12.h"
-#include "shader/cppshared/d3d12.h"
+#include "shader/cppshared/d3d12.hlsli"
 
 #include <magic_enum/magic_enum_utility.hpp>
 

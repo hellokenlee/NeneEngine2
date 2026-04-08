@@ -3,6 +3,6 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#include "/common/static_samplers.h"
+#include "common/static_samplers.hlsli"
 
 #endif // COMMON_H

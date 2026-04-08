@@ -43,7 +43,7 @@ namespace nene::r
 
 	void vertex_factory::modify_shader_translate_environment(shader_translate_environment& inout_shader_translate_environment) const
 	{
-		inout_shader_translate_environment.m_virtual_include_contents.emplace("/engine/generated/vertex_factory.h", get_shader_filename());
+		inout_shader_translate_environment.m_virtual_include_contents.emplace("generated/vertex_factory.hlsli", get_shader_filename());
 	}
 
 	void vertex_factory::add_vertex_stream(const std::string& shader_semantic, const std::shared_ptr<vertex_stream>& vertex_stream)

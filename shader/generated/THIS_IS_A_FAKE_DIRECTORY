@@ -1,0 +1,5 @@
+This is a fake directory and only for IDE complementing only.
+
+DO NOT use any of file of this directory in runtime.
+
+See: `shader_translate_environment::m_virtual_include_contents` for more information.

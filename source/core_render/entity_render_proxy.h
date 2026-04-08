@@ -4,7 +4,7 @@
 
 #include "core/core.h"
 #include "render_constant_buffer.h"
-#include "shader/cppshared/object_data.h"
+#include "shader/cppshared/object_data.hlsli"
 
 
 namespace nene::r

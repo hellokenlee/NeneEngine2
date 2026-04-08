@@ -3,7 +3,7 @@
 #ifndef STATIC_SAMPLERS_H
 #define STATIC_SAMPLERS_H
 
-#include "/cppshared/d3d12.h"
+#include "cppshared/d3d12.hlsli"
 
 SamplerState PointWrapSampler : register(SLOT_POINT_WRAP, SPACE_STATIC_SAMPLER);
 SamplerState PointClampSampler : register(SLOT_POINT_CLAMP, SPACE_STATIC_SAMPLER);

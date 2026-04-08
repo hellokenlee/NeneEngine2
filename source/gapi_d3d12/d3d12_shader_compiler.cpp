@@ -130,10 +130,13 @@ namespace nene
 		result->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&message), nullptr);
 		if (FAILED(hres))
 		{
-			log(shader_, error, "failed to compile shader( {}::{}(...) ) with errors:", shader.get_name(), shader.get_function_entry());
 			if (message && message->GetStringLength() > 0)
 			{
-				log(shader_, error, "	{}", message->GetStringPointer());
+				log(shader_, error, "failed to compile shader( {}::{}(...) ) with errors:\n{}", shader.get_name(), shader.get_function_entry(), message->GetStringPointer());
+			}
+			else
+			{
+				log(shader_, error, "failed to compile shader( {}::{}(...) )", shader.get_name(), shader.get_function_entry());
 			}
 
 			//
@@ -149,7 +152,7 @@ namespace nene
 				preprocessed_string.reserve(preprocessed->GetBufferSize());
 				preprocessed_string.insert(0, static_cast<const char*>(preprocessed->GetBufferPointer()), preprocessed->GetBufferSize());
 
-				log(shader_, error, "preprocessed:\n{}", preprocessed_string);
+				log(shader_, error, "dump preprocessed shader source:\n{}", preprocessed_string);
 			}
 		
 			return false;

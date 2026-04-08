@@ -29,6 +29,7 @@ class CppOptimazation(Enum):
 class BuildTarget(Enum):
 	DLL = "DLL"
 	EXE = "EXE"
+	NONE = "NONE"
 
 
 class WindowsSubsystem(Enum):
@@ -39,6 +40,7 @@ class WindowsSubsystem(Enum):
 class ModuleCategory(Enum):
 	App = "App"
 	Library = "Library"
+	Resource = "Resource"
 
 
 class Compiler(object):

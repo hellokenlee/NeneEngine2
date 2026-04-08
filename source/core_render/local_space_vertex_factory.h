@@ -11,7 +11,7 @@ namespace nene::r
 	class NENE_API local_space_vertex_factory : public vertex_factory
 	{
 	public:
-		const char* get_shader_filename() const override { return "/vertex_factory/local_space_vertex_factory.h"; }
+		const char* get_shader_filename() const override { return "vertex_factory/local_space_vertex_factory.hlsli"; }
 		local_space_vertex_factory(const std::vector<float3>& positions, const std::vector<float3>& normals, const std::vector<float2>& uvs);
 	};
 }

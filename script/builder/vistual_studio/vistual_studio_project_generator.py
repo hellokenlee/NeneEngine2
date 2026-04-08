@@ -20,6 +20,7 @@ class VisualStudioSolutionGenerator(ProjectGenerator):
 	CONST_MODULE_VCXPROJECT_GUIDS = {
 		ModuleCategory.App: "{174E1B50-38D0-4F5C-B5AC-74C1248197D8}",
 		ModuleCategory.Library: "{186E0ADC-35CD-48B9-BA78-A47C5BA414E4}",
+		ModuleCategory.Resource: "{D16B052B-7F67-4FEC-AA44-B7DAF9B3A87F}"
 	}
 
 	def generate(self, nene_project: NeneProject):
@@ -84,12 +85,17 @@ class VisualStudioSolutionGenerator(ProjectGenerator):
 		if guid:
 			solution.globals.extensibility_globals.attribs.append(Attribute("SolutionGuid", guid))
 		#
+		module_catgories = {
+			BuildTarget.EXE: ModuleCategory.App,
+			BuildTarget.DLL: ModuleCategory.Library,
+			BuildTarget.NONE: ModuleCategory.Resource,
+		}
+		#
 		for nene_module_class in nene_project.nene_module_classes:
 			module_guid = nene_module_guids[nene_module_class]
-			category = ModuleCategory.App if nene_module_class().build_target == BuildTarget.EXE else ModuleCategory.Library
+			category = module_catgories[nene_module_class().build_target]
 			category_guid = self.CONST_MODULE_VCXPROJECT_GUIDS[category]
 			solution.globals.nested_projects.attribs.append(Attribute(module_guid, category_guid))
-
 		#
 		sln_path = os.path.join(BuildConfiguration().engine_root_abs_path, nene_project.__class__.__name__ + ".sln")
 		solution.save(sln_path)

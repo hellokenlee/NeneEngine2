@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "/common/common.h"
+#include "common/common.hlsli"
 
 struct SVertexShaderOutput
 {

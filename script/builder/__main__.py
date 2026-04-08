@@ -83,7 +83,7 @@ def main():
 	#
 	nene_module_classes: list[type[NeneModule]] = []
 	for name in BuildConfigurationUtils.list_modules():
-		mod = importlib.import_module(BuildConfiguration.SOURCE + "." + name)
+		mod = importlib.import_module(name)
 		nene_module_class = get_class(mod)
 		assert (issubclass(nene_module_class, NeneModule))
 		if nene_module_class.available():

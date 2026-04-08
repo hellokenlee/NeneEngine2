@@ -4,18 +4,22 @@
 
 import os
 from abc import ABC
+from collections.abc import Iterator
 from script.builder.common.build_configuration import BuildConfiguration
 
 
 class BuildConfigurationUtils(ABC):
 
 	@classmethod
-	def list_modules(cls):
+	def list_modules(cls) -> Iterator[str]:
 		source_root_path = BuildConfiguration().source_root_abs_path
 		for folder in os.listdir(source_root_path):
 			if not folder.startswith("__") and os.path.isdir(os.path.join(source_root_path, folder)):
 				if os.path.exists(os.path.join(source_root_path, folder, "__init__.py")):
-					yield folder
+					yield BuildConfiguration.SOURCE + "." + folder
+		#
+		if os.path.exists(os.path.join(BuildConfiguration().shader_root_abs_path, "__init__.py")):
+			yield BuildConfiguration.SHADER
 		pass
 
 	@classmethod

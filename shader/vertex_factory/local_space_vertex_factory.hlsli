@@ -2,11 +2,11 @@
 
 #pragma once
 
-#include "/vertex_factory/vertex_factory_common.h"
-#include "/common/common.h"
-#include "/cppshared/object_data.h"
+#include "vertex_factory/vertex_factory_common.hlsli"
+#include "common/common.hlsli"
+#include "cppshared/object_data.hlsli"
 
-cbuffer ObjectConstantBuffer : register(b1, SPACE_VS) { SObjectData ObjectData; };
+ConstantBuffer<SObjectData> ObjectData : register(b1, SPACE_VS);
 
 
 struct SVertexShaderInput

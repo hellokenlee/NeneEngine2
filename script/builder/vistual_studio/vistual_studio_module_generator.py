@@ -1,8 +1,10 @@
 # -*- coding=utf-8 -*-
 # __author__ = "KenLee"
 # __email__ = "hellokenlee@163.com"
+
 import os.path
 import uuid
+import inspect
 from xml.etree import ElementTree
 
 from extern.python3 import Python3
@@ -46,6 +48,7 @@ class VcTag(object):
 	ClInclude = "ClInclude"
 	ResourceCompile = "ResourceCompile"
 	Content = "Content"
+	None_ = "None"
 	Link = "Link"
 	PreBuildEvent = "PreBuildEvent"
 	PostBuildEvent = "PostBuildEvent"
@@ -140,12 +143,14 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 		self._add_property_group_configurations(vcproj_tree, nene_module, nene_module_configs)
 		self._add_imports(vcproj_tree, VcImport.Props)
 		#
-		self._add_import_group_extension_settings(vcproj_tree)
-		self._add_import_group_shared(vcproj_tree)
-		self._add_import_group_property_sheets(vcproj_tree, nene_module_configs)
+		if nene_module.build_target != BuildTarget.NONE:
+			self._add_import_group_extension_settings(vcproj_tree)
+			self._add_import_group_shared(vcproj_tree)
+			self._add_import_group_property_sheets(vcproj_tree, nene_module_configs)
 		self._add_property_group_user_macros(vcproj_tree)
 		self._add_property_group_per_configuration(vcproj_tree, nene_module, nene_module_configs)
-		self._add_item_definition_group_per_configuration(vcproj_tree, nene_module, nene_module_configs)
+		if nene_module.build_target != BuildTarget.NONE:
+			self._add_item_definition_group_per_configuration(vcproj_tree, nene_module, nene_module_configs)
 		self._add_item_group_source_files(vcproj_tree, nene_module)
 		self._add_imports(vcproj_tree, VcImport.Targets)
 		self._add_import_group_extension_targets(vcproj_tree)
@@ -207,17 +212,25 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 
 	@staticmethod
 	def _add_property_group_configurations(vcproj_tree: ElementTree.ElementTree, nene_module: NeneModule, nene_module_configs: list[NeneModuleConfig]):
+		vcproj_configuration_types = {
+			BuildTarget.EXE: "Application",
+			BuildTarget.DLL: "DynamicLibrary",
+			BuildTarget.NONE: "Utility",
+		}
+
 		for nene_module_config in nene_module_configs:
 			property_group = ElementTree.SubElement(vcproj_tree.getroot(), VcTag.PropertyGroup)
 			property_group.attrib[VcAttrib.Condition] = "\'$(Configuration)|$(Platform)\'==\'%s|%s\'" % (nene_module_config.configuration.name, nene_module_config.architecture.name)
 			property_group.attrib[VcAttrib.Label] = "Configuration"
-			ElementTree.SubElement(property_group, VcTag.ConfigurationType).text = "Application" if nene_module.build_target == BuildTarget.EXE else "DynamicLibrary"
-			ElementTree.SubElement(property_group, VcTag.UseDebugLibraries).text = "false"
+			ElementTree.SubElement(property_group, VcTag.ConfigurationType).text = vcproj_configuration_types[nene_module.build_target]
+			if nene_module.build_target != BuildTarget.NONE:
+				# 显式声明不使用调试库
+				ElementTree.SubElement(property_group, VcTag.UseDebugLibraries).text = "false"
+				# FIXME: 使用 /GL 会导致 pybind11 编译错误:
+				# refs: https://github.com/pybind/pybind11/pull/5939
+				if nene_module_config.configuration == Configuration.Release:
+					ElementTree.SubElement(property_group, VcTag.WholeProgramOptimization).text = "false"
 			ElementTree.SubElement(property_group, VcTag.PlatformToolset).text = VisualStudioConfig().msbuild_toolset_version()
-			# FIXME: 使用 /GL 会导致 pybind11 编译错误:
-			# refs: https://github.com/pybind/pybind11/pull/5939
-			if nene_module_config.configuration == Configuration.Release:
-				ElementTree.SubElement(property_group, VcTag.WholeProgramOptimization).text = "false"
 			ElementTree.SubElement(property_group, VcTag.CharacterSet).text = "Unicode"
 		pass
 
@@ -514,7 +527,7 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 		resource_paths = []
 		other_content_paths = []
 		#
-		module_root_abs_path = os.path.join(BuildConfiguration().source_root_abs_path, nene_module.name)
+		module_root_abs_path = VisualStudioModuleGenerator.get_nene_module_directory_path(nene_module)
 		source_folder_abs_path = [module_root_abs_path]
 		source_folder_abs_path.extend(nene_module.get_additional_source_folder_abs_paths())
 		#
@@ -529,24 +542,25 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 						cpp_header_paths.append(file_path)
 					elif filename.endswith(".rc"):
 						resource_paths.append(file_path)
-					elif filename == "__init__.py" or filename.endswith(".xml"):
+					elif filename == "__init__.py" or filename.endswith(".xml") or filename.endswith(".hlsl") or filename.endswith(".hlsli"):
 						other_content_paths.append(file_path)
+
+		#
+		def add_item_group_includes(tag: str, sources: list[str]):
+			if len(sources) > 0:
+				item_group_includes = ElementTree.SubElement(vcproj_tree.getroot(), VcTag.ItemGroup)
+				for source in sources:
+					ElementTree.SubElement(item_group_includes, tag).attrib["Include"] = source
+			pass
+
 		# C++ Includes
-		item_group_includes = ElementTree.SubElement(vcproj_tree.getroot(), VcTag.ItemGroup)
-		for header_path in cpp_header_paths:
-			ElementTree.SubElement(item_group_includes, VcTag.ClInclude).attrib["Include"] = header_path
+		add_item_group_includes(VcTag.ClInclude, cpp_header_paths)
 		# C++ Sources
-		item_group_sources = ElementTree.SubElement(vcproj_tree.getroot(), VcTag.ItemGroup)
-		for source_path in cpp_source_paths:
-			ElementTree.SubElement(item_group_sources, VcTag.ClCompile).attrib["Include"] = source_path
+		add_item_group_includes(VcTag.ClCompile, cpp_source_paths)
 		# Resource Files
-		item_group_sources = ElementTree.SubElement(vcproj_tree.getroot(), VcTag.ItemGroup)
-		for resource_path in resource_paths:
-			ElementTree.SubElement(item_group_sources, VcTag.ResourceCompile).attrib["Include"] = resource_path
+		add_item_group_includes(VcTag.ResourceCompile, resource_paths)
 		# Other Contents ( Won't Compile )
-		item_group_sources = ElementTree.SubElement(vcproj_tree.getroot(), VcTag.ItemGroup)
-		for content_path in other_content_paths:
-			ElementTree.SubElement(item_group_sources, VcTag.Content).attrib["Include"] = content_path
+		add_item_group_includes(VcTag.None_, other_content_paths)
 		pass
 
 	@staticmethod
@@ -557,8 +571,12 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 		pass
 
 	@staticmethod
+	def get_nene_module_directory_path(nene_module: NeneModule):
+		return os.path.dirname(os.path.abspath(inspect.getfile(nene_module.__class__)))
+
+	@staticmethod
 	def get_existing_vcproj_file_path(nene_module: NeneModule) -> str:
-		return os.path.join(BuildConfiguration().source_root_abs_path, nene_module.name, nene_module.name + ".vcxproj")
+		return os.path.join(VisualStudioModuleGenerator.get_nene_module_directory_path(nene_module), nene_module.name + ".vcxproj")
 
 	@staticmethod
 	def read_existing_vcproj_file_guid(nene_module: NeneModule) -> str:

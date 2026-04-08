@@ -1,4 +1,4 @@
-#include "base_pass_common.h"
+#include "base_pass_common.hlsli"
 
 void Main(in SVertexShaderOutput Input, out float4 OutColor : SV_TARGET0)
 {
