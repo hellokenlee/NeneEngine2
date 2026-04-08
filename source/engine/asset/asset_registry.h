@@ -62,6 +62,7 @@ namespace nene::g
 		void remove(const std::filesystem::path& file_path);
 		
 		const asset_abstract& find_abstract(const std::filesystem::path& file_path);
+		const asset_abstract& find_abstract_by_uuid(const uuid& uid) const;
 	
 	private:
 		asset_registry();

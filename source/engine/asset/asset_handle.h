@@ -9,8 +9,7 @@
 
 #include <cstdint>
 
-
-namespace nene::t
+namespace nene
 {
 	/** the handle of an asset in game-thread
 	 * 
@@ -20,17 +19,26 @@ namespace nene::t
 	 *			Component: owned by entity, the instance data in game-thread
 	 *			RenderData: owned by asset, the render proxy of an asset in render-thread 
 	 */
-	template<typename asset_t>
-	struct asset_handle
+	struct asset_handle_base
 	{
 		uuid m_uuid = {};
-		asset_handle() = default;
-		explicit asset_handle(const uuid& uuid) : m_uuid(uuid) {}
+		asset_handle_base() = default;
+		explicit asset_handle_base(const uuid& uuid) : m_uuid(uuid) {}
 		
 		bool is_valid() const { return !(m_uuid.is_nil()); }
 		
-		bool operator==(const asset_handle& other) const { return m_uuid == other.m_uuid; }
-		bool operator!=(const asset_handle& other) const { return m_uuid != other.m_uuid; }
+		bool operator==(const asset_handle_base& other) const { return m_uuid == other.m_uuid; }
+		bool operator!=(const asset_handle_base& other) const { return m_uuid != other.m_uuid; }
+	};
+}
+
+namespace nene::t
+{
+	/** phantom types for c++ */
+	template<typename asset_t>
+	struct asset_handle : asset_handle_base
+	{
+		using asset_handle_base::asset_handle_base;
 		
 		static_assert(std::is_base_of_v<g::asset, asset_t>, "must be child class of `asset`!");
 	};

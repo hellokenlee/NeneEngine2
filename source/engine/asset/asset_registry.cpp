@@ -152,6 +152,17 @@ namespace nene::g
 		return invalid;
 	}
 
+	const asset_abstract& asset_registry::find_abstract_by_uuid(const uuid& uid) const
+	{
+		auto it = m_asset_abstracts.find(uid);
+		if (it != m_asset_abstracts.end())
+		{
+			return it->second;
+		}
+		static const asset_abstract invalid{};
+		return invalid;
+	}
+
 	asset_registry::asset_registry()
 	{
 		//

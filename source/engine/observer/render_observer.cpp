@@ -26,6 +26,7 @@ namespace nene::g
 					{
 						//
 						auto mesh = asset_registry::get().load(sm.m_mesh);
+						CHECK(mesh != nullptr);
 						const auto& mesh_render_data = mesh->get_or_create_render_data();
 						//
 						auto mat = asset_registry::get().load(sm.m_material);

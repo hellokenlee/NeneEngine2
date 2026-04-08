@@ -255,8 +255,7 @@ class InspectorPropertyTableWidget(QTableWidget):
 			value_layout = QHBoxLayout(value_cell_widget)
 			value_layout.setContentsMargins(0, 0, 0, 0)
 			value_layout.setSpacing(0)
-			value_layout.addWidget(value_widget, 0, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
-			value_layout.addStretch(1)
+			value_layout.addWidget(value_widget, 1)
 			self.setCellWidget(row, 1, value_cell_widget)
 		else:
 			value_item = QTableWidgetItem(value_text)

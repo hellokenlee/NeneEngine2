@@ -3,9 +3,10 @@
 # __email__ = "hellokenlee@163.com"
 
 from PySide6 import QtCore
-from PySide6.QtWidgets import QWidget, QLabel, QHBoxLayout, QDoubleSpinBox, QSizePolicy
+from PySide6.QtWidgets import QWidget, QLabel, QHBoxLayout, QDoubleSpinBox, QSizePolicy, QApplication, QLineEdit
 
-from nene import Float3, Rotator
+from nene import Float3, Rotator, AssetHandle, AssetRegistry
+from script.editor.widget.content_broswer_view_widget import ContentBroswerViewWidget
 
 
 class _AxisSpinBox(QDoubleSpinBox):
@@ -63,7 +64,42 @@ class RGBWidget(QWidget):
 		self._r_spin.valueChanged.connect(self._on_value_changed)
 		self._g_spin.valueChanged.connect(self._on_value_changed)
 		self._b_spin.valueChanged.connect(self._on_value_changed)
+		
+		# Set the focus proxy to improve focus behavior when clicking on the RGBWidget itself.
+		self.setFocusProxy(self._r_spin)
 		pass
+
+	def focusNextPrevChild(self, next_prev: bool) -> bool:
+		"""
+		Custom focus navigation to cycle between the three spin boxes when Tab/Backtab is pressed.
+		"""
+		# Get a currently focused widget from the application
+		focused = QApplication.focusWidget()
+		spins = [self._r_spin, self._g_spin, self._b_spin]
+		
+		# Identify which spin box (if any) currently has focus (including its internal lineEdit)
+		current_spin = None
+		for spin in spins:
+			if focused == spin or spin.isAncestorOf(focused):
+				current_spin = spin
+				break
+		
+		# If focus is within one of our spin boxes, cycle between them
+		if current_spin:
+			idx = spins.index(current_spin)
+			# Tab
+			if next_prev:
+				target = spins[(idx + 1) % 3]
+			# Backtab
+			else:
+				target = spins[(idx - 1) % 3]
+			target.setFocus(QtCore.Qt.FocusReason.TabFocusReason)
+			# Ensure text is selected for easier editing
+			if hasattr(target, 'lineEdit'):
+				target.lineEdit().selectAll()
+			return True
+			
+		return super().focusNextPrevChild(next_prev)
 
 	def _on_value_changed(self):
 		pass
@@ -106,4 +142,71 @@ class RotatorWidget(RGBWidget):
 		self.data.pitch = self._r_spin.value()
 		self.data.roll = self._g_spin.value()
 		self.data.yaw = self._b_spin.value()
+		pass
+
+
+class AssetHandleWidget(QWidget):
+
+	def __init__(self, data: AssetHandle):
+		super().__init__()
+		self.data = data
+		self.setAcceptDrops(True)
+		#
+		layout = QHBoxLayout(self)
+		layout.setContentsMargins(4, 0, 0, 0)
+		layout.setSpacing(4)
+		#
+		self._line_edit = QLineEdit(self)
+		self._line_edit.setReadOnly(True)
+		self._line_edit.setPlaceholderText("None")
+		self._update_display()
+		layout.addWidget(self._line_edit)
+		pass
+
+	def _resolve_file_name(self) -> str:
+		if self.data.m_uuid is None:
+			return ""
+		abstract = AssetRegistry().find_abstract_by_uuid(self.data.m_uuid)
+		file_name = abstract.m_file_name
+		if not file_name:
+			return ""
+		import os
+		return os.path.basename(file_name)
+
+	def _resolve_full_path(self) -> str:
+		if self.data.m_uuid is None:
+			return ""
+		abstract = AssetRegistry().find_abstract_by_uuid(self.data.m_uuid)
+		file_name = abstract.m_file_name
+		return file_name if file_name else ""
+
+	def _resolve_uuid_str(self) -> str:
+		if self.data.m_uuid is None:
+			return ""
+		return str(self.data.m_uuid)
+
+	def _update_display(self):
+		self._line_edit.setText(self._resolve_file_name())
+		uid = self._resolve_uuid_str()
+		path = self._resolve_full_path()
+		if uid or path:
+			self._line_edit.setToolTip(f"uuid: {uid}\npath: {path}")
+		else:
+			self._line_edit.setToolTip("")
+
+	def dragEnterEvent(self, event):
+		if event.mimeData().hasFormat(ContentBroswerViewWidget.ASSET_MIME_TYPE):
+			event.acceptProposedAction()
+
+	def dropEvent(self, event):
+		if event.mimeData().hasFormat(ContentBroswerViewWidget.ASSET_MIME_TYPE):
+			raw = bytes(event.mimeData().data(ContentBroswerViewWidget.ASSET_MIME_TYPE).data()).decode("utf-8")
+			paths = raw.split("\n")
+			if paths:
+				path = paths[0].strip()
+				abstract = AssetRegistry().find_abstract(path)
+				if abstract.m_uuid is not None:
+					self.data.m_uuid = abstract.m_uuid
+					self._update_display()
+			event.acceptProposedAction()
 		pass

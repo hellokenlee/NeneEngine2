@@ -6,10 +6,10 @@ from PySide6.QtWidgets import QLabel
 
 from script.editor.common.util import *
 from script.editor.controller.dock_widget_controller import DockWidgetController
-from script.editor.widget.inspector_property_widgets import Float3Widget, RotatorWidget
+from script.editor.widget.inspector_property_widgets import Float3Widget, RotatorWidget, AssetHandleWidget
 from script.editor.widget.inspector_property_table_widget import InspectorPropertyTableWidget
 
-from nene import EventSubscriber, EntityInspectEvent, EntityInspector, Float3, Rotator
+from nene import EventSubscriber, EntityInspectEvent, EntityInspector, Float3, Rotator, StaticMeshAssetHandle, MaterialAssetHandle
 
 
 class EntityInspectEventHandler(EventSubscriber):
@@ -32,6 +32,8 @@ class InspectorDockWidgetController(DockWidgetController):
 	PROPERTY_WIDGET_CLASS: dict[type, type] = {
 		Float3: Float3Widget,
 		Rotator: RotatorWidget,
+		StaticMeshAssetHandle: AssetHandleWidget,
+		MaterialAssetHandle: AssetHandleWidget,
 	}
 
 	def __init__(self):
