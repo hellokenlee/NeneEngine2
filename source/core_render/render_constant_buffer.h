@@ -24,6 +24,11 @@ namespace nene::r
 			m_gapi_buffer = gapi_dynamic::get().create_buffer(desc);
 			m_gapi_buffer->set_debug_name(std::format("ConstantBuffer<{}>", boost::typeindex::type_id_with_cvr<t_shader_struct>().pretty_name()));
 		}
+		
+		~render_constant_buffer() override
+		{
+			gapi_dynamic::get().get_cmd_context().deferred_release(m_gapi_buffer);
+		}
 
 		void update_constant_buffer() const
 		{
