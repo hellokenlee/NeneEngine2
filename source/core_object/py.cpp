@@ -115,47 +115,78 @@ namespace nene::g
 
 		type get_class(const std::string& name)
 		{
-			py::gil_scoped_acquire gil;
-			py::module_ m = py::module_::import(binding::PY_NENE_MODULE_NAME);
-			py::object cls = m.attr(name.c_str());
-			return cls;
+			try
+			{
+				py::gil_scoped_acquire gil;
+				py::module_ m = py::module_::import(binding::PY_NENE_MODULE_NAME);
+				py::type cls = m.attr(name.c_str());
+				return cls;
+			}
+			catch (const py::error_already_set& e)
+			{
+				log(binding_, error, "get_class failed: {}", e.what());
+				return none_type();
+			}
 		}
 
 		std::string get_class_name(type cls)
 		{
-			py::gil_scoped_acquire gil;
-			std::string py_class_name = cls.attr("__name__").cast<std::string>();
-			return py_class_name;
+			try
+			{
+				py::gil_scoped_acquire gil;
+				std::string py_class_name = cls.attr("__name__").cast<std::string>();
+				return py_class_name;
+			}
+			catch (const py::error_already_set& e)
+			{
+				log(binding_, error, "get_class_name (type) failed: {}", e.what());
+				return "";
+			}
 		}
 
 		std::set<std::string> all_class_names()
 		{
 			std::set<std::string> result;
-			py::gil_scoped_acquire gil;
-			py::module_ m = py::module_::import(binding::PY_NENE_MODULE_NAME);
-			py::object inspect_isclass = py::module_::import("inspect").attr("isclass");
-			py::list dir_list = py::module_::import("builtins").attr("dir")(m);
-			for (auto py_name : dir_list)
+			try
 			{
-				std::string name = py_name.cast<std::string>();
-				if (name.starts_with("_"))
+				py::gil_scoped_acquire gil;
+				py::module_ m = py::module_::import(binding::PY_NENE_MODULE_NAME);
+				py::object inspect_isclass = py::module_::import("inspect").attr("isclass");
+				py::list dir_list = py::module_::import("builtins").attr("dir")(m);
+				for (auto py_name : dir_list)
 				{
-					continue;
+					std::string name = py_name.cast<std::string>();
+					if (name.starts_with("_"))
+					{
+						continue;
+					}
+					py::object attr = m.attr(py_name);
+					if (inspect_isclass(attr).cast<bool>())
+					{
+						result.emplace(name);
+					}
 				}
-				py::object attr = m.attr(py_name);
-				if (inspect_isclass(attr).cast<bool>())
-				{
-					result.emplace(name);
-				}
+			}
+			catch (const py::error_already_set& e)
+			{
+				log(binding_, error, "all_class_names failed: {}", e.what());
 			}
 			return result;
 		}
 
 		std::string get_class_name(variant self)
 		{
-			py::gil_scoped_acquire gil;
-			std::string py_class_name = py::type::of(self).attr("__name__").cast<std::string>();
-			return py_class_name;
+			try
+			{
+				py::gil_scoped_acquire gil;
+				std::string py_class_name = py::type::of(self).attr("__name__").cast<std::string>();
+				return py_class_name;
+			}
+			catch (const py::error_already_set& e)
+			{
+				log(binding_, error, "get_class_name (variant) failed: {}", e.what());
+				return "";
+			}
 		}
 
 		std::vector<std::string> get_property_names(variant self) 
@@ -163,27 +194,34 @@ namespace nene::g
 			std::vector<std::string> result;
 			if (self)
 			{
-				py::gil_scoped_acquire gil;
-				py::object py_callable_func = py::module_::import("builtins").attr("callable");
-				py::list dir_list = py::module_::import("builtins").attr("dir")(self);
-				for (auto py_prop_name : dir_list)
+				try
 				{
-					// skip internal props
-					std::string prop_name = py_prop_name.cast<std::string>();
-					if (prop_name.starts_with("__") && prop_name.ends_with("__"))
+					py::gil_scoped_acquire gil;
+					py::object py_callable_func = py::module_::import("builtins").attr("callable");
+					py::list dir_list = py::module_::import("builtins").attr("dir")(self);
+					for (auto py_prop_name : dir_list)
 					{
-						continue;
+						// skip internal props
+						std::string prop_name = py_prop_name.cast<std::string>();
+						if (prop_name.starts_with("__") && prop_name.ends_with("__"))
+						{
+							continue;
+						}
+						if (prop_name.starts_with("_pybind11_") && prop_name.ends_with("_"))
+						{
+							continue;
+						}
+						py::object prop_value = self.attr(py_prop_name);
+						if (py_callable_func(prop_value).cast<bool>())
+						{
+							continue; 
+						}
+						result.emplace_back(prop_name);
 					}
-					if (prop_name.starts_with("_pybind11_") && prop_name.ends_with("_"))
-					{
-						continue;
-					}
-					py::object prop_value = self.attr(py_prop_name);
-					if (py_callable_func(prop_value).cast<bool>())
-					{
-						continue; 
-					}
-					result.emplace_back(prop_name);
+				}
+				catch (const py::error_already_set& e)
+				{
+					log(binding_, error, "get_property_names failed: {}", e.what());
 				}
 			}
 			return result;
@@ -201,38 +239,47 @@ namespace nene::g
 				return py::none();
 			}
 			
-			py::gil_scoped_acquire gil;
-
-			// 1. 获取底层 Python 的类型对象指针 (PyTypeObject*)
-			auto* py_type = reinterpret_cast<PyTypeObject*>(cls.ptr());
-
-			// 2. 从 PyTypeObject 获取 pybind11 内部的类型元数据 (type_info)
-			const py::detail::type_info* tinfo = py::detail::get_type_info(py_type);
-			if (!tinfo)
+			try
 			{
-				log(binding_, error, "this py::type is unregistered, cast failed.");
+				py::gil_scoped_acquire gil;
+
+				// 1. 获取底层 Python 的类型对象指针 (PyTypeObject*)
+				auto* py_type = reinterpret_cast<PyTypeObject*>(cls.ptr());
+
+				// 2. 从 PyTypeObject 获取 pybind11 内部的类型元数据 (type_info)
+				const py::detail::type_info* tinfo = py::detail::get_type_info(py_type);
+				if (!tinfo)
+				{
+					log(binding_, error, "this py::type is unregistered, cast failed.");
+					return py::none();
+				}
+
+				// 3. 调用 pybind11 内部的 generic 转换函数
+				py::handle h = py::detail::type_caster_generic::cast(
+					ptr,
+					py::return_value_policy::reference,		// the ptr is managed by c++ side
+					py::handle(),							// no parent object
+					tinfo,									// type_info
+					nullptr,								// copy_constructor
+					nullptr,								// move_constructor
+					nullptr									// existing_holder
+				);
+
+				if (!h)
+				{
+					log(binding_, error, "转换失败：无法将该 void* 映射为 py::object");
+					return py::none();
+				}
+
+				// 4. cast 成功后会返回一个新的 Python 引用 (New Reference)
+				// 因此使用 reinterpret_steal 接管引用计数，避免内存泄漏
+				return py::reinterpret_steal<py::object>(h);
+			}
+			catch (const py::error_already_set& e)
+			{
+				log(binding_, error, "component cast failed: {}", e.what());
 				return py::none();
 			}
-
-			// 3. 调用 pybind11 内部的 generic 转换函数
-			py::handle h = py::detail::type_caster_generic::cast(
-				ptr,
-				py::return_value_policy::reference,		// the ptr is managed by c++ side
-				py::handle(),							// no parent object
-				tinfo,									// type_info
-				nullptr,								// copy_constructor
-				nullptr,								// move_constructor
-				nullptr									// existing_holder
-			);
-
-			if (!h)
-			{
-				throw py::cast_error("转换失败：无法将该 void* 映射为 py::object");
-			}
-
-			// 4. cast 成功后会返回一个新的 Python 引用 (New Reference)
-			// 因此使用 reinterpret_steal 接管引用计数，避免内存泄漏
-			return py::reinterpret_steal<py::object>(h);
 		}
 	}
 }
