@@ -80,13 +80,24 @@ namespace nene::g
 	
 	bool world::parent_entity(const uint64_t& parent_eid, const uint64_t& child_eid)
 	{
-		if (parent_eid == 0 || child_eid == 0)
+		if (child_eid == 0)
 		{
 			return false;
 		}
-		flecs::entity parent = m_ecs.entity(static_cast<flecs::entity_t>(parent_eid));
+		log(world_, info, "parent entity: {} to {}", child_eid, parent_eid);
+		// 
 		flecs::entity child = m_ecs.entity(static_cast<flecs::entity_t>(child_eid));
-		child.child_of(parent);
+		// unparent
+		if (parent_eid == 0)
+		{
+			child.remove(flecs::ChildOf, flecs::Wildcard);
+		}
+		// parent
+		else
+		{
+			flecs::entity parent = m_ecs.entity(static_cast<flecs::entity_t>(parent_eid));
+			child.child_of(parent);
+		}
 		return true;
 	}
 
