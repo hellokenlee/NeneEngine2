@@ -6,6 +6,9 @@ import sys
 
 
 class Singleton(type):
+	"""
+	A reload-friendly singleton meta-class.
+	"""
 	def __init__(cls, name, bases, dic):
 		cls._instance = None
 

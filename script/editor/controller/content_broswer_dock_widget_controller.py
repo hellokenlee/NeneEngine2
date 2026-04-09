@@ -12,6 +12,7 @@ from script.editor.controller.dock_widget_controller import DockWidgetController
 from script.editor.common.log import log, INFO, WARNING
 from script.editor.controller.history_navigator import HistoryNavigator
 from script.editor.widget.content_broswer_view_widget import ContentBroswerViewWidget
+from script.editor.controller.asset_editor_manager import AssetEditorManager
 
 
 class _ClickEmptyToClearFilter(QObject):
@@ -43,11 +44,11 @@ class _ContentItemDelegate(QStyledItemDelegate):
 			editor.setGeometry(rect)
 
 
-class ContentBroswerDockWidgetController(DockWidgetController):
+class ContentBrowserDockWidgetController(DockWidgetController):
 	UI_FILE = "content_browser_dock_widget.ui"
 
 	def __init__(self):
-		super(ContentBroswerDockWidgetController, self).__init__()
+		super(ContentBrowserDockWidgetController, self).__init__()
 		# FIXME: Use AssetRegistry's root
 		self._nav = HistoryNavigator("content")
 		self._import_push_button: QPushButton = self.ui.findChild(QPushButton, "importPushButton")
@@ -55,7 +56,7 @@ class ContentBroswerDockWidgetController(DockWidgetController):
 		self._forward_push_button: QPushButton = self.ui.findChild(QPushButton, "forwardPushButton")
 		self._content_view_widget: ContentBroswerViewWidget = self.ui.findChild(ContentBroswerViewWidget, "contentListWidget")
 		self._path_widget: QWidget = self.ui.findChild(QWidget, "pathWidget")
-		self._serach_line_edit: QLineEdit = self.ui.findChild(QLineEdit, "searchLineEdit")
+		self._search_line_edit: QLineEdit = self.ui.findChild(QLineEdit, "searchLineEdit")
 		#
 		self._import_push_button.clicked.connect(self._on_import_asset)
 		self._back_push_button.clicked.connect(self._on_back_push_button_clicked)
@@ -101,10 +102,13 @@ class ContentBroswerDockWidgetController(DockWidgetController):
 		pass
 
 	def _on_content_view_item_double_clicked(self, item: QListWidgetItem):
-		if os.path.isdir(os.path.join(self._nav.current(), item.text())):
-			path = os.path.join(self._nav.current(), item.text())
-			self._nav.push(path)
+		real_name = item.data(Qt.ItemDataRole.UserRole)
+		full_path = os.path.join(self._nav.current(), real_name)
+		if os.path.isdir(full_path):
+			self._nav.push(full_path)
 			self._update_views()
+		else:
+			AssetEditorManager().open_asset_editor(full_path)
 		pass
 
 	def _on_back_push_button_clicked(self):

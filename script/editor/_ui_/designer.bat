@@ -1,0 +1,1 @@
+start "" "..\..\..\.package\x64-windows\tools\python3\Lib\site-packages\PySide6\designer.exe"

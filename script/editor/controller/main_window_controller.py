@@ -16,7 +16,7 @@ from script.editor.common.reload import reload
 from script.editor.common.log import log, INFO
 from script.editor.controller.dock_widget_controller import DockWidgetController
 from script.editor.controller.console_dock_widget_controller import ConsoleDockWidgetController
-from script.editor.controller.content_broswer_dock_widget_controller import ContentBroswerDockWidgetController
+from script.editor.controller.content_broswer_dock_widget_controller import ContentBrowserDockWidgetController
 from script.editor.controller.outliner_dock_widget_controller import OutlinerDockWidgetController
 from script.editor.controller.inspector_dock_widget_controller import InspectorDockWidgetController
 
@@ -97,7 +97,7 @@ class MainWindowController(BaseController[QMainWindow], QtCore.QObject):
 		self._console.on_top_level_changed.connect(self.on_dock_widget_top_level_changed)
 
 		# Content Broswer
-		self._content_browser = self.add_dock_widget_controller(ContentBroswerDockWidgetController(), QtCore.Qt.DockWidgetArea.BottomDockWidgetArea)
+		self._content_browser = self.add_dock_widget_controller(ContentBrowserDockWidgetController(), QtCore.Qt.DockWidgetArea.BottomDockWidgetArea)
 		self._content_browser.on_top_level_changed.connect(self.on_dock_widget_top_level_changed)
 
 		# Outliner
