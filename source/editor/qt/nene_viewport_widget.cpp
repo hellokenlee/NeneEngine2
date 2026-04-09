@@ -174,3 +174,12 @@ void NeneViewportWidget::keyReleaseEvent(QKeyEvent* event)
 {
 	notifyNeneKeyEvent(*event, nene::key_event_type::on_key_release);
 }
+
+void NeneViewportWidget::wheelEvent(QWheelEvent* event)
+{
+	nene::mouse_event mouse_event;
+	mouse_event.m_type = nene::mouse_event_type::on_mouse_wheel;
+	mouse_event.m_delta_scroll = event->angleDelta().y();
+	// 
+	nene::input_manager::get().notify(mouse_event);
+}

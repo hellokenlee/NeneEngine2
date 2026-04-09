@@ -89,6 +89,11 @@ namespace nene::g
 						}
 					case mouse_event_type::on_mouse_wheel:
 						{
+							if (m_b_operating)
+							{
+								m_move_speed += static_cast<float>(ee.m_delta_scroll) * 0.01f;
+								m_move_speed = std::max(0.001f, m_move_speed);
+							}
 							break;
 						}
 					case mouse_event_type::on_mouse_button:
