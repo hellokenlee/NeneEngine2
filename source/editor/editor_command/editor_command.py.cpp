@@ -7,7 +7,7 @@ namespace nene
 {
 	PYBIND(m)
 	{
-		py::class_<editor_command, std::shared_ptr<editor_command>>(m, "EditorCommand")
+		py::class_<editor_command, py::smart_holder>(m, "EditorCommand")
 			.def(py::init<>())
 		;
 	}
