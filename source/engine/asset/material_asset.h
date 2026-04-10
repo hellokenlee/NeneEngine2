@@ -13,7 +13,7 @@ namespace nene::g
 	{
 		std::shared_ptr<r::render_material> m_render_material;
 		
-		texture_asset_handle m_texture_bindings;
+		std::unordered_map<uint32_t, texture_asset_handle> m_texture_bindings;
 		
 		void serialize(archive& ar) override;
 		

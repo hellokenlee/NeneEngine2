@@ -2,6 +2,8 @@
 # __author__ = "KenLee"
 # __email__ = "hellokenlee@163.com"
 
+import typing
+
 from shiboken6 import isValid
 from PySide6.QtCore import Qt, QSize, QEvent, QObject, QTimer, QModelIndex
 from PySide6.QtGui import QMouseEvent
@@ -200,18 +202,36 @@ class InspectorPropertyTableWidget(QTableWidget):
 
 	def set_components(self, components: list[object]):
 		#
+		def get_element_types(component: object, attr_name: str):
+			# 利用 type hint 推断元素类型
+			prop_obj = getattr(type(component), attr_name, None)
+			assert isinstance(prop_obj, property), "complex type attribute binding must be a property"
+			assert "->" in prop_obj.fget.__doc__
+			ret_doc = prop_obj.fget.__doc__.split("->")[-1].strip()
+			#
+			# noinspection PyUnusedImports
+			import nene
+			element_type = eval(ret_doc)
+			return typing.get_args(element_type)
+
+		#
 		self.clear_component_rows()
 		#
 		for comp in components:
 			comp_title = sanitize_component_name(type(comp).__name__)
 			comp_row = self.add_component_title_row(comp_title)
 			#
-			for prop_name, prop_value in iter_component_properties(comp):
-				display_name = sanitize_property_name(prop_name)
-				widget_cls = self.PROPERTY_WIDGET_CLASS.get(type(prop_value), None)
-				if widget_cls is not None:
-					widget = widget_cls(prop_value)
-					self.add_property_row(comp_row, display_name, widget)
+			for attrib_name in dir(comp):
+				if attrib_name.startswith("m_"):
+					attrib_value = getattr(comp, attrib_name, None)
+					if isinstance(attrib_value, list):
+						element_cls = get_element_types(comp, attrib_name)
+					elif isinstance(attrib_value, dict):
+						key_cls, value_cls = get_element_types(comp, attrib_name)
+					elif type(attrib_value) in self.PROPERTY_WIDGET_CLASS:
+						widget_cls = self.PROPERTY_WIDGET_CLASS.get(type(attrib_value))
+						widget = widget_cls(attrib_value)
+						self.add_property_row(comp_row, sanitize_property_name(attrib_name), widget, indent=1)
 		pass
 
 	def clear_component_rows(self):
@@ -265,14 +285,14 @@ class InspectorPropertyTableWidget(QTableWidget):
 		self._set_component_row_label(row, False)
 		return row
 
-	def add_property_row(self, component_row: int, property_name: str, value_widget: QWidget | None = None, value_text: str = "") -> int:
+	def add_property_row(self, component_row: int, property_name: str, value_widget: QWidget | None = None, value_text: str = "", indent: int = 1) -> int:
 		col_count = self.columnCount()
 		row = self.rowCount()
 		self.insertRow(row)
 
 		name_widget = QWidget(self)
 		name_layout = QHBoxLayout(name_widget)
-		name_layout.setContentsMargins(20, 0, 0, 0)
+		name_layout.setContentsMargins(20 * indent, 0, 0, 0)
 		name_layout.setSpacing(0)
 		name_label = QLabel(property_name, name_widget)
 		name_layout.addWidget(name_label)

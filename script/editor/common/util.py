@@ -16,15 +16,3 @@ def sanitize_property_name(prop_name: str):
 	if len(parts) == 0:
 		return prop_name
 	return " ".join([p.capitalize() for p in parts])
-
-
-def iter_component_properties(comp: object):
-	# 优先处理组件常见字段：m_xxx
-	for attr_name in dir(comp):
-		if attr_name.startswith("m_"):
-			# noinspection PyBroadException
-			try:
-				yield attr_name, getattr(comp, attr_name)
-			except Exception:
-				continue
-	pass
