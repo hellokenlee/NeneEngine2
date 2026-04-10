@@ -207,8 +207,39 @@ namespace nene::g
 		}
 		log(asset_registry_, info, "done building asset registry, total {} assets.", m_asset_abstracts.size());
 	}
+	
+	static std::vector<uint8_t> read_asset_content(const std::string& file_path)
+	{
+		//
+		FILE* fp = fopen(file_path.c_str(), "rb");
+		CHECK(fp);
+		
+		// read header size & skip header
+		uint32_t header_size = 0;
+		ENSURE(fread(&header_size, sizeof(header_size), 1, fp) == 1);
+		ENSURE(fseek(fp, header_size, SEEK_CUR) == 0);
+		// read original content size
+		uint32_t original_size = 0;
+		ENSURE(fread(&original_size, sizeof(original_size), 1, fp) == 1);
+		// read compressed content
+		long compressed_begin = std::ftell(fp);
+		ENSURE(fseek(fp, 0, SEEK_END) == 0);
+		long compressed_size = std::ftell(fp) - compressed_begin;
+		ENSURE(fseek(fp, compressed_begin, SEEK_SET) == 0);
+		std::vector<uint8_t> compressed(compressed_size);
+		ENSURE(fread(compressed.data(), 1, compressed_size, fp) == static_cast<size_t>(compressed_size));
+		ENSURE(fclose(fp) != -1);
+		
+		
+		// zstd decompress
+		std::vector<uint8_t> content(original_size);
+		size_t decompressed_size = ZSTD_decompress(content.data(), original_size, compressed.data(), compressed_size);
+		CHECK(!ZSTD_isError(decompressed_size));
+		
+		return content;
+	}
 
-	std::shared_ptr<asset> asset_registry::internal_load(const uuid& uid)
+	std::shared_ptr<asset> asset_registry::typeless_load(const uuid& uid)
 	{
 		// check if already loaded
 		if (m_loaded_assets.contains(uid))
@@ -225,27 +256,7 @@ namespace nene::g
 			auto var = reflection::make_variant(py_type);
 			auto ast = reflection::shared<asset>(var);
 			//
-			FILE* fp = fopen(header.m_file_name.c_str(), "rb");
-			CHECK(fp);
-			// read header size & skip header
-			uint32_t header_size = 0;
-			ENSURE(fread(&header_size, sizeof(header_size), 1, fp) == 1);
-			ENSURE(fseek(fp, header_size, SEEK_CUR) == 0);
-			// read original content size
-			uint32_t original_size = 0;
-			ENSURE(fread(&original_size, sizeof(original_size), 1, fp) == 1);
-			// read compressed content
-			long compressed_begin = std::ftell(fp);
-			ENSURE(fseek(fp, 0, SEEK_END) == 0);
-			long compressed_size = std::ftell(fp) - compressed_begin;
-			ENSURE(fseek(fp, compressed_begin, SEEK_SET) == 0);
-			std::vector<uint8_t> compressed(compressed_size);
-			ENSURE(fread(compressed.data(), 1, compressed_size, fp) == static_cast<size_t>(compressed_size));
-			ENSURE(fclose(fp) != -1);
-			// zstd decompress
-			std::vector<uint8_t> content(original_size);
-			size_t decompressed_size = ZSTD_decompress(content.data(), original_size, compressed.data(), compressed_size);
-			CHECK(!ZSTD_isError(decompressed_size));
+			std::vector<uint8_t> content = read_asset_content(header.m_file_name);
 			// unserialize the content
 			json_reader reader;
 			reader.load(content);

@@ -4,6 +4,7 @@
 
 #include "entity_inspector.h"
 #include "engine/asset/asset_registry.h"
+#include "engine/asset/static_mesh_asset.h"
 #include "engine/component/static_mesh_component.h"
 #include "engine/engine_loop.h"
 #include "engine/world.h"

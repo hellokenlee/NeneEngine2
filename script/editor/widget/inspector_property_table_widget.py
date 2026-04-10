@@ -2,12 +2,16 @@
 # __author__ = "KenLee"
 # __email__ = "hellokenlee@163.com"
 
+from shiboken6 import isValid
 from PySide6.QtCore import Qt, QSize, QEvent, QObject, QTimer, QModelIndex
 from PySide6.QtGui import QMouseEvent
 from PySide6.QtWidgets import QAbstractItemView, QTableWidget, QTableWidgetItem, QToolButton, QWidget, QHBoxLayout, QLabel, QHeaderView
-from shiboken6 import isValid
 
+from script.editor.common.util import *
 from script.editor.resource_set import IconSet
+from script.editor.widget.inspector_property_widgets import Float3Widget, RotatorWidget, AssetHandleWidget
+
+from nene import Float3, Rotator, StaticMeshAssetHandle, MaterialAssetHandle, TextureAssetHandle
 
 
 class _TableColumnRatioKeeper(QObject):
@@ -106,7 +110,7 @@ class _TableColumnRatioKeeper(QObject):
 			header.resizeSection(idx, size)
 		self._updating = False
 
-	def _on_section_resized(self, logical_index: int, old_size: int, new_size: int):
+	def _on_section_resized(self, _logical_index: int, old_size: int, new_size: int):
 		if self._updating:
 			return
 		if old_size == new_size:
@@ -118,6 +122,14 @@ class _TableColumnRatioKeeper(QObject):
 class InspectorPropertyTableWidget(QTableWidget):
 	_SPLITTER_HIT_WIDTH = 4
 	_MIN_COLUMN_WIDTH = 10
+
+	PROPERTY_WIDGET_CLASS: dict[type, type] = {
+		Float3: Float3Widget,
+		Rotator: RotatorWidget,
+		StaticMeshAssetHandle: AssetHandleWidget,
+		MaterialAssetHandle: AssetHandleWidget,
+		TextureAssetHandle: AssetHandleWidget,
+	}
 
 	def __init__(self, parent=None):
 		super().__init__(parent)
@@ -186,6 +198,22 @@ class InspectorPropertyTableWidget(QTableWidget):
 				return False
 		return super().eventFilter(obj, event)
 
+	def set_components(self, components: list[object]):
+		#
+		self.clear_component_rows()
+		#
+		for comp in components:
+			comp_title = sanitize_component_name(type(comp).__name__)
+			comp_row = self.add_component_title_row(comp_title)
+			#
+			for prop_name, prop_value in iter_component_properties(comp):
+				display_name = sanitize_property_name(prop_name)
+				widget_cls = self.PROPERTY_WIDGET_CLASS.get(type(prop_value), None)
+				if widget_cls is not None:
+					widget = widget_cls(prop_value)
+					self.add_property_row(comp_row, display_name, widget)
+		pass
+
 	def clear_component_rows(self):
 		self.clearSpans()
 		self.clearContents()
@@ -211,6 +239,7 @@ class InspectorPropertyTableWidget(QTableWidget):
 		font = item.font()
 		font.setBold(True)
 		item.setFont(font)
+		# noinspection PyTypeChecker
 		item.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable)
 		self.setItem(row, 0, item)
 
@@ -259,6 +288,7 @@ class InspectorPropertyTableWidget(QTableWidget):
 			self.setCellWidget(row, 1, value_cell_widget)
 		else:
 			value_item = QTableWidgetItem(value_text)
+			# noinspection PyTypeChecker
 			value_item.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable)
 			self.setItem(row, 1, value_item)
 

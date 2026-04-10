@@ -7,6 +7,8 @@
 #include "engine/component/static_mesh_component.h"
 #include "core_render/static_mesh_render_proxy.h"
 #include "asset/asset_registry.h"
+#include "asset/static_mesh_asset.h"
+#include "asset/material_asset.h"
 
 
 namespace nene::g

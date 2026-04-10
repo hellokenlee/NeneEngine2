@@ -28,7 +28,7 @@ namespace nene::g
 			{
 				return nullptr;
 			}
-			auto res = internal_load(handle.m_uuid);
+			auto res = typeless_load(handle.m_uuid);
 			return std::static_pointer_cast<asset_t>(res);
 		}
 		
@@ -64,9 +64,12 @@ namespace nene::g
 		const asset_abstract& find_abstract(const std::filesystem::path& file_path);
 		const asset_abstract& find_abstract_by_uuid(const uuid& uid) const;
 	
+		// Dynamicly load an asset from the registry by its UUID.
+		std::shared_ptr<asset> typeless_load(const uuid& uid);
+
 	private:
 		asset_registry();
-		std::shared_ptr<asset> internal_load(const uuid& uid);
+		
 		bool is_valid_type(const uuid& uid, const reflection::type& py_type) const;
 		
 		std::filesystem::path m_content_abs_path;

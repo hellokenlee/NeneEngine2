@@ -15,7 +15,7 @@ def sanitize_property_name(prop_name: str):
 	parts = [p for p in prop_name.split("_") if len(p) > 0]
 	if len(parts) == 0:
 		return prop_name
-	return " ".join([parts[0].capitalize()] + parts[1:])
+	return " ".join([p.capitalize() for p in parts])
 
 
 def iter_component_properties(comp: object):

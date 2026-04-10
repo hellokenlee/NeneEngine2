@@ -3,10 +3,6 @@
 #pragma once
 
 #include "core_object/asset.h"
-#include "texture_asset.h"
-#include "static_mesh_asset.h"
-#include "material_asset.h"
-
 #include <cstdint>
 
 namespace nene
@@ -39,9 +35,14 @@ namespace nene::t
 	struct asset_handle : asset_handle_base
 	{
 		using asset_handle_base::asset_handle_base;
-		
-		static_assert(std::is_base_of_v<g::asset, asset_t>, "must be child class of `asset`!");
 	};
+}
+
+namespace nene::g
+{
+	struct texture_asset;
+	class static_mesh_asset;
+	struct material_asset;
 }
 
 namespace nene::g

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "asset_handle.h"
 #include "core_object/asset.h"
 #include "core_render/render_material.h"
 
@@ -11,6 +12,8 @@ namespace nene::g
 	struct NENE_API material_asset : asset
 	{
 		std::shared_ptr<r::render_material> m_render_material;
+		
+		texture_asset_handle m_texture_bindings;
 		
 		void serialize(archive& ar) override;
 		

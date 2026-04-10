@@ -5,7 +5,7 @@
 
 namespace nene::g
 {
-	PYBIND(m, 1)
+	PYBIND(m, 2)
 	{
 		py::class_<asset_registry, std::unique_ptr<asset_registry, py::nodelete>>(m, "AssetRegistry")
 			.def(py::init([]() { return &asset_registry::get(); }))
@@ -13,6 +13,7 @@ namespace nene::g
 			.def("remove", [](asset_registry& self, const std::string& path) { self.remove(std::filesystem::path(path)); })
  			.def("find_abstract", [](asset_registry& self, const std::string& path) { return self.find_abstract(std::filesystem::path(path)); })
 			.def("find_abstract_by_uuid", [](asset_registry& self, const uuid& uid) -> const asset_abstract& { return self.find_abstract_by_uuid(uid);}, py::return_value_policy::reference_internal)
+			.def("load", &asset_registry::typeless_load)
 		;
 	}
 }

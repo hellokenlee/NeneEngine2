@@ -1,6 +1,9 @@
 ﻿/* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #include "asset_handle.h"
+#include "asset/static_mesh_asset.h"
+#include "asset/material_asset.h"
+#include "asset/texture_asset.h"
 
 
 namespace nene::g
@@ -15,6 +18,9 @@ namespace nene::g
 		;
 		
 		py::class_<material_asset_handle, asset_handle_base>(m, "MaterialAssetHandle")
+		;
+		
+		py::class_<texture_asset_handle, asset_handle_base>(m, "TextureAssetHandle")
 		;
 	}
 }
