@@ -8,6 +8,7 @@
 
 namespace nene::ecs
 {
+	/** connect py::type <-> flecs::component::id */
 	template<typename cpp_t>
 	void register_component_type()
 	{

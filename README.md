@@ -144,55 +144,33 @@ graph TD
 You can use namespaces to organize your classes, functions and variables where appropriate. But Nene Engine uses some special namespaces to annotate the category of the classes or functions:
 
 ```c++
-// Interface
-namespace i
+namespace nene
 {
-    class some_interface_class
-    {
-    public:
-        virtual void foo() = 0;
-    };
 } 
 ```
 
-The namespace `i` is for interface classes which have at least one pure virtual method.
+The namespace `nene` is the root namespace of Nene Engine.
 
 
 
 ```c++
 // Template
-namespace t
+namespace nene::t
 {
-    template<class tsometype>
+    template<class somedata_t>
     class some_class_template
     {
     };
 }
 ```
 
-The namespace `t` is for class or function templates. For example, container such as vector ( `t::dynamic_array<>` ), array ( `t:static_array<>` ) are in this namespace. 
-
-
-
-```c++
-// NeneObject
-#include "core_object/object.h"
-namespace n
-{
-    class some_class : public object
-    {
-    };
-}
-```
-
-The namespace `n` is for class that has reflection in Nene Engine. The classes in namespace `n` must inherit from `n::object` class. This give the derived classes the ability of reflection and serialization.
-
+The namespace `nene::t` is for class or function templates. For example, container such as rotator ( `t::rotator<>` ), rectangle ( `t:rect<>` ) are in this namespace. 
 
 
 ```c++
 // QtExtension
 #include <QtWidgets/QWidget>
-namespace qt
+namespace nene::qt
 {
 	class BINDINGS_API some_qt_widget : public QWidget
     {
@@ -201,7 +179,7 @@ namespace qt
 }
 ```
 
-The namespace `qt` is for Qt extension class for editor.
+The namespace `nene::qt` is for Qt extension class for editor.
 
 
 
