@@ -7,7 +7,7 @@ from PySide6.QtCore import QEvent, QObject
 from PySide6.QtGui import QAction, QDragEnterEvent, QDropEvent, QKeySequence
 from PySide6.QtWidgets import QMainWindow, QTabWidget, QTabBar, QDockWidget, QMenu
 from script.editor.controller.base_controller import BaseController
-from script.editor.widget.content_broswer_view_widget import ContentBroswerViewWidget
+from script.editor.widget.content_broswer_view_widget import ContentBrowserViewWidget
 
 from NeneQtWidgets import NeneViewportWidget
 
@@ -33,13 +33,13 @@ class _ViewportDropFilter(QObject):
 	def eventFilter(self, obj, event):
 		if event.type() == QEvent.Type.DragEnter:
 			assert (isinstance(event, QDragEnterEvent))
-			if event.mimeData().hasFormat(ContentBroswerViewWidget.ASSET_MIME_TYPE):
+			if event.mimeData().hasFormat(ContentBrowserViewWidget.ASSET_MIME_TYPE):
 				event.acceptProposedAction()
 				return True
 		elif event.type() == QEvent.Type.Drop:
 			assert (isinstance(event, QDropEvent))
-			if event.mimeData().hasFormat(ContentBroswerViewWidget.ASSET_MIME_TYPE):
-				data = bytes(event.mimeData().data(ContentBroswerViewWidget.ASSET_MIME_TYPE).data()).decode("utf-8")
+			if event.mimeData().hasFormat(ContentBrowserViewWidget.ASSET_MIME_TYPE):
+				data = bytes(event.mimeData().data(ContentBrowserViewWidget.ASSET_MIME_TYPE).data()).decode("utf-8")
 				asset_paths = data.split("\n")
 				self._callback(asset_paths)
 				event.acceptProposedAction()

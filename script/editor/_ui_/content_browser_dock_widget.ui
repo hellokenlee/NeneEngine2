@@ -306,7 +306,7 @@ QPushButton:hover {
         <number>0</number>
        </property>
        <item>
-        <widget class="ContentBroswerViewWidget" name="contentListWidget">
+        <widget class="ContentBrowserViewWidget" name="contentListWidget">
          <property name="contextMenuPolicy">
           <enum>Qt::ContextMenuPolicy::CustomContextMenu</enum>
          </property>
@@ -341,7 +341,7 @@ QPushButton:hover {
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ContentBroswerViewWidget</class>
+   <class>ContentBrowserViewWidget</class>
    <extends>QListWidget</extends>
    <header>content_broswer_view_widget.py</header>
   </customwidget>

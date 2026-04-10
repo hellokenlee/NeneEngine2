@@ -11,7 +11,7 @@ from script.editor.resource_set import IconSet, PixmapSet, AssetFileIconSet
 from script.editor.controller.dock_widget_controller import DockWidgetController
 from script.editor.common.log import log, INFO, WARNING
 from script.editor.controller.history_navigator import HistoryNavigator
-from script.editor.widget.content_broswer_view_widget import ContentBroswerViewWidget
+from script.editor.widget.content_broswer_view_widget import ContentBrowserViewWidget
 from script.editor.controller.asset_editor_manager import AssetEditorManager
 
 
@@ -54,7 +54,7 @@ class ContentBrowserDockWidgetController(DockWidgetController):
 		self._import_push_button: QPushButton = self.ui.findChild(QPushButton, "importPushButton")
 		self._back_push_button: QPushButton = self.ui.findChild(QPushButton, "backPushButton")
 		self._forward_push_button: QPushButton = self.ui.findChild(QPushButton, "forwardPushButton")
-		self._content_view_widget: ContentBroswerViewWidget = self.ui.findChild(ContentBroswerViewWidget, "contentListWidget")
+		self._content_view_widget: ContentBrowserViewWidget = self.ui.findChild(ContentBrowserViewWidget, "contentListWidget")
 		self._path_widget: QWidget = self.ui.findChild(QWidget, "pathWidget")
 		self._search_line_edit: QLineEdit = self.ui.findChild(QLineEdit, "searchLineEdit")
 		#

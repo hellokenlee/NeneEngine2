@@ -6,7 +6,7 @@ from PySide6 import QtCore
 from PySide6.QtWidgets import QWidget, QLabel, QHBoxLayout, QDoubleSpinBox, QSizePolicy, QApplication, QLineEdit
 
 from nene import Float3, Rotator, AssetHandle, AssetRegistry
-from script.editor.widget.content_broswer_view_widget import ContentBroswerViewWidget
+from script.editor.widget.content_broswer_view_widget import ContentBrowserViewWidget
 
 
 class _AxisSpinBox(QDoubleSpinBox):
@@ -195,12 +195,12 @@ class AssetHandleWidget(QWidget):
 			self._line_edit.setToolTip("")
 
 	def dragEnterEvent(self, event):
-		if event.mimeData().hasFormat(ContentBroswerViewWidget.ASSET_MIME_TYPE):
+		if event.mimeData().hasFormat(ContentBrowserViewWidget.ASSET_MIME_TYPE):
 			event.acceptProposedAction()
 
 	def dropEvent(self, event):
-		if event.mimeData().hasFormat(ContentBroswerViewWidget.ASSET_MIME_TYPE):
-			raw = bytes(event.mimeData().data(ContentBroswerViewWidget.ASSET_MIME_TYPE).data()).decode("utf-8")
+		if event.mimeData().hasFormat(ContentBrowserViewWidget.ASSET_MIME_TYPE):
+			raw = bytes(event.mimeData().data(ContentBrowserViewWidget.ASSET_MIME_TYPE).data()).decode("utf-8")
 			paths = raw.split("\n")
 			if paths:
 				path = paths[0].strip()

@@ -215,6 +215,7 @@ class InspectorPropertyTableWidget(QTableWidget):
 			return typing.get_args(element_type)
 
 		#
+		self._components = components
 		self.clear_component_rows()
 		#
 		for comp in components:
@@ -225,14 +226,169 @@ class InspectorPropertyTableWidget(QTableWidget):
 				if attrib_name.startswith("m_"):
 					attrib_value = getattr(comp, attrib_name, None)
 					if isinstance(attrib_value, list):
-						element_cls = get_element_types(comp, attrib_name)
+						element_types = get_element_types(comp, attrib_name)
+						element_cls = element_types[0] if element_types else None
+						self._add_list_rows(comp, comp_row, attrib_name, attrib_value, element_cls)
 					elif isinstance(attrib_value, dict):
 						key_cls, value_cls = get_element_types(comp, attrib_name)
+						self._add_dict_rows(comp, comp_row, attrib_name, attrib_value, key_cls, value_cls)
 					elif type(attrib_value) in self.PROPERTY_WIDGET_CLASS:
 						widget_cls = self.PROPERTY_WIDGET_CLASS.get(type(attrib_value))
 						widget = widget_cls(attrib_value)
 						self.add_property_row(comp_row, sanitize_property_name(attrib_name), widget, indent=1)
 		pass
+
+	def _refresh_components(self):
+		if hasattr(self, '_components') and self._components:
+			self.set_components(self._components)
+		pass
+
+	def _add_list_rows(self, comp: object, comp_row: int, attrib_name: str, attrib_value: list, element_cls: type | None):
+		prop_name = sanitize_property_name(attrib_name)
+		# 添加集合子标题行（带 + 按钮）
+		self._add_collection_header_row(
+			comp_row, prop_name,
+			on_add=lambda: self._on_list_add(comp, attrib_name, element_cls)
+		)
+		# 添加每个元素的行
+		for idx, element in enumerate(attrib_value):
+			value_widget = self._create_element_widget(element)
+			value_text = "" if value_widget else str(element)
+			delete_cb = lambda i=idx: self._on_list_delete(comp, attrib_name, i)
+			self._add_collection_entry_row(comp_row, f"[{idx}]", value_widget, value_text, delete_cb)
+		pass
+
+	def _add_dict_rows(self, comp: object, comp_row: int, attrib_name: str, attrib_value: dict, key_cls: type, value_cls: type):
+		prop_name = sanitize_property_name(attrib_name)
+		# 添加集合子标题行（带 + 按钮）
+		self._add_collection_header_row(
+			comp_row, prop_name,
+			on_add=lambda: self._on_dict_add(comp, attrib_name, key_cls, value_cls)
+		)
+		# 添加每个键值对的行
+		for key, value in attrib_value.items():
+			value_widget = self._create_element_widget(value)
+			value_text = "" if value_widget else str(value)
+			delete_cb = lambda k=key: self._on_dict_delete(comp, attrib_name, k)
+			self._add_collection_entry_row(comp_row, str(key), value_widget, value_text, delete_cb)
+		pass
+
+	def _create_element_widget(self, element) -> QWidget | None:
+		widget_cls = self.PROPERTY_WIDGET_CLASS.get(type(element))
+		if widget_cls is not None:
+			return widget_cls(element)
+		return None
+
+	def _add_collection_header_row(self, comp_row: int, title: str, on_add: typing.Callable) -> int:
+		row = self.rowCount()
+		self.insertRow(row)
+		# 名称列：缩进的加粗标题
+		name_widget = QWidget(self)
+		name_layout = QHBoxLayout(name_widget)
+		name_layout.setContentsMargins(20, 0, 0, 0)
+		name_layout.setSpacing(4)
+		name_label = QLabel(f"<b>{title}</b>", name_widget)
+		name_layout.addWidget(name_label)
+		name_layout.addStretch(1)
+		self.setCellWidget(row, 0, name_widget)
+		# 值列：添加按钮
+		add_widget = QWidget(self)
+		add_layout = QHBoxLayout(add_widget)
+		add_layout.setContentsMargins(0, 0, 0, 0)
+		add_layout.setSpacing(0)
+		add_btn = QToolButton(add_widget)
+		add_btn.setText("+")
+		add_btn.setFixedSize(20, 20)
+		add_btn.setStyleSheet("QToolButton { border: 1px solid gray; font-weight: bold; }")
+		add_btn.clicked.connect(on_add)
+		add_layout.addWidget(add_btn)
+		add_layout.addStretch(1)
+		self.setCellWidget(row, 1, add_widget)
+		#
+		self._component_row_children.setdefault(comp_row, []).append(row)
+		return row
+
+	def _add_collection_entry_row(self, comp_row: int, key_text: str, value_widget: QWidget | None, value_text: str, on_delete: typing.Callable) -> int:
+		row = self.rowCount()
+		self.insertRow(row)
+		# 名称列：缩进的键名
+		name_widget = QWidget(self)
+		name_layout = QHBoxLayout(name_widget)
+		name_layout.setContentsMargins(40, 0, 0, 0)
+		name_layout.setSpacing(0)
+		name_label = QLabel(key_text, name_widget)
+		name_layout.addWidget(name_label)
+		name_layout.addStretch(1)
+		self.setCellWidget(row, 0, name_widget)
+		# 值列：值控件 + 删除按钮
+		value_cell_widget = QWidget(self)
+		value_layout = QHBoxLayout(value_cell_widget)
+		value_layout.setContentsMargins(0, 0, 0, 0)
+		value_layout.setSpacing(2)
+		if value_widget is not None:
+			value_layout.addWidget(value_widget, 1)
+		else:
+			text_label = QLabel(value_text, value_cell_widget)
+			value_layout.addWidget(text_label, 1)
+		delete_btn = QToolButton(value_cell_widget)
+		delete_btn.setText("−")
+		delete_btn.setFixedSize(20, 20)
+		delete_btn.setStyleSheet("QToolButton { border: 1px solid gray; color: red; font-weight: bold; }")
+		delete_btn.clicked.connect(on_delete)
+		value_layout.addWidget(delete_btn)
+		self.setCellWidget(row, 1, value_cell_widget)
+		#
+		self._component_row_children.setdefault(comp_row, []).append(row)
+		return row
+
+	def _on_list_add(self, comp: object, attrib_name: str, element_cls: type | None):
+		current_list = list(getattr(comp, attrib_name))
+		new_element = element_cls() if element_cls is not None else None
+		current_list.append(new_element)
+		setattr(comp, attrib_name, current_list)
+		self._refresh_components()
+		pass
+
+	def _on_list_delete(self, comp: object, attrib_name: str, index: int):
+		current_list = list(getattr(comp, attrib_name))
+		if 0 <= index < len(current_list):
+			del current_list[index]
+			setattr(comp, attrib_name, current_list)
+		self._refresh_components()
+		pass
+
+	def _on_dict_add(self, comp: object, attrib_name: str, key_cls: type, value_cls: type):
+		current_dict = dict(getattr(comp, attrib_name))
+		new_key = self._generate_dict_key(current_dict, key_cls)
+		new_value = value_cls() if value_cls is not None else None
+		current_dict[new_key] = new_value
+		setattr(comp, attrib_name, current_dict)
+		self._refresh_components()
+		pass
+
+	def _on_dict_delete(self, comp: object, attrib_name: str, key):
+		current_dict = dict(getattr(comp, attrib_name))
+		if key in current_dict:
+			del current_dict[key]
+			setattr(comp, attrib_name, current_dict)
+		self._refresh_components()
+		pass
+
+	@staticmethod
+	def _generate_dict_key(current_dict: dict, key_cls: type):
+		if key_cls == int:
+			key = 0
+			while key in current_dict:
+				key += 1
+			return key
+		elif key_cls == str:
+			key = "new_key"
+			idx = 0
+			while key in current_dict:
+				idx += 1
+				key = f"new_key_{idx}"
+			return key
+		return key_cls()
 
 	def clear_component_rows(self):
 		self.clearSpans()

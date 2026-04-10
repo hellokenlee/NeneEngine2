@@ -7,7 +7,7 @@ from PySide6.QtCore import QMimeData, Qt
 from PySide6.QtWidgets import QListWidget, QAbstractItemView
 
 
-class ContentBroswerViewWidget(QListWidget):
+class ContentBrowserViewWidget(QListWidget):
 	"""支持向外拖拽的 QListWidget，MIME 数据中携带资产的完整文件路径"""
 
 	ASSET_MIME_TYPE = "application/x-nene-asset-path"

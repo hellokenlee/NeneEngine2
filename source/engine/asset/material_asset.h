@@ -15,6 +15,8 @@ namespace nene::g
 		
 		std::unordered_map<uint32_t, texture_asset_handle> m_texture_bindings;
 		
+		std::vector<float> m_scalar_parameters;
+		
 		void serialize(archive& ar) override;
 		
 		const std::shared_ptr<r::render_material>& get_or_create_render_material();
