@@ -3,16 +3,20 @@
 # __email__ = "hellokenlee@163.com"
 
 import os
+import time
+from datetime import datetime
 
 from PySide6.QtCore import QEvent, QObject, QSize, Qt
 from PySide6.QtGui import QKeySequence, QShortcut, QMouseEvent
 from PySide6.QtWidgets import QPushButton, QWidget, QListWidget, QListWidgetItem, QApplication, QLabel, QLineEdit, QFileDialog, QMenu, QMessageBox, QStyledItemDelegate
 from script.editor.resource_set import IconSet, PixmapSet, AssetFileIconSet
 from script.editor.controller.dock_widget_controller import DockWidgetController
-from script.editor.common.log import log, INFO, WARNING
+from script.editor.common.log import log, INFO
 from script.editor.controller.history_navigator import HistoryNavigator
 from script.editor.widget.content_broswer_view_widget import ContentBrowserViewWidget
 from script.editor.controller.asset_editor_manager import AssetEditorManager
+
+from nene import EditorCommandCenter, AssetImportCommand, AssetNewCommand, AssetRegistry
 
 
 class _ClickEmptyToClearFilter(QObject):
@@ -82,24 +86,39 @@ class ContentBrowserDockWidgetController(DockWidgetController):
 		pass
 
 	def _on_import_asset(self):
-		from nene import EditorCommandCenter, AssetImportCommand
-
 		exts: list[str] = ["*" + ext for ext in AssetImportCommand.supported_extensions()]
 		file_path, _ = QFileDialog.getOpenFileName(self.ui, "Import Asset", "", "Asset Files (%s)" % " ".join(exts))
 		if file_path:
-			file_rel = os.path.join(self._nav.current(), os.path.basename(file_path))
+			file_rel = self._get_unique_path(os.path.join(self._nav.current(), os.path.basename(file_path)))
 			log(self, INFO, "Import: %s -> %s" % (file_path, file_rel))
 			EditorCommandCenter().invoke(AssetImportCommand(file_path, file_rel))
 			self._update_views()
 		pass
 
 	def _on_new_asset(self, type_name: str):
-		from nene import EditorCommandCenter, AssetNewCommand
-		file_rel = os.path.join(self._nav.current(), "New%s" % type_name)
+		file_rel = self._get_unique_path(os.path.join(self._nav.current(), "New%s" % type_name))
 		log(self, INFO, "New Asset: %s" % file_rel)
 		EditorCommandCenter().invoke(AssetNewCommand(type_name + "Asset", file_rel))
 		self._update_views()
 		pass
+
+	@staticmethod
+	def _get_unique_path(path: str) -> str:
+		"""
+		如果路径已存在，则在文件名后添加序号（如 " (1)", " (2)"）直到路径唯一。
+		"""
+		if not path.endswith(".asset"):
+			path += ".asset"
+		if not os.path.exists(path):
+			return path
+
+		base, ext = os.path.splitext(path)
+		counter = 1
+		while True:
+			new_path = "%s_(%d)%s" % (base, counter, ext)
+			if not os.path.exists(new_path):
+				return new_path
+			counter += 1
 
 	def _on_content_view_item_double_clicked(self, item: QListWidgetItem):
 		real_name = item.data(Qt.ItemDataRole.UserRole)
@@ -204,7 +223,6 @@ class ContentBrowserDockWidgetController(DockWidgetController):
 			QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
 		)
 		if reply == QMessageBox.StandardButton.Yes:
-			from nene import AssetRegistry
 			AssetRegistry().remove(full_path)
 			log(self, INFO, "Deleted: %s" % full_path)
 			self._update_views()
@@ -222,7 +240,7 @@ class ContentBrowserDockWidgetController(DockWidgetController):
 		if mode == "new_folder":
 			# 在当前目录下创建文件夹（名称为空或已存在则跳过）
 			if name:
-				folder_path = os.path.join(self._nav.current(), name)
+				folder_path = self._get_unique_path(os.path.join(self._nav.current(), name))
 				if not os.path.exists(folder_path):
 					os.makedirs(folder_path)
 					log(self, INFO, "New folder: %s" % folder_path)
@@ -239,7 +257,7 @@ class ContentBrowserDockWidgetController(DockWidgetController):
 					new_name = name + ext
 				if new_name != old_name:
 					old_path = os.path.join(self._nav.current(), old_name)
-					new_path = os.path.join(self._nav.current(), new_name)
+					new_path = self._get_unique_path(os.path.join(self._nav.current(), new_name))
 					if not os.path.exists(new_path):
 						os.rename(old_path, new_path)
 						log(self, INFO, "Renamed: %s -> %s" % (old_path, new_path))
@@ -292,6 +310,16 @@ class ContentBrowserDockWidgetController(DockWidgetController):
 				item = QListWidgetItem(IconSet().folder, filename)
 			else:
 				item = QListWidgetItem(AssetFileIconSet().icon(AssetRegistry().find_abstract(filepath).m_type_name), filename.split('.')[0])
+
+			# Set tooltip: path and modification time
+			try:
+				mtime = os.path.getmtime(filepath)
+				mtime_str = datetime.fromtimestamp(mtime).strftime("%Y-%m-%d %H:%M:%S")
+				tooltip = f"Path: {filepath}\nModified: {mtime_str}"
+				item.setToolTip(tooltip)
+			except Exception as e:
+				log(self, INFO, f"Failed to set tooltip for {filepath}: {e}")
+
 			item.setData(Qt.ItemDataRole.UserRole, filename)  # 存储完整文件名，供重命名/删除使用
 			self._content_view_widget.addItem(item)
 		pass

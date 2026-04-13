@@ -17,6 +17,7 @@ class AssetEditorWidgetController(BaseController[QWidget]):
 		pass
 
 	def show(self):
+		self.ui.resize(1280, 720)
 		self.ui.raise_()
 		self.ui.activateWindow()
 		self.ui.show()

@@ -153,6 +153,9 @@ class InspectorPropertyTableWidget(QTableWidget):
 		self.viewport().installEventFilter(self)
 		self._apply_column_resize_policy()
 		QTimer.singleShot(0, self._apply_column_resize_policy)
+
+		#
+		self._inspecting_components: list[object] = []
 		pass
 
 	def setColumnCount(self, columns: int):
@@ -215,7 +218,7 @@ class InspectorPropertyTableWidget(QTableWidget):
 			return typing.get_args(element_type)
 
 		#
-		self._components = components
+		self._inspecting_components = components
 		self.clear_component_rows()
 		#
 		for comp in components:
@@ -239,8 +242,8 @@ class InspectorPropertyTableWidget(QTableWidget):
 		pass
 
 	def _refresh_components(self):
-		if hasattr(self, '_components') and self._components:
-			self.set_components(self._components)
+		if len(self._inspecting_components) > 0:
+			self.set_components(self._inspecting_components)
 		pass
 
 	def _add_list_rows(self, comp: object, comp_row: int, attrib_name: str, attrib_value: list, element_cls: type | None):
