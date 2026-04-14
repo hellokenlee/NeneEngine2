@@ -55,12 +55,12 @@ class ContentBrowserDockWidgetController(DockWidgetController):
 		super(ContentBrowserDockWidgetController, self).__init__()
 		# FIXME: Use AssetRegistry's root
 		self._nav = HistoryNavigator("content")
-		self._import_push_button: QPushButton = self.ui.findChild(QPushButton, "importPushButton")
-		self._back_push_button: QPushButton = self.ui.findChild(QPushButton, "backPushButton")
-		self._forward_push_button: QPushButton = self.ui.findChild(QPushButton, "forwardPushButton")
-		self._content_view_widget: ContentBrowserViewWidget = self.ui.findChild(ContentBrowserViewWidget, "contentListWidget")
-		self._path_widget: QWidget = self.ui.findChild(QWidget, "pathWidget")
-		self._search_line_edit: QLineEdit = self.ui.findChild(QLineEdit, "searchLineEdit")
+		self._import_push_button: QPushButton = self.find_child(QPushButton, "importPushButton")
+		self._back_push_button: QPushButton = self.find_child(QPushButton, "backPushButton")
+		self._forward_push_button: QPushButton = self.find_child(QPushButton, "forwardPushButton")
+		self._content_view_widget: ContentBrowserViewWidget = self.find_child(ContentBrowserViewWidget, "contentListWidget")
+		self._path_widget: QWidget = self.find_child(QWidget, "pathWidget")
+		self._search_line_edit: QLineEdit = self.find_child(QLineEdit, "searchLineEdit")
 		#
 		self._import_push_button.clicked.connect(self._on_import_asset)
 		self._back_push_button.clicked.connect(self._on_back_push_button_clicked)

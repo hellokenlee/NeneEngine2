@@ -134,8 +134,8 @@ class ConsoleDockWidgetController(DockWidgetController):
 
 	def __init__(self):
 		super(ConsoleDockWidgetController, self).__init__()
-		self.command_line_edit = self.ui.findChild(QLineEdit, "commandLineEdit")
-		self.log_text_browser = self.ui.findChild(QTextBrowser, "logTextBrowser")
+		self.command_line_edit = self.find_child(QLineEdit, "commandLineEdit")
+		self.log_text_browser = self.find_child(QTextBrowser, "logTextBrowser")
 		self._python_globals = {"__builtins__": __builtins__}
 		self._python_locals = {"controller": self}
 		self._command_history = []

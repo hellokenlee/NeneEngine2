@@ -2,12 +2,13 @@
 # __author__ = "KenLee"
 # __email__ = "hellokenlee@163.com"
 
-from PySide6.QtCore import Qt, QModelIndex, QEvent, QObject, QTimer, Signal
-from PySide6.QtGui import QKeySequence, QShortcut, QMouseEvent
-from PySide6.QtWidgets import QTreeWidget, QTreeWidgetItem, QMenu, QAbstractItemView, QHeaderView
+from PySide6.QtCore import Qt, QModelIndex, QEvent, QObject, QTimer, Signal, QPoint
+from PySide6.QtGui import QKeySequence, QShortcut, QMouseEvent, QDropEvent
+from PySide6.QtWidgets import QTreeWidget, QTreeWidgetItem, QMenu, QAbstractItemView, QHeaderView, QWidget
 from shiboken6 import isValid
 
 
+# noinspection DuplicatedCode
 class _TreeColumnRatioKeeper(QObject):
 	"""保持列宽按比例填满可视区，避免出现横向滚动条。"""
 
@@ -25,7 +26,7 @@ class _TreeColumnRatioKeeper(QObject):
 		# 延迟到布局稳定后再应用一次，避免首次 viewport 宽度为 0。
 		QTimer.singleShot(0, self._apply_ratios_to_sections)
 
-	def _get_header(self):
+	def _get_header(self) -> QHeaderView | None:
 		if not isValid(self._tree_widget):
 			return None
 		header = self._tree_widget.header()
@@ -33,13 +34,13 @@ class _TreeColumnRatioKeeper(QObject):
 			return None
 		return header
 
-	def eventFilter(self, obj, event):
+	def eventFilter(self, obj: QObject, event: QEvent) -> bool:
 		if obj == self._tree_widget:
 			if event.type() == QEvent.Type.Resize or event.type() == QEvent.Type.Show:
 				self._apply_ratios_to_sections()
 		return False
 
-	def _set_default_ratios(self):
+	def _set_default_ratios(self) -> None:
 		header = self._get_header()
 		if header is None:
 			return
@@ -53,7 +54,7 @@ class _TreeColumnRatioKeeper(QObject):
 		each = 1.0 / float(section_count)
 		self._ratios = [each for _ in range(section_count)]
 
-	def _sync_ratios_from_sections(self):
+	def _sync_ratios_from_sections(self) -> None:
 		header = self._get_header()
 		if header is None:
 			return
@@ -69,7 +70,7 @@ class _TreeColumnRatioKeeper(QObject):
 			return
 		self._ratios = [size / float(total) for size in sizes]
 
-	def _apply_ratios_to_sections(self):
+	def _apply_ratios_to_sections(self) -> None:
 		if self._updating:
 			return
 		header = self._get_header()
@@ -99,7 +100,7 @@ class _TreeColumnRatioKeeper(QObject):
 			header.resizeSection(idx, size)
 		self._updating = False
 
-	def _on_section_resized(self, logical_index: int, old_size: int, new_size: int):
+	def _on_section_resized(self, _logical_index: int, old_size: int, new_size: int) -> None:
 		if self._updating:
 			return
 		if old_size == new_size:
@@ -111,11 +112,11 @@ class _TreeColumnRatioKeeper(QObject):
 class _ClickEmptyToClearCurrentItemFilter(QObject):
 	"""左键点击树控件空白区域时，清除当前选中项。"""
 
-	def __init__(self, tree_widget: QTreeWidget):
+	def __init__(self, tree_widget: QTreeWidget) -> None:
 		super().__init__(tree_widget)
 		self._tree_widget = tree_widget
 
-	def eventFilter(self, obj, event):
+	def eventFilter(self, obj: QObject, event: QEvent) -> bool:
 		if event.type() == QEvent.Type.MouseButtonPress:
 			assert isinstance(event, QMouseEvent)
 			if event.button() == Qt.MouseButton.LeftButton and self._tree_widget.itemAt(event.position().toPoint()) is None:
@@ -132,7 +133,7 @@ class OutlinerTreeWidget(QTreeWidget):
 	TREE_COL_NAME = 0
 	TREE_COL_ID = 1
 
-	def __init__(self, parent=None):
+	def __init__(self, parent: QWidget | None = None) -> None:
 		super().__init__(parent)
 
 		header = self.header()
@@ -161,31 +162,33 @@ class OutlinerTreeWidget(QTreeWidget):
 		self.currentItemChanged.connect(self._on_current_item_changed)
 		pass
 
-	def add_entity(self, name: str, entity_id: int):
+	def add_entity(self, name: str, entity_id: int) -> QTreeWidgetItem:
 		item = QTreeWidgetItem(self)
 		item.setText(self.TREE_COL_NAME, name)
 		item.setText(self.TREE_COL_ID, str(entity_id))
 		return item
 
-	def _on_current_item_changed(self, current: QTreeWidgetItem, previous: QTreeWidgetItem):
+	def _on_current_item_changed(self, current: QTreeWidgetItem, _previous: QTreeWidgetItem) -> None:
 		eid = self._item_to_entity_id(current)
 		if eid is None:
 			eid = 0
 		self.entity_selected.emit(eid)
 		pass
 
-	def _on_context_menu(self, pos):
+	def _on_context_menu(self, pos: QPoint) -> None:
 		item = self.itemAt(pos)
 		if item is None:
 			return
 		menu = QMenu(self)
 		delete_action = menu.addAction("Delete")
-		action = menu.exec(self.viewport().mapToGlobal(pos))
+		pos = self.viewport().mapToGlobal(pos)
+		assert isinstance(pos, QPoint)
+		action = menu.exec(pos)
 		if action == delete_action:
 			self._remove_entity_item(item)
 		pass
 
-	def _remove_entity_item(self, item: QTreeWidgetItem):
+	def _remove_entity_item(self, item: QTreeWidgetItem) -> None:
 		entity_id = self._item_to_entity_id(item)
 		if entity_id is None:
 			return
@@ -199,14 +202,14 @@ class OutlinerTreeWidget(QTreeWidget):
 			parent.removeChild(item)
 		pass
 
-	def _on_delete_shortcut_activated(self):
+	def _on_delete_shortcut_activated(self) -> None:
 		item = self.currentItem()
 		if item is None:
 			return
 		self._remove_entity_item(item)
 		pass
 
-	def _item_to_entity_id(self, item: QTreeWidgetItem):
+	def _item_to_entity_id(self, item: QTreeWidgetItem | None) -> int | None:
 		if item is None:
 			return None
 		entity_id_text = item.text(self.TREE_COL_ID)
@@ -214,14 +217,14 @@ class OutlinerTreeWidget(QTreeWidget):
 			return None
 		return int(entity_id_text)
 
-	def _entity_id_of_row(self, parent_index: QModelIndex, row: int):
+	def _entity_id_of_row(self, parent_index: QModelIndex, row: int) -> int | None:
 		index = self.model().index(row, self.TREE_COL_ID, parent_index)
 		if not index.isValid():
 			return None
 		item = self.itemFromIndex(index)
 		return self._item_to_entity_id(item)
 
-	def _find_item_by_entity_id(self, entity_id: int):
+	def _find_item_by_entity_id(self, entity_id: int) -> QTreeWidgetItem | None:
 		stack = []
 		top_level_count = self.topLevelItemCount()
 		for idx in range(top_level_count):
@@ -234,7 +237,7 @@ class OutlinerTreeWidget(QTreeWidget):
 				stack.append(item.child(idx))
 		return None
 
-	def dropEvent(self, event):
+	def dropEvent(self, event: QDropEvent) -> None:
 		# 记录移动前的信息
 		selected_items = self.selectedItems()
 		moving_info = []

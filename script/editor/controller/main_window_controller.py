@@ -65,7 +65,7 @@ class MainWindowController(BaseController[QMainWindow], QtCore.QObject):
 		self._dock_widget_controllers: dict[QDockWidget, DockWidgetController] = {}
 
 		# Menus
-		self._file_menu: QMenu = self.ui.findChild(QMenu, "menuFile")
+		self._file_menu: QMenu = self.find_child(QMenu, "menuFile")
 		open_level_action = QAction("Open Level", self.ui)
 		open_level_action.triggered.connect(self._on_file_open_level)
 		self._file_menu.addAction(open_level_action)
@@ -73,14 +73,14 @@ class MainWindowController(BaseController[QMainWindow], QtCore.QObject):
 		save_current_level_action.triggered.connect(self._on_file_save_current_level)
 		self._file_menu.addAction(save_current_level_action)
 		#
-		self._window_menu: QMenu = self.ui.findChild(QMenu, "menuView")
+		self._window_menu: QMenu = self.find_child(QMenu, "menuView")
 		#
-		self._help_menu: QMenu = self.ui.findChild(QMenu, "menuHelp")
+		self._help_menu: QMenu = self.find_child(QMenu, "menuHelp")
 		reload_action = QAction("Reload", self.ui)
 		reload_action.triggered.connect(self._on_help_debug_reload)
 		self._help_menu.addMenu("Debug").addAction(reload_action)
 		#
-		self._edit_menu: QMenu = self.ui.findChild(QMenu, "menuEdit")
+		self._edit_menu: QMenu = self.find_child(QMenu, "menuEdit")
 		self._edit_menu_undo_action = QAction("Undo", self.ui)
 		self._edit_menu_undo_action.setShortcuts(QKeySequence.keyBindings(QKeySequence.StandardKey.Undo))
 		self._edit_menu_undo_action.triggered.connect(self._on_edit_undo)
@@ -96,7 +96,7 @@ class MainWindowController(BaseController[QMainWindow], QtCore.QObject):
 		self._console = self.add_dock_widget_controller(ConsoleDockWidgetController(), QtCore.Qt.DockWidgetArea.BottomDockWidgetArea)
 		self._console.on_top_level_changed.connect(self.on_dock_widget_top_level_changed)
 
-		# Content Broswer
+		# Content Browser
 		self._content_browser = self.add_dock_widget_controller(ContentBrowserDockWidgetController(), QtCore.Qt.DockWidgetArea.BottomDockWidgetArea)
 		self._content_browser.on_top_level_changed.connect(self.on_dock_widget_top_level_changed)
 
@@ -184,7 +184,7 @@ class MainWindowController(BaseController[QMainWindow], QtCore.QObject):
 		if b_in_tab_group:
 			controller.hide_title_bar()
 			# 双击弹出 tab 窗口
-			tab_bar = self.ui.findChild(QTabBar)
+			tab_bar = self.find_child(QTabBar)
 			if tab_bar:
 				tab_bar.tabBarDoubleClicked.connect(lambda idx, tb=tab_bar: self._tab_bar_double_click(tb, idx))
 		else:

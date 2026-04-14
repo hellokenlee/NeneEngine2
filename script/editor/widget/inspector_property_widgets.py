@@ -3,13 +3,14 @@
 # __email__ = "hellokenlee@163.com"
 
 from PySide6 import QtCore
-from PySide6.QtWidgets import QWidget, QLabel, QHBoxLayout, QDoubleSpinBox, QSizePolicy, QApplication, QLineEdit
+from PySide6.QtWidgets import QWidget, QLabel, QHBoxLayout, QDoubleSpinBox, QSpinBox, QSizePolicy, QApplication, QLineEdit
 
 from nene import Float3, Rotator, AssetHandle, AssetRegistry
 from script.editor.widget.content_broswer_view_widget import ContentBrowserViewWidget
 
 
-class _AxisSpinBox(QDoubleSpinBox):
+# noinspection DuplicatedCode
+class _AxisDoubleSpinBox(QDoubleSpinBox):
 	def __init__(self, color_hex: str, parent=None):
 		super().__init__(parent)
 		self.setDecimals(1)
@@ -45,6 +46,89 @@ class _AxisSpinBox(QDoubleSpinBox):
 		pass
 
 
+# noinspection DuplicatedCode
+class _AxisIntegerSpinBox(QSpinBox):
+	def __init__(self, color_hex: str, parent=None):
+		super().__init__(parent)
+		self.setRange(-999999, 999999)
+		self.setSingleStep(1)
+		self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+		self.setFixedWidth(52)
+		self.setButtonSymbols(QSpinBox.ButtonSymbols.NoButtons)
+		self.setStyleSheet(
+			"QSpinBox{padding-left:2px;}"
+			"QSpinBox::up-button,QSpinBox::down-button{width:0px;}"
+		)
+		self._axis_tag = QLabel("", self)
+		self._axis_tag.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+		self._axis_tag.setFixedWidth(2)
+		self._axis_tag.setStyleSheet(
+			"QLabel{"
+			f"background:{color_hex};"
+			"color:#111111;"
+			"border-radius:2px;"
+			"font-weight:700;"
+			"}"
+		)
+
+	def resizeEvent(self, event):
+		super().resizeEvent(event)
+		h = self.height() - 6
+		if h < 8:
+			h = self.height()
+		self._axis_tag.setFixedHeight(h)
+		self._axis_tag.move(2, (self.height() - h) // 2)
+		pass
+
+
+class IntegerWidget(QWidget):
+	valueChanged = QtCore.Signal(int)
+
+	def __init__(self, data: int):
+		super().__init__()
+		self.data = data
+		#
+		layout = QHBoxLayout(self)
+		layout.setContentsMargins(4, 0, 0, 0)
+		layout.setSpacing(4)
+		#
+		self._spin = _AxisIntegerSpinBox("#999999", self)
+		layout.addWidget(self._spin)
+		#
+		self._spin.blockSignals(True)
+		self._spin.setValue(int(self.data))
+		self._spin.blockSignals(False)
+		#
+		self._spin.valueChanged.connect(self.valueChanged.emit)
+		#
+		self.setFocusProxy(self._spin)
+		pass
+
+
+class FloatWidget(QWidget):
+	valueChanged = QtCore.Signal(float)
+
+	def __init__(self, data: float):
+		super().__init__()
+		self.data = data
+		#
+		layout = QHBoxLayout(self)
+		layout.setContentsMargins(4, 0, 0, 0)
+		layout.setSpacing(4)
+		#
+		self._spin = _AxisDoubleSpinBox("#999999", self)
+		layout.addWidget(self._spin)
+		#
+		self._spin.blockSignals(True)
+		self._spin.setValue(float(self.data))
+		self._spin.blockSignals(False)
+		#
+		self._spin.valueChanged.connect(self.valueChanged.emit)
+		#
+		self.setFocusProxy(self._spin)
+		pass
+
+
 class RGBWidget(QWidget):
 
 	def __init__(self):
@@ -54,9 +138,9 @@ class RGBWidget(QWidget):
 		layout.setContentsMargins(4, 0, 0, 0)
 		layout.setSpacing(4)
 		#
-		self._r_spin = _AxisSpinBox("#df5a4f", self)
-		self._g_spin = _AxisSpinBox("#6dbb4a", self)
-		self._b_spin = _AxisSpinBox("#4a84d8", self)
+		self._r_spin = _AxisDoubleSpinBox("#df5a4f", self)
+		self._g_spin = _AxisDoubleSpinBox("#6dbb4a", self)
+		self._b_spin = _AxisDoubleSpinBox("#4a84d8", self)
 		layout.addWidget(self._r_spin)
 		layout.addWidget(self._g_spin)
 		layout.addWidget(self._b_spin)
@@ -80,6 +164,7 @@ class RGBWidget(QWidget):
 		# Identify which spin box (if any) currently has focus (including its internal lineEdit)
 		current_spin = None
 		for spin in spins:
+			# noinspection PyTypeChecker
 			if focused == spin or spin.isAncestorOf(focused):
 				current_spin = spin
 				break

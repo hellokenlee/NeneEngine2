@@ -14,10 +14,11 @@ from script.editor.widget.content_broswer_view_widget import ContentBrowserViewW
 from script.editor.widget.inspector_property_table_widget import InspectorPropertyTableWidget
 from script.editor.widget.outliner_tree_widget import OutlinerTreeWidget
 
-T = TypeVar("T")
+TRootWidget = TypeVar("TRootWidget", bound=QtCore.QObject)
+TChildWidget = TypeVar("TChildWidget", bound=QtCore.QObject)
 
 
-class BaseController(Generic[T], QtCore.QObject):
+class BaseController(Generic[TRootWidget], QtCore.QObject):
 
 	UI_FILE = ""
 
@@ -32,5 +33,10 @@ class BaseController(Generic[T], QtCore.QObject):
 		loader.registerCustomWidget(InspectorPropertyTableWidget)
 		loader.registerCustomWidget(OutlinerTreeWidget)
 		loader.setWorkingDirectory(QDir(IconSet.UI_FOLDER_PATH))
-		self.ui: T = loader.load(ui_file)
+		self.ui: TRootWidget = loader.load(ui_file)
 		pass
+
+	def find_child(self, child_class: type[TChildWidget], child_name: str = "") -> TChildWidget:
+		child_widget = self.ui.findChild(child_class, child_name)
+		assert child_widget is not None, "Cannot find child widget: %s (%s)" % (child_name, child_class.__name__)
+		return child_widget

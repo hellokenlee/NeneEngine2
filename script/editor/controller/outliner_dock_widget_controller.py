@@ -30,7 +30,7 @@ class OutlinerDockWidgetController(DockWidgetController):
 
 	def __init__(self):
 		super(OutlinerDockWidgetController, self).__init__()
-		self._tree_widget = self.ui.findChild(OutlinerTreeWidget, "treeWidget")
+		self._tree_widget = self.find_child(OutlinerTreeWidget, "treeWidget")
 		self._tree_widget.clear()
 		self._tree_widget.entity_selected.connect(self._on_entity_selected)
 		self._tree_widget.entity_remove_requested.connect(self._on_entity_remove_requested)

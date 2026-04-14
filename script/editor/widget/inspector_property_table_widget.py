@@ -11,7 +11,7 @@ from PySide6.QtWidgets import QAbstractItemView, QTableWidget, QTableWidgetItem,
 
 from script.editor.common.util import *
 from script.editor.resource_set import IconSet
-from script.editor.widget.inspector_property_widgets import Float3Widget, RotatorWidget, AssetHandleWidget
+from script.editor.widget.inspector_property_widgets import Float3Widget, RotatorWidget, AssetHandleWidget, FloatWidget, IntegerWidget
 
 from nene import Float3, Rotator, StaticMeshAssetHandle, MaterialAssetHandle, TextureAssetHandle
 
@@ -126,6 +126,8 @@ class InspectorPropertyTableWidget(QTableWidget):
 	_MIN_COLUMN_WIDTH = 10
 
 	PROPERTY_WIDGET_CLASS: dict[type, type] = {
+		int: IntegerWidget,
+		float: FloatWidget,
 		Float3: Float3Widget,
 		Rotator: RotatorWidget,
 		StaticMeshAssetHandle: AssetHandleWidget,
@@ -238,6 +240,9 @@ class InspectorPropertyTableWidget(QTableWidget):
 					elif type(attrib_value) in self.PROPERTY_WIDGET_CLASS:
 						widget_cls = self.PROPERTY_WIDGET_CLASS.get(type(attrib_value))
 						widget = widget_cls(attrib_value)
+						# For immutable types like float, we need to connect a signal to update the property
+						if hasattr(widget, 'valueChanged'):
+							widget.valueChanged.connect(lambda val, c=comp, a=attrib_name: setattr(c, a, val))
 						self.add_property_row(comp_row, sanitize_property_name(attrib_name), widget, indent=1)
 		pass
 
@@ -255,7 +260,10 @@ class InspectorPropertyTableWidget(QTableWidget):
 		)
 		# 添加每个元素的行
 		for idx, element in enumerate(attrib_value):
-			value_widget = self._create_element_widget(element)
+			value_widget = self._create_element_widget(
+				element, 
+				on_changed=lambda val, i=idx: self._on_list_element_changed(comp, attrib_name, i, val)
+			)
 			value_text = "" if value_widget else str(element)
 			delete_cb = lambda i=idx: self._on_list_delete(comp, attrib_name, i)
 			self._add_collection_entry_row(comp_row, f"[{idx}]", value_widget, value_text, delete_cb)
@@ -270,16 +278,22 @@ class InspectorPropertyTableWidget(QTableWidget):
 		)
 		# 添加每个键值对的行
 		for key, value in attrib_value.items():
-			value_widget = self._create_element_widget(value)
+			value_widget = self._create_element_widget(
+				value, 
+				on_changed=lambda val, k=key: self._on_dict_element_changed(comp, attrib_name, k, val)
+			)
 			value_text = "" if value_widget else str(value)
 			delete_cb = lambda k=key: self._on_dict_delete(comp, attrib_name, k)
 			self._add_collection_entry_row(comp_row, str(key), value_widget, value_text, delete_cb)
 		pass
 
-	def _create_element_widget(self, element) -> QWidget | None:
+	def _create_element_widget(self, element, on_changed: typing.Callable = None) -> QWidget | None:
 		widget_cls = self.PROPERTY_WIDGET_CLASS.get(type(element))
 		if widget_cls is not None:
-			return widget_cls(element)
+			widget = widget_cls(element)
+			if on_changed and hasattr(widget, "valueChanged"):
+				widget.valueChanged.connect(on_changed)
+			return widget
 		return None
 
 	def _add_collection_header_row(self, comp_row: int, title: str, on_add: typing.Callable) -> int:
@@ -360,6 +374,12 @@ class InspectorPropertyTableWidget(QTableWidget):
 		self._refresh_components()
 		pass
 
+	def _on_list_element_changed(self, comp: object, attrib_name: str, index: int, value: typing.Any):
+		current_list = list(getattr(comp, attrib_name))
+		current_list[index] = value
+		setattr(comp, attrib_name, current_list)
+		pass
+
 	def _on_dict_add(self, comp: object, attrib_name: str, key_cls: type, value_cls: type):
 		current_dict = dict(getattr(comp, attrib_name))
 		new_key = self._generate_dict_key(current_dict, key_cls)
@@ -375,6 +395,12 @@ class InspectorPropertyTableWidget(QTableWidget):
 			del current_dict[key]
 			setattr(comp, attrib_name, current_dict)
 		self._refresh_components()
+		pass
+
+	def _on_dict_element_changed(self, comp: object, attrib_name: str, key: typing.Any, value: typing.Any):
+		current_dict = dict(getattr(comp, attrib_name))
+		current_dict[key] = value
+		setattr(comp, attrib_name, current_dict)
 		pass
 
 	@staticmethod

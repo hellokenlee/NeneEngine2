@@ -19,9 +19,9 @@ class MaterialEditorWidgetController(AssetEditorWidgetController):
 	def __init__(self, asset_path: str):
 		super().__init__()
 		self._asset_path = asset_path
-		self._property_table: InspectorPropertyTableWidget = self.ui.findChild(InspectorPropertyTableWidget, "ComponentTable")
-		self._name_label: QLabel = self.ui.findChild(QLabel, "NameLabel")
-		self._search_line_edit: QLineEdit = self.ui.findChild(QLineEdit, "SarchLineEdit")
+		self._property_table: InspectorPropertyTableWidget = self.find_child(InspectorPropertyTableWidget, "ComponentTable")
+		self._name_label: QLabel = self.find_child(QLabel, "NameLabel")
+		self._search_line_edit: QLineEdit = self.find_child(QLineEdit, "SarchLineEdit")
 
 		# 设置显示名称
 		file_name = os.path.basename(asset_path)

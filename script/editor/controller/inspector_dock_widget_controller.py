@@ -29,8 +29,8 @@ class InspectorDockWidgetController(DockWidgetController):
 
 	def __init__(self):
 		super(InspectorDockWidgetController, self).__init__()
-		self._placeholder_label = self.ui.findChild(QLabel, "PlaceholderLabel")
-		self._component_property_table = self.ui.findChild(InspectorPropertyTableWidget, "ComponentTable")
+		self._placeholder_label = self.find_child(QLabel, "PlaceholderLabel")
+		self._component_property_table = self.find_child(InspectorPropertyTableWidget, "ComponentTable")
 		self._component_property_table.setVisible(False)
 		#
 		self._event_handler = EntityInspectEventHandler(self._on_entity_inspect)
