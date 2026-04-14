@@ -181,9 +181,9 @@ class OutlinerTreeWidget(QTreeWidget):
 			return
 		menu = QMenu(self)
 		delete_action = menu.addAction("Delete")
-		pos = self.viewport().mapToGlobal(pos)
-		assert isinstance(pos, QPoint)
-		action = menu.exec(pos)
+		mapped_pos = self.viewport().mapToGlobal(pos)
+		assert isinstance(mapped_pos, QPoint)
+		action = menu.exec(mapped_pos)
 		if action == delete_action:
 			self._remove_entity_item(item)
 		pass

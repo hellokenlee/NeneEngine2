@@ -4,9 +4,12 @@
 
 import os
 
+from script.editor.common.log import log, WARNING
 from script.editor.common.singleton import Singleton
 from script.editor.controller.asset_editor_widget_controller import AssetEditorWidgetController
 from script.editor.controller.material_editor_widget_controller import MaterialEditorWidgetController
+
+from nene import AssetRegistry, MaterialAsset
 
 
 class AssetEditorManager(object, metaclass=Singleton):
@@ -22,8 +25,13 @@ class AssetEditorManager(object, metaclass=Singleton):
         if abs_path in self._open_editor_controllers:
             controller = self._open_editor_controllers[abs_path]
         else:
-            # TODO: 根据资源类型选择编辑器
-            controller = MaterialEditorWidgetController(abs_path)
+            # 根据资源类型选择编辑器
+            abstract = AssetRegistry().find_abstract(abs_path)
+            if abstract.m_type_name == MaterialAsset.__name__:
+                controller = MaterialEditorWidgetController(abs_path)
+            else:
+                log(self, WARNING, "Unsupported asset type: %s" % abstract.m_type_name)
+                return
             self._open_editor_controllers[abs_path] = controller
         controller.show()
         pass

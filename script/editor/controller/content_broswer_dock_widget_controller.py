@@ -3,12 +3,12 @@
 # __email__ = "hellokenlee@163.com"
 
 import os
-import time
+import typing
 from datetime import datetime
 
-from PySide6.QtCore import QEvent, QObject, QSize, Qt
+from PySide6.QtCore import QEvent, QObject, QSize, Qt, QPoint
 from PySide6.QtGui import QKeySequence, QShortcut, QMouseEvent
-from PySide6.QtWidgets import QPushButton, QWidget, QListWidget, QListWidgetItem, QApplication, QLabel, QLineEdit, QFileDialog, QMenu, QMessageBox, QStyledItemDelegate
+from PySide6.QtWidgets import QPushButton, QWidget, QListWidget, QListWidgetItem, QApplication, QLabel, QLineEdit, QFileDialog, QMenu, QMessageBox, QStyledItemDelegate, QLayout
 from script.editor.resource_set import IconSet, PixmapSet, AssetFileIconSet
 from script.editor.controller.dock_widget_controller import DockWidgetController
 from script.editor.common.log import log, INFO
@@ -53,13 +53,14 @@ class ContentBrowserDockWidgetController(DockWidgetController):
 
 	def __init__(self):
 		super(ContentBrowserDockWidgetController, self).__init__()
-		# FIXME: Use AssetRegistry's root
+		# TODO: Use AssetRegistry's root
 		self._nav = HistoryNavigator("content")
 		self._import_push_button: QPushButton = self.find_child(QPushButton, "importPushButton")
 		self._back_push_button: QPushButton = self.find_child(QPushButton, "backPushButton")
 		self._forward_push_button: QPushButton = self.find_child(QPushButton, "forwardPushButton")
 		self._content_view_widget: ContentBrowserViewWidget = self.find_child(ContentBrowserViewWidget, "contentListWidget")
 		self._path_widget: QWidget = self.find_child(QWidget, "pathWidget")
+		self._path_widget_layout: QLayout = typing.cast(QLayout, self._path_widget.layout())
 		self._search_line_edit: QLineEdit = self.find_child(QLineEdit, "searchLineEdit")
 		#
 		self._import_push_button.clicked.connect(self._on_import_asset)
@@ -164,16 +165,18 @@ class ContentBrowserDockWidgetController(DockWidgetController):
 		# 子菜单：New Asset
 		new_asset_menu = menu.addMenu(IconSet().file, "New Asset")
 		new_material_action = new_asset_menu.addAction(IconSet().material, "Material")
-		action = menu.exec(self._content_view_widget.mapToGlobal(pos))
+		mapped_pos = self._content_view_widget.mapToGlobal(pos)
+		assert isinstance(mapped_pos, QPoint)
+		action = menu.exec(mapped_pos)
 		if action is None:
 			return
 		if action == import_action:
 			self._on_import_asset()
 		elif action == new_folder_action:
 			self._on_new_folder()
-		elif action == rename_action:
+		elif action == rename_action and hit_item is not None:
 			self._on_rename(hit_item)
-		elif action == delete_action:
+		elif action == delete_action and hit_item is not None:
 			self._on_delete(hit_item)
 		elif action == new_material_action:
 			self._on_new_asset("Material")
@@ -203,7 +206,7 @@ class ContentBrowserDockWidgetController(DockWidgetController):
 
 	def _on_rename(self, item: QListWidgetItem):
 		"""原地进入内联编辑以重命名；文件只编辑主名部分，扩展名在提交时自动保留"""
-		real_name = item.data(Qt.ItemDataRole.UserRole)
+		real_name: str = item.data(Qt.ItemDataRole.UserRole)
 		self._editing_original_name = real_name
 		item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEditable)
 		is_dir = os.path.isdir(os.path.join(self._nav.current(), real_name))
@@ -269,7 +272,7 @@ class ContentBrowserDockWidgetController(DockWidgetController):
 		self._path_button_to_path.clear()
 		for child in self._path_widget.children():
 			if isinstance(child, QWidget):
-				self._path_widget.layout().removeWidget(child)
+				self._path_widget_layout.removeWidget(child)
 				child.deleteLater()
 		# 根据当前路径重建路径按钮
 		button_path = ""
@@ -277,7 +280,7 @@ class ContentBrowserDockWidgetController(DockWidgetController):
 		for directory in directories:
 			# 路径按钮
 			path_button = QPushButton(directory)
-			self._path_widget.layout().addWidget(path_button)
+			self._path_widget_layout.addWidget(path_button)
 			button_path = os.path.join(button_path, directory)
 			self._path_button_to_path[path_button] = button_path
 			path_button.clicked.connect(lambda _, btn=path_button: self._on_path_button_clicked(btn))
@@ -288,7 +291,7 @@ class ContentBrowserDockWidgetController(DockWidgetController):
 				sep_label.setPixmap(PixmapSet().path_seperator.scaled(14, 28))
 				sep_label.setFixedSize(QSize(18, 28))
 				sep_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-				self._path_widget.layout().addWidget(sep_label)
+				self._path_widget_layout.addWidget(sep_label)
 
 		# 更新导航栏按钮可用状态
 		if not self._nav.can_back():
@@ -299,7 +302,6 @@ class ContentBrowserDockWidgetController(DockWidgetController):
 		self._forward_push_button.setEnabled(self._nav.can_forward())
 
 		# 重绘当前路径的文件视图
-		from nene import AssetRegistry
 		self._content_view_widget.base_path = self._nav.current()
 		self._content_view_widget.clear()
 		filenames = os.listdir(self._nav.current())
