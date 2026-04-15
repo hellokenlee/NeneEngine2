@@ -2,19 +2,17 @@
 # __author__ = "KenLee"
 # __email__ = "hellokenlee@163.com"
 
-import typing
 
 from shiboken6 import isValid
-from PySide6.QtCore import Qt, QSize, QEvent, QObject, QTimer, QModelIndex
+from PySide6.QtCore import Qt, QSize, QEvent, QTimer, QModelIndex
 from PySide6.QtGui import QMouseEvent
-from PySide6.QtWidgets import QAbstractItemView, QTableWidget, QTableWidgetItem, QToolButton, QWidget, QHBoxLayout, QLabel, QHeaderView
+from PySide6.QtWidgets import QAbstractItemView, QTableWidgetItem, QHeaderView
 
-from script.editor.common.util import *
 from script.editor.resource_set import IconSet
-from script.editor.widget.inspector_property_widgets import Float3Widget, RotatorWidget, AssetHandleWidget, FloatWidget, IntegerWidget
+from script.editor.widget.inspector_collection_property_widgets import *
+
 
 from nene import Float3, Rotator, StaticMeshAssetHandle, MaterialAssetHandle, TextureAssetHandle
-
 
 class _TableColumnRatioKeeper(QObject):
 	"""保持列宽按比例填满可视区，避免出现横向滚动条。"""
@@ -50,36 +48,31 @@ class _TableColumnRatioKeeper(QObject):
 		self._apply_ratios_to_sections()
 		pass
 
-	def _set_default_ratios(self):
+	def _num_sections(self) -> int:
 		header = self._get_header()
-		if header is None:
-			return
-		section_count = header.count()
-		if section_count <= 0:
-			self._ratios = []
-			return
+		if header is None or header.count() <= 0:
+			return 0
+		return header.count()
+
+	def _set_default_ratios(self):
+		section_count = self._num_sections()
 		if section_count == 2:
 			self._ratios = [0.3, 0.7]
-			return
-		each = 1.0 / float(section_count)
-		self._ratios = [each for _ in range(section_count)]
+		else:
+			self._ratios = [1.0 / float(section_count) for _ in range(section_count)]
+		pass
 
 	def _sync_ratios_from_sections(self):
-		header = self._get_header()
-		if header is None:
-			return
-		section_count = header.count()
-		if section_count <= 0:
-			self._ratios = []
-			return
-		sizes = [header.sectionSize(idx) for idx in range(section_count)]
+		section_count = self._num_sections()
+		sizes = [self._get_header().sectionSize(idx) for idx in range(section_count)]
 		total = sum(sizes)
 		if total <= 0:
-			each = 1.0 / float(section_count)
-			self._ratios = [each for _ in range(section_count)]
-			return
-		self._ratios = [size / float(total) for size in sizes]
+			self._set_default_ratios()
+		else:
+			self._ratios = [size / float(total) for size in sizes]
+		pass
 
+	# noinspection DuplicatedCode
 	def _apply_ratios_to_sections(self):
 		if self._updating:
 			return
@@ -121,18 +114,27 @@ class _TableColumnRatioKeeper(QObject):
 		self._apply_ratios_to_sections()
 
 
+class _ComponentRowData:
+	def __init__(self, title: str, button: QToolButton):
+		self.title = title
+		self.button = button
+		self.children: list[int] = []
+		self.collapsed = False
+		pass
+
+
 class InspectorPropertyTableWidget(QTableWidget):
 	_SPLITTER_HIT_WIDTH = 4
 	_MIN_COLUMN_WIDTH = 10
 
-	PROPERTY_WIDGET_CLASS: dict[type, type] = {
-		int: IntegerWidget,
-		float: FloatWidget,
-		Float3: Float3Widget,
-		Rotator: RotatorWidget,
-		StaticMeshAssetHandle: AssetHandleWidget,
-		MaterialAssetHandle: AssetHandleWidget,
-		TextureAssetHandle: AssetHandleWidget,
+	PROPERTY_WIDGET_CLASS: dict[type, type[PropertyEdit, QWidget]] = {
+		int: IntegerPropertyWidget,
+		float: FloatPropertyWidget,
+		Float3: Float3PropertyWidget,
+		Rotator: RotatorPropertyWidget,
+		StaticMeshAssetHandle: AssetHandlePropertyWidget,
+		MaterialAssetHandle: AssetHandlePropertyWidget,
+		TextureAssetHandle: AssetHandlePropertyWidget,
 	}
 
 	def __init__(self, parent=None):
@@ -143,10 +145,7 @@ class InspectorPropertyTableWidget(QTableWidget):
 		self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 		self.cellClicked.connect(self._on_table_cell_clicked)
 
-		self._component_row_titles: dict[int, str] = {}
-		self._component_row_children: dict[int, list[int]] = {}
-		self._component_row_collapsed: dict[int, bool] = {}
-		self._component_row_buttons: dict[int, QToolButton] = {}
+		self._component_rows: dict[int, _ComponentRowData] = {}
 		self._dragging_splitter_index: int | None = None
 		self._drag_start_x = 0
 		self._drag_start_left_width = 0
@@ -224,6 +223,10 @@ class InspectorPropertyTableWidget(QTableWidget):
 		self.clear_component_rows()
 		#
 		for comp in components:
+			#
+			if comp is None:
+				continue
+			#
 			comp_title = sanitize_component_name(type(comp).__name__)
 			comp_row = self.add_component_title_row(comp_title)
 			#
@@ -231,19 +234,22 @@ class InspectorPropertyTableWidget(QTableWidget):
 				if attrib_name.startswith("m_"):
 					attrib_value = getattr(comp, attrib_name, None)
 					if isinstance(attrib_value, list):
-						element_types = get_element_types(comp, attrib_name)
-						element_cls = element_types[0] if element_types else None
-						self._add_list_rows(comp, comp_row, attrib_name, attrib_value, element_cls)
+						element_cls = get_element_types(comp, attrib_name)
+						assert len(element_cls) == 1, "complex type attribute binding must have exactly one element type"
+						ctrl = ListPropertyWidget(comp, attrib_name, self, comp_row, element_cls[0])
+						ctrl.property_changed.connect(self._refresh_components)
+						self._component_rows[comp_row].children.extend(ctrl.component_children_rows)
 					elif isinstance(attrib_value, dict):
-						key_cls, value_cls = get_element_types(comp, attrib_name)
-						self._add_dict_rows(comp, comp_row, attrib_name, attrib_value, key_cls, value_cls)
+						pass
+						# key_cls, value_cls = get_element_types(comp, attrib_name)
+						# ctrl = DictPropertyWidget(comp, attrib_name, self, comp_row, key_cls, value_cls)
+						# ctrl.property_changed.connect(self._refresh_components)
+						# self._component_rows[comp_row].children.extend(ctrl.component_children_rows)
 					elif type(attrib_value) in self.PROPERTY_WIDGET_CLASS:
 						widget_cls = self.PROPERTY_WIDGET_CLASS.get(type(attrib_value))
-						widget = widget_cls(attrib_value)
-						# For immutable types like float, we need to connect a signal to update the property
-						if hasattr(widget, 'valueChanged'):
-							widget.valueChanged.connect(lambda val, c=comp, a=attrib_name: setattr(c, a, val))
-						self.add_property_row(comp_row, sanitize_property_name(attrib_name), widget, indent=1)
+						widget = widget_cls(comp, attrib_name)
+						property_row = self.add_property_row(sanitize_property_name(attrib_name), widget, indent=1)
+						self._component_rows[comp_row].children.append(property_row)
 		pass
 
 	def _refresh_components(self):
@@ -251,182 +257,11 @@ class InspectorPropertyTableWidget(QTableWidget):
 			self.set_components(self._inspecting_components)
 		pass
 
-	def _add_list_rows(self, comp: object, comp_row: int, attrib_name: str, attrib_value: list, element_cls: type | None):
-		prop_name = sanitize_property_name(attrib_name)
-		# 添加集合子标题行（带 + 按钮）
-		self._add_collection_header_row(
-			comp_row, prop_name,
-			on_add=lambda: self._on_list_add(comp, attrib_name, element_cls)
-		)
-		# 添加每个元素的行
-		for idx, element in enumerate(attrib_value):
-			value_widget = self._create_element_widget(
-				element, 
-				on_changed=lambda val, i=idx: self._on_list_element_changed(comp, attrib_name, i, val)
-			)
-			value_text = "" if value_widget else str(element)
-			delete_cb = lambda i=idx: self._on_list_delete(comp, attrib_name, i)
-			self._add_collection_entry_row(comp_row, f"[{idx}]", value_widget, value_text, delete_cb)
-		pass
-
-	def _add_dict_rows(self, comp: object, comp_row: int, attrib_name: str, attrib_value: dict, key_cls: type, value_cls: type):
-		prop_name = sanitize_property_name(attrib_name)
-		# 添加集合子标题行（带 + 按钮）
-		self._add_collection_header_row(
-			comp_row, prop_name,
-			on_add=lambda: self._on_dict_add(comp, attrib_name, key_cls, value_cls)
-		)
-		# 添加每个键值对的行
-		for key, value in attrib_value.items():
-			value_widget = self._create_element_widget(
-				value, 
-				on_changed=lambda val, k=key: self._on_dict_element_changed(comp, attrib_name, k, val)
-			)
-			value_text = "" if value_widget else str(value)
-			delete_cb = lambda k=key: self._on_dict_delete(comp, attrib_name, k)
-			self._add_collection_entry_row(comp_row, str(key), value_widget, value_text, delete_cb)
-		pass
-
-	def _create_element_widget(self, element, on_changed: typing.Callable = None) -> QWidget | None:
-		widget_cls = self.PROPERTY_WIDGET_CLASS.get(type(element))
-		if widget_cls is not None:
-			widget = widget_cls(element)
-			if on_changed and hasattr(widget, "valueChanged"):
-				widget.valueChanged.connect(on_changed)
-			return widget
-		return None
-
-	def _add_collection_header_row(self, comp_row: int, title: str, on_add: typing.Callable) -> int:
-		row = self.rowCount()
-		self.insertRow(row)
-		# 名称列：缩进的加粗标题
-		name_widget = QWidget(self)
-		name_layout = QHBoxLayout(name_widget)
-		name_layout.setContentsMargins(20, 0, 0, 0)
-		name_layout.setSpacing(4)
-		name_label = QLabel(f"<b>{title}</b>", name_widget)
-		name_layout.addWidget(name_label)
-		name_layout.addStretch(1)
-		self.setCellWidget(row, 0, name_widget)
-		# 值列：添加按钮
-		add_widget = QWidget(self)
-		add_layout = QHBoxLayout(add_widget)
-		add_layout.setContentsMargins(0, 0, 0, 0)
-		add_layout.setSpacing(0)
-		add_btn = QToolButton(add_widget)
-		add_btn.setText("+")
-		add_btn.setFixedSize(20, 20)
-		add_btn.setStyleSheet("QToolButton { border: 1px solid gray; font-weight: bold; }")
-		add_btn.clicked.connect(on_add)
-		add_layout.addWidget(add_btn)
-		add_layout.addStretch(1)
-		self.setCellWidget(row, 1, add_widget)
-		#
-		self._component_row_children.setdefault(comp_row, []).append(row)
-		return row
-
-	def _add_collection_entry_row(self, comp_row: int, key_text: str, value_widget: QWidget | None, value_text: str, on_delete: typing.Callable) -> int:
-		row = self.rowCount()
-		self.insertRow(row)
-		# 名称列：缩进的键名
-		name_widget = QWidget(self)
-		name_layout = QHBoxLayout(name_widget)
-		name_layout.setContentsMargins(40, 0, 0, 0)
-		name_layout.setSpacing(0)
-		name_label = QLabel(key_text, name_widget)
-		name_layout.addWidget(name_label)
-		name_layout.addStretch(1)
-		self.setCellWidget(row, 0, name_widget)
-		# 值列：值控件 + 删除按钮
-		value_cell_widget = QWidget(self)
-		value_layout = QHBoxLayout(value_cell_widget)
-		value_layout.setContentsMargins(0, 0, 0, 0)
-		value_layout.setSpacing(2)
-		if value_widget is not None:
-			value_layout.addWidget(value_widget, 1)
-		else:
-			text_label = QLabel(value_text, value_cell_widget)
-			value_layout.addWidget(text_label, 1)
-		delete_btn = QToolButton(value_cell_widget)
-		delete_btn.setText("−")
-		delete_btn.setFixedSize(20, 20)
-		delete_btn.setStyleSheet("QToolButton { border: 1px solid gray; color: red; font-weight: bold; }")
-		delete_btn.clicked.connect(on_delete)
-		value_layout.addWidget(delete_btn)
-		self.setCellWidget(row, 1, value_cell_widget)
-		#
-		self._component_row_children.setdefault(comp_row, []).append(row)
-		return row
-
-	def _on_list_add(self, comp: object, attrib_name: str, element_cls: type | None):
-		current_list = list(getattr(comp, attrib_name))
-		new_element = element_cls() if element_cls is not None else None
-		current_list.append(new_element)
-		setattr(comp, attrib_name, current_list)
-		self._refresh_components()
-		pass
-
-	def _on_list_delete(self, comp: object, attrib_name: str, index: int):
-		current_list = list(getattr(comp, attrib_name))
-		if 0 <= index < len(current_list):
-			del current_list[index]
-			setattr(comp, attrib_name, current_list)
-		self._refresh_components()
-		pass
-
-	def _on_list_element_changed(self, comp: object, attrib_name: str, index: int, value: typing.Any):
-		current_list = list(getattr(comp, attrib_name))
-		current_list[index] = value
-		setattr(comp, attrib_name, current_list)
-		pass
-
-	def _on_dict_add(self, comp: object, attrib_name: str, key_cls: type, value_cls: type):
-		current_dict = dict(getattr(comp, attrib_name))
-		new_key = self._generate_dict_key(current_dict, key_cls)
-		new_value = value_cls() if value_cls is not None else None
-		current_dict[new_key] = new_value
-		setattr(comp, attrib_name, current_dict)
-		self._refresh_components()
-		pass
-
-	def _on_dict_delete(self, comp: object, attrib_name: str, key):
-		current_dict = dict(getattr(comp, attrib_name))
-		if key in current_dict:
-			del current_dict[key]
-			setattr(comp, attrib_name, current_dict)
-		self._refresh_components()
-		pass
-
-	def _on_dict_element_changed(self, comp: object, attrib_name: str, key: typing.Any, value: typing.Any):
-		current_dict = dict(getattr(comp, attrib_name))
-		current_dict[key] = value
-		setattr(comp, attrib_name, current_dict)
-		pass
-
-	@staticmethod
-	def _generate_dict_key(current_dict: dict, key_cls: type):
-		if key_cls == int:
-			key = 0
-			while key in current_dict:
-				key += 1
-			return key
-		elif key_cls == str:
-			key = "new_key"
-			idx = 0
-			while key in current_dict:
-				idx += 1
-				key = f"new_key_{idx}"
-			return key
-		return key_cls()
-
 	def clear_component_rows(self):
 		self.clearSpans()
 		self.clearContents()
 		self.setRowCount(0)
-		self._component_row_titles.clear()
-		self._component_row_children.clear()
-		self._component_row_collapsed.clear()
-		self._component_row_buttons.clear()
+		self._component_rows.clear()
 		pass
 
 	def add_component_title_row(self, title: str) -> int:
@@ -465,12 +300,11 @@ class InspectorPropertyTableWidget(QTableWidget):
 		button.clicked.connect(lambda checked, r=row: self._on_component_header_clicked(r, checked))
 		self.setCellWidget(row, 0, button)
 
-		self._component_row_titles[row] = title
-		self._component_row_buttons[row] = button
+		self._component_rows[row] = _ComponentRowData(title, button)
 		self._set_component_row_label(row, False)
 		return row
 
-	def add_property_row(self, component_row: int, property_name: str, value_widget: QWidget | None = None, value_text: str = "", indent: int = 1) -> int:
+	def add_property_row(self, property_name: str, value_widget: QWidget, indent: int = 1) -> int:
 		col_count = self.columnCount()
 		row = self.rowCount()
 		self.insertRow(row)
@@ -483,51 +317,45 @@ class InspectorPropertyTableWidget(QTableWidget):
 		name_layout.addWidget(name_label)
 		name_layout.addStretch(1)
 		self.setCellWidget(row, 0, name_widget)
-
-		if value_widget is not None:
-			value_cell_widget = QWidget(self)
-			value_layout = QHBoxLayout(value_cell_widget)
-			value_layout.setContentsMargins(0, 0, 0, 0)
-			value_layout.setSpacing(0)
-			value_layout.addWidget(value_widget, 1)
-			self.setCellWidget(row, 1, value_cell_widget)
-		else:
-			value_item = QTableWidgetItem(value_text)
-			# noinspection PyTypeChecker
-			value_item.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable)
-			self.setItem(row, 1, value_item)
-
+		#
+		value_cell_widget = QWidget(self)
+		value_layout = QHBoxLayout(value_cell_widget)
+		value_layout.setContentsMargins(0, 0, 0, 0)
+		value_layout.setSpacing(0)
+		value_layout.addWidget(value_widget, 1)
+		self.setCellWidget(row, 1, value_cell_widget)
+		#
 		for col in range(2, col_count):
 			empty_item = QTableWidgetItem("")
 			empty_item.setFlags(Qt.ItemFlag.ItemIsEnabled)
 			self.setItem(row, col, empty_item)
-
-		self._component_row_children.setdefault(component_row, []).append(row)
 		return row
 
 	def set_component_collapsed(self, row: int, collapsed: bool):
-		self._component_row_collapsed[row] = collapsed
-		self._set_component_row_label(row, collapsed)
-		for prop_row in self._component_row_children.get(row, []):
-			self.setRowHidden(prop_row, collapsed)
+		data = self._component_rows.get(row)
+		if data:
+			data.collapsed = collapsed
+			self._set_component_row_label(row, collapsed)
+			for prop_row in data.children:
+				self.setRowHidden(prop_row, collapsed)
 		pass
 
 	def _set_component_row_label(self, row: int, collapsed: bool):
-		button = self._component_row_buttons.get(row, None)
-		if button is None:
+		data = self._component_rows.get(row)
+		if data is None or data.button is None:
 			return
-		button.setText(self._component_row_titles.get(row, "Component"))
-		button.setIcon(IconSet().right_triangle if collapsed else IconSet().down_triangle)
-		button.setIconSize(QSize(11, 11))
-		button.blockSignals(True)
-		button.setChecked(not collapsed)
-		button.blockSignals(False)
+		data.button.setText(data.title)
+		data.button.setIcon(IconSet().right_triangle if collapsed else IconSet().down_triangle)
+		data.button.setIconSize(QSize(11, 11))
+		data.button.blockSignals(True)
+		data.button.setChecked(not collapsed)
+		data.button.blockSignals(False)
 		pass
 
 	def _on_table_cell_clicked(self, row: int, _: int):
-		if row not in self._component_row_children:
+		if row not in self._component_rows:
 			return
-		collapsed = not self._component_row_collapsed.get(row, False)
+		collapsed = not self._component_rows[row].collapsed
 		self.set_component_collapsed(row, collapsed)
 		pass
 

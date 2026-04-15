@@ -47,7 +47,7 @@ class _ViewportDropFilter(QObject):
 		return False
 
 
-class MainWindowController(BaseController[QMainWindow], QtCore.QObject):
+class MainWindowController(BaseController[QMainWindow]):
 
 	UI_FILE = "main_window.ui"
 

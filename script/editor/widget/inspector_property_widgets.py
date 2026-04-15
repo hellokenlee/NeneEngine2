@@ -2,11 +2,43 @@
 # __author__ = "KenLee"
 # __email__ = "hellokenlee@163.com"
 
+from typing import Generic, TypeVar
 from PySide6 import QtCore
 from PySide6.QtWidgets import QWidget, QLabel, QHBoxLayout, QDoubleSpinBox, QSpinBox, QSizePolicy, QApplication, QLineEdit
 
 from nene import Float3, Rotator, AssetHandle, AssetRegistry
 from script.editor.widget.content_broswer_view_widget import ContentBrowserViewWidget
+
+T = TypeVar("T")
+
+
+class PropertyEdit(object):
+
+	def __init__(self, _component: object, _prop_name: str):
+		super().__init__()
+		pass
+
+
+class MutablePropertyEdit(PropertyEdit, Generic[T]):
+
+	def __init__(self, component: object, prop_name: str):
+		super().__init__(component, prop_name)
+		self.data: T = getattr(component, prop_name)
+		pass
+
+
+class ImmutablePropertyEdit(PropertyEdit, Generic[T]):
+	def __init__(self, component: object, prop_name: str):
+		super().__init__(component, prop_name)
+		self.data: T = getattr(component, prop_name)
+		self.component = component
+		self.prop_name = prop_name
+		pass
+
+	def on_value_change(self, value: T):
+		self.data = value
+		setattr(self.component, self.prop_name, value)
+		pass
 
 
 # noinspection DuplicatedCode
@@ -82,11 +114,9 @@ class _AxisIntegerSpinBox(QSpinBox):
 
 
 class IntegerWidget(QWidget):
-	valueChanged = QtCore.Signal(int)
 
-	def __init__(self, data: int):
+	def __init__(self):
 		super().__init__()
-		self.data = data
 		#
 		layout = QHBoxLayout(self)
 		layout.setContentsMargins(4, 0, 0, 0)
@@ -96,36 +126,46 @@ class IntegerWidget(QWidget):
 		layout.addWidget(self._spin)
 		#
 		self._spin.blockSignals(True)
-		self._spin.setValue(int(self.data))
 		self._spin.blockSignals(False)
-		#
-		self._spin.valueChanged.connect(self.valueChanged.emit)
 		#
 		self.setFocusProxy(self._spin)
 		pass
 
 
-class FloatWidget(QWidget):
-	valueChanged = QtCore.Signal(float)
+class IntegerPropertyWidget(ImmutablePropertyEdit[int], IntegerWidget):
+	def __init__(self, component: object, prop_name: str):
+		super().__init__(component, prop_name)
+		self._spin.setValue(self.data)
+		self._spin.valueChanged.connect(self.on_value_change)
+		pass
 
-	def __init__(self, data: float):
+
+class FloatWidget(QWidget):
+
+	def __init__(self):
 		super().__init__()
-		self.data = data
 		#
 		layout = QHBoxLayout(self)
 		layout.setContentsMargins(4, 0, 0, 0)
 		layout.setSpacing(4)
 		#
 		self._spin = _AxisDoubleSpinBox("#999999", self)
+		self._spin.setDecimals(3)
 		layout.addWidget(self._spin)
 		#
 		self._spin.blockSignals(True)
-		self._spin.setValue(float(self.data))
 		self._spin.blockSignals(False)
 		#
-		self._spin.valueChanged.connect(self.valueChanged.emit)
-		#
 		self.setFocusProxy(self._spin)
+		pass
+
+
+class FloatPropertyWidget(ImmutablePropertyEdit[float], FloatWidget):
+
+	def __init__(self, component: object, prop_name: str):
+		super().__init__(component, prop_name)
+		self._spin.setValue(self.data)
+		self._spin.valueChanged.connect(self.on_value_change)
 		pass
 
 
@@ -145,12 +185,15 @@ class RGBWidget(QWidget):
 		layout.addWidget(self._g_spin)
 		layout.addWidget(self._b_spin)
 		#
-		self._r_spin.valueChanged.connect(self._on_value_changed)
-		self._g_spin.valueChanged.connect(self._on_value_changed)
-		self._b_spin.valueChanged.connect(self._on_value_changed)
+		self._r_spin.valueChanged.connect(self.on_value_change)
+		self._g_spin.valueChanged.connect(self.on_value_change)
+		self._b_spin.valueChanged.connect(self.on_value_change)
 		
 		# Set the focus proxy to improve focus behavior when clicking on the RGBWidget itself.
 		self.setFocusProxy(self._r_spin)
+		pass
+
+	def on_value_change(self):
 		pass
 
 	def focusNextPrevChild(self, next_prev: bool) -> bool:
@@ -183,19 +226,14 @@ class RGBWidget(QWidget):
 			if hasattr(target, 'lineEdit'):
 				target.lineEdit().selectAll()
 			return True
-			
 		return super().focusNextPrevChild(next_prev)
 
-	def _on_value_changed(self):
-		pass
 
+class Float3PropertyWidget(MutablePropertyEdit[Float3], RGBWidget):
 
-class Float3Widget(RGBWidget):
-
-	def __init__(self, data: Float3):
-		super().__init__()
+	def __init__(self, component: object, prop_name: str):
 		#
-		self.data = data
+		super().__init__(component, prop_name)
 		#
 		for spin, val in ((self._r_spin, self.data.x), (self._g_spin, self.data.y), (self._b_spin, self.data.z)):
 			spin.blockSignals(True)
@@ -203,19 +241,17 @@ class Float3Widget(RGBWidget):
 			spin.blockSignals(False)
 		pass
 
-	def _on_value_changed(self):
+	def on_value_change(self):
 		self.data.x = self._r_spin.value()
 		self.data.y = self._g_spin.value()
 		self.data.z = self._b_spin.value()
 		pass
 
 
-class RotatorWidget(RGBWidget):
+class RotatorPropertyWidget(MutablePropertyEdit[Rotator], RGBWidget):
 
-	def __init__(self, data: Rotator):
-		super().__init__()
-		#
-		self.data = data
+	def __init__(self, component: object, prop_name: str):
+		super().__init__(component, prop_name)
 		#
 		for spin, val in ((self._r_spin, self.data.pitch), (self._g_spin, self.data.roll), (self._b_spin, self.data.yaw)):
 			spin.blockSignals(True)
@@ -223,18 +259,17 @@ class RotatorWidget(RGBWidget):
 			spin.blockSignals(False)
 		pass
 
-	def _on_value_changed(self):
+	def on_value_change(self):
 		self.data.pitch = self._r_spin.value()
 		self.data.roll = self._g_spin.value()
 		self.data.yaw = self._b_spin.value()
 		pass
 
 
-class AssetHandleWidget(QWidget):
+class AssetHandlePropertyWidget(MutablePropertyEdit[AssetHandle], QWidget):
 
-	def __init__(self, data: AssetHandle):
-		super().__init__()
-		self.data = data
+	def __init__(self, component: object, prop_name: str):
+		super().__init__(component, prop_name)
 		self.setAcceptDrops(True)
 		#
 		layout = QHBoxLayout(self)

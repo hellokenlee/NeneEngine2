@@ -24,6 +24,7 @@ class EntityEventSubscriber(EventSubscriber):
 		pass
 
 
+# noinspection PyMethodMayBeStatic
 class OutlinerDockWidgetController(DockWidgetController):
 
 	UI_FILE = "outliner_dock_widget.ui"

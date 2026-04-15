@@ -4,6 +4,8 @@
 
 import os
 import typing
+
+from PySide6.QtGui import QCloseEvent
 from PySide6.QtWidgets import QLabel, QLineEdit
 
 from script.editor.controller.asset_editor_widget_controller import AssetEditorWidgetController
@@ -21,14 +23,11 @@ class MaterialEditorWidgetController(AssetEditorWidgetController):
 		self._asset_path = asset_path
 		self._property_table: InspectorPropertyTableWidget = self.find_child(InspectorPropertyTableWidget, "ComponentTable")
 		self._name_label: QLabel = self.find_child(QLabel, "NameLabel")
-		self._search_line_edit: QLineEdit = self.find_child(QLineEdit, "SarchLineEdit")
+		self._search_line_edit: QLineEdit = self.find_child(QLineEdit, "SearchLineEdit")
 
 		# 设置显示名称
 		file_name = os.path.basename(asset_path)
 		self._name_label.setText(f"<b>{file_name}</b>")
-
-		# 连接搜索栏
-		# self._search_line_edit.textChanged.connect(self._refresh_properties)
 
 		# 加载材质资源
 		asset_abstract = AssetRegistry().find_abstract(asset_path)
@@ -38,10 +37,12 @@ class MaterialEditorWidgetController(AssetEditorWidgetController):
 		self._refresh_properties()
 		pass
 
+	def on_close(self, event: QCloseEvent):
+		AssetRegistry().save(self._material_asset)
+		super().on_close(event)
+		pass
+
 	def _refresh_properties(self):
 		"""刷新材质属性列表"""
-		if self._material_asset is None:
-			return
-		# 遍历属性显示
 		self._property_table.set_components([self._material_asset])
 		pass
