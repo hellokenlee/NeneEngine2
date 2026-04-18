@@ -39,7 +39,7 @@ namespace nene
 	};
 
 	/** auto expired observer pattern ( thread unsafe ) */
-	class NENE_API event_subscriber : public std::enable_shared_from_this<event_subscriber>
+	class NENE_API event_subscriber
 	{
 	public:
 		event_subscriber() = default;

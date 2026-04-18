@@ -8,12 +8,12 @@ namespace nene
 {
 	PYBIND(m, 1)
 	{
-		py::class_<asset_import_command, editor_command, py::smart_holder>(m, "AssetImportCommand")
+		py::classh<asset_import_command, editor_command>(m, "AssetImportCommand")
 			.def(py::init<const std::string&, const std::string&>())
 			.def_static("supported_extensions", &asset_import_command::supported_extensions)
 		;
 
-		py::class_<asset_new_command, editor_command, py::smart_holder>(m, "AssetNewCommand")
+		py::classh<asset_new_command, editor_command>(m, "AssetNewCommand")
 			.def(py::init<const std::string&, const std::string&>())
 		;
 	}

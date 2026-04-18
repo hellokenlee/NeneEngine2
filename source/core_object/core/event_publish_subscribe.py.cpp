@@ -1,9 +1,7 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #include "py.h"
-#include "core/log.h"
 #include "core/event_publish_subscribe.h"
-#include "core/event_id.h"
 
 #ifdef _MSC_VER
 	#pragma warning(push)
@@ -14,7 +12,7 @@
 
 namespace nene::g
 {
-	class py_event_subscriber : public event_subscriber, public py::trampoline_self_life_support
+	class py_event_subscriber_trampoline : public event_subscriber
 	{
 	public:
 		void on_notify(const event& e) override
@@ -31,15 +29,16 @@ namespace nene::g
 
 	PYBIND(m)
 	{
-		py::class_<event, py::smart_holder>(m, "Event")
+		// use `std::shared_ptr` to avoid object counter problem in `event_publisher::add_subscriber()`
+		py::class_<event, std::shared_ptr<event>>(m, "Event")
 		;
 		
-		py::class_<event_subscriber, py_event_subscriber, py::smart_holder>(m, "EventSubscriber")
+		py::class_<event_subscriber, py_event_subscriber_trampoline, std::shared_ptr<event_subscriber>>(m, "EventSubscriber")
 			.def(py::init<>())
 			.def("on_notify", &event_subscriber::on_notify)
 		;
 		
-		py::class_<event_publisher, py::smart_holder>(m, "EventPublisher")
+		py::class_<event_publisher, std::shared_ptr<event_publisher>>(m, "EventPublisher")
 			.def(py::init<>())
 			.def("add_subscriber", &event_publisher::add_subscriber)
 		;

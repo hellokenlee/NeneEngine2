@@ -8,7 +8,7 @@ namespace nene
 {
 	PYBIND(m, 1)
 	{
-		py::class_<entity_inspect_event, event, py::smart_holder>(m, "EntityInspectEvent")
+		py::classh<entity_inspect_event, event>(m, "EntityInspectEvent")
 		;
 		
 		py::class_<entity_inspector, event_publisher, std::shared_ptr<entity_inspector>>(m, "EntityInspector")

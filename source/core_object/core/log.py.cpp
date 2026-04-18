@@ -16,11 +16,11 @@ namespace nene::g
 {
 	PYBIND(m, 1)
 	{
-		py::class_<log_message_event, event, py::smart_holder>(m, "LogMessageEvent")
+		py::classh<log_message_event, event>(m, "LogMessageEvent")
 			.def_readonly("m_message", &log_message_event::m_message)
 		;
 
-		py::class_<logger, py::smart_holder>(m, "Logger")
+		py::classh<logger>(m, "Logger")
 			.def_static("publisher", &logger::publisher)
 		;
 	}

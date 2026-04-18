@@ -8,7 +8,7 @@ namespace nene::g
 {
 	PYBIND(m, 1)
 	{
-		py::class_<local_transform_component, py::smart_holder>(m, "LocalTransformComponent")
+		py::classh<local_transform_component>(m, "LocalTransformComponent")
 			.def(py::init<>())
 			.def_readwrite("m_location", &local_transform_component::m_location)
 			.def_readwrite("m_rotation", &local_transform_component::m_rotation)

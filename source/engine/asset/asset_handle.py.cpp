@@ -7,19 +7,19 @@ namespace nene::g
 {
 	PYBIND(m)
 	{
-		py::class_<asset_handle_base, py::smart_holder>(m, "AssetHandle")
+		py::classh<asset_handle_base>(m, "AssetHandle")
 			.def_readwrite("m_uuid", &static_mesh_asset_handle::m_uuid)
 		;
 		
-		py::class_<static_mesh_asset_handle, asset_handle_base, py::smart_holder>(m, "StaticMeshAssetHandle")
+		py::classh<static_mesh_asset_handle, asset_handle_base>(m, "StaticMeshAssetHandle")
 			.def(py::init<>())
 		;
 		
-		py::class_<material_asset_handle, asset_handle_base, py::smart_holder>(m, "MaterialAssetHandle")
+		py::classh<material_asset_handle, asset_handle_base>(m, "MaterialAssetHandle")
 			.def(py::init<>())
 		;
 		
-		py::class_<texture_asset_handle, asset_handle_base, py::smart_holder>(m, "TextureAssetHandle")
+		py::classh<texture_asset_handle, asset_handle_base>(m, "TextureAssetHandle")
 			.def(py::init<>())
 		;
 	}
