@@ -12,8 +12,6 @@ from script.editor.resource_set import IconSet
 from script.editor.widget.inspector_collection_property_widgets import *
 
 
-from nene import Float3, Rotator, StaticMeshAssetHandle, MaterialAssetHandle, TextureAssetHandle
-
 class _TableColumnRatioKeeper(QObject):
 	"""保持列宽按比例填满可视区，避免出现横向滚动条。"""
 
@@ -127,16 +125,6 @@ class InspectorPropertyTableWidget(QTableWidget):
 	_SPLITTER_HIT_WIDTH = 4
 	_MIN_COLUMN_WIDTH = 10
 
-	PROPERTY_WIDGET_CLASS: dict[type, type[PropertyEdit, QWidget]] = {
-		int: IntegerPropertyWidget,
-		float: FloatPropertyWidget,
-		Float3: Float3PropertyWidget,
-		Rotator: RotatorPropertyWidget,
-		StaticMeshAssetHandle: AssetHandlePropertyWidget,
-		MaterialAssetHandle: AssetHandlePropertyWidget,
-		TextureAssetHandle: AssetHandlePropertyWidget,
-	}
-
 	def __init__(self, parent=None):
 		super().__init__(parent)
 		self.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
@@ -236,18 +224,17 @@ class InspectorPropertyTableWidget(QTableWidget):
 					if isinstance(attrib_value, list):
 						element_cls = get_element_types(comp, attrib_name)
 						assert len(element_cls) == 1, "complex type attribute binding must have exactly one element type"
-						ctrl = ListPropertyWidget(comp, attrib_name, self, comp_row, element_cls[0])
+						ctrl = ListPropertyWidget(comp, attrib_name, self, element_cls[0])
 						ctrl.property_changed.connect(self._refresh_components)
 						self._component_rows[comp_row].children.extend(ctrl.component_children_rows)
 					elif isinstance(attrib_value, dict):
-						pass
-						# key_cls, value_cls = get_element_types(comp, attrib_name)
-						# ctrl = DictPropertyWidget(comp, attrib_name, self, comp_row, key_cls, value_cls)
-						# ctrl.property_changed.connect(self._refresh_components)
-						# self._component_rows[comp_row].children.extend(ctrl.component_children_rows)
-					elif type(attrib_value) in self.PROPERTY_WIDGET_CLASS:
-						widget_cls = self.PROPERTY_WIDGET_CLASS.get(type(attrib_value))
-						widget = widget_cls(comp, attrib_name)
+						key_cls, value_cls = get_element_types(comp, attrib_name)
+						ctrl = DictPropertyWidget(comp, attrib_name, self, key_cls, value_cls)
+						ctrl.property_changed.connect(self._refresh_components)
+						self._component_rows[comp_row].children.extend(ctrl.component_children_rows)
+					elif type(attrib_value) in PROPERTY_WIDGET_CLASS:
+						widget_cls = PROPERTY_WIDGET_CLASS.get(type(attrib_value))
+						widget = widget_cls(getattr(comp, attrib_name), lambda data, _comp=comp, _attrib=attrib_name: setattr(_comp, _attrib, data))
 						property_row = self.add_property_row(sanitize_property_name(attrib_name), widget, indent=1)
 						self._component_rows[comp_row].children.append(property_row)
 		pass
