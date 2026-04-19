@@ -5,7 +5,7 @@
 from PySide6 import QtCore
 from PySide6.QtCore import QEvent, QObject
 from PySide6.QtGui import QAction, QDragEnterEvent, QDropEvent, QKeySequence
-from PySide6.QtWidgets import QMainWindow, QTabWidget, QTabBar, QDockWidget, QMenu
+from PySide6.QtWidgets import QApplication, QMainWindow, QTabWidget, QTabBar, QDockWidget, QMenu
 from script.editor.controller.base_controller import BaseController
 from script.editor.widget.content_broswer_view_widget import ContentBrowserViewWidget
 
@@ -44,6 +44,23 @@ class _ViewportDropFilter(QObject):
 				self._callback(asset_paths)
 				event.acceptProposedAction()
 				return True
+		return False
+
+
+class _MainWindowCloseFilter(QObject):
+	"""事件过滤器：拦截主窗口的 Close 事件，关闭所有顶层窗口并退出应用"""
+
+	def __init__(self, main_window, parent=None):
+		super().__init__(parent)
+		self._main_window = main_window
+
+	def eventFilter(self, obj, event):
+		if obj is self._main_window and event.type() == QEvent.Type.Close:
+			# 关闭所有其他顶层窗口
+			for widget in list(QApplication.topLevelWidgets()):
+				if widget is not self._main_window:
+					widget.close()
+					widget.deleteLater()
 		return False
 
 
@@ -116,6 +133,10 @@ class MainWindowController(BaseController[QMainWindow]):
 		viewport.setAcceptDrops(True)
 		self._viewport_drop_filter = _ViewportDropFilter(self._on_asset_dropped, viewport)
 		viewport.installEventFilter(self._viewport_drop_filter)
+
+		# 关闭主窗口时，关闭所有窗口并退出应用（使用事件过滤器，因为 QUiLoader 创建的窗口无法通过猴子补丁重写 closeEvent）
+		self._close_filter = _MainWindowCloseFilter(self.ui)
+		self.ui.installEventFilter(self._close_filter)
 		pass
 
 	# noinspection PyMethodMayBeStatic
