@@ -25,6 +25,12 @@ namespace nene
 		
 		bool operator==(const asset_handle_base& other) const { return m_uuid == other.m_uuid; }
 		bool operator!=(const asset_handle_base& other) const { return m_uuid != other.m_uuid; }
+		
+		friend archive& operator<<(archive& ar, asset_handle_base& self)
+		{
+			ar << AR(self, m_uuid);
+			return ar;
+		}
 	};
 }
 

@@ -5,6 +5,7 @@
 
 from typing import Optional, Callable
 
+from PySide6.QtCore import QEvent
 from PySide6.QtGui import QCloseEvent
 from PySide6.QtWidgets import QWidget
 
@@ -18,8 +19,15 @@ class AssetEditorWidgetController(BaseController[QWidget]):
 		super().__init__()
 		self.ui.setWindowIcon(IconSet().sakura)
 		self._on_close_callback: Optional[Callable] = None
-		self.ui.closeEvent = self.on_close
+		self.ui.installEventFilter(self)
 		pass
+
+	def eventFilter(self, obj, event):
+		if obj is self.ui and event.type() == QEvent.Type.Close:
+			assert (isinstance(event, QCloseEvent))
+			self.on_close(event)
+			return True
+		return super().eventFilter(obj, event)
 
 	def show(self):
 		self.ui.resize(1280, 720)

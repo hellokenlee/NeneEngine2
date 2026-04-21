@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include "asset_abstract.h"
 #include "core/core.h"
 #include <boost/pfr.hpp>
+#include <unordered_map>
 
 
 namespace nene
@@ -103,6 +103,45 @@ namespace nene
 		}
 		
 		// stl's container types
+		/** std::unordered_map<> specialization */
+		template<typename key_t, typename value_t>
+		archive& operator<<(const nvp<std::unordered_map<key_t, value_t>>& kvs)
+		{
+			//
+			size_t len = kvs.m_data.size();
+			enter_array(kvs.m_name, len);
+			if (direction() == direction::write)
+			{
+				for (auto& [key, value] : kvs.m_data)
+				{
+					key_t k = key;
+					size_t pair_len = 2;
+					enter_array(nullptr, pair_len);
+					*this << nvp<key_t>(nullptr, k);
+					*this << nvp<value_t>(nullptr, value);
+					leave_array();
+				}
+			}
+			else
+			{
+				kvs.m_data.clear();
+				for (size_t i = 0; i < len; ++i)
+				{
+					key_t k{};
+					value_t v{};
+					size_t pair_len = 2;
+					enter_array(nullptr, pair_len);
+					*this << nvp<key_t>(nullptr, k);
+					*this << nvp<value_t>(nullptr, v);
+					leave_array();
+					kvs.m_data.emplace(std::move(k), std::move(v));
+				}
+			}
+			leave_array();
+			//
+			return *this;
+		}
+		
 		/** std::vector<> specialization */
 		template<typename element_t>
 		archive& operator<<(const nvp<std::vector<element_t>>& kvs)
@@ -124,7 +163,6 @@ namespace nene
 			return *this;
 		}
 		
-	protected:
 		virtual void enter_array(const char* name, size_t& size) = 0;
 		virtual void leave_array() = 0;
 		

@@ -45,11 +45,19 @@ namespace nene::g
 			ar << nvp(prop_name.c_str(), prop_value);
 			py_prop_value = py::cast(prop_value);
 		}
-		// TODO: list, dict, object types
-		else
+		// object type
+		else if (py::isinstance<py::object>(py_prop_value))
 		{
-			NOT_IMPLEMENTED();
+			ar.enter_object(prop_name.c_str());
+			auto obj_prop_names = reflection::get_property_names(py_prop_value);
+			for (const auto& obj_prop_name : obj_prop_names)
+			{
+				serialize_property(ar, py_prop_value, obj_prop_name);
+			}
+			ar.leave_object();
 		}
+		// list, dict: due to the typeless traits for python. use manual serialization instead.
+		// TODO: maybe change to RTTR for getting 
 		
 		// write immutable type's memory
 		if (ar.direction() == archive::direction::read)
