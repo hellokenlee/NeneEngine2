@@ -14,7 +14,7 @@ Nene Engine use [Vcpkg](https://vcpkg.io/) to manage dependencies. The following
 
 - [Working Vcpkg environment](https://learn.microsoft.com/en-us/vcpkg/get_started/get-started?pivots=shell-cmd)
 
-Note that Nene Engine use an inhouse build tool NBT  ( instead of CMake ) as a primary way to organize the source files. 
+
 
 The following C++ environment should be satisfied in Windows:
 
@@ -22,7 +22,7 @@ The following C++ environment should be satisfied in Windows:
 - Compiler C++ Standard >= C++20 ( MSVC >= 143 )
 
 Currently Nene Engine only supports Microsoft Windows 10, 11 with Direct3D 12. 
-Apple's MacOS, iPadOS, iOS with Metal 2; Linux, Android with Vulkan will be supported in the future.
+Apple's OS with Metal 2; Linux, Android with Vulkan will be supported in the future.
 
 [*] [Microsoft only supports `std::format` under C++20 after Visual Studio 17.2](https://github.com/microsoft/STL/issues/1814)
 
@@ -32,8 +32,8 @@ Apple's MacOS, iPadOS, iOS with Metal 2; Linux, Android with Vulkan will be supp
 
 #### Setup
 
-1. Run `Setup.bat` or `Setup.sh` and wait patiently for the first time for dependency installation.
-2. Run `Generate.bat` or `Generate.sh` to generate build files of IDE.
+1. Run `Setup.bat|sh` and **wait patiently** for the first time for dependency installation.
+2. Run `Generate.bat|sh` to generate build files of IDE.
 
 
 
@@ -43,7 +43,7 @@ Open the `NeneEngine2` build file with corresponding IDE then compile and run.
 
 
 
-#### Build Tool
+#### Modify
 
 To deal with module dependency, we use a Python based inhouse build tool ( Nene Build Tool or NBT ).
 

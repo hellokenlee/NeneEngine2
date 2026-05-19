@@ -126,9 +126,9 @@ class _ClickEmptyToClearCurrentItemFilter(QObject):
 
 
 class OutlinerTreeWidget(QTreeWidget):
-	entity_selected = Signal(int)
-	entity_remove_requested = Signal(int)
-	entity_parent_changed = Signal(int, int)
+	entity_selected = Signal(object)
+	entity_remove_requested = Signal(object)
+	entity_parent_changed = Signal(object, object)
 
 	TREE_COL_NAME = 0
 	TREE_COL_ID = 1
