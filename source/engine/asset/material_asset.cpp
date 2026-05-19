@@ -6,9 +6,9 @@ namespace nene::g
 {
 	void material_asset::serialize(archive& ar)
 	{
-		asset::serialize(ar);
 		ar << AR(m_texture_bindings);
 		ar << AR(m_scalar_parameters);
+		asset::serialize(ar);
 	}
 
 	const std::shared_ptr<r::render_material>& material_asset::get_or_create_render_material()
