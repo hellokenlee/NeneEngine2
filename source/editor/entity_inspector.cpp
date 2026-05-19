@@ -19,12 +19,28 @@ namespace nene
 		notify(entity_inspect_event());
 	}
 
+	void entity_inspector::modified() const
+	{
+		if (m_inspecting_eid != 0)
+		{
+			flecs::entity e = engine_loop::get_world()->get_ecs().entity(static_cast<flecs::entity_t>(m_inspecting_eid));
+			e.each(
+			[&e](flecs::id id)
+				{
+					if (id.is_entity())
+					{
+						e.modified(id);
+					}
+				}
+			);
+		}
+	}
+
 	std::vector<g::reflection::variant> entity_inspector::get_inspecting_components() const
 	{
 		std::vector<g::reflection::variant> components;
-		const auto& w = engine_loop::get_world();
 		
-		flecs::entity e = w->get_ecs().entity(static_cast<flecs::entity_t>(m_inspecting_eid));
+		flecs::entity e = engine_loop::get_world()->get_ecs().entity(static_cast<flecs::entity_t>(m_inspecting_eid));
 		e.each(
 			[&e, &components](flecs::id id)
 			{

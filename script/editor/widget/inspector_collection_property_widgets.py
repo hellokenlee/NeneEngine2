@@ -100,9 +100,10 @@ class ListPropertyWidget(CollectionPropertyWidget):
 		self._add_collection_header_row(display_name, on_add=lambda: self._on_add())
 		# 添加每个元素的行 (带 - 按钮)
 		for idx, element in enumerate(self._cached_data):
-			if type(element) in PROPERTY_WIDGET_CLASS:
-				widget_cls = PROPERTY_WIDGET_CLASS[type(element)]
-				value_widget = widget_cls(element, lambda val, i=idx: self._on_change(i, val))
+			widget_cls = PROPERTY_WIDGET_CLASS.get(type(element), None)
+			if widget_cls is not None:
+				value_widget = widget_cls(element)
+				value_widget.on_change = lambda val, i=idx: self._on_change(i, val)
 				self._add_collection_entry_row(QLabel(f"[{idx}]"), value_widget, lambda i=idx: self._on_delete(i))
 		pass
 
@@ -143,13 +144,14 @@ class DictPropertyWidget(CollectionPropertyWidget):
 		self._add_collection_header_row(display_name, on_add=lambda: self._on_add())
 		# 添加每个键值对的行 (带 - 按钮)
 		for key, value in self._cached_data.items():
-			if type(value) in PROPERTY_WIDGET_CLASS and type(key) in PROPERTY_WIDGET_CLASS:
+			key_widget_cls = PROPERTY_WIDGET_CLASS.get(type(key), None)
+			value_widget_cls = PROPERTY_WIDGET_CLASS.get(type(value), None)
+			if key_widget_cls is not None and value_widget_cls is not None:
 				#
-				key_widget_cls = PROPERTY_WIDGET_CLASS[type(key)]
-				key_widget = key_widget_cls(key, lambda new_key, old_key=key: self._on_key_change(new_key, old_key))
-				#
-				value_widget_cls = PROPERTY_WIDGET_CLASS[type(value)]
-				value_widget = value_widget_cls(value, lambda val, k=key: self._on_value_change(k, val))
+				key_widget = key_widget_cls(key)
+				key_widget.on_change = lambda new_key, old_key=key: self._on_key_change(new_key, old_key)
+				value_widget = value_widget_cls(value)
+				value_widget.on_change = lambda val, k=key: self._on_value_change(k, val)
 				#
 				self._add_collection_entry_row(key_widget, value_widget, lambda k=key: self._on_delete(k))
 		pass

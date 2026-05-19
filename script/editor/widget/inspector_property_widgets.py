@@ -2,7 +2,7 @@
 # __author__ = "KenLee"
 # __email__ = "hellokenlee@163.com"
 
-from typing import Generic, TypeVar, Callable
+from typing import Generic, TypeVar
 from PySide6 import QtCore
 from PySide6.QtWidgets import QWidget, QLabel, QHBoxLayout, QDoubleSpinBox, QSpinBox, QSizePolicy, QApplication, QLineEdit
 
@@ -88,17 +88,17 @@ T = TypeVar("T")
 
 class PropertyWidget(QWidget, Generic[T]):
 
-	def __init__(self, data: T, on_changed: Callable[[T], None] | None):
+	def __init__(self, data: T):
 		super().__init__()
 		self._data = data
-		self._on_changed = on_changed
+		self.on_change = lambda _: None
 		pass
 
 
 class IntegerPropertyWidget(PropertyWidget[int]):
 
-	def __init__(self, data: int, on_changed: Callable[[int], None]):
-		super().__init__(data, on_changed)
+	def __init__(self, data: int):
+		super().__init__(data)
 		#
 		layout = QHBoxLayout(self)
 		layout.setContentsMargins(4, 0, 0, 0)
@@ -117,14 +117,14 @@ class IntegerPropertyWidget(PropertyWidget[int]):
 
 	def on_value_change(self, value: int):
 		self._data = value
-		self._on_changed(value)
+		self.on_change(value)
 		pass
 
 
 class FloatPropertyWidget(PropertyWidget[float]):
 
-	def __init__(self, data: float, on_changed: Callable[[float], None]):
-		super().__init__(data, on_changed)
+	def __init__(self, data: float):
+		super().__init__(data)
 		#
 		layout = QHBoxLayout(self)
 		layout.setContentsMargins(4, 0, 0, 0)
@@ -145,14 +145,14 @@ class FloatPropertyWidget(PropertyWidget[float]):
 
 	def on_value_change(self, value: int):
 		self._data = value
-		self._on_changed(value)
+		self.on_change(value)
 		pass
 
 
 class RGBWidget(PropertyWidget, Generic[T]):
 
-	def __init__(self, data: T, on_changed: Callable[[T], None] | None):
-		super().__init__(data, on_changed)
+	def __init__(self, data: T):
+		super().__init__(data)
 		#
 		layout = QHBoxLayout(self)
 		layout.setContentsMargins(4, 0, 0, 0)
@@ -211,9 +211,9 @@ class RGBWidget(PropertyWidget, Generic[T]):
 
 class Float3PropertyWidget(RGBWidget[Float3]):
 
-	def __init__(self, data: Float3, _):
+	def __init__(self, data: Float3):
 		#
-		super().__init__(data, None)
+		super().__init__(data)
 		#
 		for spin, val in ((self._r_spin, self._data.x), (self._g_spin, self._data.y), (self._b_spin, self._data.z)):
 			spin.blockSignals(True)
@@ -230,8 +230,8 @@ class Float3PropertyWidget(RGBWidget[Float3]):
 
 class RotatorPropertyWidget(RGBWidget[Rotator]):
 
-	def __init__(self, data: Rotator, _):
-		super().__init__(data, None)
+	def __init__(self, data: Rotator):
+		super().__init__(data)
 		#
 		for spin, val in ((self._r_spin, self._data.pitch), (self._g_spin, self._data.roll), (self._b_spin, self._data.yaw)):
 			spin.blockSignals(True)
@@ -248,8 +248,8 @@ class RotatorPropertyWidget(RGBWidget[Rotator]):
 
 class AssetHandlePropertyWidget(PropertyWidget[AssetHandle]):
 
-	def __init__(self, data: AssetHandle, _):
-		super().__init__(data, None)
+	def __init__(self, data: AssetHandle):
+		super().__init__(data)
 		self.setAcceptDrops(True)
 		#
 		layout = QHBoxLayout(self)
@@ -308,16 +308,21 @@ class AssetHandlePropertyWidget(PropertyWidget[AssetHandle]):
 				if abstract.m_uuid is not None:
 					self._data.m_uuid = abstract.m_uuid
 					self._update_display()
+					self.on_change(self._data)
 			event.acceptProposedAction()
 		pass
 
-
-PROPERTY_WIDGET_CLASS: dict[type, type[PropertyWidget]] = {
+IMMUTABLE_PROPERTY_WIDGET_CLASS: dict[type, type[PropertyWidget]] = {
 	int: IntegerPropertyWidget,
 	float: FloatPropertyWidget,
+}
+
+MUTABLE_PROPERTY_WIDGET_CLASS: dict[type, type[PropertyWidget]] = {
 	Float3: Float3PropertyWidget,
 	Rotator: RotatorPropertyWidget,
 	StaticMeshAssetHandle: AssetHandlePropertyWidget,
 	MaterialAssetHandle: AssetHandlePropertyWidget,
 	TextureAssetHandle: AssetHandlePropertyWidget,
 }
+
+PROPERTY_WIDGET_CLASS: dict[type, type[PropertyWidget]] = {**IMMUTABLE_PROPERTY_WIDGET_CLASS, **MUTABLE_PROPERTY_WIDGET_CLASS}

@@ -18,8 +18,11 @@ namespace nene
 		//
 		entity_inspector(const entity_inspector&) = delete;
 		entity_inspector& operator=(const entity_inspector&) = delete;
-		//
+		// inspect one entity
 		void inspect(uint64_t eid);
+		// mark the inspecting entity's components modified
+		void modified() const;
+		// get the inspecting entity's components
 		std::vector<g::reflection::variant> get_inspecting_components() const;
 		
 	protected:

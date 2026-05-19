@@ -11,6 +11,8 @@ from PySide6.QtWidgets import QAbstractItemView, QTableWidgetItem, QHeaderView
 from script.editor.resource_set import IconSet
 from script.editor.widget.inspector_collection_property_widgets import *
 
+from nene import EntityInspector
+
 
 class _TableColumnRatioKeeper(QObject):
 	"""保持列宽按比例填满可视区，避免出现横向滚动条。"""
@@ -194,6 +196,7 @@ class InspectorPropertyTableWidget(QTableWidget):
 
 	def set_components(self, components: list[object]):
 		#
+		# noinspection PyUnresolvedReferences
 		def get_element_types(component: object, attr_name: str):
 			# 利用 type hint 推断元素类型
 			prop_obj = getattr(type(component), attr_name, None)
@@ -233,8 +236,17 @@ class InspectorPropertyTableWidget(QTableWidget):
 						ctrl.property_changed.connect(self._refresh_components)
 						self._component_rows[comp_row].children.extend(ctrl.component_children_rows)
 					elif type(attrib_value) in PROPERTY_WIDGET_CLASS:
-						widget_cls = PROPERTY_WIDGET_CLASS.get(type(attrib_value))
-						widget = widget_cls(getattr(comp, attrib_name), lambda data, _comp=comp, _attrib=attrib_name: setattr(_comp, _attrib, data))
+						#
+						widget_cls = PROPERTY_WIDGET_CLASS[type(attrib_value)]
+						#
+						widget = widget_cls(getattr(comp, attrib_name))
+						# 不可变类型外部赋值
+						if type(attrib_value) in IMMUTABLE_PROPERTY_WIDGET_CLASS:
+							widget.on_change = lambda data, _comp=comp, _attrib=attrib_name: setattr(_comp, _attrib, data)
+						# 可变类型通知引擎值更改
+						elif type(attrib_value) in MUTABLE_PROPERTY_WIDGET_CLASS:
+							widget.on_change = lambda _: EntityInspector().modified()
+						#
 						property_row = self.add_property_row(sanitize_property_name(attrib_name), widget, indent=1)
 						self._component_rows[comp_row].children.append(property_row)
 		pass

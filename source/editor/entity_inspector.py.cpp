@@ -18,6 +18,7 @@ namespace nene
 				return std::shared_ptr<entity_inspector>(&entity_inspector::get(), [](entity_inspector*) {});
 			}))
 			.def("inspect", &entity_inspector::inspect)
+			.def("modified", &entity_inspector::modified)
 			.def("get_inspecting_components", &entity_inspector::get_inspecting_components)
 		;
 	}
