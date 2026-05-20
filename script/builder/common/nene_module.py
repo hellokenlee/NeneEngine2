@@ -149,9 +149,7 @@ class NeneModule(object, metaclass=Singleton):
 			# activate the profiler and import symbols from the DLL.
 			# Only enable Tracy in Development builds; Release builds ship
 			# without the profiler client.
-			# TRACY_ON_DEMAND defers data collection until a Tracy server connects,
-			# which keeps idle overhead low for long-running sessions.
-			module_config.add_defines(["TRACY_ENABLE", "TRACY_IMPORTS", "TRACY_ON_DEMAND"])
+			module_config.add_defines(["TRACY_ENABLE", "TRACY_IMPORTS"])
 			#
 			module_config.add_defines(["NENE_DEVELOPMENT", "_CONSOLE", "NOMINMAX"])
 			module_config.compiler.optimization = CppOptimazation.Disabled
