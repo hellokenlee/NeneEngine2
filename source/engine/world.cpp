@@ -27,6 +27,7 @@ namespace nene::g
 
 	void world::update(std::chrono::milliseconds delta)
 	{
+		ZoneScoped;
 		// TODO: level updates
 		
 		// system updates

@@ -27,6 +27,8 @@ namespace nene
 
 	void engine::update(std::chrono::milliseconds delta)
 	{
+		//
+		ZoneScoped;
 		// update world
 		m_world->update(delta);
 		
@@ -34,6 +36,7 @@ namespace nene
 		enqueue_render_command<"Render">(
 			[this, render_scene = m_world->get_render_scene(), main_render_view = m_world->get_main_render_view()]()
 			{
+				ZoneScopedN("Render");
 				if (main_render_view != nullptr)
 				{
 					m_renderer->set_rendering_scene(render_scene);

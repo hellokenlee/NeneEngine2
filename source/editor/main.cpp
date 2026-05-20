@@ -3,12 +3,15 @@
 #include <filesystem>
 #include <iostream>
 #include "qt/qt.h"
+#include "core/core.h"
 #include "core/stdout_log_handler.h"
 #include "core_object/py.h"
 
 
 int main()
 {
+	// Name the main thread inside the Tracy profiler.
+	tracy::SetThreadName("MainThread");
 	//
 	auto handler = std::make_shared<nene::stdout_log_handler>();
 	nene::logger::publisher()->add_subscriber(handler);

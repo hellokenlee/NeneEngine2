@@ -38,6 +38,8 @@ namespace nene
 
 	void engine_loop::tick()
 	{
+		//
+		FrameMark;
 		// engine update
 		static auto tick = std::chrono::high_resolution_clock::now();
 		auto tock = std::chrono::high_resolution_clock::now();

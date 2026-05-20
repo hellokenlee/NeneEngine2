@@ -144,6 +144,14 @@ class NeneModule(object, metaclass=Singleton):
 		# Default Settings
 		module_config.compiler.disabled_warnings.extend({4251, 4819})
 		if build_config.configuration == Configuration.Development:
+			# Tracy profiler: TracyClient is built as a SHARED library by vcpkg,
+			# so consumers must define both TRACY_ENABLE and TRACY_IMPORTS to
+			# activate the profiler and import symbols from the DLL.
+			# Only enable Tracy in Development builds; Release builds ship
+			# without the profiler client.
+			# TRACY_ON_DEMAND defers data collection until a Tracy server connects,
+			# which keeps idle overhead low for long-running sessions.
+			module_config.add_defines(["TRACY_ENABLE", "TRACY_IMPORTS", "TRACY_ON_DEMAND"])
 			#
 			module_config.add_defines(["NENE_DEVELOPMENT", "_CONSOLE", "NOMINMAX"])
 			module_config.compiler.optimization = CppOptimazation.Disabled

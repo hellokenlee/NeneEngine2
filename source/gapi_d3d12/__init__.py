@@ -6,6 +6,7 @@ from source import *
 from source.core import Core
 from source.gapi import Gapi
 from extern.directx_dxc import DirectxDxc
+from extern.winpixevent import WinPixEvent
 from script.builder.common.build_configuration import BuildConfiguration
 
 
@@ -21,7 +22,7 @@ class GapiD3D12(NeneModule):
 			[Core, Gapi]
 		)
 		self.external_dependencies.extend(
-			[DirectxDxc]
+			[DirectxDxc, WinPixEvent]
 		)
 		self.system_library_dependencies.extend(
 			[
