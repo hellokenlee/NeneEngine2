@@ -6,10 +6,9 @@
 #include "gapi/gapi_resource.h"
 
 
-namespace nene::r
+namespace nene
 {
-	/** Creation of render texture */
-	struct image_data
+	struct NENE_API mip_data
 	{
 		//  
 		uint3 m_extent;
@@ -18,12 +17,15 @@ namespace nene::r
 		// 
 		std::vector<uint8_t> m_pixels;
 	};
-	
+}
+
+namespace nene::r
+{
 	/** The render thread representation of a texture */
 	class NENE_API render_texture : public render_resource
 	{
 	public:
-		render_texture(const std::vector<image_data>& mipmaps);
+		render_texture(const std::vector<mip_data>& mipmaps);
 		render_texture(const std::shared_ptr<gapi_texture>& gapi_texture);
 
 		const std::shared_ptr<gapi_texture>& get_texture() const { return m_gapi_texture; }

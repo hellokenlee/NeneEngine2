@@ -9,7 +9,7 @@
 
 namespace
 {
-	D3D12_STATIC_SAMPLER_DESC make_static_sampler(D3D12_FILTER d3d_filter, D3D12_TEXTURE_ADDRESS_MODE d3d_wrap_mode, uint32_t shader_register)
+	D3D12_STATIC_SAMPLER_DESC make_static_sampler(D3D12_FILTER d3d_filter, D3D12_TEXTURE_ADDRESS_MODE d3d_wrap_mode, uint32_t shader_register) noexcept
 	{
 		D3D12_STATIC_SAMPLER_DESC d3d_desc = {
 			.Filter = d3d_filter,

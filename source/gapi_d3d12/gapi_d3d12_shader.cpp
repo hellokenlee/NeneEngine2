@@ -2,6 +2,7 @@
 
 #include "gapi_d3d12_shader.h"
 #include "d3d12_shader_compiler.h"
+#include "shader/cppshared/d3d12.hlsli"
 
 #include <bitset>
 
@@ -127,12 +128,16 @@ namespace nene
 			}
 			else if (bind_desc.Type == D3D_SIT_SAMPLER)
 			{
-				++m_register_count.num_dynamic_sampler;
-				//
-				if (!set_register_bits(bind_desc, dynamic_sampler_register_bits))
+				// skip all the static samplers
+				if (bind_desc.Space != NENE_D3D_STATIC_SAMPLER_REGISTER_SPACE)
 				{
-					log(shader_, error, "Max dynamic sampler register ( {} ) exceeded. Name: {}, Start: {}, Count: {}.", NUM_D3D_MAX_DYNAMIC_SAMPLERS, bind_desc.Name, bind_desc.BindPoint, bind_desc.BindCount);
-					return false;
+					++m_register_count.num_dynamic_sampler;
+					//
+					if (!set_register_bits(bind_desc, dynamic_sampler_register_bits))
+					{
+						log(shader_, error, "Max dynamic sampler register ( {} ) exceeded. Name: {}, Start: {}, Count: {}.", NUM_D3D_MAX_DYNAMIC_SAMPLERS, bind_desc.Name, bind_desc.BindPoint, bind_desc.BindCount);
+						return false;
+					}
 				}
 			}
 			else
@@ -149,14 +154,17 @@ namespace nene
 		if (!t::has_continuous_ones_from_lsb(shader_resource_register_bits))
 		{
 			log(shader_, error, "Discontinuous shader resource register is forbidden. Registers bit set: `{:b}`.", shader_resource_register_bits);
+			return false;
 		}
 		if (!t::has_continuous_ones_from_lsb(unordered_access_register_bits))
 		{
 			log(shader_, error, "Discontinuous unordered access register is forbidden. Registers bit set: `{:b}`.", unordered_access_register_bits);
+			return false;
 		}
 		if (!t::has_continuous_ones_from_lsb(dynamic_sampler_register_bits))
 		{
 			log(shader_, error, "Discontinuous dynamic sampler register is forbidden. Registers bit set: `{:b}`.", dynamic_sampler_register_bits);
+			return false;
 		}
 		return true;
 	}

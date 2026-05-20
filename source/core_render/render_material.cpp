@@ -4,9 +4,14 @@
 
 namespace nene::r
 {
-	render_material::render_material()
+	render_material::render_material(std::unordered_map<uint32_t, std::shared_ptr<render_texture>> render_textures)
 		: m_shader_map("shader/base_pass_vertex_shader.hlsl")
+		, m_texture_bindings(std::move(render_textures))
 	{
+		for (const auto& [idx, tex] : m_texture_bindings)
+		{
+			m_resource_bindings.emplace(idx, tex->get_texture());
+		}
 		m_shader_map.add_shader(gapi_shader_stage::pixel_shader, "shader/base_pass_pixel_shader.hlsl", {});
 	}
 

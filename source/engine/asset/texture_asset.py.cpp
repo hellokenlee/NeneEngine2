@@ -10,6 +10,7 @@ namespace nene::g
 	PYBIND(m, 2)
 	{
 		py::classh<texture_asset, asset>(m, "TextureAsset")
+			.def(py::init<>())
 		;
 	}
 }

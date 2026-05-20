@@ -17,6 +17,8 @@ namespace nene::g
 		
 		std::vector<float> m_scalar_parameters;
 		
+		std::vector<std::shared_ptr<texture_asset>> m_loaded_textures; 
+		
 		void serialize(archive& ar) override;
 		
 		const std::shared_ptr<r::render_material>& get_or_create_render_material();

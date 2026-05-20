@@ -2,6 +2,8 @@
 
 #include "gapi_cmd_context.h"
 
+#include "gapi_dynamic.h"
+
 
 namespace nene
 {
@@ -151,10 +153,8 @@ namespace nene
 
 	std::shared_ptr<gapi_buffer> gapi_cmd_context::create_and_upload_buffer(const gapi_resource_desc& desc, const void* initial_data)
 	{
-		//
-		CHECK(desc.is_buffer());
 		// 先创建目标的资源
-		auto target_buffer = std::dynamic_pointer_cast<gapi_buffer>(m_device->create_resource(desc));
+		auto target_buffer = gapi_dynamic::get().create_buffer(desc);
 		if (t::has_flag(desc.m_buffer_usage_flag, gapi_buffer_usage_flag::dynamic_buffer))
 		{
 			// 对于 CPU 可见直接拷贝
@@ -192,8 +192,7 @@ namespace nene
 
 	std::shared_ptr<gapi_texture> gapi_cmd_context::create_and_upload_texture(const gapi_resource_desc& desc, const std::vector<const void*>& initial_data)
 	{
-		CHECK(desc.is_texture());
-		auto target_texture = std::dynamic_pointer_cast<gapi_texture>(m_device->create_resource(desc));
+		auto target_texture = gapi_dynamic::get().create_texture(desc);
 		if (t::has_flag(desc.m_texture_create_flag, gapi_texture_create_flag::cpu_writable))
 		{
 			// 对于 CPU 可见直接拷贝
@@ -246,6 +245,7 @@ namespace nene
 			// 延迟删除 ( 帧末删除 )
 			deferred_release(intermediate_buffer);
 		}
+		
 		return target_texture;
 	}
 

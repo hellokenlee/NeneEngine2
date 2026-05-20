@@ -11,7 +11,16 @@ namespace nene::g
 		ar << AR(data, m_some_attrib);
 		return ar;
 	}
-	
+
+	const std::shared_ptr<r::render_texture>& texture_asset::get_or_create_render_texture()
+	{
+		if (m_render_texture == nullptr)
+		{
+			m_render_texture = std::make_shared<r::render_texture>(m_mip_maps);
+		}
+		return m_render_texture;
+	}
+
 	void texture_asset::serialize(archive& ar)
 	{
 		//

@@ -8,13 +8,6 @@
 
 namespace nene::g
 {
-	struct NENE_API mip_data
-	{
-		uint3 m_extent;
-		gapi_pixel_format m_format;
-		std::vector<uint8_t> m_pixels;
-	};
-	
 	struct NENE_API test_data
 	{
 	private:
@@ -29,7 +22,9 @@ namespace nene::g
 		test_data m_test;
 		std::vector<mip_data> m_mip_maps;
 		//
-		std::unique_ptr<r::render_texture> m_render_texture;
+		std::shared_ptr<r::render_texture> m_render_texture;
+		//
+		const std::shared_ptr<r::render_texture>& get_or_create_render_texture();
 		
 		void serialize(archive& ar) override;
 	};

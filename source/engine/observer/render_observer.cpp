@@ -34,7 +34,7 @@ namespace nene::g
 						auto mat = asset_registry::get().load(sm.m_material);
 						if (mat == nullptr)
 						{
-							mat = material_asset::get_default_material();
+							return;
 						}
 						const auto& render_mat = mat->get_or_create_render_material();
 						auto proxy = std::make_shared<r::static_mesh_render_proxy>(mesh_render_data, render_mat);

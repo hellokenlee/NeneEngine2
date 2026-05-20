@@ -5,7 +5,7 @@
 
 namespace nene::r
 {
-	render_texture::render_texture(const std::vector<image_data>& mipmaps)
+	render_texture::render_texture(const std::vector<mip_data>& mipmaps)
 	{
 		gapi_resource_desc desc;
 		//
@@ -31,7 +31,7 @@ namespace nene::r
 		{
 			mipmap_datas.emplace_back(mip.m_pixels.data());
 		}
-		gapi_dynamic::get().get_cmd_context().create_and_upload_texture(desc, mipmap_datas);
+		m_gapi_texture = gapi_dynamic::get().get_cmd_context().create_and_upload_texture(desc, mipmap_datas);
 	}
 
 	render_texture::render_texture(const std::shared_ptr<gapi_texture>& gapi_texture)

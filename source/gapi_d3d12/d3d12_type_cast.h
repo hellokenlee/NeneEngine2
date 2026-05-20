@@ -17,7 +17,6 @@ namespace nene
 		case gapi_pixel_format::unknown:
 			return DXGI_FORMAT_UNKNOWN;
 		case gapi_pixel_format::r8g8b8a8:
-			return DXGI_FORMAT_R8G8B8A8_TYPELESS;
 		case gapi_pixel_format::r8g8b8a8_unorm:
 			return DXGI_FORMAT_R8G8B8A8_UNORM;
 		case gapi_pixel_format::r16g16b16a16:
