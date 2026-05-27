@@ -303,7 +303,8 @@ namespace nene
 	void gapi_d3d12_cmd_list::transition_resource(const std::shared_ptr<gapi_resource>& resource, const gapi_resource_state& to_state)
 	{
 		// TODO: batch independent barriers
-		if (auto barrier = t::gapi_pin<gapi_d3d12_resource>(resource).d3d_transition(to_state); barrier.has_value())
+		auto barrier = t::gapi_pin<gapi_d3d12_resource>(resource).d3d_transition(to_state);
+		if (barrier.has_value())
 		{
 			m_d3d_list->ResourceBarrier(1, std::addressof(barrier.value()));		
 		}

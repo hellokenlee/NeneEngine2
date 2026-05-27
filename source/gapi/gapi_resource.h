@@ -16,6 +16,9 @@ namespace nene
 		render_target,
 		shader_resource,
 
+		depth_write,
+		depth_read,
+
 		copy_source,
 		copy_destination,
 		

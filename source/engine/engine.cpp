@@ -34,16 +34,24 @@ namespace nene
 		
 		// renderer render world
 		enqueue_render_command<"Render">(
-			[this, render_scene = m_world->get_render_scene(), main_render_view = m_world->get_main_render_view()]()
+			[this, b_gpu_capture = m_gpu_capture_requested, render_scene = m_world->get_render_scene(), main_render_view = m_world->get_main_render_view()]()
 			{
 				ZoneScopedN("Render");
 				if (main_render_view != nullptr)
 				{
+					//
+					auto& gai = gapi_dynamic::get();
+					//
+					if (b_gpu_capture)
+					{
+						gai.get_device()->begin_gpu_capture();
+					}
+					
 					m_renderer->set_rendering_scene(render_scene);
 					// TODO: culling
 					{
 						//
-						auto& gai = gapi_dynamic::get();
+						
 						auto& context = gai.get_cmd_context();
 						auto& back_buffer_texture = gai.get_swap_chain()->get_back_buffer();
 					
@@ -58,9 +66,16 @@ namespace nene
 						gai.present_frame();
 					}
 					m_renderer->set_rendering_scene(nullptr);
+					
+					if (b_gpu_capture)
+					{
+						gai.get_device()->end_gpu_capture();
+					}
 				}
 			}
 		);
+		//
+		m_gpu_capture_requested = false;
 	}
 
 	const std::shared_ptr<g::world>& engine::get_world() const

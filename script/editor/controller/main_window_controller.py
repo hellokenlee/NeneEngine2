@@ -20,7 +20,7 @@ from script.editor.controller.content_broswer_dock_widget_controller import Cont
 from script.editor.controller.outliner_dock_widget_controller import OutlinerDockWidgetController
 from script.editor.controller.inspector_dock_widget_controller import InspectorDockWidgetController
 
-from nene import EditorCommandCenter, SpawnEntityCommand
+from nene import EditorCommandCenter, SpawnEntityCommand, PixCaptureCommand
 
 
 class _ViewportDropFilter(QObject):
@@ -93,9 +93,14 @@ class MainWindowController(BaseController[QMainWindow]):
 		self._window_menu: QMenu = self.find_child(QMenu, "menuView")
 		#
 		self._help_menu: QMenu = self.find_child(QMenu, "menuHelp")
+		debug_menu = self._help_menu.addMenu("Debug")
 		reload_action = QAction("Reload", self.ui)
 		reload_action.triggered.connect(self._on_help_debug_reload)
-		self._help_menu.addMenu("Debug").addAction(reload_action)
+		debug_menu.addAction(reload_action)
+		capture_action = QAction("Capture", self.ui)
+		capture_action.setShortcut(QKeySequence(QtCore.Qt.Key.Key_F11))
+		capture_action.triggered.connect(self._on_help_debug_capture)
+		debug_menu.addAction(capture_action)
 		#
 		self._edit_menu: QMenu = self.find_child(QMenu, "menuEdit")
 		self._edit_menu_undo_action = QAction("Undo", self.ui)
@@ -142,6 +147,12 @@ class MainWindowController(BaseController[QMainWindow]):
 	# noinspection PyMethodMayBeStatic
 	def _on_help_debug_reload(self):
 		reload()
+		pass
+
+	# noinspection PyMethodMayBeStatic
+	def _on_help_debug_capture(self):
+		log(self, INFO, "trigger gpu capture!")
+		EditorCommandCenter().invoke(PixCaptureCommand())
 		pass
 
 	# noinspection PyMethodMayBeStatic

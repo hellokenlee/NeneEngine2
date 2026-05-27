@@ -143,9 +143,9 @@ namespace nene
 		{
 		case gapi_rasterizer_cull_mode::cull_none:
 			return D3D12_CULL_MODE_NONE;
-		case gapi_rasterizer_cull_mode::cull_back:
+		case gapi_rasterizer_cull_mode::cull_clock_wise:
 			return D3D12_CULL_MODE_BACK;
-		case gapi_rasterizer_cull_mode::cull_front:
+		case gapi_rasterizer_cull_mode::cull_counter_clock_wise:
 			return D3D12_CULL_MODE_FRONT;
 		default:
 			CHECK(false);
@@ -404,6 +404,11 @@ namespace nene
 			return D3D12_RESOURCE_STATE_RENDER_TARGET;
 		case gapi_resource_state::shader_resource:
 			return D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
+		
+		case gapi_resource_state::depth_write:
+			return D3D12_RESOURCE_STATE_DEPTH_WRITE;
+		case gapi_resource_state::depth_read:
+			return D3D12_RESOURCE_STATE_DEPTH_READ;
 			
 		case gapi_resource_state::copy_source:
 			return D3D12_RESOURCE_STATE_COPY_SOURCE;

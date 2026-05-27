@@ -21,11 +21,13 @@ namespace nene::r
 		{
 			auto desc = gapi_texture_desc::create_2d(uint2(view_family_texture.get_texture_width(), view_family_texture.get_texture_height()), gapi_pixel_format::d24_s8, gapi_texture_create_flag::as_depth_stencil);
 			m_scene_depth = gapi_dynamic::get().create_texture(desc);
+			m_scene_depth->set_debug_name("SceneDepth");
 		}
 		if (m_scene_color == nullptr || m_scene_color->get_resource_desc().m_width != view_family_texture.get_texture_width() || m_scene_color->get_resource_desc().m_height != view_family_texture.get_texture_height())
 		{
 			auto desc = gapi_texture_desc::create_2d(uint2(view_family_texture.get_texture_width(), view_family_texture.get_texture_height()), gapi_pixel_format::r8g8b8a8_unorm, gapi_texture_create_flag::as_render_target);
 			m_scene_color = gapi_dynamic::get().create_texture(desc);
+			m_scene_color->set_debug_name("SceneColor");
 		}
 	}
 
@@ -40,6 +42,7 @@ namespace nene::r
 		//
 		{
 			auto _ = context.render_pass({view_family_texture.get_texture()}, m_scene_depth);
+			context.clear_depth_stencil(m_scene_depth, 1.0f, 0);
 		
 			view.update_constant_buffer();
 			
@@ -65,6 +68,8 @@ namespace nene::r
 							);
 							pso_desc.m_render_target_formats.emplace_back(gapi_pixel_format::r8g8b8a8_unorm);
 							pso_desc.m_depth_stencil_format = gapi_pixel_format::d24_s8;
+							pso_desc.m_depth_stencil_state.m_use_depth_write = true;
+							pso_desc.m_depth_stencil_state.m_depth_func = gapi_cmp_func::less_equal;
 							const auto& pso = gapi_pipeline_state_manager::get().find_or_create_pipeline_state(pso_desc);
 							context.set_pipeline_state(pso);
 							// 2. 设置 IB 和 VB

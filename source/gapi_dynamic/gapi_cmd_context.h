@@ -39,7 +39,7 @@ namespace nene
 
 		//
 		void clear_render_target(const std::shared_ptr<gapi_texture>& render_target, const color::rgba<float>& clear_color) const;
-
+		void clear_depth_stencil(const std::shared_ptr<gapi_texture>& depth_stencil, float depth, uint8_t stencil) const;
 
 		// void dispatch(const uvector3& thread_group_size) const;
 		void draw(uint32_t num_vertices, uint32_t num_instances, uint32_t vertex_offset = 0, uint32_t instance_offset = 0);

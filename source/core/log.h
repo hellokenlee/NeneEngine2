@@ -41,7 +41,7 @@ namespace nene
 	class NENE_API logger final 
 	{
 	public:
-		logger(const std::string_view& name);
+		logger(const std::string_view& name) noexcept;
 		logger(const logger&) = delete;
 		logger(logger&&) = delete;
 		~logger() = default;

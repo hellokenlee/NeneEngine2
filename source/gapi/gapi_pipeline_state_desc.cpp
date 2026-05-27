@@ -76,7 +76,7 @@ namespace nene
 
 	gapi_rasterizer_state_desc::gapi_rasterizer_state_desc()
 		: m_fill_mode(gapi_rasterizer_fill_mode::solid)
-		, m_cull_mode(gapi_rasterizer_cull_mode::cull_back)
+		, m_cull_mode(gapi_rasterizer_cull_mode::cull_clock_wise)
 		, m_depth_clip_mode(gapi_rasterizer_depth_clip_mode::clip)
 		, m_depth_bias(0.0f)
 		, m_slope_scale_depth_bias(0.0f)

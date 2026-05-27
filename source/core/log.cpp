@@ -13,7 +13,7 @@ namespace nene
 		return instance;
 	}
 
-	logger::logger(const std::string_view& name)
+	logger::logger(const std::string_view& name) noexcept
 		: m_name(name)
 	{
 	}

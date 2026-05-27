@@ -212,15 +212,15 @@ namespace nene
 		wireframe,
 		solid,
 	};
-
+	
 	enum class gapi_rasterizer_cull_mode : uint8_t
 	{
 		// dont cull anything
 		cull_none,
-		// cull back face ( clock wise )
-		cull_back,
-		// cull front face ( counter-clock wise )
-		cull_front,
+		// cull back face ( cull clock wise )
+		cull_clock_wise,
+		// cull front face ( cull counter clock wise )
+		cull_counter_clock_wise,
 	};
 
 	enum class gapi_rasterizer_depth_clip_mode : uint8_t

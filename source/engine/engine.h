@@ -25,7 +25,10 @@ namespace nene
 		
 		virtual const std::shared_ptr<g::world>& get_world() const;
 		
+		virtual void debug_capture_gpu_frame() { m_gpu_capture_requested = true;}
+		
 	protected:
+		bool m_gpu_capture_requested = false;
 		std::shared_ptr<g::world> m_world;
 		std::unique_ptr<r::renderer> m_renderer;
 		std::unique_ptr<g::render_observer> m_render_observer;

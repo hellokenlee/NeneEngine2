@@ -36,6 +36,10 @@ namespace nene
 			m_cmd_list->transition_resource(render_target, gapi_resource_state::render_target);
 			rtvs.emplace_back(render_target->get_render_target_view());
 		}
+		if (depth_stencil != nullptr)
+		{
+			m_cmd_list->transition_resource(depth_stencil, gapi_resource_state::depth_write);
+		}
 		m_cmd_list->set_viewports(m_viewports);
 		m_cmd_list->set_scissor_rects(m_scissors);
 		m_cmd_list->set_render_targets(rtvs, depth_stencil ? depth_stencil->get_depth_stencil_view() : nullptr);
@@ -98,6 +102,12 @@ namespace nene
 	{
 		CHECK(render_target->get_render_target_view() != nullptr);
 		m_cmd_list->clear_render_target_view(render_target->get_render_target_view(), clear_color);
+	}
+
+	void gapi_cmd_context::clear_depth_stencil(const std::shared_ptr<gapi_texture>& depth_stencil, float depth, uint8_t stencil) const
+	{
+		CHECK(depth_stencil->get_depth_stencil_view() != nullptr);
+		m_cmd_list->clear_depth_stencil_view(depth_stencil->get_depth_stencil_view(), depth, stencil);
 	}
 
 	void gapi_cmd_context::draw(uint32_t num_vertices, uint32_t num_instances, uint32_t vertex_offset, uint32_t instance_offset)

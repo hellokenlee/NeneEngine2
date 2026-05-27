@@ -32,6 +32,8 @@ namespace nene
 		static void shutdown();
 
 		static bool is_initialized();
+		
+		static void debug_capture_gpu_frame();
 	
 		static const std::shared_ptr<g::world>& get_world();
 

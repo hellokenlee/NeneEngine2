@@ -14,6 +14,9 @@
 #include "d3d12_type_cast.h"
 #include "d3d12_root_signature_manager.h"
 
+#include "pix3.h"
+
+
 namespace nene
 {
 	extern t::console_var<bool> cvar_gapi_d3d_debug;
@@ -276,7 +279,7 @@ namespace nene
 				desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE1D;
 				desc.Texture1D.MipLevels = resource_desc.m_num_mips;
 				desc.Texture1D.MostDetailedMip = 0;
-				desc.Texture1D.ResourceMinLODClamp = 1;
+				desc.Texture1D.ResourceMinLODClamp = 0.0f;
 				break;	
 			}
 		case gapi_resource_type::texture2d:
@@ -285,7 +288,7 @@ namespace nene
 				desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 				desc.Texture2D.MipLevels = resource_desc.m_num_mips;
 				desc.Texture2D.MostDetailedMip = 0;
-				desc.Texture2D.ResourceMinLODClamp = 1;
+				desc.Texture2D.ResourceMinLODClamp = 0.0f;
 				break;
 			}
 		case gapi_resource_type::texture3d:
@@ -294,7 +297,7 @@ namespace nene
 				desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE3D;
 				desc.Texture3D.MipLevels = resource_desc.m_num_mips;
 				desc.Texture3D.MostDetailedMip = 0;
-				desc.Texture3D.ResourceMinLODClamp = 1;
+				desc.Texture3D.ResourceMinLODClamp = 0.0f;
 				break;	
 			}
 		default:
@@ -492,6 +495,16 @@ namespace nene
 		{
 			const_cast<gapi_resource_desc&>(desc).m_width = t::align(desc.m_width, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
 		}
+		
+		D3D12_CLEAR_VALUE initial_clear_value = {};
+		const D3D12_CLEAR_VALUE* initial_clear_value_ptr = nullptr;
+		if (desc.is_texture() && t::has_flag(desc.m_texture_create_flag, gapi_texture_create_flag::as_depth_stencil))
+		{
+			initial_clear_value.Format = d3d_cast(desc.m_format);
+			initial_clear_value.DepthStencil.Depth = 1.0f;
+			initial_clear_value.DepthStencil.Stencil = 0;
+			initial_clear_value_ptr = &initial_clear_value;
+		}
 
 		// TODO: choose initial resource state
 		const CD3DX12_HEAP_PROPERTIES d3d_heap_props(heap_type);
@@ -502,7 +515,7 @@ namespace nene
 			D3D12_HEAP_FLAG_NONE,
 			&d3d_desc,
 			D3D12_RESOURCE_STATE_COMMON,
-			nullptr,
+			initial_clear_value_ptr,
 			IID_PPV_ARGS(&resource)
 		));
 
@@ -553,5 +566,18 @@ namespace nene
 		auto result = std::make_shared<gapi_d3d12_shader>(stype, level, source, entry, debug_name);
 		ENSURE(result->compile());
 		return result;
+	}
+
+	void gapi_d3d12_device::begin_gpu_capture()
+	{
+		m_gpu_capture_begun = true;
+		PIXCaptureParameters params = {};
+		params.GpuCaptureParameters.FileName = L"NeneEngine_20260527_Frame_12345.wpix";
+		PIXBeginCapture(PIX_CAPTURE_GPU, &params);
+	}
+
+	void gapi_d3d12_device::end_gpu_capture()
+	{
+		PIXEndCapture(true);
 	}
 }

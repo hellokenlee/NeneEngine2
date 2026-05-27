@@ -82,6 +82,12 @@ namespace nene
 		return m_engine != nullptr;
 	}
 
+	void engine_loop::debug_capture_gpu_frame()
+	{
+		CHECK(is_initialized());
+		m_engine->debug_capture_gpu_frame();
+	}
+
 	const std::shared_ptr<g::world>& engine_loop::get_world()
 	{
 		CHECK(is_initialized());

@@ -161,8 +161,8 @@ namespace nene
 	std::map<std::string, std::shared_ptr<g::asset>> mesh_importer::import_asset(const std::string& from_abs_path)
 	{
 		Assimp::Importer importer;
-		
-		const aiScene* scene = importer.ReadFile(from_abs_path, aiProcess_Triangulate | aiProcess_GenNormals);
+		// nene uses left handed coordinate system
+		const aiScene* scene = importer.ReadFile(from_abs_path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_MakeLeftHanded | aiProcess_GenNormals);
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) 
 		{
 			log(mesh_importer_, error, "assimp error: {}", importer.GetErrorString());
