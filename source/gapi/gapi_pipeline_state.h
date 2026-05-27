@@ -13,58 +13,36 @@ namespace  nene
 		compute,
 		graphics,
 	};
-
-
+	
+	struct gapi_shader_parameter_index
+	{
+		uint8_t m_root_binding_slot = INVALID_INDEX_UINT8;
+		uint8_t m_parameter_index = INVALID_INDEX_UINT8;
+	};
+	
 	struct gapi_shader_resource_table
 	{
-		// map `t#` to pipeline parameter index
-		std::vector<uint32_t> m_srv_register_table;
-		// map `b#` to pipeline parameter index
-		std::vector<uint32_t> m_cbv_register_table;
-		// map `u#` to pipeline parameter index
-		std::vector<uint32_t> m_uav_register_table;
-		// map `s#` to pipeline parameter index
-		std::vector<uint32_t> m_dynamic_sampler_register_table;
+		// map `t#` to parameter index ( within a root binding slot )
+		std::vector<gapi_shader_parameter_index> m_srv_register_table;
+		// map `b#` to parameter index ( within a root binding slot )
+		std::vector<gapi_shader_parameter_index> m_cbv_register_table;
+		// map `u#` to parameter index ( within a root binding slot )
+		std::vector<gapi_shader_parameter_index> m_uav_register_table;
+		// map `s#` to parameter index ( within a root binding slot )
+		std::vector<gapi_shader_parameter_index> m_dynamic_sampler_register_table;
 	};
 
-	struct gapi_shader_resource_tables
+	struct NENE_API gapi_shader_resource_tables
 	{
-		std::array<gapi_shader_resource_table, num_gapi_shader_stage> m_shader_stage_register_tables;
-		uint32_t m_num_total_parameters = 0;
-
-		uint32_t get_parameter_index(gapi_shader_stage stage, gapi_resource_view_type stype, uint32_t reg) const
-		{
-			switch (stype)
-			{
-				case gapi_resource_view_type::constant_buffer_view:
-				{
-					const auto& cbv_table = m_shader_stage_register_tables[magic_enum::enum_underlying(stage)].m_cbv_register_table;
-					CHECK(cbv_table.size() > reg);
-					return cbv_table[reg];
-				}
-				case gapi_resource_view_type::shader_resource_view:
-				{
-					const auto& srv_table = m_shader_stage_register_tables[magic_enum::enum_underlying(stage)].m_srv_register_table;
-					CHECK(srv_table.size() > reg);
-					return srv_table[reg];
-				}
-				case gapi_resource_view_type::unordered_access_view:
-				{
-					const auto& uav_table = m_shader_stage_register_tables[magic_enum::enum_underlying(stage)].m_uav_register_table;
-					CHECK(uav_table.size() > reg);
-					return uav_table[reg];
-				}
-				case gapi_resource_view_type::texture_sampler:
-				{
-					const auto& sampler_table = m_shader_stage_register_tables[magic_enum::enum_underlying(stage)].m_dynamic_sampler_register_table;
-					CHECK(sampler_table.size() > reg);
-					return sampler_table[reg];
-				}
-				default:
-					CHECK(false);
-			}
-			return -1;
-		}
+		// 
+		std::array<gapi_shader_resource_table, NUM_GAPI_SHADER_STAGE> m_shader_stage_register_tables;
+		//
+		bool m_is_finalized = false;
+		std::vector<uint8_t> m_num_parameters_per_root_binding_slot;
+		
+		void finalize();
+		
+		gapi_shader_parameter_index get_parameter_index(gapi_shader_stage stage, gapi_resource_view_type stype, uint32_t reg) const;
 	};
 	
 	/**

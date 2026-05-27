@@ -329,7 +329,9 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 						else:
 							exec_rear_paths.add(directory)
 				exec_paths_str = ";".join([*exec_prior_paths, *exec_rear_paths])
-				ElementTree.SubElement(property_group, VcTag.LocalDebuggerEnvironment).text = "PATH=%s;%%(PATH)" % exec_paths_str
+				# TRACY_NO_SYS_TRACE=1 disables Tracy's system tracing on Windows,
+				# avoiding the need for Administrator privileges when profiling.
+				ElementTree.SubElement(property_group, VcTag.LocalDebuggerEnvironment).text = "PATH=%s;%%(PATH)\nTRACY_NO_SYS_TRACE=1" % exec_paths_str
 				ElementTree.SubElement(property_group, VcTag.LocalDebuggerWorkingDirectory).text = "$(SolutionDir)"
 
 				# 目前 Rider 还不支持读取 `LocalDebuggerEnvironment`, 也不支持读取指定的 `*.env` 文件, 只能 hack 配置文件
@@ -430,7 +432,10 @@ class VisualStudioModuleGenerator(ModuleGenerator):
 									element = configuration_n.find("envs")
 									if element is None:
 										element = ElementTree.SubElement(configuration_n, "envs")
-									VisualStudioModuleGenerator._hack_rider_add_envs(element, {"PATH": "%s;$PATH$" % exec_paths_str})
+									VisualStudioModuleGenerator._hack_rider_add_envs(element, {
+										"PATH": "%s;$PATH$" % exec_paths_str,
+										"TRACY_NO_SYS_TRACE": "1",
+									})
 			#
 			ElementTree.indent(tree, '  ')
 			content = ElementTree.tostring(tree.getroot(), encoding="unicode")

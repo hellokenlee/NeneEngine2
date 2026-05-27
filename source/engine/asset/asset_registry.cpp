@@ -241,6 +241,7 @@ namespace nene::g
 
 	std::shared_ptr<asset> asset_registry::typeless_load(const uuid& uid)
 	{
+		ZoneScoped;
 		// check if already loaded
 		if (m_loaded_assets.contains(uid))
 		{
@@ -249,8 +250,10 @@ namespace nene::g
 		// check if there exists its header
 		if (m_asset_abstracts.contains(uid))
 		{
+			ZoneScopedN("doload");
 			const auto& header = m_asset_abstracts.at(uid);
 			CHECK(header.valid());
+			ZoneText(header.m_file_name.c_str(), header.m_type_name.size());
 			//
 			auto py_type = reflection::get_class(header.m_type_name);
 			auto var = reflection::make_variant(py_type);

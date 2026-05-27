@@ -94,7 +94,7 @@ namespace nene
 		// 
 		gapi_vertices_declaration m_vertices_declaration;
 		//
-		std::array<std::shared_ptr<gapi_shader>, num_gapi_shader_stage> m_stage_shaders;
+		std::array<std::shared_ptr<gapi_shader>, NUM_GAPI_SHADER_STAGE> m_stage_shaders;
 		
 	};
 

@@ -22,7 +22,7 @@ namespace nene
 		ray_gen_shader,
 		ray_tracing_shader,
 	};
-	constexpr size_t num_gapi_shader_stage = magic_enum::enum_count<gapi_shader_stage>();
+	constexpr size_t NUM_GAPI_SHADER_STAGE = magic_enum::enum_count<gapi_shader_stage>();
 
 
 	enum class gapi_shader_feature_level : uint8_t

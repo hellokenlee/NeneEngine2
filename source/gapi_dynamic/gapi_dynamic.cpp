@@ -244,13 +244,15 @@ namespace nene
 
 	std::unique_ptr<gapi_dynamic> gapi_dynamic::s_instance = {};
 
-	void gapi_dynamic::initialize(void* window, const uint2& window_size)
+	gapi_dynamic& gapi_dynamic::initialize(void* window, const uint2& window_size)
 	{
 		CHECK(window != nullptr);
 		CHECK(s_instance == nullptr);
 		
 		const auto platform = static_cast<gapi_platform>(cvar_gapi_platform.get_value_thread_unsafe());
 		s_instance = std::unique_ptr<gapi_dynamic>(new gapi_dynamic(platform, static_cast<HWND>(window), window_size));
+		//
+		return *s_instance;
 	}
 
 	gapi_dynamic& gapi_dynamic::get()

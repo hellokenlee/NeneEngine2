@@ -26,7 +26,7 @@ namespace nene
 		~gapi_dynamic() override;
 
 		/** Create adapter and device from a window handler. */
-		static void initialize(void* window, const uint2& window_size);
+		static gapi_dynamic& initialize(void* window, const uint2& window_size);
 	
 		/** Fetch the current gapi that is using. */
 		static gapi_dynamic& get();

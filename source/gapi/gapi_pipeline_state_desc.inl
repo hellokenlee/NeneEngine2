@@ -43,7 +43,7 @@ namespace std
 			{
 				nene::hash_combine(seed, element);
 			}
-			for (uint32_t i = 0; i < nene::num_gapi_shader_stage; ++i)
+			for (uint32_t i = 0; i < nene::NUM_GAPI_SHADER_STAGE; ++i)
 			{
 				nene::hash_combine(seed, desc.get_shader((nene::gapi_shader_stage)i));
 			}

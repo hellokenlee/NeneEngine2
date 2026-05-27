@@ -41,7 +41,7 @@ namespace nene
 			return false;
 		}
 		//
-		std::array<gapi_shader_register_count, num_gapi_shader_stage> m_shader_register_counts;
+		std::array<gapi_shader_register_count, NUM_GAPI_SHADER_STAGE> m_shader_register_counts;
 	};
 
 	class d3d12_root_signature_manager

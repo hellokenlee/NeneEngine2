@@ -165,10 +165,10 @@ namespace nene
 		uint32_t current_root_parameter_index = 0;
 		// we only bind:
 		//		1. Root Descriptor: It can only be CBV
-		//		2. Descriptor Table: SRV, UAV, Sampler and `exceeded` CBV
+		//		2. Descriptor Table: SRV, UAV, Sampler and `exceeded` CBV ( which means the number of CBVs exceeds the limit of root descriptors)
 		for (auto root_parameter_type : {D3D12_ROOT_PARAMETER_TYPE_CBV, D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE})
 		{
-			// TODO: per-stage shader binding
+			//
 			for (auto shader_visibility : magic_enum::enum_values<D3D12_SHADER_VISIBILITY>())
 			{
 				gapi_shader_stage stage = d3d_back_cast(shader_visibility);
@@ -178,23 +178,26 @@ namespace nene
 				{
 				case D3D12_ROOT_PARAMETER_TYPE_CBV:
 					{
-						// we first try to bind CBV as a root descriptor
+						//
+						auto& cbv_table = out_shader_resource_table.m_shader_stage_register_tables[magic_enum::enum_underlying(stage)].m_cbv_register_table;
+						// we first try to bind CBVs ( within limit ) as root descriptors
 						for (uint32_t shader_register = 0; shader_register < shader_register_count.num_constant_buffer && shader_register < NUM_D3D_MAX_ROOT_CBVS; ++shader_register)
 						{
 							root_parameters[current_root_parameter_index].InitAsConstantBufferView(shader_register, register_space, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, shader_visibility);
 							out_shader_resource_table.m_shader_stage_register_tables[magic_enum::enum_underlying(stage)].m_cbv_register_table.emplace_back(current_root_parameter_index);
 							++current_root_parameter_index;
 							CHECK(current_root_parameter_index <= NUM_D3D_MAX_ROOT_PARAMETERS);
+							// mark it should be bind as root descriptor
+							cbv_table.emplace_back();
 						}
-						
 						break;
 					}
 				case D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE:
 					{
-						// CBV: if the num of CBV exceeds, bind all remain CBVs as a descriptor range in a descriptor table
+						// CBV: if the num of CBV exceeds, bind all remain CBVs as ONE descriptor range in ONE descriptor table
 						if (shader_register_count.num_constant_buffer > NUM_D3D_MAX_ROOT_CBVS)
 						{
-							// the num of cbvs will be bound in ONE SINGLE descriptor range
+							// all `exceeded` CBVs will be bound in ONE SINGLE descriptor range
 							uint32_t num_cbvs = shader_register_count.num_constant_buffer - NUM_D3D_MAX_ROOT_CBVS;
 							descriptor_ranges[current_root_parameter_index].Init(
 								D3D12_DESCRIPTOR_RANGE_TYPE_CBV,
@@ -204,19 +207,24 @@ namespace nene
 								D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC_WHILE_SET_AT_EXECUTE | D3D12_DESCRIPTOR_RANGE_FLAG_DESCRIPTORS_VOLATILE
 							);
 							root_parameters[current_root_parameter_index].InitAsDescriptorTable(1, &descriptor_ranges[current_root_parameter_index], shader_visibility);
-							// map reset of all cbvs into ONE SINGLE parameter index
+							// map reset of all cbvs into ONE SINGLE root parameter index
 							auto& cbv_table = out_shader_resource_table.m_shader_stage_register_tables[magic_enum::enum_underlying(stage)].m_cbv_register_table;
 							for (uint32_t i = 0; i < num_cbvs; ++i)
 							{
-								cbv_table.emplace_back(current_root_parameter_index);
+								cbv_table.emplace_back(
+									gapi_shader_parameter_index{
+										.m_root_binding_slot = static_cast<uint8_t>(current_root_parameter_index), 
+										.m_parameter_index = static_cast<uint8_t>(i)
+									}
+								);
 							}
 							++current_root_parameter_index;
 							CHECK(current_root_parameter_index <= NUM_D3D_MAX_ROOT_PARAMETERS);
 						}
-						// SRV: bind all SRVs as a descriptor range in a descriptor table
+						// SRV: bind all SRVs as ONE descriptor range in ONE descriptor table
 						if (shader_register_count.num_shader_resource > 0)
 						{
-							// the num of srvs will be bound into ONE SINGLE descriptor range
+							// all srvs will be bound into ONE SINGLE descriptor range
 							uint32_t num_srvs = shader_register_count.num_shader_resource;
 							descriptor_ranges[current_root_parameter_index].Init(
 								D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
@@ -226,11 +234,16 @@ namespace nene
 								D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC_WHILE_SET_AT_EXECUTE | D3D12_DESCRIPTOR_RANGE_FLAG_DESCRIPTORS_VOLATILE
 							);
 							root_parameters[current_root_parameter_index].InitAsDescriptorTable(1, &descriptor_ranges[current_root_parameter_index], shader_visibility);
-							// map all srvs into ONE SINGLE parameter index
+							// map all srvs into ONE SINGLE root parameter index
 							auto& srv_table = out_shader_resource_table.m_shader_stage_register_tables[magic_enum::enum_underlying(stage)].m_srv_register_table;
 							for (uint32_t i = 0; i < num_srvs; ++i)
 							{
-								srv_table.emplace_back(current_root_parameter_index);
+								srv_table.emplace_back(
+									gapi_shader_parameter_index{
+										.m_root_binding_slot = static_cast<uint8_t>(current_root_parameter_index), 
+										.m_parameter_index = static_cast<uint8_t>(i)
+									}
+								);
 							}
 							++current_root_parameter_index;
 							CHECK(current_root_parameter_index <= NUM_D3D_MAX_ROOT_PARAMETERS);
@@ -238,7 +251,7 @@ namespace nene
 						// UAV: bind all UAVs as a descriptor range in a descriptor table
 						if (shader_register_count.num_unordered_access > 0)
 						{
-							// the num of uavs will be bound into ONE SINGLE descriptor range
+							// all uavs will be bound into ONE SINGLE descriptor range
 							uint32_t num_uavs = shader_register_count.num_unordered_access;
 							descriptor_ranges[current_root_parameter_index].Init(
 								D3D12_DESCRIPTOR_RANGE_TYPE_UAV,
@@ -248,11 +261,16 @@ namespace nene
 								D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE | D3D12_DESCRIPTOR_RANGE_FLAG_DESCRIPTORS_VOLATILE
 							);
 							root_parameters[current_root_parameter_index].InitAsDescriptorTable(1, &descriptor_ranges[current_root_parameter_index], shader_visibility);
-							// map all uavs into ONE SINGLE parameter index
+							// map all uavs into ONE SINGLE root parameter index
 							auto& uav_table = out_shader_resource_table.m_shader_stage_register_tables[magic_enum::enum_underlying(stage)].m_uav_register_table;
 							for (uint32_t i = 0; i < num_uavs; ++i)
 							{
-								uav_table.emplace_back(current_root_parameter_index);
+								uav_table.emplace_back(
+									gapi_shader_parameter_index{
+										.m_root_binding_slot = static_cast<uint8_t>(current_root_parameter_index), 
+										.m_parameter_index = static_cast<uint8_t>(i)
+									}
+								);
 							}
 							++current_root_parameter_index;
 							CHECK(current_root_parameter_index <= NUM_D3D_MAX_ROOT_PARAMETERS);
@@ -260,7 +278,7 @@ namespace nene
 						// Sampler: bind all dynamic samplers as a descriptor range in a descriptor table
 						if (shader_register_count.num_dynamic_sampler > 0)
 						{
-							// the num of dynamic samplers will be bound into ONE SINGLE descriptor range
+							// all dynamic samplers will be bound into ONE SINGLE descriptor range
 							uint32_t num_dynamic_samplers = shader_register_count.num_dynamic_sampler;
 							descriptor_ranges[current_root_parameter_index].Init(
 								D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER,
@@ -270,11 +288,16 @@ namespace nene
 								D3D12_DESCRIPTOR_RANGE_FLAG_DESCRIPTORS_VOLATILE
 							);
 							root_parameters[current_root_parameter_index].InitAsDescriptorTable(1, &descriptor_ranges[current_root_parameter_index], shader_visibility);
-							// map all dynamic samplers into ONE SINGLE parameter index
+							// map all dynamic samplers into ONE SINGLE root parameter index
 							auto& dynamic_sampler_table = out_shader_resource_table.m_shader_stage_register_tables[magic_enum::enum_underlying(stage)].m_dynamic_sampler_register_table;
 							for (uint32_t i = 0; i < num_dynamic_samplers; ++i)
 							{
-								dynamic_sampler_table.emplace_back(current_root_parameter_index);
+								dynamic_sampler_table.emplace_back(
+									gapi_shader_parameter_index{
+										.m_root_binding_slot = static_cast<uint8_t>(current_root_parameter_index), 
+										.m_parameter_index = static_cast<uint8_t>(i)
+									}
+								);
 							}
 							++current_root_parameter_index;
 							CHECK(current_root_parameter_index <= NUM_D3D_MAX_ROOT_PARAMETERS);
@@ -288,7 +311,7 @@ namespace nene
 			}
 		}
 		// 
-		out_shader_resource_table.m_num_total_parameters = current_root_parameter_index;
+		out_shader_resource_table.finalize();
 	
 		// TODO: support bindless resource and ray tracing
 		D3D12_ROOT_SIGNATURE_FLAGS flags = D3D12_ROOT_SIGNATURE_FLAG_NONE;

@@ -19,7 +19,7 @@ namespace nene::r
 		virtual const std::shared_ptr<gapi_shader>& get_shader(gapi_shader_stage stype) const;
 		
 	protected:
-		std::array<std::shared_ptr<gapi_shader>, num_gapi_shader_stage> m_gpi_shaders;
-		std::array<shader_translate_environment, num_gapi_shader_stage> m_shader_translate_environments;
+		std::array<std::shared_ptr<gapi_shader>, NUM_GAPI_SHADER_STAGE> m_gpi_shaders;
+		std::array<shader_translate_environment, NUM_GAPI_SHADER_STAGE> m_shader_translate_environments;
 	};
 }

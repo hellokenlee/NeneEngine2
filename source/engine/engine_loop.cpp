@@ -6,6 +6,7 @@
 #include "input_manager.h"
 #include "asset/asset_registry.h"
 #include "core_render/render_thread.h"
+#include "gapi_dynamic/gapi_invalid_resources.h"
 
 
 namespace nene
@@ -17,16 +18,19 @@ namespace nene
 	void engine_loop::initialize(void* window, const uint2& window_size)
 	{
 		//
+		ZoneScoped;
+		//
 		log(engine_, info, "Engine Init!");
-		
-		// initialize gapi 
-		gapi_dynamic::initialize(window, window_size);
 		
 		// initialize render thread
 		enqueue_render_command<"RenderThreadInit">(
-			[]()
+			[window, window_size]()
 			{
-				auto& gapi = gapi_dynamic::get();
+				// initialize gapi 
+				auto& gapi = gapi_dynamic::initialize(window, window_size);
+				//
+				gapi_invalid_resources::initialize(gapi.get_cmd_context());
+				//
 				r::global_render_resource::initialize_global_render_resources(gapi.get_cmd_context());
 				gapi.present_frame();
 			}
