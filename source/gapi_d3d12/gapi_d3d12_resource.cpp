@@ -32,6 +32,7 @@ namespace nene
 
 	void gapi_d3d12_resource::set_debug_name(const std::string& debug_name)
 	{
+		m_desc.m_debug_name = debug_name;
 		d3d_set_debug_name(*m_d3d_resource.Get(), debug_name);
 	}
 

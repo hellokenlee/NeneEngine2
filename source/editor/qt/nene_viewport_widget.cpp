@@ -4,7 +4,7 @@
 
 #include <QtGui/qevent.h>
 #include <QtGui/QWindow>
-#include "engine/engine_loop.h"
+#include "engine/engine.h"
 #include "engine/input_manager.h"
 
 
@@ -30,10 +30,10 @@ NeneViewportWidget::NeneViewportWidget(QWidget* parent)
 	setAttribute(Qt::WA_OpaquePaintEvent);
 	
 	//
-	if (!nene::engine_loop::is_initialized())
+	if (!nene::engine::is_initialized())
 	{
-		nene::engine_loop::initialize(reinterpret_cast<void*>(winId()), nene::uint2(static_cast<uint32_t>(size().width()), static_cast<uint32_t>(size().height())));  // NOLINT(performance-no-int-to-ptr)
-		connect(&m_engine_tick_timer, &QTimer::timeout, &nene::engine_loop::tick);
+		nene::engine::initialize(reinterpret_cast<void*>(winId()), nene::uint2(static_cast<uint32_t>(size().width()), static_cast<uint32_t>(size().height())));  // NOLINT(performance-no-int-to-ptr)
+		connect(&m_engine_tick_timer, &QTimer::timeout, &nene::engine::tick);
 		m_engine_tick_timer.start(EDITOR_MILLISECOND_PER_FRAME);
 	}
 }
@@ -65,7 +65,7 @@ void NeneViewportWidget::resizeEvent(QResizeEvent* event)
 {
 	//
 	QWidget::resizeEvent(event);
-	nene::engine_loop::resize(nene::uint2(static_cast<uint32_t>(event->size().width()), static_cast<uint32_t>(event->size().height())));
+	nene::engine::resize(nene::uint2(static_cast<uint32_t>(event->size().width()), static_cast<uint32_t>(event->size().height())));
 }
 
 bool NeneViewportWidget::nativeEvent(const QByteArray& eventType, void* message, qintptr* result)

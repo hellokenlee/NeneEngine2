@@ -1,7 +1,7 @@
 ﻿/* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #include "entity_inspector.h"
-#include "engine/engine_loop.h"
+#include "engine/engine.h"
 #include "engine/world.h"
 
 
@@ -23,7 +23,7 @@ namespace nene
 	{
 		if (m_inspecting_eid != 0)
 		{
-			flecs::entity e = engine_loop::get_world()->get_ecs().entity(static_cast<flecs::entity_t>(m_inspecting_eid));
+			flecs::entity e = engine::get().get_world()->get_ecs().entity(static_cast<flecs::entity_t>(m_inspecting_eid));
 			e.each(
 			[&e](flecs::id id)
 				{
@@ -40,7 +40,7 @@ namespace nene
 	{
 		std::vector<g::reflection::variant> components;
 		
-		flecs::entity e = engine_loop::get_world()->get_ecs().entity(static_cast<flecs::entity_t>(m_inspecting_eid));
+		flecs::entity e = engine::get().get_world()->get_ecs().entity(static_cast<flecs::entity_t>(m_inspecting_eid));
 		e.each(
 			[&e, &components](flecs::id id)
 			{

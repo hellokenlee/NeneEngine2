@@ -67,10 +67,5 @@ namespace nene
 
 		// Shaders ( Synchronized Compilation )
 		virtual std::shared_ptr<gapi_shader> create_and_compile_shader(const gapi_shader_stage& stype, const std::string& source, const std::string& entry, const gapi_shader_feature_level& level, const std::string& debug_name = "") = 0;
-		
-		
-		// Debug
-		virtual void begin_gpu_capture() {}
-		virtual void end_gpu_capture() {}
 	};
 }

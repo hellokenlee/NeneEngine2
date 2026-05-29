@@ -5,7 +5,7 @@
 #include "core/log.h"
 #include "core/stdout_log_handler.h"
 #include "core_object/py.h"
-#include "engine/engine_loop.h"
+#include "engine/engine.h"
 #include "engine/world.h"
 #include "engine/asset/asset_registry.h"
 #include "engine/component/static_mesh_component.h"

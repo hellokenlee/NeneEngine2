@@ -8,6 +8,8 @@
 #include "gapi_d3d12_swap_chain.h"
 #include "core/utils.h"
 
+#include <dxgidebug.h>
+
 
 namespace nene
 {
@@ -195,6 +197,15 @@ namespace nene
 		auto result = std::make_shared<gapi_d3d12_swap_chain>(swap_chain3, desc);
 		result->set_debug_name("DefaultSwapChain");
 		return result;
+	}
+
+	void gapi_d3d12_factory::print_live_objects()
+	{
+		Microsoft::WRL::ComPtr<IDXGIDebug1> dxgiDebug;
+		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&dxgiDebug))))
+		{
+			dxgiDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_DETAIL | DXGI_DEBUG_RLO_IGNORE_INTERNAL));
+		}
 	}
 
 	int32_t gapi_d3d12_factory::get_d3d12_version()

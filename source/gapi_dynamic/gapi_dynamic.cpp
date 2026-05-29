@@ -260,4 +260,9 @@ namespace nene
 		CHECK_HINTS(s_instance != nullptr, "Call `gapi_dynamic::initialize(...)` first for initialization.");
 		return *s_instance;
 	}
+
+	void gapi_dynamic::shutdown()
+	{
+		s_instance->m_factory->print_live_objects();
+	}
 }

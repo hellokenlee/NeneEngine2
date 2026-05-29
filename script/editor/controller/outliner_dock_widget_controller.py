@@ -6,14 +6,14 @@
 from script.editor.controller.dock_widget_controller import DockWidgetController
 from script.editor.common.log import log, INFO
 from script.editor.widget.outliner_tree_widget import OutlinerTreeWidget
-from nene import EventSubscriber, EntitySpawnEvent, EngineLoop, EditorCommandCenter, RemoveEntityCommand, ParentEntityCommand, EntityInspector
+from nene import EventSubscriber, EntitySpawnEvent, Engine, EditorCommandCenter, RemoveEntityCommand, ParentEntityCommand, EntityInspector
 
 
 class EntityEventSubscriber(EventSubscriber):
 	def __init__(self, on_entity_spawned):
 		super(EntityEventSubscriber, self).__init__()
 		self._on_entity_spawned = on_entity_spawned
-		EngineLoop.get_world().add_subscriber(self)
+		Engine().get_world().add_subscriber(self)
 		pass
 
 	def on_notify(self, e):

@@ -38,9 +38,6 @@ namespace nene
 		std::vector<std::shared_ptr<gapi_buffer_sublayout>> calculate_buffer_layout(const std::shared_ptr<gapi_resource>& dst_resource, uint32_t dst_start_subindex, uint32_t num_subresources, uint64_t& out_num_total_bytes) override;
 
 		std::shared_ptr<gapi_shader> create_and_compile_shader(const gapi_shader_stage& stype, const std::string& source, const std::string& entry, const gapi_shader_feature_level& level, const std::string& debug_name) override;
-		
-		void begin_gpu_capture() override;
-		void end_gpu_capture() override;
 
 	public:
 		ID3D12Device* get_d3d_device() const { return m_d3d_device.Get(); }
@@ -50,8 +47,6 @@ namespace nene
 		std::shared_ptr<gapi_cmd_queue> m_cmd_queues[magic_enum::enum_count<gapi_cmd_type>()];
 		
 	private:
-		bool m_gpu_capture_begun = false;
-		
 		WinComPtr<ID3D12Device> m_d3d_device;
 		WinComPtr<ID3D12Device2> m_d3d_device2;
 

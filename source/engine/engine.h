@@ -1,36 +1,58 @@
-/* Copyright reserved by KenLee@hellokenlee@163.com */
+﻿/* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #pragma once
 
 #include <chrono>
-#include <core/windll.h>
-#include "world.h"
-#include "renderer/renderer.h"
-#include "observer/render_observer.h"
+#include <memory>
+#include "core/windll.h"
+#include "core/math/numeric.h"
 
 namespace nene
 {
+	namespace g
+	{
+		class world;
+		class render_observer;
+	}
+
 	namespace r
 	{
-		class render_view;	
+		class renderer;
+		class render_view;
 	}
-	
+
 	class NENE_API engine
 	{
 	public:
-		engine();
-		virtual ~engine() = default;
+		// Singleton: no copy / move
+		engine(const engine&) = delete;
+		engine& operator =(const engine&) = delete;
 
-		virtual void update(std::chrono::milliseconds delta);
-		
-		virtual const std::shared_ptr<g::world>& get_world() const;
-		
-		virtual void debug_capture_gpu_frame() { m_gpu_capture_requested = true;}
-		
+		// Lifecycle (was engine_loop)
+		static void initialize(void* window, const uint2& window_size);
+		static void tick();
+		static void resize(const uint2& new_window_size);
+		static void shutdown();
+		static bool is_initialized();
+
+		// Access to the singleton instance.
+		static engine& get();
+
+		void update(std::chrono::milliseconds delta);
+
+		const std::shared_ptr<g::world>& get_world() const;
+
+		virtual ~engine();
+
 	protected:
-		bool m_gpu_capture_requested = false;
+		engine();
+
+	protected:
 		std::shared_ptr<g::world> m_world;
 		std::unique_ptr<r::renderer> m_renderer;
 		std::unique_ptr<g::render_observer> m_render_observer;
+
+	private:
+		static std::unique_ptr<engine> s_instance;
 	};
 }

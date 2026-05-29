@@ -14,8 +14,6 @@
 #include "d3d12_type_cast.h"
 #include "d3d12_root_signature_manager.h"
 
-#include "pix3.h"
-
 
 namespace nene
 {
@@ -566,18 +564,5 @@ namespace nene
 		auto result = std::make_shared<gapi_d3d12_shader>(stype, level, source, entry, debug_name);
 		ENSURE(result->compile());
 		return result;
-	}
-
-	void gapi_d3d12_device::begin_gpu_capture()
-	{
-		m_gpu_capture_begun = true;
-		PIXCaptureParameters params = {};
-		params.GpuCaptureParameters.FileName = L"NeneEngine_20260527_Frame_12345.wpix";
-		PIXBeginCapture(PIX_CAPTURE_GPU, &params);
-	}
-
-	void gapi_d3d12_device::end_gpu_capture()
-	{
-		PIXEndCapture(true);
 	}
 }

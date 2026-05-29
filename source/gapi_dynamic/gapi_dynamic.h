@@ -30,6 +30,9 @@ namespace nene
 	
 		/** Fetch the current gapi that is using. */
 		static gapi_dynamic& get();
+
+		/** Shutdown the gapi and release all resources. */
+		static void shutdown();
 	
 		/** Get the context for a thread. */
 		gapi_cmd_context& get_cmd_context(uint32_t context_id = 0) const;

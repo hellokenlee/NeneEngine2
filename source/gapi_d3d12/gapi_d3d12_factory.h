@@ -21,6 +21,8 @@ namespace nene
 
 		std::shared_ptr<gapi_swap_chain> create_swap_chain(void* hwnd, const std::shared_ptr<gapi_cmd_queue>& cmd_queue, const uint2& resolution, uint32_t multibuffer, const gapi_pixel_format& pixel_format, uint32_t multisample) override;
 		
+		void print_live_objects() override;
+		
 	protected:
 		WinComPtr<IDXGIFactory2> m_factory2;
 		WinComPtr<IDXGIFactory4> m_factory4;

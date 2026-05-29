@@ -23,12 +23,12 @@ namespace nene::r
 			m_scene_depth = gapi_dynamic::get().create_texture(desc);
 			m_scene_depth->set_debug_name("SceneDepth");
 		}
-		if (m_scene_color == nullptr || m_scene_color->get_resource_desc().m_width != view_family_texture.get_texture_width() || m_scene_color->get_resource_desc().m_height != view_family_texture.get_texture_height())
-		{
-			auto desc = gapi_texture_desc::create_2d(uint2(view_family_texture.get_texture_width(), view_family_texture.get_texture_height()), gapi_pixel_format::r8g8b8a8_unorm, gapi_texture_create_flag::as_render_target);
-			m_scene_color = gapi_dynamic::get().create_texture(desc);
-			m_scene_color->set_debug_name("SceneColor");
-		}
+		// if (m_scene_color == nullptr || m_scene_color->get_resource_desc().m_width != view_family_texture.get_texture_width() || m_scene_color->get_resource_desc().m_height != view_family_texture.get_texture_height())
+		// {
+		// 	auto desc = gapi_texture_desc::create_2d(uint2(view_family_texture.get_texture_width(), view_family_texture.get_texture_height()), gapi_pixel_format::r8g8b8a8_unorm, gapi_texture_create_flag::as_render_target);
+		// 	m_scene_color = gapi_dynamic::get().create_texture(desc);
+		// 	m_scene_color->set_debug_name("SceneColor");
+		// }
 	}
 
 	void simple_renderer::render_view_family(const render_view& view, const render_texture& view_family_texture)

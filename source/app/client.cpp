@@ -4,7 +4,7 @@
 #include "core/log.h"
 #include "core/event_id.h"
 #include "engine/input_manager.h"
-#include "engine/engine_loop.h"
+#include "engine/engine.h"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_surface.h>
@@ -56,7 +56,7 @@ namespace nene
 		}
 		
 		// TODO: multi windows support
-		engine_loop::initialize(client::get_window(), uint2(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT));
+		engine::initialize(client::get_window(), uint2(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT));
 	}
 
 	client::~client()
@@ -127,7 +127,7 @@ namespace nene
 			case SDL_EVENT_WINDOW_RESIZED:
 				int w, h;
 				SDL_GetWindowSize(m_window, &w, &h);
-				engine_loop::resize(uint2(static_cast<uint32_t>(w), static_cast<uint32_t>(h)));
+				engine::resize(uint2(static_cast<uint32_t>(w), static_cast<uint32_t>(h)));
 				break;
 			case SDL_EVENT_KEY_UP:
 			case SDL_EVENT_KEY_DOWN:
@@ -178,7 +178,7 @@ namespace nene
 			}
 		}
 		//
-		engine_loop::tick();
+		engine::tick();
 	}
 
 	void* client::get_window()
