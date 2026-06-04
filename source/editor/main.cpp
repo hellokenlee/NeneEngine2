@@ -11,7 +11,7 @@
 int main()
 {
 	// Name the main thread inside the Tracy profiler.
-	tracy::SetThreadName("MainThread");
+	NENE_PROFILER_THREAD_NAME("MainThread");
 	//
 	auto handler = std::make_shared<nene::stdout_log_handler>();
 	nene::logger::publisher()->add_subscriber(handler);

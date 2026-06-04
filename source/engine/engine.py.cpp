@@ -11,7 +11,8 @@ namespace nene
 	{
 		py::class_<engine, std::unique_ptr<engine, py::nodelete>>(m, "Engine")
 			.def(py::init([]() { return &engine::get(); }))
-			.def_static("get_world", []() -> const std::shared_ptr<g::world>& { return engine::get().get_world(); })
+			.def("get_world", &engine::get_world)
+			.def_static("shutdown", &engine::shutdown)
 		;
 	}
 }

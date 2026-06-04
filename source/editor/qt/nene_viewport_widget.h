@@ -14,6 +14,7 @@ public:
 	~NeneViewportWidget() override;
 
 protected:
+	//
 	bool event(QEvent *e) override;
 	void showEvent(QShowEvent *event) override;
 	void paintEvent(QPaintEvent* event) override;

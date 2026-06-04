@@ -4,15 +4,15 @@
 
 namespace nene::r
 {
-	[[maybe_unused]] static auto& g_system_vertex_buffers_auto_register = builtin_static_mesh_render_data::get();
-
-	const builtin_static_mesh_render_data& builtin_static_mesh_render_data::get()
+	std::unique_ptr<builtin_static_mesh_render_data> builtin_static_mesh_render_data::s_instance = nullptr;
+	
+	builtin_static_mesh_render_data& builtin_static_mesh_render_data::get()
 	{
-		static builtin_static_mesh_render_data instance;
-		return instance;
+		CHECK(s_instance != nullptr);
+		return *s_instance;
 	}
 
-	void builtin_static_mesh_render_data::initialize(gapi_cmd_context& cmd_context)
+	builtin_static_mesh_render_data::builtin_static_mesh_render_data(gapi_cmd_context& cmd_context)
 	{
 		// nene engine always use CCW as front face
 		{
@@ -123,5 +123,17 @@ namespace nene::r
 			};
 			m_cube = std::make_shared<static_mesh_lod_render_data>(indices, positions, normals, uvs);
 		}
+	}
+
+	void builtin_static_mesh_render_data::initialize(gapi_cmd_context& cmd_context)
+	{
+		CHECK(s_instance == nullptr);
+		s_instance = std::unique_ptr<builtin_static_mesh_render_data>(new builtin_static_mesh_render_data(cmd_context));
+	}
+
+	void builtin_static_mesh_render_data::destroy()
+	{
+		CHECK(s_instance != nullptr);
+		s_instance.reset();
 	}
 }

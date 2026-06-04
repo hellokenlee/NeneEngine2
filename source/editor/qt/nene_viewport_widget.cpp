@@ -11,6 +11,14 @@
 constexpr int EDITOR_FRAME_PER_SECOND	= 60.0f;
 constexpr int EDITOR_MILLISECOND_PER_FRAME = static_cast<int>((1.0f / EDITOR_FRAME_PER_SECOND) * 1000.0f);
 
+static void tick_engine()
+{
+	if (nene::engine::is_initialized())
+	{
+		nene::engine::get().tick();
+	}
+}
+
 NeneViewportWidget::NeneViewportWidget(QWidget* parent)
 	: QWidget(parent)
 {
@@ -33,7 +41,7 @@ NeneViewportWidget::NeneViewportWidget(QWidget* parent)
 	if (!nene::engine::is_initialized())
 	{
 		nene::engine::initialize(reinterpret_cast<void*>(winId()), nene::uint2(static_cast<uint32_t>(size().width()), static_cast<uint32_t>(size().height())));  // NOLINT(performance-no-int-to-ptr)
-		connect(&m_engine_tick_timer, &QTimer::timeout, &nene::engine::tick);
+		connect(&m_engine_tick_timer, &QTimer::timeout, &tick_engine);
 		m_engine_tick_timer.start(EDITOR_MILLISECOND_PER_FRAME);
 	}
 }
@@ -65,7 +73,10 @@ void NeneViewportWidget::resizeEvent(QResizeEvent* event)
 {
 	//
 	QWidget::resizeEvent(event);
-	nene::engine::resize(nene::uint2(static_cast<uint32_t>(event->size().width()), static_cast<uint32_t>(event->size().height())));
+	if (nene::engine::is_initialized())
+	{
+		nene::engine::get().resize(nene::uint2(static_cast<uint32_t>(event->size().width()), static_cast<uint32_t>(event->size().height())));
+	}
 }
 
 bool NeneViewportWidget::nativeEvent(const QByteArray& eventType, void* message, qintptr* result)

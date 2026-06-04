@@ -24,30 +24,25 @@ namespace nene
 	class NENE_API engine
 	{
 	public:
-		// Singleton: no copy / move
+		// Singleton
+		virtual ~engine();
 		engine(const engine&) = delete;
 		engine& operator =(const engine&) = delete;
 
-		// Lifecycle (was engine_loop)
+		// Lifecycle
 		static void initialize(void* window, const uint2& window_size);
-		static void tick();
-		static void resize(const uint2& new_window_size);
 		static void shutdown();
 		static bool is_initialized();
-
-		// Access to the singleton instance.
 		static engine& get();
 
-		void update(std::chrono::milliseconds delta);
-
+		// Methods
+		void tick();
+		void resize(const uint2& new_window_size);
 		const std::shared_ptr<g::world>& get_world() const;
-
-		virtual ~engine();
 
 	protected:
 		engine();
-
-	protected:
+		
 		std::shared_ptr<g::world> m_world;
 		std::unique_ptr<r::renderer> m_renderer;
 		std::unique_ptr<g::render_observer> m_render_observer;

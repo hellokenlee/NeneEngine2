@@ -67,6 +67,8 @@ namespace nene
 		void create_buffer_views(const std::shared_ptr<gapi_buffer>& buffer) const;
 		void create_texture_views(const std::shared_ptr<gapi_texture>& texture) const;
 		//
+		gapi_platform m_platform;
+		//
 		std::unique_ptr<gapi_factory> m_factory;
 		std::shared_ptr<gapi_gpu> m_gpu;
 		std::shared_ptr<gapi_device> m_device;

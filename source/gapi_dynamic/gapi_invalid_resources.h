@@ -13,6 +13,7 @@ namespace nene
 	{
 	public:
 		static void initialize(gapi_cmd_context& context);
+		static void destroy();
 		static gapi_invalid_resources& get();
 		
 		const std::shared_ptr<gapi_texture>& get_invalid_texture() const;

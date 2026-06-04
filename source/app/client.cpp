@@ -127,7 +127,7 @@ namespace nene
 			case SDL_EVENT_WINDOW_RESIZED:
 				int w, h;
 				SDL_GetWindowSize(m_window, &w, &h);
-				engine::resize(uint2(static_cast<uint32_t>(w), static_cast<uint32_t>(h)));
+				engine::get().resize(uint2(static_cast<uint32_t>(w), static_cast<uint32_t>(h)));
 				break;
 			case SDL_EVENT_KEY_UP:
 			case SDL_EVENT_KEY_DOWN:
@@ -178,7 +178,7 @@ namespace nene
 			}
 		}
 		//
-		engine::tick();
+		engine::get().tick();
 	}
 
 	void* client::get_window()

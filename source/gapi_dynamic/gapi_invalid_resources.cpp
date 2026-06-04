@@ -15,7 +15,13 @@ namespace nene
 			float invalid_pixel[4] = {1.0f, 0.0f, 1.0f, 1.0f};
 			auto desc = gapi_texture_desc::create_2d(uint2(1, 1),gapi_pixel_format::r8g8b8a8_unorm, gapi_texture_create_flag::as_shader_resource);
 			s_instance->m_invalid_texture = context.create_and_upload_texture(desc, {invalid_pixel});
+			s_instance->m_invalid_texture->set_debug_name("EngineInvalidTexture");
 		}
+	}
+
+	void gapi_invalid_resources::destroy()
+	{
+		s_instance.reset();
 	}
 
 	gapi_invalid_resources& gapi_invalid_resources::get()

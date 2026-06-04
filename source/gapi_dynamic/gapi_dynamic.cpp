@@ -15,13 +15,14 @@ namespace nene
 	t::console_var<uint32_t> cvar_gapi_num_buffering("gapi.num_buffering", 2u, "The num of N-Buffering; Default is 2 for double buffering.", console_var_flag::read_only);
 
 	gapi_dynamic::gapi_dynamic(const gapi_platform& platform, void* window, const uint2& window_size)
-		: m_factory(nullptr)
+		: m_platform(platform)
+		, m_factory(nullptr)
 		, m_gpu(nullptr)
 		, m_device(nullptr)
 		, m_swap_chain(nullptr)
 	{
 		//
-		switch (platform)
+		switch (m_platform)
 		{
 		case gapi_platform::d3d12:
 			m_factory = std::make_unique<gapi_d3d12_factory>();
@@ -263,6 +264,14 @@ namespace nene
 
 	void gapi_dynamic::shutdown()
 	{
-		s_instance->m_factory->print_live_objects();
+		CHECK(s_instance != nullptr);
+		auto platform = s_instance->m_platform;
+		
+		s_instance.reset();
+		
+		if (platform == gapi_platform::d3d12)
+		{
+			gapi_d3d12_factory::report_live_objects();
+		}
 	}
 }

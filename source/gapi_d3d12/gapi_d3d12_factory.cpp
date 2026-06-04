@@ -9,15 +9,81 @@
 #include "core/utils.h"
 
 #include <dxgidebug.h>
+#include <pix3.h>
+#include <filesystem>
 
 
 namespace nene
 {
-	t::console_var<bool> cvar_gapi_d3d_debug("gapi.d3d.debug", true, "");
+	t::console_var<bool> cvar_gapi_d3d_pix("gapi.d3d.pix", true, "Enable PIX capture supports for d3d12.");
+	t::console_var<bool> cvar_gapi_d3d_debug("gapi.d3d.debug", true, "Enable debug layer for d3d12.");
 	t::console_var<int> cvar_gapi_d3d_version("gapi.d3d.version", 0, "Feature level of d3d12. Default is 0 for D3D_FEATURE_LEVEL_12_0.");
 	extern t::console_var<bool> cvar_gapi_d3d_vsync;
 
 	logger d3d12_("d3d12");
+	
+	static void LoadPixCapturerWithFallback()
+	{
+		if (PIXGetCaptureState() == 0)
+		{
+			HMODULE hpix = PIXLoadLatestWinPixGpuCapturerLibrary();
+			if (hpix == nullptr)
+			{
+				// PIXLoadLatestWinPixGpuCapturerLibrary looks for the latest version under
+				// HKCU\Software\Microsoft\PIX\Capturer. On some machines (e.g. PIX freshly installed
+				// but never launched by the current user, or non-MSIX deployment), that registry
+				// key is missing and the API fails with a Win32 error code.
+				//
+				// Fallback: scan the default PIX installation root, pick the highest version
+				// sub-directory that contains WinPixGpuCapturer.dll, and load it manually.
+				const DWORD e = GetLastError();
+				log(d3d12_, warn, "PIXLoadLatestWinPixGpuCapturerLibrary failed (Win32 error: {}). Falling back to manual scan.", e);
+
+				std::filesystem::path best_dll;
+				std::wstring best_version;
+				const std::filesystem::path pix_root = LR"(C:\Program Files\Microsoft PIX)";
+				std::error_code ec;
+				if (std::filesystem::exists(pix_root, ec))
+				{
+					for (const auto& entry : std::filesystem::directory_iterator(pix_root, ec))
+					{
+						if (!entry.is_directory()) continue;
+						const auto dll = entry.path() / L"WinPixGpuCapturer.dll";
+						if (!std::filesystem::exists(dll, ec)) continue;
+
+						const std::wstring version = entry.path().filename().wstring();
+						// Lexicographic compare works for PIX's "YYMM.NN" style version strings.
+						if (best_version.empty() || version > best_version)
+						{
+							best_version = version;
+							best_dll = dll;
+						}
+					}
+				}
+
+				if (!best_dll.empty())
+				{
+					hpix = LoadLibraryW(best_dll.c_str());
+					if (hpix != nullptr)
+					{
+						log(d3d12_, info, "PIX GPU Capturer loaded from fallback path: {}", best_dll.string());
+					}
+					else
+					{
+						log(d3d12_, error, "Fallback LoadLibraryW failed for {}. Win32 error: {}", best_dll.string(), GetLastError());
+					}
+				}
+				else
+				{
+					log(d3d12_, error, "Failed to locate WinPixGpuCapturer.dll under {}. Please install PIX on Windows.", pix_root.string());
+				}
+			}
+			else
+			{
+				log(d3d12_, info, "PIX GPU Capturer loaded successfully!");
+			}
+		}
+	}
 
 	namespace
 	{
@@ -48,12 +114,17 @@ namespace nene
 		, m_factory4(nullptr)
 		, m_factory7(nullptr)
 	{
-	
+		// Enable capture support
+		if (cvar_gapi_d3d_pix.value())
+		{
+			LoadPixCapturerWithFallback();
+		}
+		
 		// Init dxgi crate flag
 		uint32_t dxgi_factory_flags = 0;
 	
 		// Enable debug layer if needed
-		if (cvar_gapi_d3d_debug.get_value_thread_unsafe())
+		if (cvar_gapi_d3d_debug.value())
 		{
 			WinComPtr<ID3D12Debug> debug_com;
 			if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debug_com))))
@@ -199,7 +270,7 @@ namespace nene
 		return result;
 	}
 
-	void gapi_d3d12_factory::print_live_objects()
+	void gapi_d3d12_factory::report_live_objects()
 	{
 		Microsoft::WRL::ComPtr<IDXGIDebug1> dxgiDebug;
 		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&dxgiDebug))))

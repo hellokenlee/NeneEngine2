@@ -13,7 +13,7 @@
 #include "utils.h"
 #include "event_publish_subscribe.h"
 
-#include <tracy/Tracy.hpp>
+#include "profiling.h"
 
 #include <chrono>
 

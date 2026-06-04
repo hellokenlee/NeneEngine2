@@ -20,7 +20,7 @@ from script.editor.controller.content_broswer_dock_widget_controller import Cont
 from script.editor.controller.outliner_dock_widget_controller import OutlinerDockWidgetController
 from script.editor.controller.inspector_dock_widget_controller import InspectorDockWidgetController
 
-from nene import EditorCommandCenter, SpawnEntityCommand
+from nene import Engine, EditorCommandCenter, SpawnEntityCommand
 
 
 class _ViewportDropFilter(QObject):
@@ -56,11 +56,15 @@ class _MainWindowCloseFilter(QObject):
 
 	def eventFilter(self, obj, event):
 		if obj is self._main_window and event.type() == QEvent.Type.Close:
+			#
+			log("Editor", INFO, "Editor exiting...")
 			# 关闭所有其他顶层窗口
 			for widget in list(QApplication.topLevelWidgets()):
 				if widget is not self._main_window:
 					widget.close()
 					widget.deleteLater()
+			#
+			Engine.shutdown()
 		return False
 
 

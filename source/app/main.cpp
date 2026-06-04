@@ -6,14 +6,12 @@
 #include "core/stdout_log_handler.h"
 #include "core_object/py.h"
 #include "engine/engine.h"
-#include "engine/world.h"
-#include "engine/asset/asset_registry.h"
-#include "engine/component/static_mesh_component.h"
+
 
 int main()
 {
 	// Name the main thread inside the Tracy profiler.
-	tracy::SetThreadName("MainThread");
+	NENE_PROFILER_THREAD_NAME("MainThread");
 	//
 	auto handler = std::make_shared<nene::stdout_log_handler>();
 	nene::logger::publisher()->add_subscriber(handler);
@@ -29,7 +27,6 @@ int main()
 	while (!runtime_client.should_exit())
 	{
 		runtime_client.update();
-		FrameMark;
 	}
 	return 0;
 }

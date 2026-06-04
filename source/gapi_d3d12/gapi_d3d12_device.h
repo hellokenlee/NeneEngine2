@@ -12,7 +12,7 @@ namespace nene
 	{
 	public:
 		gapi_d3d12_device(const WinComPtr<ID3D12Device>& device);
-		~gapi_d3d12_device() override = default;
+		~gapi_d3d12_device() override;
 		
 		std::shared_ptr<gapi_cmd_queue> create_cmd_queue(gapi_cmd_type cmd_type) override;
 		std::shared_ptr<gapi_cmd_allocator> create_cmd_allocator(gapi_cmd_type cmd_type) override;

@@ -9,6 +9,7 @@
 #include "renderer/simple_renderer.h"
 #include "observer/render_observer.h"
 #include "core_render/render_thread.h"
+#include "renderer/builtin_render_resource.h"
 #include "gapi_dynamic/gapi_invalid_resources.h"
 
 
@@ -36,13 +37,12 @@ namespace nene
 
 	engine::~engine()
 	{
-		gapi_dynamic::shutdown();
 	}
 
 	void engine::initialize(void* window, const uint2& window_size)
 	{
 		//
-		ZoneScoped;
+		NENE_PROFILER_ZONE();
 		//
 		log(engine_, info, "Engine Init!");
 
@@ -55,7 +55,8 @@ namespace nene
 				//
 				gapi_invalid_resources::initialize(gapi.get_cmd_context());
 				//
-				r::global_render_resource::initialize_global_render_resources(gapi.get_cmd_context());
+				r::builtin_static_mesh_render_data::initialize(gapi.get_cmd_context());
+				//
 				gapi.present_frame();
 			}
 		);
@@ -64,18 +65,41 @@ namespace nene
 		s_instance.reset(new engine());
 	}
 
-	void engine::tick()
+	void engine::shutdown()
 	{
 		//
-		FrameMark;
-		// engine update
-		static auto tick = std::chrono::high_resolution_clock::now();
-		auto tock = std::chrono::high_resolution_clock::now();
-		auto delta = tock - tick;
-		tick = tock;
-		s_instance->update(std::chrono::duration_cast<std::chrono::seconds>(delta));
-	}
+		enqueue_render_command<"FlushOneLastTime">(
+			[]()
+			{
+				// wait for render thread
+				flush_render_commands();
 
+				// wait for executing all commands
+				gapi_dynamic::get().flush();
+	
+				
+			}
+		);
+		
+		// destory whole engine ( and release their resources )
+		s_instance.reset();
+		
+		enqueue_render_command<"ShutdownGapi">(
+			[]()
+			{
+				//
+				r::builtin_static_mesh_render_data::destroy();
+				//
+				gapi_invalid_resources::destroy();
+				//
+				gapi_dynamic::shutdown();
+			}
+		);
+		
+		//
+		log(engine_, info, "Engine Shutdown!");
+	}
+	
 	void engine::resize(const uint2& new_window_size)
 	{
 		//
@@ -84,21 +108,6 @@ namespace nene
 		input_manager::get().notify(e);
 		//
 		gapi_dynamic::get().resize_swap_chain(new_window_size);
-	}
-
-	void engine::shutdown()
-	{
-		// wait for render thread
-		flush_render_commands();
-
-		// wait for executing all commands
-		gapi_dynamic::get().flush();
-
-		//
-		s_instance.reset();
-
-		//
-		log(engine_, info, "Engine Shutdown!");
 	}
 
 	bool engine::is_initialized()
@@ -112,10 +121,17 @@ namespace nene
 		return *s_instance;
 	}
 
-	void engine::update(std::chrono::milliseconds delta)
+	void engine::tick()
 	{
 		//
-		ZoneScoped;
+		NENE_PROFILER_FRAME_MARK();
+		NENE_PROFILER_ZONE();
+		// engine update
+		static auto tick = std::chrono::high_resolution_clock::now();
+		auto tock = std::chrono::high_resolution_clock::now();
+		auto delta = std::chrono::duration_cast<std::chrono::seconds>(tock - tick);
+		tick = tock;
+		
 		// update world
 		m_world->update(delta);
 		
@@ -123,7 +139,7 @@ namespace nene
 		enqueue_render_command<"Render">(
 			[this, render_scene = m_world->get_render_scene(), main_render_view = m_world->get_main_render_view()]()
 			{
-				ZoneScopedN("Render");
+				NENE_PROFILER_ZONE_NAMED("Render");
 				if (main_render_view != nullptr)
 				{
 					//

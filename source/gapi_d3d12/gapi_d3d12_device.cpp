@@ -19,16 +19,16 @@ namespace nene
 {
 	extern t::console_var<bool> cvar_gapi_d3d_debug;
 	extern logger d3d12_;
-	static gapi_d3d12_device* g_gapi_d3d12_device = nullptr;
+	static gapi_d3d12_device* g_debug_gapi_d3d12_device = nullptr;
 
 	// ReSharper disable once CppParameterMayBeConstPtrOrRef
 	static LONG __stdcall d3d_vectored_exception_handler(EXCEPTION_POINTERS* info)
 	{
 		if (info->ExceptionRecord->ExceptionCode == _FACDXGI)
 		{
-			if (g_gapi_d3d12_device != nullptr)
+			if (g_debug_gapi_d3d12_device != nullptr)
 			{
-				g_gapi_d3d12_device->print_d3d_debug_messages();
+				g_debug_gapi_d3d12_device->print_d3d_debug_messages();
 			}
 		}
 		return EXCEPTION_CONTINUE_SEARCH;
@@ -92,8 +92,8 @@ namespace nene
 				VERIFY(m_d3d_debug_info_queue->PushStorageFilter(&info_queue_filter));
 			}
 			//
-			CHECK(g_gapi_d3d12_device == nullptr);
-			g_gapi_d3d12_device = this;
+			CHECK(g_debug_gapi_d3d12_device == nullptr);
+			g_debug_gapi_d3d12_device = this;
 			m_debug_exception_handler = AddVectoredExceptionHandler(0, d3d_vectored_exception_handler);
 		}
 		//
@@ -110,6 +110,24 @@ namespace nene
 		m_d3d_resource_heap_tier = d3d_options.ResourceHeapTier;
 		// nene require at least tier 2
 		CHECK(m_d3d_resource_binding_tier >= D3D12_RESOURCE_BINDING_TIER_2);
+	}
+
+	gapi_d3d12_device::~gapi_d3d12_device()
+	{
+		// remove debug message filter
+		if (cvar_gapi_d3d_debug.value())
+		{
+			if (SUCCEEDED(m_d3d_device2.As(&m_d3d_debug_info_queue)))
+			{
+				m_d3d_debug_info_queue->PopStorageFilter();
+				m_d3d_debug_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, false);
+				m_d3d_debug_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, false);
+				m_d3d_debug_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, false);
+			}
+			RemoveVectoredExceptionHandler(m_debug_exception_handler);
+			CHECK(g_debug_gapi_d3d12_device != nullptr);
+			g_debug_gapi_d3d12_device = nullptr;
+		}
 	}
 
 	std::shared_ptr<gapi_cmd_queue> gapi_d3d12_device::create_cmd_queue(gapi_cmd_type cmd_type)
