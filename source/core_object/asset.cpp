@@ -78,6 +78,8 @@ namespace nene::g
 	
 	void asset::serialize(archive& ar)
 	{
+		NENE_PROFILER_ZONE();
+		
 		// subclass native attributes manual serialization
 		// ...
 		

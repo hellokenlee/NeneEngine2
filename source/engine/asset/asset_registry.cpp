@@ -250,7 +250,7 @@ namespace nene::g
 		// check if there exists its header
 		if (m_asset_abstracts.contains(uid))
 		{
-			NENE_PROFILER_ZONE_NAMED("DoLoad");
+			NENE_PROFILER_ZONE("DoLoad");
 			const auto& header = m_asset_abstracts.at(uid);
 			CHECK(header.valid());
 			NENE_PROFILER_ZONE_TEXT(header.m_file_name.c_str(), header.m_type_name.size());

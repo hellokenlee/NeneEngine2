@@ -139,7 +139,7 @@ namespace nene
 		enqueue_render_command<"Render">(
 			[this, render_scene = m_world->get_render_scene(), main_render_view = m_world->get_main_render_view()]()
 			{
-				NENE_PROFILER_ZONE_NAMED("Render");
+				NENE_PROFILER_ZONE("Render");
 				if (main_render_view != nullptr)
 				{
 					//

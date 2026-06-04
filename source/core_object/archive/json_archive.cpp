@@ -209,6 +209,8 @@ namespace nene::g
 
 	void json_reader::load(const std::vector<uint8_t>& content)
 	{
+		NENE_PROFILER_ZONE();
+
 		m_root = nlohmann::json::object();
 		m_stack.clear();
 
