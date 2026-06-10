@@ -1,0 +1,7 @@
+option(
+	'configuration',
+	type : 'combo',
+	choices : ['development', 'release'],
+	value : 'development',
+	description : 'Nene build configuration. Maps to the legacy Development / Release triplet.',
+)
