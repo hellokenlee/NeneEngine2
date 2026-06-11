@@ -2,99 +2,219 @@
 # __author__ = "KenLee"
 # __email__ = "hellokenlee@163.com"
 #
-# NeneEngine2 - meson build definition.
-#
-# This file (together with the per-module `source/<module>/meson.build` files
-# and `extern/meson.build`) replaces the legacy python "Nene Build Tool" that
-# generated the Visual Studio solution. Running
-#
-#     meson setup .bin/intermediate/meson --backend vs
-#
-# from the engine root regenerates the whole `NeneEngine2.sln`.
 
+
+# --------------------------------------------------------------------------- #
+# NeneEngine2 ( meson build entry )                                           #
+# --------------------------------------------------------------------------- #
 project(
 	'NeneEngine2',
 	'cpp',
 	version : '0.3.0',
-	meson_version : '>= 1.1.0',
+	meson_version : '>= 1.11.0',
 	default_options : [
 		'cpp_std=c++20',     # LanguageStandard = stdcpp20
-		'b_vscrt=md',        # RuntimeLibrary  = MultiThreadedDLL (every configuration)
-		'buildtype=plain',   # We drive optimisation / debug flags explicitly below.
-		'warning_level=0',   # WarningLevel handled manually (/W3).
+		'warning_level=3',   # WarningLevel = 3
+		'buildtype=debugoptimized',
 	],
 )
 
-assert(
-	host_machine.system() == 'windows',
-	'NeneEngine2 currently only supports the Windows / MSVC toolchain.',
-)
+VCPKG_ROOT = '.package'
+VCPKG_MANIFEST = 'vcpkg.json'
+VCPKG_TRIPLET = 'x64-' + host_machine.system()
+VCPKG_INCLUDE = 'include'
 
+message(f'Vcpkg Info: dir: @VCPKG_ROOT@, file: @VCPKG_MANIFEST@, triplet: @VCPKG_TRIPLET@')
+
+# --------------------------------------------------------------------------- #
+# Setup ( vcpkg && pip )                                                      #
+# --------------------------------------------------------------------------- #
+
+# Setup vcpkg
+message('Installing C++ External Libraries...')
+run_command('vcpkg', 'install', '--x-install-root=.package', check: true, console: false)
+message('...done!')
+
+# Setup python
+python = find_program(meson.project_source_root() / VCPKG_ROOT / VCPKG_TRIPLET / 'tools' / 'python3' / 'python')
+script_util = meson.project_source_root() / 'script' / 'util'
+message('Installing Python External Libraries...')
+run_command(python, '-m', 'ensurepip', check: true)
+run_command(python, '-m', 'pip', 'install', '-r', 'requirements.txt', check: true, console: false)
+message('...done!')
+
+
+# --------------------------------------------------------------------------- #
+# Buildtype ( debugoptimized | release )                                      #
+# --------------------------------------------------------------------------- #
 cpp = meson.get_compiler('cpp')
 
-# --------------------------------------------------------------------------- #
-# Configuration ( Development | Release )                                      #
-# --------------------------------------------------------------------------- #
-configuration = get_option('configuration')
-is_development = configuration == 'development'
-# Capitalised names that match the legacy `.bin/.../<Configuration>` layout.
-config_name = is_development ? 'Development' : 'Release'
+buildtype = get_option('buildtype')
 
-# Common compiler flags shared by every module (see NeneModule.configure).
-nene_cpp_args = [
-	'/W3',                # WarningLevel = Level3
-	'/Zc:preprocessor',   # AdditionalOptions
-	'/wd4251', '/wd4819', # DisableSpecificWarnings
-	'/sdl',               # SDLCheck = true
-	# Preprocessor definitions.
-	'/D_CONSOLE', '/DNOMINMAX',
-	'/DNENE_PLATFORM_WINDOWS', '/D_CRT_SECURE_NO_WARNINGS',
-]
-nene_link_args = ['/ignore:4099', '/ignore:4075']
-
-if is_development
-	nene_cpp_args += ['/Od', '/Zi']                                   # Optimization Disabled + ProgramDatabase
-	nene_cpp_args += ['/DTRACY_ENABLE', '/DTRACY_IMPORTS', '/DNENE_DEVELOPMENT']
-	nene_link_args += ['/DEBUG']                                      # GenerateDebugInformation = true
-else
-	nene_cpp_args += ['/Ox', '/Gy', '/Oi']                            # Optimization Full + FunctionLevelLinking + IntrinsicFunctions
-	nene_cpp_args += ['/DNENE_RELEASE']
-	nene_link_args += ['/OPT:REF', '/OPT:ICF']                        # OptimizeReferences + EnableCOMDATFolding
+# Checks
+if buildtype not in ['debugoptimized', 'release']
+	error('only `debugoptimized` or `release` is allowed for buildtype')
 endif
 
-# Conformance mode.
-#
-# The legacy build used ConformanceMode = false (`/permissive`) for regular
-# modules. Under the meson VS backend that flag, combined with MSBuild's own
-# default options and `/Zc:preprocessor`, breaks `<DirectXMath.h>` / UCRT
-# `<cmath>` ("'floorf': identifier not found"). meson already enables the
-# conformant `/permissive-` mode for MSVC, which compiles every module cleanly,
-# so we simply keep it (this also matches the editor module, which always
-# required `/permissive-`).
-nene_cpp_args_base = nene_cpp_args
-nene_cpp_args = nene_cpp_args_base
-
-# Include search paths shared by every module:
-#   - engine root          (`#include "source/..."`, generated headers, ...)
-#   - source root          (`#include <module/...>`)
-#   - vcpkg header root     (header-only third party libraries)
-nene_inc = include_directories(
+# Headers
+inc = include_directories(
 	'.',
 	'source',
-	'.package/x64-windows/include',
+	VCPKG_ROOT / VCPKG_TRIPLET / VCPKG_INCLUDE
 )
 
-# Output directory mirrors the legacy `.bin/binary/<Platform>/<Configuration>`.
-nene_bindir = meson.project_source_root() / '.bin' / 'binary' / 'x64' / config_name
+# Common Args
+nene_compile_args = [
+	# 
+	'-D_CONSOLE', 
+	'-D_CRT_SECURE_NO_WARNINGS', 
+	'-DNOMINMAX', 
+	'-DNENE_PLATFORM_WINDOWS',
+	# AdditionalOptions
+	'/Zc:preprocessor',   
+	# DisableSpecificWarnings
+	'/wd4251', '/wd4819', '/wd4100', '/wd4505',
+	# SDLCheck = true
+	'/sdl',               
+	
+]
+nene_link_args = [
+	'/ignore:4099', 
+	'/ignore:4075',
+]
 
-# Helper used by every module to collect its translation units.
-nene_python = find_program(
-	meson.project_source_root() / '.package' / 'x64-windows' / 'tools' / 'python3' / 'python.exe',
-)
-nbt_script = meson.project_source_root() / 'script' / 'meson' / 'nbt_meson.py'
+# Configure Args
+if buildtype == 'release'
+	nene_compile_args += [
+		# Preprocessor
+		'-DNENE_RELEASE',
+	]
+else
+	nene_compile_args += [
+		# Preprocessor
+		'-DNENE_DEVELOPMENT'
+	]
+endif
+
 
 # --------------------------------------------------------------------------- #
-# Third party dependencies & engine modules                                    #
+# Options ( from `meson.options` )                                            #
 # --------------------------------------------------------------------------- #
-subdir('extern')
-subdir('source')
+
+if get_option('enable_tracy')
+	nene_compile_args += [
+		# Preprocessor
+		'-DTRACY_ENABLE',
+		'-DTRACY_IMPORTS',
+	]
+endif
+
+
+# --------------------------------------------------------------------------- #
+# Apply all arguments                                                         #
+# --------------------------------------------------------------------------- #
+add_project_arguments(cpp.get_supported_arguments(nene_compile_args), language: 'cpp')
+add_project_link_arguments(cpp.get_supported_link_arguments(nene_link_args), language: 'cpp')
+#
+
+# --------------------------------------------------------------------------- #
+# External depenencies                                                        #
+# --------------------------------------------------------------------------- #
+ext_deps = {}
+names = run_command(
+	python, script_util / 'list_vcpkg.py', meson.project_source_root() / VCPKG_MANIFEST,
+	check : true,
+).stdout().strip().split('\n')
+
+foreach name : names
+	if name != ''
+		#
+		ext_args = run_command(
+			python, script_util / 'vcpkg_link_args.py', name, meson.project_source_root() / VCPKG_ROOT, VCPKG_TRIPLET,
+			check : true,
+		).stdout().strip().split('\n')
+		# Hack for pybin11 which assume that the includes have python 
+		ext_inc = []
+		if name == 'python3'
+			ext_inc += [VCPKG_ROOT / VCPKG_TRIPLET / VCPKG_INCLUDE / 'python3.12']
+		endif
+		# Hack for Qt6
+		if name == 'qtbase'
+			qt6_inc_path = VCPKG_ROOT / VCPKG_TRIPLET / VCPKG_INCLUDE / 'Qt6'
+			ext_inc += [qt6_inc_path, qt6_inc_path / 'QtCore', qt6_inc_path / 'QtGui', qt6_inc_path / 'QtWidgets']
+		endif
+		#
+		ext_deps += {name: declare_dependency(link_args: ext_args, include_directories : include_directories(ext_inc))}
+	endif
+endforeach
+
+# Pyside6
+pyside6_inc_path = VCPKG_ROOT / VCPKG_TRIPLET / 'tools' / 'python3' / 'Lib' / 'site-packages' / 'PySide6' / 'include' 
+shiboken_inc_path = VCPKG_ROOT / VCPKG_TRIPLET / 'tools' / 'python3' / 'Lib' / 'site-packages' / 'shiboken6_generator' / 'include'
+pyside_lib_dir_path = meson.project_source_root() / VCPKG_ROOT / VCPKG_TRIPLET / 'tools' / 'python3' / 'Lib' / 'site-packages' / 'PySide6'
+shiboken_lib_dir_path = meson.project_source_root() / VCPKG_ROOT / VCPKG_TRIPLET / 'tools' / 'python3' / 'Lib' / 'site-packages' / 'shiboken6'
+
+# FIXME: Only works with windows now
+ext_deps += {'pyside6': declare_dependency(
+	include_directories : [
+		include_directories(pyside6_inc_path),
+		include_directories(pyside6_inc_path / 'QtCore'),
+		include_directories(pyside6_inc_path / 'QtGui'),
+		include_directories(pyside6_inc_path / 'QtWidgets'),
+		include_directories(shiboken_inc_path),
+	],
+	link_args : [
+		pyside_lib_dir_path / 'pyside6.abi3.lib',
+		pyside_lib_dir_path / 'pyside6qml.abi3.lib',
+		shiboken_lib_dir_path / 'shiboken6.abi3.lib'
+	],
+)}
+
+
+# --------------------------------------------------------------------------- #
+# Find all source codes                                                       #
+# --------------------------------------------------------------------------- #
+modules = [
+	'core',
+	'gapi', 'gapi_d3d12', 'gapi_vulkan', 'gapi_dynamic',
+	'core_render', 'renderer',
+ 	'core_object','engine', 
+ 	'app', 'editor'
+]
+
+foreach module : modules
+	subdir('source' / module)
+endforeach
+
+subdir('shader')
+
+
+# --------------------------------------------------------------------------- #
+# Developer environment                                                       #
+# --------------------------------------------------------------------------- #
+devenv = environment()
+#
+devenv.set('TRACY_NO_SYS_TRACE', '1')
+#
+devenv.prepend('PATH', meson.project_source_root() / VCPKG_ROOT / VCPKG_TRIPLET / 'bin')
+#
+foreach module : modules
+	devenv.prepend('PATH', meson.project_build_root() / 'source' / module)
+endforeach
+meson.add_devenv(devenv)
+
+
+# --------------------------------------------------------------------------- #
+# Pretty up the generated Visual Studio solution                              #
+# --------------------------------------------------------------------------- #
+# The `vs` backend emits pseudo targets (RUN_TESTS, RUN_INSTALL, ...) that
+# clutter the solution explorer. Strip them out right after meson has finished
+# generating the `.sln` (postconf scripts run at the end of configuration).
+if meson.backend().startswith('vs')
+	nene_engine_sln = meson.project_name() + '.sln'
+	meson.add_postconf_script(
+		python, 
+		script_util / 'pretty_sln.py', meson.project_build_root() / nene_engine_sln,
+		'--workdir', meson.project_source_root()
+	)
+endif

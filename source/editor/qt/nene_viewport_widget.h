@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <QWidget>
+#include <QtWidgets/QWidget>
 #include <QtCore/QTimer>
 
 class NeneViewportWidget : public QWidget
