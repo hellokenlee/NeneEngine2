@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "core/math.h"
+#include "core/mathematics.h"
 
 namespace nene::g
 {

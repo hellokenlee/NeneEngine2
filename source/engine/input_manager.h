@@ -5,7 +5,7 @@
 #include <cstdint>
 #include "core/event_publish_subscribe.h"
 #include "core/template/flag_enum_class.h"
-#include "core/math.h"
+#include "core/mathematics.h"
 #include "core/event_id.h"
 
 namespace nene

@@ -4,13 +4,13 @@
 
 #include <type_traits>
 
-#include "math/rect.h"
-#include "math/matrix.h"
-#include "math/floats.h"
-#include "math/rotator.h"
-#include "math/numeric.h"
-#include "math/transform.h"
-#include "math/constants.h"
+#include "mathematics/rect.h"
+#include "mathematics/matrix.h"
+#include "mathematics/floats.h"
+#include "mathematics/rotator.h"
+#include "mathematics/numeric.h"
+#include "mathematics/transform.h"
+#include "mathematics/constants.h"
 
 namespace nene::t
 {

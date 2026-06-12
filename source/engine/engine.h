@@ -5,7 +5,7 @@
 #include <chrono>
 #include <memory>
 #include "core/windll.h"
-#include "core/math/numeric.h"
+#include "core/mathematics.h"
 
 namespace nene
 {

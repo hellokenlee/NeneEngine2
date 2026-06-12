@@ -1,7 +1,7 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #include "py.h"
-#include "core/math.h"
+#include "core/mathematics.h"
 
 
 namespace nene::g

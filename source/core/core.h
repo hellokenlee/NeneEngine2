@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "math.h"
+#include "mathematics.h"
 #include "debug.h"
 #include "color.h"
 #include "platform.h"

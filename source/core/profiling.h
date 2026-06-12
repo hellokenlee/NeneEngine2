@@ -21,7 +21,7 @@
 
 #else
 
-#define NENE_PROFILER_ZONE()						do {} while(0)
+#define NENE_PROFILER_ZONE(...)						do {} while(0)
 #define NENE_PROFILER_ZONE_TEXT(text, size)			do { (void)(text); (void)(size); } while(0)
 #define NENE_PROFILER_FRAME_MARK()					do {} while(0)
 #define NENE_PROFILER_THREAD_NAME(name)				do { (void)(name); } while(0)
