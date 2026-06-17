@@ -19,7 +19,8 @@
     "zstd",
     "tsl-hat-trie",
     "winpixevent",
-    "tracy"
+    "tracy",
+    "flatbuffers"
   ],
   "builtin-baseline": "734f8130ffe2f02cf855a3a42a2958f01b3fb005",
   "overrides": [
