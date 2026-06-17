@@ -8,7 +8,7 @@ from script.editor.common.log import *
 
 class StubGenerator(object):
 
-	NENE_EDITOR_STUB_PATH = os.path.join(".bin", "intermediate", "editor", "pythonstubs")
+	NENE_EDITOR_STUB_PATH = os.path.join(".build", "intermediate", "editor", "pythonstubs")
 
 	# noinspection PyGlobalUndefined,PyUnresolvedReferences
 	@classmethod
