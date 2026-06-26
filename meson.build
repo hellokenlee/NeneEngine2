@@ -104,8 +104,7 @@ endif
 if get_option('enable_tracy')
 	nene_compile_args += [
 		# Preprocessor
-		'-DTRACY_ENABLE',
-		'-DTRACY_IMPORTS',
+		'-DNENE_ENABLE_TRACY',
 	]
 endif
 
@@ -201,6 +200,10 @@ devenv.prepend('PATH', meson.project_source_root() / VCPKG_ROOT / VCPKG_TRIPLET 
 foreach module : modules
 	devenv.prepend('PATH', meson.project_build_root() / 'source' / module)
 endforeach
+#
+# 保证 PySide 的 dll 目录优先于 Qt6 的 dll 目录, 否则会出现 "no qt platform plugin could be initialized" 报错
+devenv.prepend('PATH', pyside_lib_dir_path)
+#
 meson.add_devenv(devenv)
 
 

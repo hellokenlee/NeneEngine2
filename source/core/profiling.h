@@ -2,7 +2,11 @@
 
 #pragma once
 
-#if defined(TRACY_ENABLE)
+
+#ifdef NENE_ENABLE_TRACY
+
+#define TRACY_ENABLE 1
+#define TRACY_IMPORTS 1
 
 #include "utils.h"
 #include <tracy/Tracy.hpp>
@@ -20,6 +24,10 @@
 #define NENE_PROFILER_THREAD_NAME(name)				::tracy::SetThreadName(name)
 
 #else
+
+#if defined(TRACY_ENABLE) || defined(TRACY_IMPORTS)
+#error "Preprocessor Assertion Failed: `TRACY_ENABLE` or `TRACY_IMPORTS`  should NOT be defined!"
+#endif
 
 #define NENE_PROFILER_ZONE(...)						do {} while(0)
 #define NENE_PROFILER_ZONE_TEXT(text, size)			do { (void)(text); (void)(size); } while(0)

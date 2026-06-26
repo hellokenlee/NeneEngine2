@@ -28,7 +28,7 @@ vswhere = find_program(
 	required: false
 )
 vs_json_infos = run_command(
-	vswhere, '-sort', '-format', 'json', '-version', MIN_VS_2022_VERSION
+	vswhere, '-sort', '-format', 'json', '-version', MIN_VS_2022_VERSION, check : true
 )
 run_command(
 	python, script_util / 'qtbinding.py', 

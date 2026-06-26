@@ -5,7 +5,7 @@ core_object_sources = run_command(
 	check : true,
 ).stdout().strip().split('\n')
 
-core_object_deps = [core_dep, core_render_dep, ext_deps['python3'], ext_deps['zstd'], ext_deps['flecs']]
+core_object_deps = [core_dep, core_render_dep, ext_deps['python3'], ext_deps['zstd'], ext_deps['flecs'], ext_deps['flatbuffers']]
 
 # Embedded CPython Home
 python_home = meson.project_source_root() / '.package/x64-windows/tools/python3'
