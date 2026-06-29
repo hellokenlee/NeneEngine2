@@ -6,6 +6,8 @@
 
 #include <filesystem>
 
+#include "core/slow_task.h"
+#include "core/task_graph.h"
 #include "engine/asset/asset_registry.h"
 
 
@@ -28,6 +30,7 @@ namespace nene
 	void asset_import_command::execute()
 	{
 		NENE_PROFILER_ZONE();
+		
 		auto names = t::split(m_origin_file_abs_path, '.');
 		if (names.size() > 1)
 		{
@@ -35,29 +38,39 @@ namespace nene
 			auto importer = asset_importer_manager::get().find_asset_importer_by_extension(ext);
 			if (importer != nullptr)
 			{
-				auto new_assets = importer->import_asset(m_origin_file_abs_path);
-				
-				std::filesystem::path target_foldere_rel_path;
-				if (new_assets.size() > 1)
-				{
-					target_foldere_rel_path = std::filesystem::path(m_target_content_rel_path).parent_path() / std::filesystem::path(m_origin_file_abs_path).stem();
-					std::filesystem::create_directory(target_foldere_rel_path);
-				}
-				
-				for (auto& [filename, new_asset] : new_assets)
-				{
-					if (target_foldere_rel_path.empty())
+				task_graph::get().async(
+					[importer, this]()
 					{
-						g::asset_registry::get().add(new_asset, m_target_content_rel_path);	
+						//
+						scoped_slow_task slow_task(100);
+						slow_task.begin_progress_scope(90, "importing asset");
+						// 
+						auto new_assets = importer->import_asset(m_origin_file_abs_path);
+						//
+						std::filesystem::path target_foldere_rel_path;
+						if (new_assets.size() > 1)
+						{
+							target_foldere_rel_path = std::filesystem::path(m_target_content_rel_path).parent_path() / std::filesystem::path(m_origin_file_abs_path).stem();
+							std::filesystem::create_directory(target_foldere_rel_path);
+						}
+						//
+						for (auto& [filename, new_asset] : new_assets)
+						{
+							slow_task.begin_progress_scope(10 / new_assets.size(), std::format("saving {}", filename));
+							if (target_foldere_rel_path.empty())
+							{
+								g::asset_registry::get().add(new_asset, m_target_content_rel_path);	
+							}
+							else
+							{
+								g::asset_registry::get().add(new_asset, (target_foldere_rel_path / filename).generic_string());
+							}
+							
+							// TODO: 单独的 Save 命令
+							g::asset_registry::get().save(*new_asset);
+						}
 					}
-					else
-					{
-						g::asset_registry::get().add(new_asset, (target_foldere_rel_path / filename).generic_string());
-					}
-					
-					// TODO: 单独的 Save 命令
-					g::asset_registry::get().save(*new_asset);
-				}
+				);
 			}
 			else
 			{
@@ -78,6 +91,9 @@ namespace nene
 
 	void asset_new_command::execute()
 	{
+		//
+		g::reflection::scoped_guard _;
+		//
 		auto type = g::reflection::get_class(m_asset_type_name);
 		if (type.ptr() == nullptr)
 		{

@@ -12,6 +12,8 @@
 #include <assimp/postprocess.h>
 #include <stb_image.h>
 
+#include "core/slow_task.h"
+
 
 namespace nene
 {
@@ -117,9 +119,10 @@ namespace nene
 	static void process_assimp_scene_node(const aiNode* node, const aiScene* scene, const std::filesystem::path& to_directory_abs_path, std::map<std::string, std::shared_ptr<g::asset>>& result_assets)
 	{
 		// TODO: 按 node 处理, 记录 transform 关系, 一个 scene 导出为一个 prefab 文件
-		
+		scoped_slow_task slow_task(100.0f);
 		
 		// process all meshes
+		slow_task.begin_progress_scope(50.0f, "importing meshes");
 		for (uint32_t i = 0; i < scene->mNumMeshes; i++)
 		{
 			auto mesh = scene->mMeshes[i];
@@ -127,6 +130,7 @@ namespace nene
 		}
 		
 		// process all textures
+		slow_task.begin_progress_scope(50.0f, "importing textures");
 		for (uint32_t i = 0; i < scene->mNumTextures; i++)
 		{
 			auto tex = scene->mTextures[i];
@@ -160,8 +164,10 @@ namespace nene
 	
 	std::map<std::string, std::shared_ptr<g::asset>> mesh_importer::import_asset(const std::string& from_abs_path)
 	{
+		//
 		NENE_PROFILER_ZONE();
 		NENE_PROFILER_ZONE_TEXT(from_abs_path.c_str(), from_abs_path.size());
+		//
 		Assimp::Importer importer;
 		// nene uses left handed coordinate system
 		const aiScene* scene = importer.ReadFile(from_abs_path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_MakeLeftHanded | aiProcess_GenNormals);

@@ -11,7 +11,6 @@ namespace nene::g
 	static void serialize_property(archive& ar, reflection::variant& self, const std::string& prop_name)
 	{
 		//
-		py::gil_scoped_acquire gil;
 		static py::object py_uuid_class = py::module_::import("uuid").attr("UUID");
 		//
 		py::object py_prop_value = self.attr(prop_name.c_str());
@@ -62,7 +61,7 @@ namespace nene::g
 			{
 				serialize_property(ar, py_prop_value, obj_prop_name);
 			}
-			ar.leave_object();
+		 	ar.leave_object();
 		}
 		// TODO: maybe change to RTTR for getting 
 		
@@ -90,6 +89,7 @@ namespace nene::g
 		}
 		
 		// bound attributes serialization 
+		reflection::scoped_guard _;
 		reflection::variant var = reflection::get_variant(this);
 		for (const auto& name : reflection::get_property_names(var))
 		{

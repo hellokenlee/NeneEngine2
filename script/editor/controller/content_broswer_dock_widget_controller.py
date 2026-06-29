@@ -14,6 +14,7 @@ from script.editor.controller.dock_widget_controller import DockWidgetController
 from script.editor.common.log import log, INFO
 from script.editor.controller.history_navigator import HistoryNavigator
 from script.editor.widget.content_broswer_view_widget import ContentBrowserViewWidget
+from script.editor.widget.slow_task_dialog import SlowTaskDialog
 from script.editor.controller.asset_editor_manager import AssetEditorManager
 
 from nene import EditorCommandCenter, AssetImportCommand, AssetNewCommand, AssetRegistry
@@ -93,6 +94,10 @@ class ContentBrowserDockWidgetController(DockWidgetController):
 			file_rel = self._get_unique_path(os.path.join(self._nav.current(), os.path.basename(file_path)))
 			log(self, INFO, "Import: %s -> %s" % (file_path, file_rel))
 			EditorCommandCenter().invoke(AssetImportCommand(file_path, file_rel))
+			#
+			dialog = SlowTaskDialog("Asset Importing")
+			dialog.exec()
+			#
 			self._update_views()
 		pass
 

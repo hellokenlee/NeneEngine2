@@ -198,7 +198,6 @@ namespace nene
 			}
 		}
 		
-	protected:
 		virtual void enter_array(const char* name, size_t& size) = 0;
 		virtual void leave_array() = 0;
 		

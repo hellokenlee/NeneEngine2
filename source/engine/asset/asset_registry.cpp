@@ -21,6 +21,7 @@ namespace nene::g
 
 	static asset_abstract make_asset_abstract(const asset& ast, const std::string& file_name)
 	{
+		reflection::scoped_guard _;
 		auto var = reflection::get_variant(&ast);
 		return asset_abstract{
 			.m_uuid = ast.m_uuid,
@@ -279,6 +280,7 @@ namespace nene::g
 			std::shared_ptr<asset> ast = nullptr;
 			{
 				NENE_PROFILER_ZONE("AssetConstruct");
+				reflection::scoped_guard _;
 				auto py_type = reflection::get_class(header.m_type_name);
 				auto var = reflection::make_variant(py_type);
 				ast = reflection::shared<asset>(var);

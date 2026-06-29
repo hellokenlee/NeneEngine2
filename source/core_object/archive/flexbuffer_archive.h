@@ -32,8 +32,7 @@ namespace nene::g
 		archive& operator<<(const nvp<float3>& kv) override;
 		archive& operator<<(const nvp<uuid>& kv) override;
 		archive& operator<<(const nvp<std::string>& kv) override;
-
-	protected:
+		
 		void enter_array(const char* name, size_t& size) override;
 		void leave_array() override;
 		void enter_object(const char* name) override;
@@ -85,12 +84,12 @@ namespace nene::g
 		archive& operator<<(const nvp<float3>& kv) override;
 		archive& operator<<(const nvp<uuid>& kv) override;
 		archive& operator<<(const nvp<std::string>& kv) override;
-
-	protected:
+		
 		void enter_array(const char* name, size_t& size) override;
 		void leave_array() override;
 		void enter_object(const char* name) override;
 		void leave_object() override;
+		
 		void read_blob(const char* name, std::vector<uint8_t>& bytes) override;
 
 	private:

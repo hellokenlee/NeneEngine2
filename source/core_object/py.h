@@ -57,6 +57,7 @@ namespace nene::g
 	{
 		using type = py::type;
 		using variant = py::object;
+		using scoped_guard = py::gil_scoped_acquire;
 		
 		/** get the class none */
 		NENE_API type none_type();
