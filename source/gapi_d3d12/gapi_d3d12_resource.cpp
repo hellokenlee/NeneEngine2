@@ -54,7 +54,7 @@ namespace nene
 	gapi_d3d12_texture::gapi_d3d12_texture(const WinComPtr<ID3D12Resource>& resource, const gapi_resource_desc& desc)
 		: gapi_resource(desc)
 		, gapi_d3d12_resource(resource, desc)
-		, gapi_texture(desc)
+		, gapi_texture()
 	{
 		gapi_d3d12_resource::set_debug_name(desc.m_debug_name);
 	}
@@ -62,7 +62,7 @@ namespace nene
 	gapi_d3d12_buffer::gapi_d3d12_buffer(const WinComPtr<ID3D12Resource>& resource, const gapi_resource_desc& desc)
 		: gapi_resource(desc)
 		, gapi_d3d12_resource(resource, desc)
-		, gapi_buffer(desc)
+		, gapi_buffer()
 	{
 		//
 		CHECK(desc.is_buffer());

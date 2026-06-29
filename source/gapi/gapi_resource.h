@@ -75,7 +75,6 @@ namespace nene
 	class NENE_API gapi_texture : virtual public gapi_resource
 	{
 	public:
-		using gapi_resource::gapi_resource;
 		~gapi_texture() override = default;
 
 		const auto& get_render_target_view() const { return m_render_target_view; }
@@ -84,6 +83,8 @@ namespace nene
 		void set_depth_stencil_view(const std::shared_ptr<gapi_resource_view>& depth_stencil_view) { m_depth_stencil_view = depth_stencil_view; }
 		
 	protected:
+		// initialize both `gapi_resource` and `gapi_texture` at most-derived class
+		gapi_texture() {}
 		// optional offline resource views
 		std::shared_ptr<gapi_resource_view> m_render_target_view;
 		std::shared_ptr<gapi_resource_view> m_depth_stencil_view;
@@ -93,7 +94,6 @@ namespace nene
 	class NENE_API gapi_buffer : virtual public gapi_resource
 	{
 	public:
-		using gapi_resource::gapi_resource;
 		~gapi_buffer() override = default;
 
 		bool is_index_buffer() const { return t::has_flag(get_resource_desc().m_buffer_usage_flag, gapi_buffer_usage_flag::usage_index_buffer); }
@@ -103,6 +103,8 @@ namespace nene
 		void set_constant_buffer_view(const std::shared_ptr<gapi_resource_view>& view) { m_constant_buffer_view = view; }
 		
 	protected:
+		// initialize both `gapi_resource` and `gapi_buffer` at most-derived class
+		gapi_buffer() {}
 		// optional offline resource views
 		std::shared_ptr<gapi_resource_view> m_constant_buffer_view;
 	};

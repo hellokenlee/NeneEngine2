@@ -2,7 +2,8 @@
 
 #include "asset_registry.h"
 #include "core_object/archive/json_archive.h"
-#include <cstdio>
+#include "core_object/archive/flexbuffer_archive.h"
+
 #include <zstd.h>
 
 
@@ -61,7 +62,7 @@ namespace nene::g
 		//
 		NENE_PROFILER_ZONE_TEXT(abstract.m_file_name.c_str(), abstract.m_file_name.size());
 		// 
-		json_writer writer;
+		flexbuffer_writer writer;
 		{
 			NENE_PROFILER_ZONE("Serialize");
 			ast.serialize(writer);	
@@ -229,6 +230,7 @@ namespace nene::g
 	
 	static std::vector<uint8_t> read_asset_content(const std::string& file_path)
 	{
+		NENE_PROFILER_ZONE();
 		//
 		FILE* fp = fopen(file_path.c_str(), "rb");
 		CHECK(fp);
@@ -274,14 +276,19 @@ namespace nene::g
 			CHECK(header.valid());
 			NENE_PROFILER_ZONE_TEXT(header.m_file_name.c_str(), header.m_type_name.size());
 			//
-			auto py_type = reflection::get_class(header.m_type_name);
-			auto var = reflection::make_variant(py_type);
-			auto ast = reflection::shared<asset>(var);
+			std::shared_ptr<asset> ast = nullptr;
+			{
+				NENE_PROFILER_ZONE("AssetConstruct");
+				auto py_type = reflection::get_class(header.m_type_name);
+				auto var = reflection::make_variant(py_type);
+				ast = reflection::shared<asset>(var);
+			}
+			
 			//
 			std::vector<uint8_t> content = read_asset_content(header.m_file_name);
 			// unserialize the content
-			json_reader reader;
-			reader.load(content);
+			flexbuffer_reader reader;
+			reader.load(std::move(content));
 			ast->serialize(reader);
 
 			return ast;

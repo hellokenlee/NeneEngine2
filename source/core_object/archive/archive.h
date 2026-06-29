@@ -5,6 +5,8 @@
 #include "core/core.h"
 #include <boost/pfr.hpp>
 #include <unordered_map>
+#include <type_traits>
+#include <cstring>
 
 
 namespace nene
@@ -32,6 +34,8 @@ namespace nene
 		virtual ~archive() = default;
 		virtual direction direction() const = 0;
 		virtual void load(const std::vector<uint8_t>& content) = 0;
+		/** move overload, defaults to copying via the const-ref version */
+		virtual void load(std::vector<uint8_t>&& content) { load(static_cast<const std::vector<uint8_t>&>(content)); }
 		virtual std::vector<uint8_t> dump() const = 0;
 		
 		// basic types
@@ -146,28 +150,64 @@ namespace nene
 		template<typename element_t>
 		archive& operator<<(const nvp<std::vector<element_t>>& kvs)
 		{
-			//
-			size_t len = kvs.m_data.size();
-			enter_array(kvs.m_name, len);
-			if (direction() == direction::read)
+			// fast path: vectors of trivially-copyable scalar types are stored as a
+			// single Blob (one builder op + one memcpy) instead of element-by-element.
+			// std::vector<bool> is excluded (bit-packed, no contiguous data()).
+			if constexpr (std::is_arithmetic_v<element_t> &&
+			              std::is_trivially_copyable_v<element_t> &&
+			              !std::is_same_v<element_t, bool>)
 			{
-				kvs.m_data.resize(len);
+				if (direction() == direction::write)
+				{
+					write_blob(
+						kvs.m_name,
+						reinterpret_cast<const uint8_t*>(kvs.m_data.data()),
+						kvs.m_data.size() * sizeof(element_t)
+					);
+				}
+				else
+				{
+					std::vector<uint8_t> bytes;
+					read_blob(kvs.m_name, bytes);
+					kvs.m_data.resize(bytes.size() / sizeof(element_t));
+					if (!bytes.empty())
+					{
+						std::memcpy(kvs.m_data.data(), bytes.data(), bytes.size());
+					}
+				}
+				return *this;
 			}
-			//
-			for (auto i = 0; i < len; ++i)
+			// slow path:
+			else
 			{
-				(*this) << nvp<element_t>(nullptr, kvs.m_data[i]);
+				//
+				size_t len = kvs.m_data.size();
+				enter_array(kvs.m_name, len);
+				if (direction() == direction::read)
+				{
+					kvs.m_data.resize(len);
+				}
+				//
+				for (auto i = 0; i < len; ++i)
+				{
+					(*this) << nvp<element_t>(nullptr, kvs.m_data[i]);
+				}
+				leave_array();
+				//
+				return *this;
 			}
-			leave_array();
-			//
-			return *this;
 		}
 		
+	protected:
 		virtual void enter_array(const char* name, size_t& size) = 0;
 		virtual void leave_array() = 0;
 		
 		virtual void enter_object(const char* name) = 0;
 		virtual void leave_object() = 0;
+		
+		/** raw byte block (Blob) read/write, shared fast path for all scalar vectors */
+		virtual void write_blob(const char* name, const uint8_t* data, size_t bytes) { CHECK(false); }
+		virtual void read_blob(const char* name, std::vector<uint8_t>& bytes) { CHECK(false); }
 	};
 }
 
