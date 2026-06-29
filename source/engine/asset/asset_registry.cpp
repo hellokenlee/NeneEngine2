@@ -53,33 +53,49 @@ namespace nene::g
 
 	void asset_registry::save(asset& ast) const
 	{
+		//
+		NENE_PROFILER_ZONE();
 		// find abstract
 		const auto& abstract = m_asset_abstracts.at(ast.m_uuid);
 		auto header = abstract.dump();
+		//
+		NENE_PROFILER_ZONE_TEXT(abstract.m_file_name.c_str(), abstract.m_file_name.size());
 		// 
 		json_writer writer;
-		ast.serialize(writer);
+		{
+			NENE_PROFILER_ZONE("Serialize");
+			ast.serialize(writer);	
+		}
+		
 		auto content = writer.dump();
 		// zstd compress content
 		size_t compress_bound = ZSTD_compressBound(content.size());
 		std::vector<uint8_t> compressed(compress_bound);
-		size_t compressed_size = ZSTD_compress(compressed.data(), compress_bound, content.data(), content.size(), 19);
-		CHECK(!ZSTD_isError(compressed_size));
-		compressed.resize(compressed_size);
+		{
+			NENE_PROFILER_ZONE("ZstdCompress");
+			size_t compressed_size = ZSTD_compress(compressed.data(), compress_bound, content.data(), content.size(), 19);
+			CHECK(!ZSTD_isError(compressed_size));
+			compressed.resize(compressed_size);
+		}
+		
 		//
-		FILE* fp = std::fopen(abstract.m_file_name.c_str(), "wb");
-		CHECK(fp);
-		uint32_t header_size = static_cast<uint32_t>(header.size());
-		uint32_t original_size = static_cast<uint32_t>(content.size());
-		ENSURE(fwrite(&header_size, sizeof(header_size), 1, fp) == 1);
-		ENSURE(fwrite(header.data(), 1, header.size(), fp) == header.size());
-		ENSURE(fwrite(&original_size, sizeof(original_size), 1, fp) == 1);
-		ENSURE(fwrite(compressed.data(), 1, compressed.size(), fp) == compressed.size());
-		ENSURE(fclose(fp) != -1);
+		{
+			NENE_PROFILER_ZONE("WriteToFile");
+			FILE* fp = std::fopen(abstract.m_file_name.c_str(), "wb");
+			CHECK(fp);
+			uint32_t header_size = static_cast<uint32_t>(header.size());
+			uint32_t original_size = static_cast<uint32_t>(content.size());
+			ENSURE(fwrite(&header_size, sizeof(header_size), 1, fp) == 1);
+			ENSURE(fwrite(header.data(), 1, header.size(), fp) == header.size());
+			ENSURE(fwrite(&original_size, sizeof(original_size), 1, fp) == 1);
+			ENSURE(fwrite(compressed.data(), 1, compressed.size(), fp) == compressed.size());
+			ENSURE(fclose(fp) != -1);
+		}
 	}
 
 	void asset_registry::add(const std::shared_ptr<asset>& ast, const std::string& file_name)
 	{
+		NENE_PROFILER_ZONE();
 		// sanitize
 		std::filesystem::path file_path = std::string(t::split(file_name, '.')[0]) + ".asset";
 		if (file_path.is_absolute())
@@ -97,6 +113,7 @@ namespace nene::g
 
 	void asset_registry::remove(const uuid& uid)
 	{
+		NENE_PROFILER_ZONE();
 		auto it = m_asset_abstracts.find(uid);
 		if (it != m_asset_abstracts.end())
 		{
@@ -109,6 +126,7 @@ namespace nene::g
 
 	void asset_registry::remove(const std::filesystem::path& file_path)
 	{
+		NENE_PROFILER_ZONE();
 		auto rel = file_path.is_absolute() ? std::filesystem::relative(file_path) : file_path;
 		auto key = rel.generic_string();
 
@@ -138,6 +156,7 @@ namespace nene::g
 
 	const asset_abstract& asset_registry::find_abstract(const std::filesystem::path& file_path)
 	{
+		NENE_PROFILER_ZONE();
 		auto rel = file_path.is_absolute() ? std::filesystem::relative(file_path) : file_path;
 		rel = rel.lexically_normal();
 		const auto key = rel.generic_string();

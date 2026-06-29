@@ -13,6 +13,7 @@ namespace nene::g
 	
 	json_writer::json_writer()
 	{
+		NENE_PROFILER_ZONE();
 		// 初始化根节点为空 object，栈底指向根
 		m_root = json::object();
 		m_stack.emplace_back(&m_root);
@@ -200,6 +201,7 @@ namespace nene::g
 
 	std::vector<uint8_t> json_writer::dump() const
 	{
+		NENE_PROFILER_ZONE();
 		return json::to_bjdata(m_root);
 	}
 

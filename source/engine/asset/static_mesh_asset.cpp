@@ -8,6 +8,7 @@ namespace nene::g
 {
 	void static_mesh_asset::serialize(archive& ar)
 	{
+		NENE_PROFILER_ZONE();
 		ar << AR(m_triangle_faces);
 		ar << AR(m_vertex_positions);
 		ar << AR(m_vertex_normals);

@@ -23,6 +23,7 @@ namespace nene::g
 
 	void texture_asset::serialize(archive& ar)
 	{
+		NENE_PROFILER_ZONE();
 		//
 		ar << AR(m_test);
 		ar << AR(m_mip_maps);

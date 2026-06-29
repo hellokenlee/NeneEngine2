@@ -27,6 +27,7 @@ namespace nene
 	
 	void asset_import_command::execute()
 	{
+		NENE_PROFILER_ZONE();
 		auto names = t::split(m_origin_file_abs_path, '.');
 		if (names.size() > 1)
 		{

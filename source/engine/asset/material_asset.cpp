@@ -9,6 +9,7 @@ namespace nene::g
 {
 	void material_asset::serialize(archive& ar)
 	{
+		NENE_PROFILER_ZONE();
 		ar << AR(m_texture_bindings);
 		ar << AR(m_scalar_parameters);
 		asset::serialize(ar);

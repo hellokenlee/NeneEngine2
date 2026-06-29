@@ -160,6 +160,8 @@ namespace nene
 	
 	std::map<std::string, std::shared_ptr<g::asset>> mesh_importer::import_asset(const std::string& from_abs_path)
 	{
+		NENE_PROFILER_ZONE();
+		NENE_PROFILER_ZONE_TEXT(from_abs_path.c_str(), from_abs_path.size());
 		Assimp::Importer importer;
 		// nene uses left handed coordinate system
 		const aiScene* scene = importer.ReadFile(from_abs_path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_MakeLeftHanded | aiProcess_GenNormals);

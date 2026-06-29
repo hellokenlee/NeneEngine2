@@ -42,6 +42,17 @@ namespace nene
 	void engine::initialize(void* window, const uint2& window_size)
 	{
 		//
+		std::string nene_build_type = "???";
+#ifdef NENE_DEVELOPMENT
+		nene_build_type = "Develop";
+#endif
+#ifdef NENE_RELEASE
+		nene_build_type = "Release";
+#endif 
+		//		
+		std::string nene_info = std::format("NeneEngine {}, {} Build", NENE_ENGINE_VERSION, nene_build_type);
+		NENE_PROFILER_INFO(nene_info.c_str(), nene_info.size());
+		//
 		NENE_PROFILER_ZONE();
 		//
 		log(engine_, info, "Engine Init!");

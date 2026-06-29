@@ -63,6 +63,7 @@ inc = include_directories(
 	VCPKG_ROOT / VCPKG_TRIPLET / VCPKG_INCLUDE
 )
 
+# FIXME: Platform Specified
 # Common Args
 nene_compile_args = [
 	# 
@@ -70,13 +71,14 @@ nene_compile_args = [
 	'-D_CRT_SECURE_NO_WARNINGS', 
 	'-DNOMINMAX', 
 	'-DNENE_PLATFORM_WINDOWS',
+	#
+	'-DNENE_ENGINE_VERSION="' + meson.project_version() + '"',
 	# AdditionalOptions
 	'/Zc:preprocessor',   
 	# DisableSpecificWarnings
 	'/wd4251', '/wd4819', '/wd4100', '/wd4505',
 	# SDLCheck = true
 	'/sdl',               
-	
 ]
 nene_link_args = [
 	'/ignore:4099', 

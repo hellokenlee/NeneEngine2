@@ -1,13 +1,15 @@
 /* Copyright reserved by KenLee@hellokenlee@163.com */
 
 #include "asset_abstract.h"
-#include <cstring>
+#include "core/core.h"
 
 
 namespace nene
 {
 	std::vector<uint8_t> asset_abstract::dump() const
 	{
+		NENE_PROFILER_ZONE();
+		
 		std::vector<uint8_t> buf;
 
 		buf.insert(buf.end(), m_uuid.begin(), m_uuid.end());
