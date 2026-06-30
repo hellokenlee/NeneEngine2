@@ -38,6 +38,7 @@ namespace nene
 
 	std::vector<g::reflection::variant> entity_inspector::get_inspecting_components() const
 	{
+		g::reflection::scoped_guard _;
 		std::vector<g::reflection::variant> components;
 		
 		flecs::entity e = engine::get().get_world()->get_ecs().entity(static_cast<flecs::entity_t>(m_inspecting_eid));

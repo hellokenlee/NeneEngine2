@@ -78,6 +78,4 @@ editor_exe = executable(
 	cpp_args : editor_cpp_args,
 	link_args : nene_link_args,
 	dependencies : editor_deps,
-	install : true,
-	install_dir : get_option('bindir'),
 )

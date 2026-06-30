@@ -8,7 +8,7 @@ namespace nene::g
 {
 	logger asset_("asset");
 
-	static void serialize_property(archive& ar, reflection::variant& self, const std::string& prop_name)
+	static void recursively_serialize_property(archive& ar, reflection::variant& self, const std::string& prop_name)
 	{
 		//
 		static py::object py_uuid_class = py::module_::import("uuid").attr("UUID");
@@ -59,7 +59,7 @@ namespace nene::g
 			auto obj_prop_names = reflection::get_property_names(py_prop_value);
 			for (const auto& obj_prop_name : obj_prop_names)
 			{
-				serialize_property(ar, py_prop_value, obj_prop_name);
+				recursively_serialize_property(ar, py_prop_value, obj_prop_name);
 			}
 		 	ar.leave_object();
 		}
@@ -93,7 +93,7 @@ namespace nene::g
 		reflection::variant var = reflection::get_variant(this);
 		for (const auto& name : reflection::get_property_names(var))
 		{
-			serialize_property(ar, var, name);
+			recursively_serialize_property(ar, var, name);
 		}
 	}
 }

@@ -35,8 +35,10 @@ namespace nene::g
 		template<typename asset_t>
 		t::asset_handle<asset_t> make_handle(const uuid& uid) const
 		{
+			reflection::scoped_guard _;
 			auto py_type = reflection::get_class<asset_t>();
-			if (is_valid_type(uid, py_type))
+			auto py_type_name = reflection::get_class_name(py_type);
+			if (is_valid_type(uid, py_type_name))
 			{
 				return t::asset_handle<asset_t>(uid);
 			}
@@ -70,7 +72,7 @@ namespace nene::g
 	private:
 		asset_registry();
 		
-		bool is_valid_type(const uuid& uid, const reflection::type& py_type) const;
+		bool is_valid_type(const uuid& uid, const std::string& py_type_name) const;
 		
 		std::filesystem::path m_content_abs_path;
 		std::unordered_map<uuid, asset_abstract> m_asset_abstracts;

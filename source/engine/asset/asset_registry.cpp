@@ -298,12 +298,12 @@ namespace nene::g
 		return nullptr;
 	}
 
-	bool asset_registry::is_valid_type(const uuid& uid, const reflection::type& py_type) const
+	bool asset_registry::is_valid_type(const uuid& uid, const std::string& py_type_name) const
 	{
 		if (m_asset_abstracts.contains(uid))
 		{
 			const auto& abstract = m_asset_abstracts.at(uid);
-			return abstract.m_type_name == reflection::get_class_name(py_type);
+			return abstract.m_type_name == py_type_name;
 		}
 		return false;
 	}

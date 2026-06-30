@@ -22,7 +22,7 @@ namespace nene
 		void inspect(uint64_t eid);
 		// mark the inspecting entity's components modified
 		void modified() const;
-		// get the inspecting entity's components
+		// get the inspecting entity's components, can only be used in scripts
 		std::vector<g::reflection::variant> get_inspecting_components() const;
 		
 	protected:

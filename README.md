@@ -29,6 +29,8 @@ Apple's OS with Metal; Linux, Android with Vulkan will be supported in the futur
 
 
 
+
+
 ### Development
 
 Nene Engine is built by [Meson](https://mesonbuild.com/) now. 
@@ -63,6 +65,8 @@ $ meson setup .build --backend=vs --buildtype=release
 ```
 
 All available options are listed in `meson.options` file.
+
+
 
 
 
@@ -113,7 +117,11 @@ Run the executable
 
 
 
-#### Module Scheme
+
+
+## Introduction
+
+### Module Scheme
 
 Nene Engine organizes C++ modules as folders under `source`. Each module owns a
 `meson.build` file. 
@@ -121,7 +129,6 @@ Nene Engine organizes C++ modules as folders under `source`. Each module owns a
 You can add or remove a module by adding or removing a folder with a `meson.build` file under `source`.
 
 
-## Introduction
 
 ### Modules Dependency
 
@@ -144,49 +151,39 @@ graph TD
 
 
 
+
+
 ### Coding Standard
 
 #### Namespace
 
 You can use namespaces to organize your classes, functions and variables where appropriate. But Nene Engine uses some special namespaces to annotate the category of the classes or functions:
 
-```c++
-namespace nene
-{
-} 
-```
-
-The namespace `nene` is the root namespace of Nene Engine.
 
 
+- The namespace `nene` is the root namespace of Nene Engine.
 
-```c++
-// Template
-namespace nene::t
-{
-    template<class somedata_t>
-    class some_class_template
-    {
-    };
-}
-```
+  ```c++
+  namespace nene
+  {
+  } 
+  ```
 
-The namespace `nene::t` is for class or function templates. For example, container such as rotator ( `t::rotator<>` ), rectangle ( `t::rect<>` ) are in this namespace. 
+- The namespace `nene::qt` is for Qt extension class for editor.
+
+  ```c++
+  // QtExtension
+  #include <QtWidgets/QWidget>
+  namespace nene::qt
+  {
+  	class BINDINGS_API some_qt_widget : public QWidget
+      {
+          Q_OBJECT
+      };
+  }
+  ```
 
 
-```c++
-// QtExtension
-#include <QtWidgets/QWidget>
-namespace nene::qt
-{
-	class BINDINGS_API some_qt_widget : public QWidget
-    {
-        Q_OBJECT
-    };
-}
-```
-
-The namespace `nene::qt` is for Qt extension class for editor.
 
 
 

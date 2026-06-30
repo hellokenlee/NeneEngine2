@@ -76,7 +76,18 @@ nene_compile_args = [
 	# AdditionalOptions
 	'/Zc:preprocessor',   
 	# DisableSpecificWarnings
-	'/wd4251', '/wd4819', '/wd4100', '/wd4505',
+	# Warnings about using `__declspec(dllimport)` for class
+	'/wd4251', 
+	# Warnings about using mixed code page
+	'/wd4819', 
+	# Warnings about unused parameter
+	'/wd4100',
+	# Warnings about unused function
+	'/wd4505', 
+	# Warnings about conditional expression is constant
+	'/wd4127', 
+	# Warnings about structure was padded due to alignment specifier
+	'/wd4324',
 	# SDLCheck = true
 	'/sdl',               
 ]
@@ -194,9 +205,9 @@ subdir('shader')
 # Developer environment                                                       #
 # --------------------------------------------------------------------------- #
 devenv = environment()
-#
+# 默认不采集系统数据
 devenv.set('TRACY_NO_SYS_TRACE', '1')
-#
+# 没有设置 `install: true` 所以我们自己管理 PATH 变量
 devenv.prepend('PATH', meson.project_source_root() / VCPKG_ROOT / VCPKG_TRIPLET / 'bin')
 #
 foreach module : modules
@@ -205,6 +216,7 @@ endforeach
 #
 # 保证 PySide 的 dll 目录优先于 Qt6 的 dll 目录, 否则会出现 "no qt platform plugin could be initialized" 报错
 devenv.prepend('PATH', pyside_lib_dir_path)
+devenv.prepend('PATH', shiboken_lib_dir_path)
 #
 meson.add_devenv(devenv)
 
