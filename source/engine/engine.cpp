@@ -37,6 +37,10 @@ namespace nene
 
 	engine::~engine()
 	{
+		// make sure the observers are destructed before world
+		m_render_observer.reset();
+		//
+		m_world.reset();
 	}
 
 	void engine::initialize(void* window, const uint2& window_size)

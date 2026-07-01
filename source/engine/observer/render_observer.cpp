@@ -15,7 +15,7 @@ namespace nene::g
 {
 	render_observer::render_observer(const world& w)
 	{
-		w.get_ecs().observer<static_mesh_component>()
+		m_on_set_observer = w.get_ecs().observer<static_mesh_component>()
 			.event(flecs::OnSet)
 			.each(
 				[&w](flecs::entity e, static_mesh_component& sm)
@@ -52,7 +52,7 @@ namespace nene::g
 			)
 		;
 		
-		w.get_ecs().observer<render_component>()
+		m_on_remove_observer = w.get_ecs().observer<render_component>()
 			.event(flecs::OnRemove)
 			.each(
 				[&w](flecs::entity e, render_component& c) 
@@ -70,5 +70,13 @@ namespace nene::g
 				}
 			)
 		;
+	}
+
+	render_observer::~render_observer()
+	{
+		m_on_set_observer.disable();
+		m_on_set_observer.destruct();
+		m_on_remove_observer.disable();
+		m_on_remove_observer.destruct();
 	}
 }
