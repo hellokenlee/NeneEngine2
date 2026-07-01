@@ -83,6 +83,8 @@ namespace nene
 	void engine::shutdown()
 	{
 		//
+		g::asset_registry::get().clear_loaded();
+		//
 		enqueue_render_command<"FlushOneLastTime">(
 			[]()
 			{

@@ -48,9 +48,6 @@ namespace nene::g
 			}
 		}
 		
-		// Get the absolute path of the asset registry root directory.
-		const std::filesystem::path& content() const { return m_content_abs_path; }
-		
 		// Save the asset to the underlying storage.
 		void save(asset& ast) const;
 		
@@ -63,8 +60,15 @@ namespace nene::g
 		// Remove assets whose relative path matches or falls under the given path.
 		void remove(const std::filesystem::path& file_path);
 		
+		// Get the absolute path of the asset registry root directory.
+		const std::filesystem::path& content() const { return m_content_abs_path; }
+		
+		// Get the abstract of asset
 		const asset_abstract& find_abstract(const std::filesystem::path& file_path);
 		const asset_abstract& find_abstract_by_uuid(const uuid& uid) const;
+		
+		// Clear loaded assets
+		void clear_loaded();
 	
 		// Dynamicly load an asset from the registry by its UUID.
 		std::shared_ptr<asset> typeless_load(const uuid& uid);

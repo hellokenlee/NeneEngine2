@@ -184,6 +184,11 @@ namespace nene::g
 		return invalid;
 	}
 
+	void asset_registry::clear_loaded()
+	{
+		m_loaded_assets.clear();
+	}
+
 	asset_registry::asset_registry()
 	{
 		//
@@ -292,7 +297,9 @@ namespace nene::g
 			flexbuffer_reader reader;
 			reader.load(std::move(content));
 			ast->serialize(reader);
-
+			//
+			m_loaded_assets.emplace(ast->m_uuid, ast);
+			//
 			return ast;
 		}
 		return nullptr;
