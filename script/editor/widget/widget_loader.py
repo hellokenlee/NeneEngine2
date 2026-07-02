@@ -1,0 +1,32 @@
+# -*- coding=utf-8 -*-
+# __author__ = "KenLee"
+# __email__ = "hellokenlee@163.com"
+
+import os
+
+from PySide6.QtCore import QDir, QFile, QIODevice
+from PySide6.QtUiTools import QUiLoader
+
+from script.editor.resource_set import IconSet
+from script.editor.common.singletonmeta import SingletonMeta
+from script.editor.widget.content_broswer_view_widget import ContentBrowserViewWidget
+from script.editor.widget.inspector_property_table_widget import InspectorPropertyTableWidget
+from script.editor.widget.outliner_tree_widget import OutlinerTreeWidget
+
+
+class WidgetLoader(object, metaclass=SingletonMeta):
+
+    def __init__(self):
+        super().__init__()
+        self._loader = QUiLoader()
+        self._loader.registerCustomWidget(ContentBrowserViewWidget)
+        self._loader.registerCustomWidget(InspectorPropertyTableWidget)
+        self._loader.registerCustomWidget(OutlinerTreeWidget)
+        self._loader.setWorkingDirectory(QDir(IconSet.UI_FOLDER_PATH))
+        pass
+
+    def load(self, ui_file: str):
+        ui_file = QFile(os.path.join(IconSet.UI_FOLDER_PATH, ui_file))
+        open_succeed = ui_file.open(QIODevice.OpenModeFlag.ReadOnly)
+        assert open_succeed, "Cannot open: %s!" % ui_file
+        return self._loader.load(ui_file)

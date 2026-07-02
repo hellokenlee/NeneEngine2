@@ -4,10 +4,10 @@
 
 import os
 from PySide6.QtGui import QIcon, QPixmap
-from script.editor.common.singleton import Singleton
+from script.editor.common.singletonmeta import SingletonMeta
 
 
-class IconSet(object, metaclass=Singleton):
+class IconSet(object, metaclass=SingletonMeta):
 
 	UI_FOLDER_PATH = os.path.join("script", "editor", "_ui_")
 	ICON_FOLDER_PATH = os.path.join(UI_FOLDER_PATH, "icon")
@@ -26,14 +26,14 @@ class IconSet(object, metaclass=Singleton):
 		pass
 
 
-class PixmapSet(object, metaclass=Singleton):
+class PixmapSet(object, metaclass=SingletonMeta):
 	def __init__(self):
 		super(PixmapSet, self).__init__()
 		self.path_seperator = QPixmap(os.path.join(IconSet.ICON_FOLDER_PATH, "path_seperator.png"))
 		pass
 
 
-class AssetFileIconSet(object, metaclass=Singleton):
+class AssetFileIconSet(object, metaclass=SingletonMeta):
 	def __init__(self):
 		super(AssetFileIconSet, self).__init__()
 		pass

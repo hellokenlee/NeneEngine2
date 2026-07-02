@@ -5,14 +5,14 @@
 import os
 
 from script.editor.common.log import log, WARNING
-from script.editor.common.singleton import Singleton
+from script.editor.common.singletonmeta import SingletonMeta
 from script.editor.controller.asset_editor_widget_controller import AssetEditorWidgetController
 from script.editor.controller.material_editor_widget_controller import MaterialEditorWidgetController
 
 from nene import AssetRegistry, MaterialAsset
 
 
-class AssetEditorManager(object, metaclass=Singleton):
+class AssetEditorManager(object, metaclass=SingletonMeta):
 
     def __init__(self):
         super(AssetEditorManager, self).__init__()

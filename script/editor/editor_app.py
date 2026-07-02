@@ -3,11 +3,11 @@
 # __email__ = "hellokenlee@163.com"
 
 from PySide6.QtWidgets import QApplication
-from script.editor.common.singleton import Singleton
+from script.editor.common.singletonmeta import SingletonMeta
 from script.editor.controller.main_window_controller import MainWindowController
 
 
-class EditorApp(object, metaclass=Singleton):
+class EditorApp(object, metaclass=SingletonMeta):
 
 	def __init__(self):
 		super(EditorApp, self).__init__()
