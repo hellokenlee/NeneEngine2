@@ -22,6 +22,7 @@ class AssetEditorBaseWidget(QWidget, BaseWidget):
 		pass
 
 	def setup(self):
+		super().setup()
 		self.setWindowIcon(IconSet().sakura)
 		self.installEventFilter(self)
 		pass

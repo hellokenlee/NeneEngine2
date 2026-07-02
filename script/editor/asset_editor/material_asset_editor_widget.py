@@ -28,6 +28,7 @@ class MaterialEditorWidget(AssetEditorBaseWidget):
 		pass
 
 	def setup(self):
+		super().setup()
 		#
 		self._property_table = self.find_child(InspectorPropertyTableWidget, "ComponentTable")
 		self._name_label = self.find_child(QLabel, "NameLabel")

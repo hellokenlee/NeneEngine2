@@ -2,7 +2,6 @@
 # __author__ = "KenLee"
 # __email__ = "hellokenlee@163.com"
 
-from PySide6 import QtCore
 from PySide6.QtWidgets import QLabel
 
 from script.editor.widget.base_dock_widget import BaseDockWidget

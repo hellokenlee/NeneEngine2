@@ -2,11 +2,8 @@
 # __author__ = "KenLee"
 # __email__ = "hellokenlee@163.com"
 
-from PySide6 import QtCore
-
 from script.editor.widget.base_dock_widget import BaseDockWidget
 from script.editor.widget.outliner_tree_widget import OutlinerTreeWidget
-from script.editor.common.log import log, INFO
 
 from nene import EventSubscriber, EntitySpawnEvent, Engine, EditorCommandCenter, RemoveEntityCommand, ParentEntityCommand, EntityInspector
 

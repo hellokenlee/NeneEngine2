@@ -1,5 +1,4 @@
 
-import os
 from typing import TypeVar
 
 from PySide6.QtCore import QObject

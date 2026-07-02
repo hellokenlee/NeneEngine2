@@ -85,6 +85,7 @@ class EditorMainWindow(QMainWindow, BaseWidget):
         pass
 
     def setup(self):
+        super().setup()
         self.resize(1920, 1080)
         self.setWindowTitle("NeneEngine")
         self.setWindowIcon(IconSet().sakura)

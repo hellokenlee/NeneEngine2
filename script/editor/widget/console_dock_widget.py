@@ -7,7 +7,6 @@ import html
 import re
 import traceback
 
-from PySide6 import QtCore
 from PySide6.QtGui import QKeyEvent
 from PySide6.QtCore import QObject, QEvent, Qt
 from PySide6.QtWidgets import QTextBrowser, QLineEdit
@@ -208,6 +207,7 @@ class ConsoleDockWidget(BaseDockWidget):
 		self._command_line_edit.clear()
 		_append_colored_log(self.log_text_browser, ">>> %s" % command, logging.DEBUG)
 
+		# noinspection PyBroadException
 		try:
 			try:
 				code = compile(command, "<console>", "eval")
