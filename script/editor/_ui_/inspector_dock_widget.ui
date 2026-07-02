@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>InspectorDockWidget</class>
- <widget class="QDockWidget" name="InspectorDockWidget">
+ <widget class="InspectorDockWidget" name="InspectorDockWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -110,6 +110,11 @@
    <class>InspectorPropertyTableWidget</class>
    <extends>QTableWidget</extends>
    <header>inspector_property_table_widget.py</header>
+  </customwidget>
+  <customwidget>
+   <class>InspectorDockWidget</class>
+   <extends>QDockWidget</extends>
+   <header>inspector_dock_widget.py</header>
   </customwidget>
  </customwidgets>
  <resources/>

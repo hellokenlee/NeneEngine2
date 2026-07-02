@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>mainWindow</class>
- <widget class="QMainWindow" name="mainWindow">
+ <widget class="EditorMainWindow" name="mainWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -49,6 +49,13 @@
    <addaction name="menuHelp"/>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>EditorMainWindow</class>
+   <extends>QMainWindow</extends>
+   <header>editor_main_window.py</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

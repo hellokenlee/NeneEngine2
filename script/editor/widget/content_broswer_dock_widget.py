@@ -8,14 +8,15 @@ from datetime import datetime
 
 from PySide6.QtCore import QEvent, QObject, QSize, Qt, QPoint
 from PySide6.QtGui import QKeySequence, QShortcut, QMouseEvent
-from PySide6.QtWidgets import QPushButton, QWidget, QListWidget, QListWidgetItem, QApplication, QLabel, QLineEdit, QFileDialog, QMenu, QMessageBox, QStyledItemDelegate, QLayout
+from PySide6.QtWidgets import QPushButton, QWidget, QListWidget, QListWidgetItem, QApplication, QLabel, QLineEdit, \
+	QFileDialog, QMenu, QMessageBox, QStyledItemDelegate, QLayout, QVBoxLayout
 from script.editor.resource_set import IconSet, PixmapSet, AssetFileIconSet
-from script.editor.controller.dock_widget_controller import DockWidgetController
 from script.editor.common.log import log, INFO
-from script.editor.controller.history_navigator import HistoryNavigator
+from script.editor.common.history_navigator import HistoryNavigator
+from script.editor.widget.base_dock_widget import BaseDockWidget
 from script.editor.widget.content_broswer_view_widget import ContentBrowserViewWidget
 from script.editor.widget.slow_task_dialog import SlowTaskDialog
-from script.editor.controller.asset_editor_manager import AssetEditorManager
+from script.editor.asset_editor.asset_editor_manager import AssetEditorManager
 
 from nene import EditorCommandCenter, AssetImportCommand, AssetNewCommand, AssetRegistry
 
@@ -49,25 +50,41 @@ class _ContentItemDelegate(QStyledItemDelegate):
 			editor.setGeometry(rect)
 
 
-class ContentBrowserDockWidgetController(DockWidgetController):
+class ContentBrowserDockWidget(BaseDockWidget):
+
 	UI_FILE = "content_browser_dock_widget.ui"
 
-	def __init__(self):
-		super(ContentBrowserDockWidgetController, self).__init__()
+	def __init__(self, parent):
+		super().__init__(parent)
 		# TODO: Use AssetRegistry's root
 		self._nav = HistoryNavigator("content")
-		self._import_push_button: QPushButton = self.find_child(QPushButton, "importPushButton")
-		self._back_push_button: QPushButton = self.find_child(QPushButton, "backPushButton")
-		self._forward_push_button: QPushButton = self.find_child(QPushButton, "forwardPushButton")
-		self._content_view_widget: ContentBrowserViewWidget = self.find_child(ContentBrowserViewWidget, "contentListWidget")
-		self._path_widget: QWidget = self.find_child(QWidget, "pathWidget")
-		self._path_widget_layout: QLayout = typing.cast(QLayout, self._path_widget.layout())
-		self._search_line_edit: QLineEdit = self.find_child(QLineEdit, "searchLineEdit")
+		self._import_push_button = QPushButton()
+		self._back_push_button = QPushButton()
+		self._forward_push_button = QPushButton()
+		self._content_view_widget = ContentBrowserViewWidget()
+		self._path_widget = QWidget()
+		self._path_widget_layout = QVBoxLayout()
+		self._search_line_edit = QLineEdit()
+		self._path_button_to_path: dict[QPushButton, str] = {}
+		self._editing_item: QListWidgetItem | None = None
+		self._editing_mode: str | None = None  # "new_folder" | "rename"
+		self._editing_original_name: str | None = None  # 重命名前的完整文件名（含扩展名）
+		self._delete_shortcut = QShortcut(self)
+		pass
+
+	def setup(self):
+		super().setup()
+		self._import_push_button = self.find_child(QPushButton, "importPushButton")
+		self._back_push_button = self.find_child(QPushButton, "backPushButton")
+		self._forward_push_button = self.find_child(QPushButton, "forwardPushButton")
+		self._content_view_widget = self.find_child(ContentBrowserViewWidget, "contentListWidget")
+		self._path_widget = self.find_child(QWidget, "pathWidget")
+		self._path_widget_layout = typing.cast(QLayout, self._path_widget.layout())
+		self._search_line_edit = self.find_child(QLineEdit, "searchLineEdit")
 		#
 		self._import_push_button.clicked.connect(self._on_import_asset)
 		self._back_push_button.clicked.connect(self._on_back_push_button_clicked)
 		self._forward_push_button.clicked.connect(self._on_forward_push_button_clicked)
-		self._path_button_to_path: dict[QPushButton, str] = {}
 		#
 		self._content_view_widget.viewport().installEventFilter(_ClickEmptyToClearFilter(self._content_view_widget))
 		self._content_view_widget.itemDoubleClicked.connect(self._on_content_view_item_double_clicked)
@@ -78,18 +95,14 @@ class ContentBrowserDockWidgetController(DockWidgetController):
 		self._delete_shortcut = QShortcut(QKeySequence("Delete"), self._content_view_widget)
 		self._delete_shortcut.setContext(Qt.ShortcutContext.WidgetWithChildrenShortcut)
 		self._delete_shortcut.activated.connect(self._on_delete_shortcut_activated)
-		# 内联编辑状态：新建文件夹和重命名共用同一套 closeEditor 回调，通过 mode 区分
-		self._editing_item: QListWidgetItem | None = None
-		self._editing_mode: str | None = None  # "new_folder" | "rename"
-		self._editing_original_name: str | None = None  # 重命名前的完整文件名（含扩展名）
+		#
 		#
 		self._update_views()
-		#
 		pass
 
 	def _on_import_asset(self):
 		exts: list[str] = ["*" + ext for ext in AssetImportCommand.supported_extensions()]
-		file_path, _ = QFileDialog.getOpenFileName(self.ui, "Import Asset", "", "Asset Files (%s)" % " ".join(exts))
+		file_path, _ = QFileDialog.getOpenFileName(self, "Import Asset", "", "Asset Files (%s)" % " ".join(exts))
 		if file_path:
 			file_rel = self._get_unique_path(os.path.join(self._nav.current(), os.path.basename(file_path)))
 			log(self, INFO, "Import: %s -> %s" % (file_path, file_rel))
@@ -227,7 +240,7 @@ class ContentBrowserDockWidgetController(DockWidgetController):
 		real_name = item.data(Qt.ItemDataRole.UserRole)
 		full_path = os.path.join(self._nav.current(), real_name)
 		reply = QMessageBox.question(
-			self.ui, "Delete", "Are you sure you want to delete '%s'?" % real_name,
+			self, "Delete", "Are you sure you want to delete '%s'?" % real_name,
 			QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
 		)
 		if reply == QMessageBox.StandardButton.Yes:

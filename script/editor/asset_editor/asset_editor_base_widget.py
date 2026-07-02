@@ -9,31 +9,39 @@ from PySide6.QtCore import QEvent
 from PySide6.QtGui import QCloseEvent
 from PySide6.QtWidgets import QWidget
 
-from script.editor.controller.base_controller import BaseController
 from script.editor.resource_set import IconSet
+from script.editor.widget.base_widget import BaseWidget
 
 
-class AssetEditorWidgetController(BaseController[QWidget]):
+class AssetEditorBaseWidget(QWidget, BaseWidget):
 
-	def __init__(self):
-		super().__init__()
-		self.ui.setWindowIcon(IconSet().sakura)
+	def __init__(self, parent=None):
+		super().__init__(parent)
+		self._asset_path = ""
 		self._on_close_callback: Optional[Callable] = None
-		self.ui.installEventFilter(self)
+		pass
+
+	def setup(self):
+		self.setWindowIcon(IconSet().sakura)
+		self.installEventFilter(self)
+		pass
+
+	def open(self, asset_path: str):
+		self._asset_path = asset_path
 		pass
 
 	def eventFilter(self, obj, event):
-		if obj is self.ui and event.type() == QEvent.Type.Close:
+		if obj is self and event.type() == QEvent.Type.Close:
 			assert (isinstance(event, QCloseEvent))
 			self.on_close(event)
 			return True
 		return super().eventFilter(obj, event)
 
 	def show(self):
-		self.ui.resize(1280, 720)
-		self.ui.raise_()
-		self.ui.activateWindow()
-		self.ui.show()
+		self.resize(1280, 720)
+		self.raise_()
+		self.activateWindow()
+		super().show()
 		pass
 
 	def on_close(self, event: QCloseEvent):

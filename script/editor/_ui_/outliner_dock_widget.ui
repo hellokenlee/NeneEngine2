@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>outlinerDockWidget</class>
- <widget class="QDockWidget" name="outlinerDockWidget">
+ <widget class="OutlinerDockWidget" name="outlinerDockWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -83,6 +83,11 @@
    <class>OutlinerTreeWidget</class>
    <extends>QTreeWidget</extends>
    <header>outliner_tree_widget.py</header>
+  </customwidget>
+  <customwidget>
+   <class>OutlinerDockWidget</class>
+   <extends>QDockWidget</extends>
+   <header>outliner_dock_widget.py</header>
   </customwidget>
  </customwidgets>
  <resources/>

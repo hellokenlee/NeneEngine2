@@ -7,12 +7,13 @@ import html
 import re
 import traceback
 
+from PySide6 import QtCore
 from PySide6.QtGui import QKeyEvent
 from PySide6.QtCore import QObject, QEvent, Qt
 from PySide6.QtWidgets import QTextBrowser, QLineEdit
 
 from script.editor.common.log import global_logger, global_log_formatter
-from script.editor.controller.dock_widget_controller import DockWidgetController
+from script.editor.widget.base_dock_widget import BaseDockWidget
 
 from nene import EventSubscriber, Logger, LogMessageEvent
 
@@ -71,7 +72,7 @@ def _append_colored_log(text_browser: QTextBrowser, message: str, levelno=None):
 		)
 
 
-class EngineLogHandler(EventSubscriber):
+class _EngineLogHandler(EventSubscriber):
 	def __init__(self, text_browser: QTextBrowser):
 		super().__init__()
 		self.text_browser = text_browser
@@ -84,7 +85,7 @@ class EngineLogHandler(EventSubscriber):
 		pass
 
 
-class PythonLogHandler(logging.Handler):
+class _PythonLogHandler(logging.Handler):
 	def __init__(self, text_browser: QTextBrowser):
 		super().__init__()
 		self.text_browser = text_browser
@@ -112,66 +113,76 @@ class PythonLogHandler(logging.Handler):
 
 
 class _CommandLineHistoryFilter(QObject):
-	def __init__(self, controller, parent=None):
+	def __init__(self, widget, parent=None):
 		super().__init__(parent)
-		self._controller = controller
+		self._widget = widget
 
 	def eventFilter(self, watched, event):
 		if event.type() == QEvent.Type.KeyPress:
 			assert (isinstance(event, QKeyEvent))
 			if event.key() == Qt.Key.Key_Up:
-				self._controller.restore_prev_command()
+				self._widget.restore_prev_command()
 				return True
 			if event.key() == Qt.Key.Key_Down:
-				self._controller.restore_next_command()
+				self._widget.restore_next_command()
 				return True
 		return False
 
 
-class ConsoleDockWidgetController(DockWidgetController):
+class ConsoleDockWidget(BaseDockWidget):
 
 	UI_FILE = "console_dock_widget.ui"
 
-	def __init__(self):
-		super(ConsoleDockWidgetController, self).__init__()
-		self.command_line_edit = self.find_child(QLineEdit, "commandLineEdit")
-		self.log_text_browser = self.find_child(QTextBrowser, "logTextBrowser")
-		self._python_globals = {"__builtins__": __builtins__}
-		self._python_locals = {"controller": self}
+	def __init__(self, parent):
+		super().__init__(parent)
+		self._command_line_edit: QLineEdit = QLineEdit()
+		self.log_text_browser: QTextBrowser = QTextBrowser()
+		self._python_globals = {}
+		self._python_locals = {}
 		self._command_history = []
 		self._history_cursor = 0
 		self._history_draft = ""
 		self._command_history_filter = None
+		self._engine_log_handler = None
+		self._python_log_handler = None
+		pass
+
+	def setup(self):
+		super().setup()
+		self._command_line_edit = self.find_child(QLineEdit, "commandLineEdit")
+		self.log_text_browser = self.find_child(QTextBrowser, "logTextBrowser")
+		self._python_globals = {"__builtins__": __builtins__}
+		self._python_locals = {"widget": self}
 		#
-		self.engine_log_handler = EngineLogHandler(self.log_text_browser)
-		self.python_log_handler = PythonLogHandler(self.log_text_browser)
-		if self.command_line_edit:
-			self._command_history_filter = _CommandLineHistoryFilter(self, self.command_line_edit)
-			self.command_line_edit.installEventFilter(self._command_history_filter)
-			self.command_line_edit.returnPressed.connect(self._on_command_line_return_pressed)
-			self.command_line_edit.textEdited.connect(self._on_command_text_edited)
+		self._engine_log_handler = _EngineLogHandler(self.log_text_browser)
+		self._python_log_handler = _PythonLogHandler(self.log_text_browser)
+		if self._command_line_edit:
+			self._command_history_filter = _CommandLineHistoryFilter(self, self._command_line_edit)
+			self._command_line_edit.installEventFilter(self._command_history_filter)
+			self._command_line_edit.returnPressed.connect(self._on_command_line_return_pressed)
+			self._command_line_edit.textEdited.connect(self._on_command_text_edited)
 		pass
 
 	def _on_command_text_edited(self, _):
 		self._history_cursor = len(self._command_history)
-		if self.command_line_edit is not None:
-			self._history_draft = self.command_line_edit.text()
+		if self._command_line_edit is not None:
+			self._history_draft = self._command_line_edit.text()
 		pass
 
 	def restore_prev_command(self):
-		if self.command_line_edit is None or not self._command_history:
+		if self._command_line_edit is None or not self._command_history:
 			return
 		if self._history_cursor == len(self._command_history):
-			self._history_draft = self.command_line_edit.text()
+			self._history_draft = self._command_line_edit.text()
 		if self._history_cursor > 0:
 			self._history_cursor -= 1
 		command = self._command_history[self._history_cursor]
-		self.command_line_edit.setText(command)
-		self.command_line_edit.setCursorPosition(len(command))
+		self._command_line_edit.setText(command)
+		self._command_line_edit.setCursorPosition(len(command))
 		pass
 
 	def restore_next_command(self):
-		if self.command_line_edit is None or not self._command_history:
+		if self._command_line_edit is None or not self._command_history:
 			return
 		last_index = len(self._command_history) - 1
 		if self._history_cursor < last_index:
@@ -180,21 +191,21 @@ class ConsoleDockWidgetController(DockWidgetController):
 		else:
 			self._history_cursor = len(self._command_history)
 			command = self._history_draft
-		self.command_line_edit.setText(command)
-		self.command_line_edit.setCursorPosition(len(command))
+		self._command_line_edit.setText(command)
+		self._command_line_edit.setCursorPosition(len(command))
 		pass
 
 	def _on_command_line_return_pressed(self):
-		if self.command_line_edit is None or self.log_text_browser is None:
+		if self._command_line_edit is None or self.log_text_browser is None:
 			return
-		command = self.command_line_edit.text().strip()
+		command = self._command_line_edit.text().strip()
 		if not command:
 			return
 
 		self._command_history.append(command)
 		self._history_cursor = len(self._command_history)
 		self._history_draft = ""
-		self.command_line_edit.clear()
+		self._command_line_edit.clear()
 		_append_colored_log(self.log_text_browser, ">>> %s" % command, logging.DEBUG)
 
 		try:

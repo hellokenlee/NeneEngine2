@@ -207,6 +207,8 @@ subdir('shader')
 devenv = environment()
 # 默认不采集系统数据
 devenv.set('TRACY_NO_SYS_TRACE', '1')
+# 
+devenv.set('PYTHONPYCACHEPREFIX', meson.project_build_root() / 'pycache')
 # 没有设置 `install: true` 所以我们自己管理 PATH 变量
 devenv.prepend('PATH', meson.project_source_root() / VCPKG_ROOT / VCPKG_TRIPLET / 'bin')
 #

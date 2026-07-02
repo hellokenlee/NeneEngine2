@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>EditorWidget</class>
- <widget class="QWidget" name="EditorWidget">
+ <widget class="MaterialEditorWidget" name="EditorWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -191,6 +191,11 @@
   </layout>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>MaterialEditorWidget</class>
+   <extends>QWidget</extends>
+   <header>material_asset_editor_widget.py</header>
+  </customwidget>
   <customwidget>
    <class>InspectorPropertyTableWidget</class>
    <extends>QTableWidget</extends>

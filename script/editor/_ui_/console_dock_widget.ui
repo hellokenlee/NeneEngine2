@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>consoleDockWidget</class>
- <widget class="QDockWidget" name="consoleDockWidget">
+ <widget class="ConsoleDockWidget" name="consoleDockWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -37,6 +37,13 @@
    </layout>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ConsoleDockWidget</class>
+   <extends>QDockWidget</extends>
+   <header>console_dock_widget.py</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

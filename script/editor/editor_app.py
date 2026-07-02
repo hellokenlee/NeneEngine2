@@ -4,7 +4,8 @@
 
 from PySide6.QtWidgets import QApplication
 from script.editor.common.singletonmeta import SingletonMeta
-from script.editor.controller.main_window_controller import MainWindowController
+from script.editor.widget.widget_loader import WidgetLoader
+from script.editor.widget.editor_main_window import EditorMainWindow
 
 
 class EditorApp(object, metaclass=SingletonMeta):
@@ -13,9 +14,9 @@ class EditorApp(object, metaclass=SingletonMeta):
 		super(EditorApp, self).__init__()
 		#
 		self._app = QApplication()
-		self._main_window = MainWindowController()
+		self._main_window = WidgetLoader().load(EditorMainWindow)
 		pass
 
 	def run(self):
-		self._main_window.ui.show()
+		self._main_window.show()
 		return self._app.exec_()

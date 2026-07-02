@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>contentBroswerDockWidget</class>
- <widget class="QDockWidget" name="contentBroswerDockWidget">
+ <class>contentBrowserDockWidget</class>
+ <widget class="ContentBrowserDockWidget" name="contentBrowserDockWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -344,6 +344,11 @@ QPushButton:hover {
    <class>ContentBrowserViewWidget</class>
    <extends>QListWidget</extends>
    <header>content_broswer_view_widget.py</header>
+  </customwidget>
+  <customwidget>
+   <class>ContentBrowserDockWidget</class>
+   <extends>QDockWidget</extends>
+   <header>content_broswer_dock_widget.py</header>
   </customwidget>
  </customwidgets>
  <resources/>
